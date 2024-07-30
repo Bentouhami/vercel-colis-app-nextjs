@@ -1,11 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
+import {NextRequest, NextResponse} from 'next/server';
 import {CreateUserDto, UserResponseDto} from '@/app/utils/dtos';
-import { registerUserSchema } from "@/app/utils/validationSchema";
+import {registerUserSchema} from "@/app/utils/validationSchema";
 import prisma from "@/app/utils/db";
-import { Address, User } from "@prisma/client";
+import {Address} from "@prisma/client";
 import bcrypt from "bcryptjs";
-import { JWTPayload } from "@/app/utils/types";
-import { setCookie } from "@/app/utils/generateToken";
+import {JWTPayload} from "@/app/utils/types";
+import {setCookie} from "@/app/utils/generateToken";
+import {errorHandler} from "@/app/utils/handelErrors";
 
 export async function POST(request: NextRequest) {
     try {
@@ -15,10 +16,10 @@ export async function POST(request: NextRequest) {
         const validated = registerUserSchema.safeParse(body);
 
         if (!validated.success) {
-            return NextResponse.json({ error: validated.error.errors[0].message }, { status: 400 });
+            return NextResponse.json({error: validated.error.errors[0].message}, {status: 400});
         }
 
-        const { firstName, lastName, birthDate, gender, phoneNumber, email, password, address } = validated.data;
+        const {firstName, lastName, birthDate, gender, phoneNumber, email, password, address} = validated.data;
 
         // Create address first
         const createdAddress: Address | null = await prisma.address.create({
@@ -50,6 +51,11 @@ export async function POST(request: NextRequest) {
             },
             select: {
                 id: true,
+                firstName: true,
+                lastName: true,
+                dateOfBirth: true,
+                gender: true,
+                phoneNumber: true,
                 email: true,
                 role: true
             }
@@ -66,18 +72,13 @@ export async function POST(request: NextRequest) {
 
         // Retournez le message de création de l'utilisateur avec le token généré
         return NextResponse.json(
-            {
-                user,
-                message: "Registered & authenticated",
-            },
+            {user, message: "Registered & authenticated",},
             {
                 status: 201,
-                headers: {
-                    'Set-Cookie': cookie
-                }
+                headers: {'Set-Cookie': cookie}
             }
         );
     } catch (error) {
-        return NextResponse.json({ error: "Internal server error", details: error.message }, { status: 500 });
+        return errorHandler("Internal server error", 500);
     }
 }
