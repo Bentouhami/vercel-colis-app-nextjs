@@ -1,0 +1,11 @@
+.logoBrand {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    color: rgba(128, 9, 239, 0.97);
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0 8px; /* Ajuster l'espace autour de l'icône */
+}

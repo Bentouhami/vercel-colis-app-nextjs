@@ -1,0 +1,65 @@
+/* components/Pricing.module.css */
+.pricingContainer {
+    text-align: center;
+    padding: 2rem 1rem;
+    background-color: #f8f9fa; /* Background color for the pricing section */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pricingHeader {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: #343a40; /* Dark color for the header */
+    font-weight: bold;
+}
+
+.plans {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.plan {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 2rem;
+    margin: 1rem;
+    width: 300px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff; /* White background for individual plans */
+}
+
+.plan h2 {
+    margin-top: 0;
+    color: #007bff; /* Primary color for plan names */
+}
+
+.price {
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.subscribeButton {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 1rem;
+}
+
+.subscribeButton:hover {
+    background-color: #0056b3;
+}
+
+.list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.listItem {
+    text-align: left;
+    margin: 0.5rem 0;
+}

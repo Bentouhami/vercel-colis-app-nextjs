@@ -1,0 +1,24 @@
+.container {
+    margin-top: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    margin-top: 15px;
+}
+
+.form-label {
+    font-weight: bold;
+}
+
+.form-control {
+    margin-top: 5px;
+}
+
+.pagination {
+    justify-content: center;
+}
+
+.button-submit {
+    margin-top: 50px;
+}

@@ -1,0 +1,23 @@
+/* components/Header.module.css */
+.navLinks {
+    gap: 10px; /* Ajoute un espace de 10px entre les éléments de navigation */
+}
+
+.navLink {
+    margin: 5px 0; /* Ajoute de la marge verticale entre les liens de navigation pour les versions mobiles */
+}
+
+.navLink:hover {
+
+    color: rgba(128, 9, 239, 0.97); /* Change la couleur de la police lorsque l'utilisateur survole un lien */
+    scale: 1.1; /* Augmente la taille de la police lorsque l'utilisateur survole un lien */
+    text-decoration: none;
+
+}
+
+@media (min-width: 992px) {
+    .navLink {
+        margin: 0; /* Réinitialise la marge verticale pour les versions desktop */
+    }
+}
+

@@ -1,0 +1,33 @@
+/* SimulationForm.css */
+.container {
+    margin-top: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-label {
+    font-weight: bold;
+}
+
+.form-control {
+    margin-top: 5px;
+}
+
+.pagination {
+    justify-content: center;
+}
+
+.button-submit {
+    margin-top: 20px;
+}
+
+/*@media (max-width: 768px) {*/
+/*    .order-1 {*/
+/*        order: 1 !important;*/
+/*    }*/
+/*    .order-0 {*/
+/*        order: 0 !important;*/
+/*    }*/
+/*}*/
