@@ -20,7 +20,7 @@ interface Props {
 export async function GET(request: NextRequest, {params}: Props) {
     try {
         // // on récupère l'adresse avec l'id passé en paramètre
-        const address : Address = await prisma.address.findUnique({
+        const address : Address |null = await prisma.address.findUnique({
             where: {
                 id: parseInt(params.id)
             }
@@ -53,7 +53,7 @@ export async function GET(request: NextRequest, {params}: Props) {
 export async function PUT(request: NextRequest, {params}: Props) {
     try {
         // récupérer le body de la requête et le transformer en adresse DTO
-        const address : Address = await prisma.address.findUnique({
+        const address : Address | null = await prisma.address.findUnique({
             where: {id: parseInt(params.id)}
         })
 

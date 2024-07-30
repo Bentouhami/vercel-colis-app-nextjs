@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
         const {firstName, lastName, birthDate, gender, phoneNumber, email, password, address} = validated.data;
 
         // Create address first
-        const createdAddress: Address = await prisma.address.create({
+        const createdAddress: Address | null = await prisma.address.create({
             data: {
                 street: address.street,
                 number: address.number,
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
         // crypto password
         const hashedPassword = await bcrypt.hash(password, 10);
         // Create user with the addressId from the newly created address
-        const user: User = await prisma.user.create({
+        const user: User | null = await prisma.user.create({
             data: {
                 firstName,
                 lastName,

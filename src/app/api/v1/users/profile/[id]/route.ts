@@ -23,7 +23,7 @@ export async function DELETE(request: NextRequest, {params}: Props) {
             where: {
                 id: parseInt(params.id)
             }
-        }) as User;
+        }) as User | null;
 
         // if user not found
         if (!user) {

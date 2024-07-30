@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
             where: {
                 email: body.email
             }
-        }) as User;
+        }) as User | null;
 
         // Si l'utilisateur n'est pas trouvé, retournez un message d'erreur
         if (!user) {
