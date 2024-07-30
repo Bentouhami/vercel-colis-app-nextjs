@@ -1,11 +1,11 @@
-import {NextRequest, NextResponse} from 'next/server';
-import {CreateUserDto} from '@/app/utils/dtos';
-import {registerUserSchema} from "@/app/utils/validationSchema";
+import { NextRequest, NextResponse } from 'next/server';
+import { CreateUserDto } from '@/app/utils/dtos';
+import { registerUserSchema } from "@/app/utils/validationSchema";
 import prisma from "@/app/utils/db";
-import {Address, User} from "@prisma/client";
+import { Address, User } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import {JWTPayload} from "@/app/utils/types";
-import {setCookie} from "@/app/utils/generateToken";
+import { JWTPayload } from "@/app/utils/types";
+import { setCookie } from "@/app/utils/generateToken";
 
 export async function POST(request: NextRequest) {
     try {
@@ -15,10 +15,10 @@ export async function POST(request: NextRequest) {
         const validated = registerUserSchema.safeParse(body);
 
         if (!validated.success) {
-            return NextResponse.json({error: validated.error.errors[0].message}, {status: 400});
+            return NextResponse.json({ error: validated.error.errors[0].message }, { status: 400 });
         }
 
-        const {firstName, lastName, birthDate, gender, phoneNumber, email, password, address} = validated.data;
+        const { firstName, lastName, birthDate, gender, phoneNumber, email, password, address } = validated.data;
 
         // Create address first
         const createdAddress: Address | null = await prisma.address.create({
@@ -31,10 +31,11 @@ export async function POST(request: NextRequest) {
             }
         });
 
-        // crypto password
+        // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
+
         // Create user with the addressId from the newly created address
-        const user: User | null = await prisma.user.create({
+        const user: User = await prisma.user.create({
             data: {
                 firstName,
                 lastName,
@@ -43,7 +44,9 @@ export async function POST(request: NextRequest) {
                 phoneNumber,
                 email,
                 password: hashedPassword,
-                addressId: createdAddress.id // Associate the created address
+                addressId: createdAddress.id, // Associate the created address
+                createdAt: new Date(), // Add createdAt timestamp
+                updatedAt: new Date(), // Add updatedAt timestamp
             },
             select: {
                 id: true,
@@ -61,7 +64,7 @@ export async function POST(request: NextRequest) {
 
         const cookie = setCookie(jwtPayload);
 
-        // retournez le message de création de l'utilisateur avec le token généré
+        // Retournez le message de création de l'utilisateur avec le token généré
         return NextResponse.json(
             {
                 user,
@@ -75,6 +78,6 @@ export async function POST(request: NextRequest) {
             }
         );
     } catch (error) {
-        return NextResponse.json({error: "Internal server error", details: error.message}, {status: 500});
+        return NextResponse.json({ error: "Internal server error", details: error.message }, { status: 500 });
     }
 }
