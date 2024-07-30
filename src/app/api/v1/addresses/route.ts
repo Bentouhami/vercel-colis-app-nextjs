@@ -27,7 +27,7 @@ export async function GET() {
 
         // si une erreur survient, on renvoie une erreur
     } catch (error) {
-        return errorHandler("Internal server error");
+        return errorHandler("Internal server error", 500);
     }
 }
 
