@@ -38,7 +38,7 @@ export async function GET(request: NextRequest, {params}: Props) {
 
     } catch (error) {
         // si une erreur survient, on renvoie une erreur
-        return errorHandler("Internal server error");
+        return errorHandler("Internal server error" , 500);
     }
 }
 
@@ -79,7 +79,7 @@ export async function PUT(request: NextRequest, {params}: Props) {
 
     } catch (error) {
         // si une erreur survient, on renvoie une erreur
-        return errorHandler("Internal server error");
+        return errorHandler("Internal server error" , 500);
     }
 }
 
