@@ -1,12 +1,12 @@
-import {NextRequest, NextResponse} from 'next/server';
-import {CreateUserDto, UserResponseDto} from '@/app/utils/dtos';
-import {registerUserSchema} from "@/app/utils/validationSchema";
+import { NextRequest, NextResponse } from 'next/server';
+import { CreateUserDto, UserResponseDto } from '@/app/utils/dtos';
+import { registerUserSchema } from "@/app/utils/validationSchema";
 import prisma from "@/app/utils/db";
-import {Address} from "@prisma/client";
+import { Address } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import {JWTPayload} from "@/app/utils/types";
-import {setCookie} from "@/app/utils/generateToken";
-import {errorHandler} from "@/app/utils/handelErrors";
+import { JWTPayload } from "@/app/utils/types";
+import { setCookie } from "@/app/utils/generateToken";
+import { errorHandler } from "@/app/utils/handelErrors";
 
 export async function POST(request: NextRequest) {
     try {
@@ -16,10 +16,10 @@ export async function POST(request: NextRequest) {
         const validated = registerUserSchema.safeParse(body);
 
         if (!validated.success) {
-            return NextResponse.json({error: validated.error.errors[0].message}, {status: 400});
+            return NextResponse.json({ error: validated.error.errors[0].message }, { status: 400 });
         }
 
-        const {firstName, lastName, birthDate, gender, phoneNumber, email, password, address} = validated.data;
+        const { firstName, lastName, birthDate, gender, phoneNumber, email, password, address } = validated.data;
 
         // Create address first
         const createdAddress: Address | null = await prisma.address.create({
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Create user with the addressId from the newly created address
-        const user: UserResponseDto = await prisma.user.create({
+        const user = await prisma.user.create({
             data: {
                 firstName,
                 lastName,
@@ -61,7 +61,19 @@ export async function POST(request: NextRequest) {
             }
         });
 
-        // Générez un jeton et retournez l'objet de réponse utilisateur
+        // Convert dateOfBirth to string
+        const userResponse: UserResponseDto = {
+            id: user.id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            dateOfBirth: user.dateOfBirth?.toISOString() || "", // Convert Date to string
+            gender: user.gender,
+            phoneNumber: user.phoneNumber,
+            email: user.email,
+            role: user.role
+        };
+
+        // Generate a token and return the user response object
         const jwtPayload: JWTPayload = {
             id: user.id,
             role: user.role,
@@ -70,12 +82,12 @@ export async function POST(request: NextRequest) {
 
         const cookie = setCookie(jwtPayload);
 
-        // Retournez le message de création de l'utilisateur avec le token généré
+        // Return the user creation message with the generated token
         return NextResponse.json(
-            {user, message: "Registered & authenticated",},
+            { user: userResponse, message: "Registered & authenticated" },
             {
                 status: 201,
-                headers: {'Set-Cookie': cookie}
+                headers: { 'Set-Cookie': cookie }
             }
         );
     } catch (error) {

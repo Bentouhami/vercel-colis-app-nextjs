@@ -44,9 +44,3 @@ export interface LoginUserDto {
     email: string;
     password: string;
 }
-//
-// export interface UserResponseDto {
-//     id: number;
-//     email: string;
-//     password: string;
-// }
