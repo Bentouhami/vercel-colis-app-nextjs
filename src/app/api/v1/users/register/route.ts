@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { CreateUserDto } from '@/app/utils/dtos';
+import {CreateUserDto, UserResponseDto} from '@/app/utils/dtos';
 import { registerUserSchema } from "@/app/utils/validationSchema";
 import prisma from "@/app/utils/db";
 import { Address, User } from "@prisma/client";
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Create user with the addressId from the newly created address
-        const user: User = await prisma.user.create({
+        const user: UserResponseDto = await prisma.user.create({
             data: {
                 firstName,
                 lastName,
