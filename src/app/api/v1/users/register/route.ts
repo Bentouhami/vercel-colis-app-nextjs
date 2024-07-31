@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { CreateUserDto, UserResponseDto } from '@/app/utils/dtos';
 import { registerUserSchema } from "@/app/utils/validationSchema";
-import prisma from "@/app/utils/db";
+import {prisma} from "@/app/utils/db";
 import {Address, User} from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { JWTPayload } from "@/app/utils/types";

@@ -8,7 +8,7 @@ export async function fetchCountries() {
     }
 }
 
-export async function fetchCities(country) {
+export async function fetchCities(country: string) {
     const response = await fetch(`/api/v1/simulation/${encodeURIComponent(country)}/cities`);
     if (response.ok) {
         return response.json();
@@ -17,7 +17,7 @@ export async function fetchCities(country) {
     }
 }
 
-export async function fetchAgencies(country, city) {
+export async function fetchAgencies(country:string, city:string) {
     const response = await fetch(`/api/v1/simulation/${encodeURIComponent(country)}/cities/${encodeURIComponent(city)}/agencies`);
     if (response.ok) {
         return response.json();

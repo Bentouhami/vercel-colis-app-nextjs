@@ -1,5 +1,5 @@
 import {NextRequest, NextResponse} from 'next/server';
-import prisma from "@/app/utils/db";
+import {prisma} from "@/app/utils/db";
 import {errorHandler} from "@/app/utils/handelErrors";
 import {Address, User} from "@prisma/client";
 import {verifyToken} from "@/app/utils/verifyToken";
@@ -108,9 +108,9 @@ export async function PUT(request: NextRequest, {params}: Props) {
 
             // get address id from body
             const newAddress = body.Address as Address;
-            await prisma.address.update({
+            const updatedAddress = await prisma.address.update({
                 where: {
-                    id: newAddress.addressId
+                    id: newAddress.id
                 },
                 data: {
                     street: newAddress.street,
@@ -118,11 +118,8 @@ export async function PUT(request: NextRequest, {params}: Props) {
                     city: newAddress.city,
                     zipCode: newAddress.zipCode,
                     country: newAddress.country
-                },
-                select: {
-                    addressId: true
                 }
-            });
+            }) as Address;
             await prisma.user.update({
                 where: {
                     id: parseInt(params.id)
@@ -132,7 +129,7 @@ export async function PUT(request: NextRequest, {params}: Props) {
                     lastName: body.lastName,
                     phoneNumber: body.phoneNumber,
                     email: body.email,
-                    addressId: newAddress.addressId
+                    addressId: updatedAddress.id
                 }
             });
 

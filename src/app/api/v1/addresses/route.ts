@@ -1,9 +1,9 @@
 import {NextRequest, NextResponse} from 'next/server';
 import {addressSchema} from "@/app/utils/validationSchema";
 import {CreateAddressDto} from "@/app/utils/dtos";
-import prisma from "@/app/utils/db";
 import {errorHandler} from "@/app/utils/handelErrors";
 import {Address} from "@prisma/client";
+import {prisma} from "@/app/utils/db";
 
 
 /**
