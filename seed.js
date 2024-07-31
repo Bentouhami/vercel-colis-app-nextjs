@@ -1,8 +1,9 @@
+// seed.js
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
-    // Insérer des addresses
+    // Insérer des adresses
     const address1 = await prisma.address.create({
         data: {
             street: 'rue de Bruxelles 1',

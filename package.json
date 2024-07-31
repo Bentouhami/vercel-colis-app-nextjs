@@ -6,8 +6,11 @@
     "dev": "next dev",
     "build": "prisma generate && next build",
     "start": "next start",
-    "lint": "next lint",
-    "seed": "node prisma/seed.js"
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "seed": "node seed.js"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.17.0",
