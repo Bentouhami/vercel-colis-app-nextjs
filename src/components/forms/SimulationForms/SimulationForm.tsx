@@ -37,11 +37,11 @@ const SimulationForm = () => {
     }, [departureCountry]);
 
     useEffect(() => {
-        if (departureCity) {
+        if (departureCity && departureCountry) {
             fetchAgencies(departureCountry, departureCity).then(setDepartureAgencies).catch(console.error);
             setDepartureAgency('');
         }
-    }, [departureCity]);
+    }, [departureCity, departureCountry]);
 
     useEffect(() => {
         if (destinationCountry) {
@@ -52,11 +52,11 @@ const SimulationForm = () => {
     }, [destinationCountry]);
 
     useEffect(() => {
-        if (destinationCity) {
+        if (destinationCity && destinationCountry) {
             fetchAgencies(destinationCountry, destinationCity).then(setDestinationAgencies).catch(console.error);
             setDestinationAgency('');
         }
-    }, [destinationCity]);
+    }, [destinationCity, destinationCountry]);
 
     const handlePackageChange = (index: number, field: string, value: number) => {
         const updatedPackages = packages.map((pkg, i) => (
