@@ -10,7 +10,7 @@ import {JWTPayload} from "@/app/utils/types";
 
 /**
  * @method POST
- * @route /api/v1/users/login
+ * @route.ts /api/v1/users/login
  * @desc Login a user
  * @access public
  */

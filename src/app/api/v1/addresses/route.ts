@@ -8,7 +8,7 @@ import {Address} from "@prisma/client";
 
 /**
  * @method GET
- * @route /api/v1/addresses
+ * @route.ts /api/v1/addresses
  * @desc Get all addresses
  * @access public
  */
@@ -33,7 +33,7 @@ export async function GET() {
 
 /**
  * @method POST
- * @route /api/v1/addresses
+ * @route.ts /api/v1/addresses
  * @desc Create a new address
  * @access public
  */

@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
-import {JWTPayload} from "@/app/utils/types";
-import {serialize} from "cookie";
-
+import { JWTPayload } from "@/app/utils/types";
+import { serialize } from "cookie";
 
 /**
  * Generate a JWT token
@@ -26,8 +25,13 @@ export function generateJwt(jwtPayload: JWTPayload) {
  * @returns {string}
  */
 export function setCookie(jwtPayload: JWTPayload): string {
+    const cookieName = process.env.COOKIE_NAME;
+    if (!cookieName) {
+        throw new Error("COOKIE_NAME environment variable is not set");
+    }
+
     const token = generateJwt(jwtPayload);
-    const cookie = serialize(process.env.COOKIE_NAME, token,  // nom du cookie
+    const cookie = serialize(cookieName, token,  // nom du cookie
         {
             httpOnly: true,  // cookie non accessible par le client
             secure: process.env.NODE_ENV === "production",  // cookie uniquement en HTTP pour le développement ou en HTTPS pour la production

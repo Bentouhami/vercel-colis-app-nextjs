@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { CreateUserDto, UserResponseDto } from '@/app/utils/dtos';
 import { registerUserSchema } from "@/app/utils/validationSchema";
 import prisma from "@/app/utils/db";
-import { Address } from "@prisma/client";
+import {Address, User} from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { JWTPayload } from "@/app/utils/types";
 import { setCookie } from "@/app/utils/generateToken";
@@ -59,15 +59,15 @@ export async function POST(request: NextRequest) {
                 email: true,
                 role: true
             }
-        });
+        }) as User;
 
         // Convert dateOfBirth to string
-        const userResponse: UserResponseDto = {
+        const userResponse: UserResponseDto  = {
             id: user.id,
             firstName: user.firstName,
             lastName: user.lastName,
             dateOfBirth: user.dateOfBirth?.toISOString() || "", // Convert Date to string
-            gender: user.gender,
+            gender: user.gender ?? false, // Provide a default value for gender if null
             phoneNumber: user.phoneNumber,
             email: user.email,
             role: user.role

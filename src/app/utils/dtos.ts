@@ -1,5 +1,8 @@
 
 
+// DTO for Address
+import {Address} from "@prisma/client";
+
 export interface CreateAddressDto {
 
     street: string;
@@ -8,6 +11,8 @@ export interface CreateAddressDto {
     zipCode: string;
     country: string;
 }
+
+// DTO for User update
 export interface UpdateAddressDto {
 
     street: string;
@@ -17,6 +22,7 @@ export interface UpdateAddressDto {
     country: string;
 }
 
+// DTO for User create
 export interface CreateUserDto {
     firstName : string;
     lastName : string;
@@ -29,6 +35,7 @@ export interface CreateUserDto {
     address : CreateAddressDto;
 }
 
+// DTO for User response
 export interface UserResponseDto {
     id: number;
     firstName: string;
@@ -40,7 +47,28 @@ export interface UserResponseDto {
     role: string;
 }
 
+// DTO for User login
 export interface LoginUserDto {
     email: string;
     password: string;
+}
+
+// DTO for User update profile
+export interface UpdateUserProfileDto {
+    firstName? : string;
+    lastName? : string;
+    dateOfBirth? : string;
+    gender? : boolean;
+    phoneNumber? : string;
+    email? : string;
+    password? : string;
+    Address? : CreateAddressDto;
+}
+
+// DTO for Agency
+export interface AgencyDto {
+    id: number;
+    name: string;
+    location: string;
+    address: Address;
 }

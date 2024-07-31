@@ -2,9 +2,9 @@ import {NextRequest, NextResponse} from 'next/server';
 import {errorHandler} from '@/app/utils/handelErrors';
 import {cookies} from 'next/headers';
 
-/** logout route
+/** logout route.ts
  * @member GET
- * @route /api/v1/users/logout
+ * @route.ts /api/v1/users/logout
  * @desc Logout a user
  * @access Public
  */

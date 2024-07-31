@@ -77,16 +77,16 @@ export const updateUserSchema = z.object({
  *
  */
 export const registerUserSchema = z.object({
-    firstName: z.string().min(1, { message: "First Name is required" }),
-    lastName: z.string().min(1, { message: "Last Name is required" }),
-    birthDate: z.string().min(1, { message: "Birth Date is required" }).refine((val) => !isNaN(Date.parse(val)), {
+    firstName: z.string().min(1, {message: "First Name is required"}),
+    lastName: z.string().min(1, {message: "Last Name is required"}),
+    birthDate: z.string().min(1, {message: "Birth Date is required"}).refine((val) => !isNaN(Date.parse(val)), {
         message: "Birth Date must be a valid date",
     }),
-    gender: z.boolean({ message: "Gender is required" }),
-    phoneNumber: z.string().min(1, { message: "Phone Number is required" }),
-    email: z.string().email({ message: "Email is invalid" }),
-    password: z.string().min(8, { message: "Password must be at least 8 characters" }),
-    confirmPassword: z.string().min(8, { message: "Password must be at least 8 characters" }),
+    gender: z.boolean({message: "Gender is required"}),
+    phoneNumber: z.string().min(1, {message: "Phone Number is required"}),
+    email: z.string().email({message: "Email is invalid"}),
+    password: z.string().min(8, {message: "Password must be at least 8 characters"}),
+    confirmPassword: z.string().min(8, {message: "Password must be at least 8 characters"}),
     address: addressSchema,
 }).refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match!",
@@ -100,7 +100,32 @@ export const registerUserSchema = z.object({
  * @desc Login user schema
  */
 export const loginUserSchema = z.object({
-    email: z.string().email({ message: "Invalid email address" }),
-    password: z.string().min(1, { message: "Password is required" }),
+    email: z.string().email({message: "Invalid email address"}),
+    password: z.string().min(1, {message: "Password is required"}),
 });
 // export type loginUserDto = z.infer<typeof loginUserSchema>;
+
+// user profile schema
+export const userProfileSchema = z.object({
+    firstName: z.string().min(1, {message: "First Name is required"}).optional(),
+    lastName: z.string().min(1, {message: "Last Name is required"}).optional(),
+    birthDate: z.string().min(1, {message: "Birth Date is required"}).refine((val) => !isNaN(Date.parse(val)), {
+        message: "Birth Date must be a valid date",
+    }).optional(),
+    gender: z.boolean({message: "Gender is required"}).optional(),
+    phoneNumber: z.string().min(1, {message: "Phone Number is required"}).optional(),
+    email: z.string().email({message: "Email is invalid"}).optional(),
+    password: z.string().min(8, {message: "Password must be at least 8 characters"}).optional(),
+    confirmPassword: z.string().min(8, {message: "Password must be at least 8 characters"}).optional(),
+    address: addressSchema,
+}).refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match!",
+    path: ["confirmPassword"],
+});
+
+// agency schema
+export const agenceyShcema = z.object({
+    name: z.string().min(1, {message: "Agency name is required"}),
+    location: z.string().min(1, {message: " Agency location is required"}),
+    address: addressSchema,
+})
