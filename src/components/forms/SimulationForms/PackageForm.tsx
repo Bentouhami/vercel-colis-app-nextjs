@@ -1,10 +1,10 @@
 import { Form, FormGroup } from 'react-bootstrap';
-import { ParcelDto } from '@/app/utils/dtos';
+import { CreateParcelDto } from '@/app/utils/dtos';
 import React from "react";
 
 interface PackageFormProps {
     index: number;
-    pkg: ParcelDto;
+    pkg: CreateParcelDto;
     onChange: (index: number, key: string, value: number) => void;
 }
 

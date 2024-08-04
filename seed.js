@@ -1,4 +1,3 @@
-// seed.js
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
@@ -129,10 +128,22 @@ async function main() {
         },
     });
 
+    // Insérer des tarifs
+    const tarifs = await prisma.tarifs.create({
+        data: {
+            weightRate: 1.60, // € per kg for weights over 10 kg
+            volumeRate: 0,    // Assuming no additional charge for volume in this scenario
+            baseRate: 0,      // Base rate if any
+            fixedRate: 15.00, // Fixed rate for weights <= 10 kg
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        },
+    });
+
     console.log({
         address1, address2, address3, address4, address5,
         agency1, agency2, agency3, agency4, agency5,
-        transport1,
+        transport1, tarifs,
     });
 }
 

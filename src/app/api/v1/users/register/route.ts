@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
             lastName: user.lastName,
             dateOfBirth: user.dateOfBirth?.toISOString() || "", // Convert Date to string
             gender: user.gender ?? false, // Provide a default value for gender if null
-            phoneNumber: user.phoneNumber,
+            phoneNumber: user.phoneNumber ?? "",
             email: user.email,
             role: user.role
         };

@@ -4,3 +4,7 @@
 @tailwind components;
 @tailwind utilities;
 
+.toast-container {
+    bottom: 20px !important;
+    right: 20px !important;
+}

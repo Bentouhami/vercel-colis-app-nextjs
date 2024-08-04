@@ -1,13 +1,18 @@
 "use client";
-import { ChangeEvent, useEffect, useState } from 'react';
-import { Button, Col, Container, Form, Pagination, Row } from 'react-bootstrap';
+// SimulationForm.tsx : Formulaire de simulation
+import React, {ChangeEvent, useEffect, useState} from 'react';
+import {Button, Col, Container, Form, Pagination, Row} from 'react-bootstrap';
 import PackageForm from './PackageForm';
 import CountrySelect from "@/components/forms/SimulationForms/CountrySelectForm";
 import CitySelect from "@/components/forms/SimulationForms/CitySelectForm";
 import AgencySelect from "@/components/forms/SimulationForms/AgencySelectForm";
-import { fetchAgencies, fetchCities, fetchCountries } from "@/app/utils/api";
+import {fetchAgencies, fetchCities, fetchCountries, fetchDestinationCountries, submitSimulation} from "@/app/utils/api";
+import {toast, ToastContainer} from "react-toastify";
+import {useRouter} from 'next/navigation';
+import {SimulationEnvoisDto} from "@/app/utils/dtos";
 
 const SimulationForm = () => {
+    const router = useRouter(); // Initialize useRouter
     const [departureCountry, setDepartureCountry] = useState('');
     const [departureCity, setDepartureCity] = useState('');
     const [departureAgency, setDepartureAgency] = useState('');
@@ -15,19 +20,30 @@ const SimulationForm = () => {
     const [destinationCity, setDestinationCity] = useState('');
     const [destinationAgency, setDestinationAgency] = useState('');
     const [packageCount, setPackageCount] = useState(1);
-    const [packages, setPackages] = useState([{ height: 0, width: 0, length: 0, weight: 0 }]);
+    const [packages, setPackages] = useState([{height: 0, width: 0, length: 0, weight: 0}]);
     const [currentPackage, setCurrentPackage] = useState(0);
 
+
+    // pays / villes / agences de départ
     const [countries, setCountries] = useState([]);
+    const [destinationCountries, setDestinationCountries] = useState([]);
     const [departureCities, setDepartureCities] = useState([]);
     const [departureAgencies, setDepartureAgencies] = useState([]);
     const [destinationCities, setDestinationCities] = useState([]);
     const [destinationAgencies, setDestinationAgencies] = useState([]);
 
+
+    // Récupérer les pays de départ disponibles pour le départ d'envoi
     useEffect(() => {
         fetchCountries().then(setCountries).catch(console.error);
     }, []);
 
+    // Récupérer les pays de destination disponibles pour le départ d'envoi
+    useEffect(() => {
+        fetchDestinationCountries(departureCountry).then(setDestinationCountries).catch(console.error);
+    }, [ departureCountry]);
+
+    // Récupérer les villes disponibles pour le départ d'envoi
     useEffect(() => {
         if (departureCountry) {
             fetchCities(departureCountry).then(setDepartureCities).catch(console.error);
@@ -36,6 +52,7 @@ const SimulationForm = () => {
         }
     }, [departureCountry]);
 
+    // Récupérer les agences disponibles pour la destination
     useEffect(() => {
         if (departureCity && departureCountry) {
             fetchAgencies(departureCountry, departureCity).then(setDepartureAgencies).catch(console.error);
@@ -43,6 +60,7 @@ const SimulationForm = () => {
         }
     }, [departureCity, departureCountry]);
 
+    // Récupérer les villes disponibles pour la destination
     useEffect(() => {
         if (destinationCountry) {
             fetchCities(destinationCountry).then(setDestinationCities).catch(console.error);
@@ -51,6 +69,7 @@ const SimulationForm = () => {
         }
     }, [destinationCountry]);
 
+    // Récupérer les agences disponibles pour la destination
     useEffect(() => {
         if (destinationCity && destinationCountry) {
             fetchAgencies(destinationCountry, destinationCity).then(setDestinationAgencies).catch(console.error);
@@ -58,17 +77,20 @@ const SimulationForm = () => {
         }
     }, [destinationCity, destinationCountry]);
 
+
+    // Mettre à jour les dimensions du colis en fonction de l'index
     const handlePackageChange = (index: number, field: string, value: number) => {
         const updatedPackages = packages.map((pkg, i) => (
-            i === index ? { ...pkg, [field]: value } : pkg
+            i === index ? {...pkg, [field]: value} : pkg
         ));
         setPackages(updatedPackages);
     };
 
+    // Mettre à jour le nombre de colis en fonction de l'entrée de l'utilisateur
     const handlePackageCountChange = (e: ChangeEvent<HTMLInputElement>) => {
         const count = parseInt(e.target.value, 10);
         setPackageCount(count);
-        const newPackages = Array.from({ length: count }, (_, i) => packages[i] || {
+        const newPackages = Array.from({length: count}, (_, i) => packages[i] || {
             height: 0,
             width: 0,
             length: 0,
@@ -77,9 +99,11 @@ const SimulationForm = () => {
         setPackages(newPackages);
     };
 
-    const handleSubmit = (e: ChangeEvent<HTMLFormElement>) => {
+// Function to handle form submission
+    const handleSubmit = async (e: ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log('Form submitted', {
+
+        const simulationData: SimulationEnvoisDto = {
             departureCountry,
             departureCity,
             departureAgency,
@@ -87,7 +111,23 @@ const SimulationForm = () => {
             destinationCity,
             destinationAgency,
             packages,
-        });
+        };
+
+        try {
+            const result = await submitSimulation(simulationData);
+
+            toast.success("Simulation successful!");
+            const query = new URLSearchParams({ data: JSON.stringify(result) }).toString();
+            router.push(`/simulation/results?${query}`);
+        } catch (error) {
+            console.error('Error submitting simulation:', error);
+
+            if (error instanceof Error) {
+                toast.error(`Error: ${error.message}`);
+            } else {
+                toast.error('An unexpected error occurred.');
+            }
+        }
     };
 
     const handlePageChange = (pageIndex: number) => {
@@ -95,7 +135,9 @@ const SimulationForm = () => {
     };
 
     return (
-        <Container className="mt-2 mb-5 bg-purple-800 text-white p-5 rounded-3 drop-shadow-2xl shadow border border-purple-700">
+        <Container
+            className="mt-2 mb-5 bg-purple-800 text-white p-5 rounded-3 drop-shadow-2xl shadow border border-purple-700">
+
             <Form className="w-100" onSubmit={handleSubmit}>
                 <Row>
                     <Col lg={6} xs={12}>
@@ -123,7 +165,7 @@ const SimulationForm = () => {
                             label="Pays de destination"
                             value={destinationCountry}
                             onChange={(e) => setDestinationCountry(e.target.value)}
-                            countries={countries}
+                            countries={destinationCountries}
                         />
                         <CitySelect
                             label="Ville de destination"
@@ -179,8 +221,21 @@ const SimulationForm = () => {
                 </Row>
                 <div className="d-flex justify-content-center mt-3">
                     <Button className="me-2" type="submit" variant="primary">Soumettre</Button>
+
                 </div>
             </Form>
+            <ToastContainer
+                theme="colored"
+                position={"bottom-right"}
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={true}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
         </Container>
     );
 };

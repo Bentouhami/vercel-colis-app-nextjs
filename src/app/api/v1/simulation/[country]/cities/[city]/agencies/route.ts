@@ -26,6 +26,7 @@ export async function GET(request: NextRequest, { params }: { params: { country:
             },
 
             select: {
+                id: true, // id de l'agence
                 name: true,
 
             }
@@ -35,8 +36,8 @@ export async function GET(request: NextRequest, { params }: { params: { country:
             return errorHandler("No agencies found", 404);
         }
         // récupérer les noms des agences dans un tableau
-        const agenciesNames = agencies.map(agency => agency.name);
-        return NextResponse.json(agenciesNames, { status: 200 });
+        // const agenciesNames = agencies.map(agency => agency.name);
+        return NextResponse.json(agencies, { status: 200 });
     } catch (error) {
         return errorHandler("Internal server error", 500);
     }

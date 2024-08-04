@@ -1,7 +1,7 @@
 datasource db {
   provider  = "postgresql"
-  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
-  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 generator client {
@@ -11,7 +11,7 @@ generator client {
 model Address {
   id        Int      @id @default(autoincrement())
   street    String
-  number    String
+  number    String?
   city      String
   zipCode   String
   country   String
@@ -25,7 +25,7 @@ model Address {
 model Agency {
   id        Int      @id @default(autoincrement())
   name      String
-  location  String
+  location  String?
   addressId Int      @unique
   Address   Address  @relation(fields: [addressId], references: [id])
   updatedAt DateTime @updatedAt
@@ -41,7 +41,7 @@ model User {
   lastName    String
   dateOfBirth DateTime?
   gender      Boolean?  @default(false) @db.Boolean
-  phoneNumber String
+  phoneNumber String?   @unique
   email       String    @unique
   password    String    @default("")
   addressId   Int
@@ -62,17 +62,25 @@ enum UserRole {
   ADMIN
 }
 
+enum EnvoiStatus {
+  PENDING
+  SENT
+  DELIVERED
+  CANCELLED
+  RETURNED
+}
+
 model Coupon {
-  id                 Int      @id @default(autoincrement())
+  id                 Int       @id @default(autoincrement())
   couponCode         String
   discountAmount     Float
   discountPercentage Float
   numberOfUses       Int
   startDate          DateTime
-  expirationDate     DateTime
+  expirationDate     DateTime?
   termsAndConditions String?
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 
   UserCoupon  UserCoupon[]
   EnvoiCoupon EnvoiCoupon[]
@@ -90,7 +98,7 @@ model UserCoupon {
 
 model Transport {
   id            Int      @id @default(autoincrement())
-  number        String
+  number        String // Numéro de la camion de transport
   baseVolume    Float
   baseWeight    Float
   currentVolume Float
@@ -99,25 +107,26 @@ model Transport {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  Envoi Envoi[]
+  Envoi             Envoi[]
+  TransportSchedule TransportSchedule[]
 }
 
 model Envoi {
-  id                Int      @id @default(autoincrement())
-  trackingNumber    String   @unique
+  id                Int         @id @default(autoincrement())
+  trackingNumber    String      @unique
   clientId          Int
   destinationId     Int
   dateSent          DateTime
   departureAgencyId Int
   dateDelivered     DateTime
   arrivalAgencyId   Int
-  status            String
+  status            EnvoiStatus @default(SENT)
   totalWeight       Float
   totalVolume       Float
   totalPrice        Float
   transportId       Int
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
 
   ArrivalAgency   Agency    @relation("ArrivalAgency", fields: [arrivalAgencyId], references: [id])
   Client          User      @relation("ClientEnvoi", fields: [clientId], references: [id])
@@ -146,9 +155,30 @@ model Parcel {
   weight    Float
   width     Float
   length    Float
-  price     Float
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   envoiId   Int
   Envoi     Envoi    @relation(fields: [envoiId], references: [id])
+}
+
+model Tarifs {
+  id         Int      @id @default(autoincrement())
+  weightRate Float // Prix par kilogramme
+  volumeRate Float // Prix par mètre cube
+  baseRate   Float // Prix de base pour chaque envoi
+  fixedRate  Float // Tarif fixe pour les envois <= 10 kg
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model TransportSchedule {
+  id            Int      @id @default(autoincrement())
+  transportId   Int
+  departureDate DateTime
+  arrivalDate   DateTime
+  isHoliday     Boolean
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  Transport Transport @relation(fields: [transportId], references: [id])
 }

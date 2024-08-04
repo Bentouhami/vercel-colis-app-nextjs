@@ -20,7 +20,7 @@ export async function GET(request: NextRequest, {params}: { params: { country: s
         }
 
         // Récupérer les addresses des agences dans le pays donné
-        const addresses = await prisma.address.findMany({
+        const cities = await prisma.address.findMany({
             where: {
                 country: country,
                 Agency: {
@@ -28,17 +28,18 @@ export async function GET(request: NextRequest, {params}: { params: { country: s
                 }
             },
             select: {
+                id: true, // id de l'adresse
                 city: true
             }
         });
 
-        if (!addresses || addresses.length === 0) {
+        if (!cities || cities.length === 0) {
             return errorHandler("No addresses found", 404);
         }
+        //
+        // const citiesSet = new Set(addresses.map(address => address.city));
 
-        const citiesSet = new Set(addresses.map(address => address.city));
-
-        const cities = Array.from(citiesSet);
+        // const cities = Array.from(addresses);
         // on renvoie les pays
         return NextResponse.json(cities, {status: 200});
     } catch (error) {

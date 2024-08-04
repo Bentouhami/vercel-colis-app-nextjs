@@ -72,10 +72,55 @@ export interface AgencyDto {
 }
 
 
-// Parcel Dto
-export interface ParcelDto {
+// DTO for Parcel create
+export interface CreateParcelDto {
     height: number; // hauteur en cm
     width: number; // largeur en cm
     length: number; // longueur en cm
     weight: number; // poids en kg
+}
+
+// DTP for Parcel
+export interface ParcelDto {
+    height: number;
+    width: number;
+    length: number;
+    weight: number;
+}
+
+// DTO for simulation envoi
+export interface  SimulationEnvoisDto {
+    departureCountry : string;
+    departureCity : string;
+    departureAgency : string;
+    destinationCountry : string;
+    destinationCity : string;
+    destinationAgency : string;
+
+    packages: ParcelDto[];
+}
+
+// STO for Tarifs
+export interface TarifsDto {
+    weightRate : number;
+    volumeRate : number;
+    baseRate : number;
+    fixedRate : number;
+
+}
+
+// DTO for simulation results
+export interface SimulationResultsDto {
+    departureCountry: string;
+    departureCity: string;
+    departureAgency: string;
+    destinationCountry: string;
+    destinationCity: string;
+    destinationAgency: string;
+    packages: CreateParcelDto[];
+    totalWeight: number;
+    totalVolume: number;
+    totalPrice: number;
+    departureDate: string;
+    arrivalDate: string;
 }
