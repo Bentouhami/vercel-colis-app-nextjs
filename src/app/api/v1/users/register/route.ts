@@ -1,29 +1,26 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { CreateUserDto, UserResponseDto } from '@/app/utils/dtos';
-import { registerUserSchema } from "@/app/utils/validationSchema";
+import {NextRequest, NextResponse} from 'next/server';
+import {CreateUserDto, UserResponseDto} from '@/app/utils/dtos';
+import {registerUserSchema} from "@/app/utils/validationSchema";
 import {prisma} from "@/app/utils/db";
-import {Address, User} from "@prisma/client";
 import bcrypt from "bcryptjs";
-import { JWTPayload } from "@/app/utils/types";
-import { setCookie } from "@/app/utils/generateToken";
-import { errorHandler } from "@/app/utils/handelErrors";
+import {JWTPayload} from "@/app/utils/types";
+import {setCookie} from "@/app/utils/generateToken";
+import {errorHandler} from "@/app/utils/handelErrors";
 
 export async function POST(request: NextRequest) {
     try {
         const body = (await request.json()) as CreateUserDto;
 
-        // Validate the user body including address
         const validated = registerUserSchema.safeParse(body);
 
         if (!validated.success) {
-            return NextResponse.json({ error: validated.error.errors[0].message }, { status: 400 });
+            return NextResponse.json({error: validated.error.errors[0].message}, {status: 400});
         }
 
-        const { firstName, lastName, birthDate, gender, phoneNumber, email, password, address } = validated.data;
+        const {firstName, lastName, birthDate, gender, phoneNumber, email, password, address} = validated.data;
 
-        // Create address first
-        const createdAddress: Address | null = await prisma.address.create({
-            data: {
+        let newAddress = await prisma.address.findFirst({
+            where: {
                 street: address.street,
                 number: address.number,
                 city: address.city,
@@ -32,10 +29,41 @@ export async function POST(request: NextRequest) {
             }
         });
 
-        // Hash password
-        const hashedPassword = await bcrypt.hash(password, 10);
+        if (!newAddress) {
+            newAddress = await prisma.address.create({
+                data: {
+                    street: address.street,
+                    number: address.number,
+                    city: address.city,
+                    zipCode: address.zipCode,
+                    country: address.country
+                }
+            });
+        }
 
-        // Create user with the addressId from the newly created address
+        // Vérifier di le numéro de téléphone existe déjà dans la base de données (pour éviter les conflicts des contraintes de clé unique sur le champ phoneNumber)
+        const phoneNumberExists = await prisma.user.findFirst({
+            where: {
+                phoneNumber: phoneNumber
+            }
+        });
+
+        if (phoneNumberExists) {
+            return NextResponse.json({error: "Phone number already exists"}, {status: 400});
+        }
+
+        // Vérifier si l'email existe déjà dans la base de données (pour éviter les conflits des contraintes de clé unique sur le champ email)
+        const emailExists = await prisma.user.findFirst({
+            where: {
+                email: email
+            }
+        });
+
+        if (emailExists) {
+            return NextResponse.json({error: "Email already exists"}, {status: 400});
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
         const user = await prisma.user.create({
             data: {
                 firstName,
@@ -45,9 +73,9 @@ export async function POST(request: NextRequest) {
                 phoneNumber,
                 email,
                 password: hashedPassword,
-                addressId: createdAddress.id, // Associate the created address
-                createdAt: new Date(), // Add createdAt timestamp
-                updatedAt: new Date(), // Add updatedAt timestamp
+                addressId: newAddress.id,
+                createdAt: new Date(),
+                updatedAt: new Date(),
             },
             select: {
                 id: true,
@@ -59,21 +87,19 @@ export async function POST(request: NextRequest) {
                 email: true,
                 role: true
             }
-        }) as User;
+        });
 
-        // Convert dateOfBirth to string
-        const userResponse: UserResponseDto  = {
+        const userResponse: UserResponseDto = {
             id: user.id,
             firstName: user.firstName,
             lastName: user.lastName,
-            dateOfBirth: user.dateOfBirth?.toISOString() || "", // Convert Date to string
-            gender: user.gender ?? false, // Provide a default value for gender if null
+            dateOfBirth: user.dateOfBirth?.toISOString() || "",
+            gender: user.gender ?? false,
             phoneNumber: user.phoneNumber ?? "",
             email: user.email,
             role: user.role
         };
 
-        // Generate a token and return the user response object
         const jwtPayload: JWTPayload = {
             id: user.id,
             role: user.role,
@@ -82,15 +108,15 @@ export async function POST(request: NextRequest) {
 
         const cookie = setCookie(jwtPayload);
 
-        // Return the user creation message with the generated token
         return NextResponse.json(
-            { user: userResponse, message: "Registered & authenticated" },
+            {user: userResponse, message: "Registered & authenticated"},
             {
                 status: 201,
-                headers: { 'Set-Cookie': cookie }
+                headers: {'Set-Cookie': cookie}
             }
         );
     } catch (error) {
-        return errorHandler("Internal server error", 500);
+        // console.error("Error in user registration: ", error);
+        return errorHandler(`Internal server error: ${error}`, 500);
     }
 }

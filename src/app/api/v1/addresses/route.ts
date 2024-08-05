@@ -49,7 +49,21 @@ export async function POST(request: NextRequest) {
         if (!validated.success) {
             return NextResponse.json({error: validated.error.errors[0].message}, {status: 400});
         }
+        // Vérifier si l'adresse existe déjà dans la base de données
+        const address = await prisma.address.findFirst({
+            where: {
+                street: body.street,
+                number: body.number,
+                city: body.city,
+                zipCode: body.zipCode,
+                country: body.country
+            },
+        }) as Address | undefined;
 
+        // Si l'adresse existe, renvoyer une erreur 400 avec l'adresse existante comme donnée et renvoyer une erreur 400
+        if (address) {
+            return NextResponse.json({error: "Address already exists", address}, {status: 400});
+        }
         // on crée une adresse avec la fonction create de prisma et on donne les données du body
         await prisma.address.create({
             data: {

@@ -1,4 +1,4 @@
-import { prisma } from "@/app/utils/db";
+import {prisma} from "@/app/utils/db";
 import {SimulationEnvoisDto, TarifsDto} from "@/app/utils/dtos";
 import {parcelsSchema, simulationEnvoisSchema, tarifsSchema} from "@/app/utils/validationSchema";
 
@@ -37,57 +37,59 @@ async function getTarifs() {
  */
 export const calculateEnvoiDetails = async (envoiData: SimulationEnvoisDto) => {
 
-    // validation envoisData
-    const validated = simulationEnvoisSchema.safeParse(envoiData);
-    if (!validated.success) {
-        console.log('envoiData non valider', envoiData);
-        throw new Error(validated.error.errors[0].message);
-    }
-    const { packages } = envoiData;
-
-
-    // Valider chaque colis avec Zod
-    // packages.forEach(pkg => parcelsSchema.parse(pkg));
-    console.log('avant la validation des colis, le tableau est :', packages);
-
-    for (let i = 0; i < packages.length; i++) {
-
-        const validated = parcelsSchema.safeParse(packages[i]);
+        // validation envoisData
+        const validated =
+            simulationEnvoisSchema.safeParse(envoiData);
         if (!validated.success) {
-            console.log('colis non valider', packages[i]);
+            // console.log('envoiData non valider', envoiData);
             throw new Error(validated.error.errors[0].message);
         }
+        const {packages} = envoiData;
+
+        // Valider chaque colis avec Zod
+        for (let i = 0; i < packages.length; i++) {
+            const validated =
+                parcelsSchema.safeParse(packages[i]);
+            if (!validated.success) {
+                console.log('colis non valider', packages[i]);
+                throw new Error(validated.error.errors[0].message);
+            }
+        }
+
+        // Récupérer les tarifs de la base de données
+        const tarifs = await getTarifs();
+
+        // Calcul du poids total
+        const totalWeight = parseFloat(packages.reduce((acc, pkg) =>
+            acc + pkg.weight, 0).toFixed(2));
+
+        // Calcul du volume total en m²
+        const totalVolume = (parseFloat(packages.reduce((acc, pkg) =>
+            acc + (pkg.height * pkg.width), 0).toFixed(2)) / 10000).toFixed(2); // Convert from cm² to m²
+
+        // Calcul du prix total
+        let totalPrice = 0;
+        if (totalWeight <= 10) {
+            totalPrice = tarifs.fixedRate;
+        } else {
+            totalPrice = totalWeight * tarifs.weightRate;
+        }
+
+        // Round to two decimal places
+        totalPrice = parseFloat(totalPrice.toFixed(2));
+
+        // Calculer les dates de départ et d'arrivée
+        const today = new Date();
+        const departureDate = getNextTuesday(today);
+        const arrivalDate = getNextMondayAfter(departureDate);
+
+        return {
+            ...envoiData,
+            totalWeight,
+            totalVolume,
+            totalPrice,
+            departureDate,
+            arrivalDate
+        };
     }
-    console.log('apres la validation des colis, le tableau est :', packages);
-
-    // Récupérer les tarifs de la base de données
-    const tarifs = await getTarifs();
-
-    // Calcul du poids total
-    const totalWeight = packages.reduce((acc, pkg) => acc + pkg.weight, 0);
-
-    // Calcul du volume total
-    const totalVolume = packages.reduce((acc, pkg) => acc + (pkg.height * pkg.width * pkg.length), 0);
-
-    // Calcul du prix total
-    let totalPrice = 0;
-    if (totalWeight <= 10) {
-        totalPrice = tarifs.fixedRate;
-    } else {
-        totalPrice = totalWeight * tarifs.weightRate;
-    }
-
-    // Calculer les dates de départ et d'arrivée
-    const today = new Date();
-    const departureDate = getNextTuesday(today);
-    const arrivalDate = getNextMondayAfter(departureDate);
-
-    return {
-        ...envoiData,
-        totalWeight,
-        totalVolume,
-        totalPrice,
-        departureDate,
-        arrivalDate
-    };
-};
+;

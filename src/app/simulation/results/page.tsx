@@ -52,7 +52,7 @@ const SimulationResults = () => {
 
                             <h4>Calculs</h4>
                             <p><strong>Poids total:</strong> {results.totalWeight} kg</p>
-                            <p><strong>Volume total:</strong> {results.totalVolume} cm³</p>
+                            <p><strong>Volume total:</strong> {results.totalVolume} cm²</p>
                             <p><strong>Prix total:</strong> {results.totalPrice} €</p>
                             <p><strong>Date de départ:</strong> {new Date(results.departureDate).toLocaleDateString()}</p>
                             <p><strong>Date d&apos;arrivée:</strong> {new Date(results.arrivalDate).toLocaleDateString()}</p>
