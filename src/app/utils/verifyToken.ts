@@ -22,3 +22,20 @@ export function verifyToken(request: NextRequest): JWTPayload | null {
         return null;
     }
 }
+
+export function verifyTokenFromCookies(): string | null {
+    // Accéder au cookie auth via le document.cookie (ou utiliser une librairie comme js-cookie)
+    const cookieString = document.cookie;
+
+    // Recherche du cookie d'authentification (auth)
+    const authCookie = cookieString.split('; ').find(row => row.startsWith('auth='));
+
+    // Si le cookie existe, extraire le token
+    if (authCookie) {
+        const token = authCookie.split('=')[1];
+        return token || null;
+    }
+
+    // Retourner null si pas de cookie trouvé
+    return null;
+}

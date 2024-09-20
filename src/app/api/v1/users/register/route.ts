@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
         const {firstName, lastName, birthDate, gender, phoneNumber, email, password, address} = validated.data;
 
         // Vérifier si l'adresse est déjà existante dans la base de données (pour éviter les conflits des contraintes de clé unique sur les champs street, number, city, zipCode et country)
-        let newAddress: Address | null = await prisma.address.findFirst({
+        let newAddress= await prisma.address.findFirst({
             where: {
                 street: address.street,
                 number: address.number,
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
         }
         // Hashes le mot de passe et créer un nouvel utilisateur dans la base de données
         const hashedPassword = await bcrypt.hash(password, 10);
-        const user: User | null = await prisma.user.create({
+        const user = await prisma.user.create({
             data: {
                 firstName,
                 lastName,
@@ -124,7 +124,7 @@ export async function POST(request: NextRequest) {
             firstName: user.firstName,
             lastName: user.lastName,
             dateOfBirth: user.dateOfBirth?.toISOString() || "",
-            gender: user.gender ?? false,
+            gender: user.gender ?? "",
             phoneNumber: user.phoneNumber ?? "",
             email: user.email,
             role: user.role

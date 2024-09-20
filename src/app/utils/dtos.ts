@@ -28,7 +28,7 @@ export interface CreateUserDto {
     phoneNumber: string;
     email: string;
     password: string;
-    confirmPassword: string;
+    checkPassword: string;
     address: CreateAddressDto;
 }
 

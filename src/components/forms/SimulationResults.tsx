@@ -5,7 +5,7 @@ import {Button, Card, Row} from 'react-bootstrap';
 import styles from './SimulationResults.module.css';
 import {SimulationResultsDto} from "@/app/utils/dtos";
 import {submitSimulation} from "@/app/utils/api";
-import {verifyToken} from "@/app/utils/verifyToken";
+import {verifyTokenFromCookies} from "@/app/utils/verifyToken";
 
 const SimulationResults = () => {
         const searchParams = useSearchParams();
@@ -25,7 +25,7 @@ const SimulationResults = () => {
             // Vérifier si l'utilisateur est connecté
             const checkAuth = async () => {
                 try {
-                    const response = await verifyToken();
+                    const response = await verifyTokenFromCookies();
                     if (response) {
                         setIsAuthenticated(true);
                     } else {
@@ -43,10 +43,11 @@ const SimulationResults = () => {
             return <p className={styles.loading}>Loading...</p>;
         }
 
-        // Fonction de validation
-        async function handelValidate() {
-            if (isAuthenticated === true) {
-                // Si l'utilisateur est authentifié, redirige vers la page de paiement
+    // Fonction de validation
+    async function handelValidate() {
+        if (isAuthenticated === true) {
+            // Vérifie que les résultats ne sont pas null
+            if (results !== null) {
                 try {
                     // Soumettre les résultats de la simulation au serveur (API)
                     await submitSimulation(results);
@@ -56,24 +57,27 @@ const SimulationResults = () => {
                 } catch (error) {
                     console.error("Erreur lors de la soumission de la simulation", error);
                 }
-            } else if (isAuthenticated === false) {
-                // vérifier dans localStorage il y a des résultats de simulation avant celui que l'utilisateur a soumis
-                // si oui, efface l'ancienne simulation et stocker le nouveau
-                // sinon, stocker le nouveau résultat
-                const results = localStorage.getItem('results');
-                if (!results) {
-                    localStorage.setItem('results', JSON.stringify(results));
-                } else {
-                    localStorage.removeItem('results');
-                    localStorage.setItem('results', JSON.stringify(results));
-                }
-
-                // Redirection vers la page de connexion
-                router.push('/login?message=Veuillez vous connecter ou vous inscrire pour confirmer l\'envoi');
+            } else {
+                console.error("Aucun résultat disponible pour soumettre la simulation.");
             }
-        }
+        } else if (isAuthenticated === false) {
+            // vérifier dans localStorage s'il y a des résultats de simulation avant celui que l'utilisateur a soumis
+            // si oui, efface l'ancienne simulation et stocke le nouveau
+            const storedResults = localStorage.getItem('results');
+            if (!storedResults) {
+                localStorage.setItem('results', JSON.stringify(results));
+            } else {
+                localStorage.removeItem('results');
+                localStorage.setItem('results', JSON.stringify(results));
+            }
 
-        function handleCancel() {
+            // Redirection vers la page de connexion
+            router.push('/login?message=Veuillez vous connecter ou vous inscrire pour confirmer l\'envoi');
+        }
+    }
+
+
+    function handleCancel() {
             router.back();
         }
 

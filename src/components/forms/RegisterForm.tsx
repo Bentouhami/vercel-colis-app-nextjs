@@ -9,6 +9,7 @@ import {CreateUserDto} from "@/app/utils/dtos";
 import {registerUserSchema} from "@/app/utils/validationSchema";
 import {useRouter} from "next/navigation";
 import {registerUser} from "@/app/utils/api";
+import {ZodError} from "zod";
 
 const RegisterForm = () => {
     const router = useRouter();
@@ -212,9 +213,13 @@ const RegisterForm = () => {
             }
 
         } catch (error) {
-            // Afficher un message d'erreur si l'enregistrement échoue
-            toast.error(error.message || "Une erreur est survenue lors de l'enregistrement de votre compte");
-            console.error(error);
+            if (error instanceof ZodError) {
+                toast.error(error.errors[0]?.message || "Erreur de validation");
+            } else if (error instanceof Error) {
+                toast.error(error.message || "Une erreur est survenue lors de l'enregistrement de votre compte");
+            } else {
+                toast.error("Une erreur inconnue est survenue");
+            }
         } finally {
             setLoading(false);
         }
