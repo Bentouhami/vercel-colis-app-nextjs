@@ -1,3 +1,4 @@
+// /src/app/(user)/login/page.tsx : page de connexion
 
 import Image from "next/image";
 import LoginForm from "@/components/forms/LoginForm";

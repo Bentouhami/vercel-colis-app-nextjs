@@ -1,3 +1,5 @@
+// /api/v1/users/login : route pour la connexion d'un utilisateur
+
 import {NextRequest, NextResponse} from 'next/server';
 import {errorHandler} from "@/app/utils/handelErrors";
 import {prisma} from "@/app/utils/db";
@@ -55,7 +57,7 @@ export async function POST(request: NextRequest) {
         // Générez un cookie et retournez l'objet de réponse utilisateur
         const cookie = setCookie(jwtPayload);
         return NextResponse.json(
-            {message: "Authenticated",},
+            {message: "Authenticated"},
             {
                 status: 200,
                 headers: {

@@ -52,17 +52,49 @@ export async function fetchAgencies(country:string, city:string) {
 }
 
 // Envoyer les données de la simulation au serveur via l'API
-export async function submitSimulation(simulationData : SimulationEnvoisDto) {
-    const response = await fetch('/api/v1/envois', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(simulationData),
-    });
-    if (response.ok) {
-        return response.json();
-    } else {
-        throw new Error('Failed to submit simulation');
+export async function submitSimulation(simulationData: SimulationEnvoisDto) {
+    try {
+        // Envoyer les données de la simulation au serveur via l'API
+        const response = await fetch('/api/v1/simulation/results', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(simulationData),
+        });
+
+        // Vérifier que la réponse HTTP est bien une réponse 200 (succès)
+        if (!response.ok) {
+            throw new Error('Failed to submit simulation');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error submitting simulation:', error);
+        throw error; // Re-throw the error so it can be caught by the calling function
     }
+}
+
+// Login user via API
+export async function login(email: string, password: string) {
+   try {
+       // envoyer l'email et le mot de passe au serveur via l'API /api/v1/users/login : route pour la connexion d'un utilisateur
+       const response = await fetch('/api/v1/users/login', {
+           method: 'POST',
+           headers: {
+               'Content-Type': 'application/json',
+           },
+           body: JSON.stringify({email, password}),
+       });
+
+       // Vérifier que la réponse HTTP est bien une réponse 200 (succès)
+       if (!response.ok) {
+           throw new Error('Failed to login');
+       }
+
+       return await response.json();
+   } catch (error) {
+       console.error('Error logging in:', error);
+       throw error; // Re-throw the error so it can be caught by the calling function
+   }
 }

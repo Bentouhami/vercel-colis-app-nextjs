@@ -1,14 +1,18 @@
 'use client';
-import {Button, Form} from "react-bootstrap";
+import {Button, Form, InputGroup} from "react-bootstrap";
 import React, {useState} from "react";
 import {toast, ToastContainer} from "react-toastify";
-// import {router} from "next/client";
+import {login} from "@/app/utils/api";
+import {useRouter} from "next/navigation";
+import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Importer les icônes FaEye et FaEyeSlash de react-icons
 
 const LoginForm = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false); // État pour contrôler la visibilité du mot de passe
+    const router = useRouter();
 
-    function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
         if (email === "") {
             toast.error("Veuillez entrer votre email");
@@ -19,39 +23,53 @@ const LoginForm = () => {
             return;
         }
 
-        toast.success("Connexion réussie");
-        console.log("Email : " + email);
-        console.log("Password : " + password);
-        // router.replace('/');
+        try {
+            await login(email, password);
+            toast.success("Connexion réussie");
+            router.replace('/');
+        } catch (error) {
+            if (error.message === 'Invalid credentials, please try again or register') {
+                toast.error("Email ou mot de passe incorrect.");
+            } else {
+                toast.error("Une erreur est survenue. Veuillez réessayer.");
+            }
+        }
     }
 
     return (
         <Form onSubmit={handleSubmit} className="mt-3">
             <Form.Group className="mb-3" controlId="formBasicEmail">
-                {/*<Form.Label>Email address</Form.Label>*/}
-                <Form.Control type="email"
-                              placeholder="Enter votre email"
-                              onChange={(e) => setEmail(e.target.value)}
+                <Form.Control
+                    type="email"
+                    placeholder="Entrez votre email"
+                    onChange={(e) => setEmail(e.target.value)}
                 />
-                <Form.Text className="text-muted">
-                    We&apos;ll never share your email with anyone else.
-                </Form.Text>
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formBasicPassword">
-                {/*<Form.Label>Password</Form.Label>*/}
-                <Form.Control type="password"
-                              placeholder="Enter votre mot de passe"
-                              onChange={(e) => setPassword(e.target.value)}
-                />
+                <InputGroup>
+                    <Form.Control
+                        type={showPassword ? "text" : "password"} // Changer le type de champ en fonction de showPassword
+                        placeholder="Entrez votre mot de passe"
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <Button
+                        variant="outline-secondary"
+                        onClick={() => setShowPassword(!showPassword)} // Inverser l'état de showPassword
+                    >
+                        {showPassword ? <FaEyeSlash /> : <FaEye />} {/* Utiliser les icônes FaEye et FaEyeSlash de react-icons */}
+                    </Button>
+                </InputGroup>
             </Form.Group>
 
-            <Button type={"submit"} variant="primary" className="mb-3">Se connecter</Button>
+            <Button type="submit" variant="primary" className="mb-3">
+                Se connecter
+            </Button>
             <ToastContainer
                 theme="colored"
-                position={"bottom-right"}
+                position="bottom-right"
             />
         </Form>
-    )
+    );
 }
-export default LoginForm
+export default LoginForm;

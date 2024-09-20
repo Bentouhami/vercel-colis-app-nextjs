@@ -1,5 +1,6 @@
 "use client";
 // SimulationForm.tsx : Formulaire de simulation
+// api/v1/simulation/route.ts : Route de simulation d'envoi
 import React, {ChangeEvent, useEffect, useState} from 'react';
 import {Button, Col, Container, Form, Pagination, Row} from 'react-bootstrap';
 import PackageForm from './PackageForm';
@@ -41,7 +42,7 @@ const SimulationForm = () => {
     // Récupérer les pays de destination disponibles pour le départ d'envoi
     useEffect(() => {
         fetchDestinationCountries(departureCountry).then(setDestinationCountries).catch(console.error);
-    }, [ departureCountry]);
+    }, [departureCountry]);
 
     // Récupérer les villes disponibles pour le départ d'envoi
     useEffect(() => {
@@ -99,25 +100,33 @@ const SimulationForm = () => {
         setPackages(newPackages);
     };
 
+    // Function to handle form submission
+    const handlePageChange = (pageIndex: number) => {
+        setCurrentPackage(pageIndex);
+    };
+
 // Function to handle form submission
     const handleSubmit = async (e: ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        // Create a new simulation object with the form data and send it to the server
         const simulationData: SimulationEnvoisDto = {
-            departureCountry,
-            departureCity,
-            departureAgency,
-            destinationCountry,
-            destinationCity,
-            destinationAgency,
-            packages,
+            departureCountry, // pays de départ
+            departureCity, // ville de départ
+            departureAgency, // agence de départ
+            destinationCountry, // pays de destination
+            destinationCity, // ville de destination
+            destinationAgency, // agence de destination
+            packages, // les colis à envoyer
+
         };
 
+        // Send the simulation data to the server
         try {
             const result = await submitSimulation(simulationData);
 
             toast.success("Simulation successful!");
-            const query = new URLSearchParams({ data: JSON.stringify(result) }).toString();
+            const query = new URLSearchParams({data: JSON.stringify(result)}).toString();
             router.push(`/simulation/results?${query}`);
         } catch (error) {
             console.error('Error submitting simulation:', error);
@@ -130,9 +139,6 @@ const SimulationForm = () => {
         }
     };
 
-    const handlePageChange = (pageIndex: number) => {
-        setCurrentPackage(pageIndex);
-    };
 
     return (
         <Container
@@ -220,8 +226,7 @@ const SimulationForm = () => {
                     </Col>
                 </Row>
                 <div className="d-flex justify-content-center mt-3">
-                    <Button className="me-2" type="submit" variant="primary">Soumettre</Button>
-
+                    <Button className="me-2" title="Soumettre les informations de l&apos;envoi et aller à la page de résultats" type="submit" variant="primary">Soumettre</Button>
                 </div>
             </Form>
             <ToastContainer

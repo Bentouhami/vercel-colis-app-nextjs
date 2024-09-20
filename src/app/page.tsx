@@ -1,4 +1,4 @@
-import Footer from "@/components/footer/Footer";
+// home page component for the home page of the application
 import Page from "@/app/home/page";
 
 export default function Home() {

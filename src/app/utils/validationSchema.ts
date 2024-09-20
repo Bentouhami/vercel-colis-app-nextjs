@@ -93,7 +93,7 @@ export const registerUserSchema = z.object({
     gender: z.boolean({message: "Gender is required"}),
     phoneNumber: z.string().min(1, {message: "Phone Number is required"}),
     email: z.string().email({message: "Email is invalid"}),
-    password: z.string().min(8, {message: "Password must be at least 8 characters"}),
+    password: z.string().min(8, {message: "Password must be at least 8 characters"}).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, {message: "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"}),
     confirmPassword: z.string().min(8, {message: "Password must be at least 8 characters"}),
     address: addressSchema,
 }).refine((data) => data.password === data.confirmPassword, {
@@ -108,10 +108,8 @@ export const registerUserSchema = z.object({
  * @desc Login user schema
  */
 export const loginUserSchema = z.object({
-    email: z.string()
-        .email({message: "Invalid email address"}),
-    password: z.string()
-        .min(1, {message: "Password is required"}),
+    email: z.string().email({message: "Invalid email address"}),
+    password: z.string().min(8, {message: "Password must be at least 8 characters"}).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, {message: "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"}),
 });
 // export type loginUserDto = z.infer<typeof loginUserSchema>;
 

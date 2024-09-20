@@ -18,14 +18,11 @@ export async function GET() {
                 Agency: {
                     // Vérifier qu'il y a une agence associée à cette adresse
                     isNot: null, // Vérifier qu'il y a une agence associée à cette adresse
-
                 },
             },
             select: {
                 id: true, // id de l'adresse
                 country: true,
-
-
             },
 
             distinct: ["country"],
@@ -57,16 +54,12 @@ export async function POST(request: NextRequest) {
                     Agency: {
                         // Vérifier qu'il y a une agence associée à cette adresse
                         isNot: null, // Vérifier qu'il y a une agence associée à cette adresse
-
                     },
                 },
                 select: {
                     id: true, // id de l'adresse
                     country: true,
-
-
                 },
-
                 distinct: ["country"],
             });
 

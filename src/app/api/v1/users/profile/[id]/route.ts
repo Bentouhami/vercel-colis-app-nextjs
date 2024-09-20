@@ -38,6 +38,7 @@ export async function DELETE(request: NextRequest, {params}: Props) {
         // get auth token from header request
         //@ts-ignore
 
+        // get auth token from header request and verify it with the token in the database
         const userFromToken = verifyToken(request);
 
         // verify if user id is the same as the user id in the token
@@ -80,7 +81,6 @@ interface Props {
 
 export async function PUT(request: NextRequest, {params}: Props) {
     try {
-
         // get user from db by id
         const user = await prisma.user.findUnique({
             where: {
@@ -97,6 +97,8 @@ export async function PUT(request: NextRequest, {params}: Props) {
         // get auth token from header request
         const userFromToken = verifyToken(request);
         if (userFromToken !== null && userFromToken.id === user.id) {
+
+            // get body data
             const body = (await request.json()) as UpdateUserProfileDto;
             const validated = userProfileSchema.safeParse(body);
             if (!validated.success) {

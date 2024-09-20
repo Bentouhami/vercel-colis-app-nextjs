@@ -3,7 +3,7 @@ import {useState} from 'react';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import ColisBrand from "@/components/brand/ColisBrand";
+import ColisBrand from "@/components/navigations/brand/ColisBrand";
 import {Button} from "react-bootstrap";
 import Link from "next/link";
 import styles from './Header.module.css'; // Assurez-vous d'importer le fichier CSS

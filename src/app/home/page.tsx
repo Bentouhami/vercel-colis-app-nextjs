@@ -1,3 +1,4 @@
+// home page component for the home page of the application
 import Image from "next/image";
 import Pricing from "@/components/pricing/Pricing";
 import Styles from "./Home.module.css";

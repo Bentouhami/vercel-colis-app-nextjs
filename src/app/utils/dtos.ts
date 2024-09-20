@@ -124,3 +124,25 @@ export interface SimulationResultsDto {
     departureDate: string;
     arrivalDate: string;
 }
+
+// DTO for Destinataire (the client, whom will receive the parcel)
+export interface CreateDestinataireDto {
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+    email: string;
+    address: CreateAddressDto;
+}
+
+// DTO for validated envoi
+export interface ValidatedEnvoisDto {
+    departureCountry: string;
+    departureCity: string;
+    departureAgency: string;
+    destinationCountry: string;
+    destinationCity: string;
+    destinationAgency: string;
+    packages: CreateParcelDto[];
+    CreateDestinataireDto: CreateDestinataireDto;
+    destinataire: CreateDestinataireDto;
+}

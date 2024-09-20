@@ -11,6 +11,7 @@ export async function POST(request: NextRequest) {
     try {
         const body = (await request.json()) as CreateUserDto;
 
+        // Validate the request body
         const validated = registerUserSchema.safeParse(body);
 
         if (!validated.success) {

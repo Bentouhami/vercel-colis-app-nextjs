@@ -1,3 +1,5 @@
+// api/v1/simulation/results/route.ts : Route de simulation d'envoi
+
 import { NextRequest, NextResponse } from 'next/server';
 import { errorHandler } from "@/app/utils/handelErrors";
 import { SimulationEnvoisDto } from "@/app/utils/dtos";
@@ -16,7 +18,7 @@ export async function POST(request: NextRequest) {
         // Récupère le corps de la requête et valide les données
         const body = await request.json() as SimulationEnvoisDto;
 
-        // console.log("before validation", body);
+        // console.log("before validation", body); // DEBUG
 
         const validated = simulationEnvoisSchema.safeParse(body);
 
@@ -24,7 +26,6 @@ export async function POST(request: NextRequest) {
         if (!validated.success) {
             return errorHandler(validated.error.errors[0].message, 400);
         }
-
 
         // Utiliser le service pour calculer les détails de l'envoi
         const envoiDetails = await calculateEnvoiDetails(body);

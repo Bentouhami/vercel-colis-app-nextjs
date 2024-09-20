@@ -20,6 +20,8 @@ model Address {
 
   Agency Agency?
   User   User[]
+
+  @@map("addresses")
 }
 
 model Agency {
@@ -33,6 +35,8 @@ model Agency {
 
   ArrivalEnvoi   Envoi[] @relation("ArrivalAgency")
   DepartureEnvoi Envoi[] @relation("DepartureAgency")
+
+  @@map("agencies")
 }
 
 model User {
@@ -60,6 +64,8 @@ enum UserRole {
   CLIENT
   DESTINATAIRE
   ADMIN
+
+  @@map("user_roles")
 }
 
 enum EnvoiStatus {
@@ -68,6 +74,8 @@ enum EnvoiStatus {
   DELIVERED
   CANCELLED
   RETURNED
+
+  @@map("envoi_status")
 }
 
 model Coupon {
@@ -84,6 +92,8 @@ model Coupon {
 
   UserCoupon  UserCoupon[]
   EnvoiCoupon EnvoiCoupon[]
+
+  @@map("coupons")
 }
 
 model UserCoupon {
@@ -94,6 +104,7 @@ model UserCoupon {
   Coupon Coupon @relation(fields: [couponId], references: [id])
 
   @@id([userId, couponId])
+  @@map("user_coupons")
 }
 
 model Transport {
@@ -109,6 +120,8 @@ model Transport {
 
   Envoi             Envoi[]
   TransportSchedule TransportSchedule[]
+
+  @@map("transports")
 }
 
 model Envoi {
@@ -136,6 +149,8 @@ model Envoi {
 
   EnvoiCoupon EnvoiCoupon[]
   Parcel      Parcel[]
+
+  @@map("envois")
 }
 
 model EnvoiCoupon {
@@ -146,6 +161,7 @@ model EnvoiCoupon {
   Coupon Coupon @relation(fields: [couponId], references: [id])
 
   @@id([envoiId, couponId])
+  @@map("envoi_coupons")
 }
 
 model Parcel {
@@ -159,6 +175,8 @@ model Parcel {
   updatedAt DateTime @updatedAt
   envoiId   Int
   Envoi     Envoi    @relation(fields: [envoiId], references: [id])
+
+  @@map("parcels")
 }
 
 model Tarifs {
@@ -169,6 +187,8 @@ model Tarifs {
   fixedRate  Float // Tarif fixe pour les envois <= 10 kg
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  @@map("tarifs")
 }
 
 model TransportSchedule {
@@ -181,4 +201,6 @@ model TransportSchedule {
   updatedAt     DateTime @updatedAt
 
   Transport Transport @relation(fields: [transportId], references: [id])
+
+  @@map("transport_schedules")
 }
