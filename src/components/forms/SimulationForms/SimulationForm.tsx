@@ -11,6 +11,7 @@ import {fetchAgencies, fetchCities, fetchCountries, fetchDestinationCountries, s
 import {toast, ToastContainer} from "react-toastify";
 import {useRouter} from 'next/navigation';
 import {SimulationEnvoisDto} from "@/app/utils/dtos";
+import {simulationEnvoisSchema} from "@/app/utils/validationSchema";
 
 const SimulationForm = () => {
     const router = useRouter(); // Initialize useRouter
@@ -121,9 +122,18 @@ const SimulationForm = () => {
 
         };
 
+        // validation du SimulationEnvoisDto
+        const validated = simulationEnvoisSchema.safeParse(simulationData);
+
+        if(!validated.success){
+            toast.error(validated.error.errors[0].message);
+            return;
+        }
         // Send the simulation data to the server
         try {
             const result = await submitSimulation(simulationData);
+            console.log(result);
+
 
             toast.success("Simulation successful!");
             const query = new URLSearchParams({data: JSON.stringify(result)}).toString();
@@ -134,7 +144,7 @@ const SimulationForm = () => {
             if (error instanceof Error) {
                 toast.error(`Error: ${error.message}`);
             } else {
-                toast.error('An unexpected error occurred.');
+                toast.error('oups.');
             }
         }
     };

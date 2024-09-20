@@ -17,7 +17,7 @@ export async function GET() {
             where: {
                 Agency: {
                     // Vérifier qu'il y a une agence associée à cette adresse
-                    isNot: null, // Vérifier qu'il y a une agence associée à cette adresse
+                    isNot: null,
                 },
             },
             select: {

@@ -10,7 +10,7 @@ import {z} from "zod";
 export const addressSchema = z.object({
     street: z.string().min(1, {message: "Street is required"}),
     number: z.string().min(1, {message: "Number is required"}),
-    zipCode: z.string().min(1, {message: "ZipCode is required"}),
+    zipCode: z.string().min(1, {message: "Zip code is required"}),
     city: z.string().min(1, {message: "City is required"}),
     country: z.string().min(1, {message: "Country is required"}),
 });
@@ -43,7 +43,8 @@ export const createUserSchema = z.object({
     firstName: z.string().min(1, {message: "First name is required"}),
     lastName: z.string().min(1, {message: "Last name is required"}),
     birthDate: z.string().min(1, {message: "Birth date is required"}),
-    gender: z.boolean().optional(),
+    gender: z.string()
+        .min(1, {message: "Gender is required"}).optional(),
     phoneNumber: z.string().min(1, {message: "Phone number is required"}),
     email: z.string().min(1, {message: "Email is required"}),
     password: z.string().min(1, {message: "Password is required"}),
@@ -59,21 +60,21 @@ export const createUserSchema = z.object({
  */
 export const updateUserSchema = z.object({
     firstName: z.string()
-        .min(1, {message: "First name is required"}),
+        .min(1, {message: "First name is required"}).optional(),
     lastName: z.string()
-        .min(1, {message: "Last name is required"}),
+        .min(1, {message: "Last name is required"}).optional(),
     birthDate: z.string()
-        .min(1, {message: "Birth date is required"}),
-    gender: z.boolean()
-        .optional(),
+        .min(1, {message: "Birth date is required"}).optional(),
+    gender: z.string()
+        .min(1, {message: "Gender is required"}).optional(),
     phoneNumber: z.string()
-        .min(1, {message: "Phone number is required"}),
+        .min(1, {message: "Phone number is required"}).optional(),
     email: z.string()
-        .min(1, {message: "Email is required"}),
+        .min(1, {message: "Email is required"}).optional(),
     password: z.string()
-        .min(1, {message: "Password is required"}),
+        .min(1, {message: "Password is required"}).optional(),
     confirmPassword: z.string()
-        .min(1, {message: "Confirm password is required"}),
+        .min(1, {message: "Confirm password is required"}).optional(),
     address: addressSchema.optional(),
 });
 
@@ -90,16 +91,27 @@ export const registerUserSchema = z.object({
     birthDate: z.string().min(1, {message: "Birth Date is required"}).refine((val) => !isNaN(Date.parse(val)), {
         message: "Birth Date must be a valid date",
     }),
-    gender: z.boolean({message: "Gender is required"}),
-    phoneNumber: z.string().min(1, {message: "Phone Number is required"}),
+    gender: z.string().min(1, {message: "Gender is required"}).optional(),
+
+    // Validation du numéro de téléphone avec un format international général
+    phoneNumber: z.string().min(1, {message: "Phone Number is required"})
+        .regex(/^\+\d{1,3}\d{9,12}$/, {message: "Invalid phone number, must be in format +[country code][number]"}),
+
     email: z.string().email({message: "Email is invalid"}),
-    password: z.string().min(8, {message: "Password must be at least 8 characters"}).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, {message: "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"}),
-    confirmPassword: z.string().min(8, {message: "Password must be at least 8 characters"}),
+
+    password: z.string()
+        .min(8, {message: "Password must be at least 8 characters"})
+        .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, {message: "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"}),
+
+    checkPassword: z.string(),
+
     address: addressSchema,
-}).refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match!",
-    path: ["confirmPassword"],
-});
+})
+    .refine((data) => data.password === data.checkPassword, {
+        message: "Passwords don't match!",
+        path: ["confirmPassword"],
+    });
+
 
 /**
  * Login user schema

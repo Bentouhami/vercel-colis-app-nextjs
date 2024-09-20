@@ -17,7 +17,9 @@ export async function POST(request: NextRequest) {
     try {
         // Récupère le corps de la requête et valide les données
         const body = await request.json() as SimulationEnvoisDto;
-
+        if(!body){
+            return errorHandler("Invalid request body", 400);
+        }
         // console.log("before validation", body); // DEBUG
 
         const validated = simulationEnvoisSchema.safeParse(body);

@@ -1,7 +1,8 @@
 // API.ts : API pour les fonctions de simulation
 
 // Récupérer les pays de départ disponibles pour la simulation
-import {SimulationEnvoisDto} from "@/app/utils/dtos";
+import {CreateUserDto, SimulationEnvoisDto, SimulationResultsDto} from "@/app/utils/dtos";
+import {verifyToken} from "@/app/utils/verifyToken";
 
 export async function fetchCountries() {
 
@@ -63,18 +64,23 @@ export async function submitSimulation(simulationData: SimulationEnvoisDto) {
             body: JSON.stringify(simulationData),
         });
 
-        // Vérifier que la réponse HTTP est bien une réponse 200 (succès)
-        if (!response.ok) {
+        if (response.ok) {
+            return await response.json();
+        } else {
             throw new Error('Failed to submit simulation');
         }
-
-        return await response.json();
     } catch (error) {
         console.error('Error submitting simulation:', error);
         throw error; // Re-throw the error so it can be caught by the calling function
     }
 }
 
+
+/** Login user via API
+ * @param email - email of the user
+ * @param password - password of the user
+ * @returns - the user object
+ */
 // Login user via API
 export async function login(email: string, password: string) {
    try {
@@ -97,4 +103,30 @@ export async function login(email: string, password: string) {
        console.error('Error logging in:', error);
        throw error; // Re-throw the error so it can be caught by the calling function
    }
+}
+
+
+// register new user via API
+export async function registerUser(newUser: CreateUserDto) {
+    try {
+        const response = await fetch('/api/v1/users/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newUser),
+        });
+
+        // Vérifier si la réponse est OK (statut 2xx)
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Une erreur est survenue');
+        }
+
+        // Retourner la réponse JSON en cas de succès
+        return await response.json();
+    } catch (error) {
+        console.error('Error registering user:', error);
+        throw error; // Relancer l'erreur pour qu'elle soit capturée par la fonction appelante
+    }
 }

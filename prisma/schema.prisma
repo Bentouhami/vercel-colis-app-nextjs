@@ -44,7 +44,7 @@ model User {
   firstName   String
   lastName    String
   dateOfBirth DateTime?
-  gender      Boolean?  @default(false) @db.Boolean
+  gender      String?
   phoneNumber String?   @unique
   email       String    @unique
   password    String    @default("")
@@ -57,6 +57,8 @@ model User {
   ClientEnvoi      Envoi[]      @relation("ClientEnvoi")
   DestinatireEnvoi Envoi[]      @relation("DestinatireEnvoi")
   UserCoupon       UserCoupon[]
+
+  @@map("users")
 }
 
 enum UserRole {

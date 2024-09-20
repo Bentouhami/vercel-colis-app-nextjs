@@ -28,13 +28,19 @@ const LoginForm = () => {
             toast.success("Connexion réussie");
             router.replace('/');
         } catch (error) {
-            if (error.message === 'Invalid credentials, please try again or register') {
-                toast.error("Email ou mot de passe incorrect.");
+            // Vérifiez d'abord si error est un objet avec une propriété 'message'
+            if (error instanceof Error) {
+                if (error.message === 'Invalid credentials, please try again or register') {
+                    toast.error("Email ou mot de passe incorrect.");
+                } else {
+                    toast.error("Une erreur est survenue. Veuillez réessayer.");
+                }
             } else {
-                toast.error("Une erreur est survenue. Veuillez réessayer.");
+                toast.error("Une erreur inconnue est survenue.");
             }
         }
     }
+
 
     return (
         <Form onSubmit={handleSubmit} className="mt-3">

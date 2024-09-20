@@ -1,8 +1,7 @@
-// DTO for Address
+// DTOs for my project - ColiApp
 import {Address} from "@prisma/client";
 
 export interface CreateAddressDto {
-
     street: string;
     number: string;
     city: string;
@@ -13,11 +12,11 @@ export interface CreateAddressDto {
 // DTO for User update
 export interface UpdateAddressDto {
 
-    street: string;
-    number: string;
-    city: string;
-    zipCode: string;
-    country: string;
+    street?: string;
+    number?: string;
+    city?: string;
+    zipCode?: string;
+    country?: string;
 }
 
 // DTO for User create
@@ -25,7 +24,7 @@ export interface CreateUserDto {
     firstName: string;
     lastName: string;
     birthDate: string;
-    gender: boolean;
+    gender: string;
     phoneNumber: string;
     email: string;
     password: string;
@@ -39,7 +38,7 @@ export interface UserResponseDto {
     firstName: string;
     lastName: string;
     dateOfBirth: string;
-    gender: boolean;
+    gender: string;
     phoneNumber: string;
     email: string;
     role: string;
@@ -56,7 +55,7 @@ export interface UpdateUserProfileDto {
     firstName?: string;
     lastName?: string;
     dateOfBirth?: string;
-    gender?: boolean;
+    gender?: string;
     phoneNumber?: string;
     email?: string;
     password?: string;
@@ -89,23 +88,23 @@ export interface ParcelDto {
 }
 
 // DTO for simulation envoi
-export interface  SimulationEnvoisDto {
-    departureCountry : string;
-    departureCity : string;
-    departureAgency : string;
-    destinationCountry : string;
-    destinationCity : string;
-    destinationAgency : string;
+export interface SimulationEnvoisDto {
+    departureCountry: string;
+    departureCity: string;
+    departureAgency: string;
+    destinationCountry: string;
+    destinationCity: string;
+    destinationAgency: string;
 
     packages: ParcelDto[];
 }
 
 // STO for Tarifs
 export interface TarifsDto {
-    weightRate : number;
-    volumeRate : number;
-    baseRate : number;
-    fixedRate : number;
+    weightRate: number;
+    volumeRate: number;
+    baseRate: number;
+    fixedRate: number;
 
 }
 
