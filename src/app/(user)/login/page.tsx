@@ -14,6 +14,7 @@ const LoginPage = () => {
                        src="/svg/login/login.svg" alt="Welcome" width={500} height={500}/>
                 <div className="text-center order-2 order-md-1 mb-5">
                     <LoginForm />
+
                 </div>
             </div>
         </div>

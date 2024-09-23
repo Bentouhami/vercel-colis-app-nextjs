@@ -1,46 +1,82 @@
 'use client';
-import {Button, Form, InputGroup} from "react-bootstrap";
-import React, {useState} from "react";
-import {toast, ToastContainer} from "react-toastify";
-import {login} from "@/app/utils/api";
-import {useRouter} from "next/navigation";
-import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Importer les icônes FaEye et FaEyeSlash de react-icons
+import { Button, Form, InputGroup } from "react-bootstrap";
+import React, { useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import { login } from "@/app/utils/api";
+import { useRouter } from "next/navigation"; // Déplacer useRouter au début du composant
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { LoginUserDto } from "@/app/utils/dtos";
+import { loginUserSchema } from "@/app/utils/validationSchema";
 
 const LoginForm = () => {
+    const router = useRouter(); // Utiliser useRouter au niveau supérieur du composant
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false); // État pour contrôler la visibilité du mot de passe
-    const router = useRouter();
+    const [loading, setLoading] = useState(false);
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        if (email === "") {
-            toast.error("Veuillez entrer votre email");
-            return;
-        }
-        if (password === "") {
-            toast.error("Veuillez entrer votre mot de passe");
+
+        const loginData: LoginUserDto = {
+            email,
+            password,
+        };
+
+        const validated = loginUserSchema.safeParse(loginData);
+
+        if (!validated.success) {
+            toast.error(validated.error.errors[0].message, {
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
             return;
         }
 
         try {
+            setLoading(true);
             await login(email, password);
-            toast.success("Connexion réussie");
-            router.replace('/');
+
+            toast.success("Connexion réussie", {
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+
+            // Redirection vers la page de simulation
+            router.replace("/simulation"); // Utiliser router ici, après la validation du login
+            router.refresh(); // Rafraîchir la page pour afficher les nouveaux composants
         } catch (error) {
-            // Vérifiez d'abord si error est un objet avec une propriété 'message'
             if (error instanceof Error) {
-                if (error.message === 'Invalid credentials, please try again or register') {
-                    toast.error("Email ou mot de passe incorrect.");
-                } else {
-                    toast.error("Une erreur est survenue. Veuillez réessayer.");
-                }
+                toast.error(error.message || "Une erreur s'est produite lors de la connexion", {
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
             } else {
-                toast.error("Une erreur inconnue est survenue.");
+                toast.error("Erreur inconnue", {
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
             }
+        } finally {
+            setLoading(false);
         }
     }
-
 
     return (
         <Form onSubmit={handleSubmit} className="mt-3">
@@ -68,8 +104,8 @@ const LoginForm = () => {
                 </InputGroup>
             </Form.Group>
 
-            <Button type="submit" variant="primary" className="mb-3">
-                Se connecter
+            <Button type="submit" variant="primary" className="mb-3" disabled={loading}>
+                {loading ? "Connexion en cours..." : "Se connecter"}
             </Button>
             <ToastContainer
                 theme="colored"
@@ -78,4 +114,5 @@ const LoginForm = () => {
         </Form>
     );
 }
+
 export default LoginForm;

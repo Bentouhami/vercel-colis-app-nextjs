@@ -72,13 +72,6 @@ export async function DELETE(request: NextRequest, {params}: Props) {
  * @access Private (only the user can update their own profile)
  */
 
-interface Props {
-    params: {
-        id: string;
-
-    }
-}
-
 export async function PUT(request: NextRequest, {params}: Props) {
     try {
         // get user from db by id

@@ -1,3 +1,6 @@
+// path : /api/v1/users/logout/route.ts
+// logout route.ts : route pour la déconnexion d'un utilisateur
+
 import {NextRequest, NextResponse} from 'next/server';
 import {errorHandler} from '@/app/utils/handelErrors';
 import {cookies} from 'next/headers';

@@ -4,6 +4,7 @@ import {CreateAddressDto} from "@/app/utils/dtos";
 import {errorHandler} from "@/app/utils/handelErrors";
 import {Address} from "@prisma/client";
 import {prisma} from "@/app/utils/db";
+import {capitalizeFirstLetter, toLowerCase} from "@/app/utils/stringUtils";
 
 
 /**
@@ -49,33 +50,52 @@ export async function POST(request: NextRequest) {
         if (!validated.success) {
             return NextResponse.json({error: validated.error.errors[0].message}, {status: 400});
         }
+
+        // formatted address data
+        const formattedAddress = {
+            street: toLowerCase(body.street),
+            number: body.number,
+            city: capitalizeFirstLetter(body.city),
+            zipCode: body.zipCode,
+            country: capitalizeFirstLetter(body.country)
+        }
         // Vérifier si l'adresse existe déjà dans la base de données
-        const address = await prisma.address.findFirst({
-            where: {
-                street: body.street,
-                number: body.number,
-                city: body.city,
-                zipCode: body.zipCode,
-                country: body.country
-            },
-        }) as Address | undefined;
+
+        // const address = await prisma.address.findFirst({
+        //     where: {
+        //         street: formattedAddress.street,
+        //         number: formattedAddress.number,
+        //         city: formattedAddress.city,
+        //         zipCode: formattedAddress.zipCode,
+        //         country: formattedAddress.country
+        //     },
+        // });
+        const existingAddress = await prisma.user.findFirst({
+                where: formattedAddress,
+            }
+        )
 
         // Si l'adresse existe, renvoyer une erreur 400 avec l'adresse existante comme donnée et renvoyer une erreur 400
-        if (address) {
-            return NextResponse.json({error: "Address already exists", address}, {status: 400});
+        if (existingAddress) {
+            return NextResponse.json({error: "Address already exists", address: existingAddress}, {status: 400});
         }
         // on crée une adresse avec la fonction create de prisma et on donne les données du body
-        await prisma.address.create({
-            data: {
-                street: body.street,
-                number: body.number,
-                city: body.city,
-                zipCode: body.zipCode,
-                country: body.country
-            }
-        });
+
+        // await prisma.address.create({
+        //     data: {
+        //         street: formattedAddress.street,
+        //         number: formattedAddress.number,
+        //         city: formattedAddress.city,
+        //         zipCode: formattedAddress.zipCode,
+        //         country: formattedAddress.country
+        //     }
+        // });
+
+        const newAddress = await prisma.address.create({
+            data: formattedAddress
+        })
         // on renvoie la liste des adresses
-        return NextResponse.json({message: "Address created successfully"}, {status: 201});
+        return NextResponse.json({message: "Address created successfully", address: newAddress}, {status: 201});
 
     } catch (error) {
         // si une erreur survient, on renvoie une erreur

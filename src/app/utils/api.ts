@@ -1,8 +1,10 @@
 // API.ts : API pour les fonctions de simulation
+// path : src/app/utils/api.ts
 
 // Récupérer les pays de départ disponibles pour la simulation
 import {CreateUserDto, SimulationEnvoisDto, SimulationResultsDto} from "@/app/utils/dtos";
 import {verifyToken} from "@/app/utils/verifyToken";
+import {forEach} from "react-bootstrap/ElementChildren";
 
 export async function fetchCountries() {
 
@@ -93,18 +95,20 @@ export async function login(email: string, password: string) {
            body: JSON.stringify({email, password}),
        });
 
-       // Vérifier que la réponse HTTP est bien une réponse 200 (succès)
+       // Lire la réponse et la retourner directement
+       const data = await response.json();
+
        if (!response.ok) {
-           throw new Error('Failed to login');
+           // Si la réponse n'est pas ok (2xx), lever une erreur avec le message retourné par l'API
+           throw new Error(data.error || 'Une erreur est survenue lors de l\'enregistrement.');
        }
 
-       return await response.json();
+       return data;
    } catch (error) {
        console.error('Error logging in:', error);
        throw error; // Re-throw the error so it can be caught by the calling function
    }
 }
-
 
 // register new user via API
 export async function registerUser(newUser: CreateUserDto) {
@@ -117,16 +121,21 @@ export async function registerUser(newUser: CreateUserDto) {
             body: JSON.stringify(newUser),
         });
 
-        // Vérifier si la réponse est OK (statut 2xx)
+        // Lire la réponse et la retourner directement
+        const data = await response.json();
+
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Une erreur est survenue');
+            // Si la réponse n'est pas ok (2xx), lever une erreur avec le message retourné par l'API
+            throw new Error(data.error || 'Une erreur est survenue lors de l\'enregistrement.');
         }
 
-        // Retourner la réponse JSON en cas de succès
-        return await response.json();
+        // Retourner les données en cas de succès
+        return data;
     } catch (error) {
         console.error('Error registering user:', error);
-        throw error; // Relancer l'erreur pour qu'elle soit capturée par la fonction appelante
+        throw error; // Relancer l'erreur pour la capturer dans RegisterForm
     }
 }
+
+
+

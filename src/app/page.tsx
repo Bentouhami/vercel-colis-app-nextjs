@@ -1,3 +1,5 @@
+// path : src/app/page.tsx
+
 // home page component for the home page of the application
 import Page from "@/app/home/page";
 

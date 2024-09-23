@@ -1,12 +1,13 @@
+// url : /api/v1/users/register
 import {NextRequest, NextResponse} from 'next/server';
 import {CreateUserDto, UserResponseDto} from '@/app/utils/dtos';
-import {registerUserSchema} from "@/app/utils/validationSchema";
 import {prisma} from "@/app/utils/db";
 import bcrypt from "bcryptjs";
 import {JWTPayload} from "@/app/utils/types";
 import {setCookie} from "@/app/utils/generateToken";
 import {errorHandler} from "@/app/utils/handelErrors";
-import {Address, User} from "@prisma/client";
+import {capitalizeFirstLetter, toLowerCase} from "@/app/utils/stringUtils";
+import {registerUserSchema} from "@/app/utils/validationSchema";
 
 /**
  * Register a new user
@@ -24,80 +25,102 @@ export async function POST(request: NextRequest) {
         }
 
         // Valider les données de l'utilisateur avec le schéma de validation
-        const validated = registerUserSchema.safeParse(body);
+        const
+            {
+                success,
+                error,
+                data: validatedData
+            } = registerUserSchema.safeParse(body);
 
         // Vérifier si les données sont valides
-        if (!validated.success) {
-            return NextResponse.json({error: validated.error.errors[0].message}, {status: 400});
+        if (!success) {
+            return NextResponse.json(
+                {error: error?.errors[0].message},
+                {status: 400}
+            );
         }
 
         // Récupérer les données de l'utilisateur à partir de la validation réussie
-        const {firstName, lastName, birthDate, gender, phoneNumber, email, password, address} = validated.data;
+        const {
+            firstName,
+            lastName,
+            birthDate,
+            gender,
+            phoneNumber,
+            email,
+            password,
+            address
+        } = validatedData;
 
-        // Vérifier si l'adresse est déjà existante dans la base de données (pour éviter les conflits des contraintes de clé unique sur les champs street, number, city, zipCode et country)
-        let newAddress= await prisma.address.findFirst({
-            where: {
-                street: address.street,
+        // formated user data
+        const formattedUser = {
+            firstName: capitalizeFirstLetter(firstName),
+            lastName: capitalizeFirstLetter(lastName),
+            birthDate,
+            gender: capitalizeFirstLetter(gender),
+            phoneNumber,
+            email: toLowerCase(email),
+            password,
+            address: {
+                street: toLowerCase(address.street),
                 number: address.number,
-                city: address.city,
+                city: capitalizeFirstLetter(address.city),
                 zipCode: address.zipCode,
-                country: address.country
+                country: capitalizeFirstLetter(address.country)
             }
-        });
+        }
+        // Vérifier si l'adresse et les informations utilisateur existent déjà
 
-        // Si l'adresse n'est pas déjà existante, créer une nouvelle adresse dans la base de données
-        if (!newAddress) {
-            newAddress = await prisma.address.create({
-                data: {
-                    street: address.street,
-                    number: address.number,
-                    city: address.city,
-                    zipCode: address.zipCode,
-                    country: address.country
+        const [existingAddress, phoneNumberExists, emailExists] = await Promise.all([
+            prisma.address.findFirst({
+                where: {
+                    street: formattedUser.address.street,
+                    number: formattedUser.address.number,
+                    city: formattedUser.address.city,
+                    zipCode: formattedUser.address.zipCode,
+                    country: formattedUser.address.country
                 }
-            });
-        }
+            }),
+            prisma.user.findFirst({
+                where: {
+                    phoneNumber: formattedUser.phoneNumber
+                }
+            }),
+            prisma.user.findFirst({
+                where: {
+                    email: formattedUser.email
+                }
+            })
+        ]);
 
-        // Vérifier di le numéro de téléphone existe déjà dans la base de données (pour éviter les conflicts des contraintes de clé unique sur le champ phoneNumber)
-        const phoneNumberExists = await prisma.user.findFirst({
-            where: {
-                phoneNumber: phoneNumber
-            }
-        });
 
-        // Si le numéro de téléphone existe déjà, renvoyer une erreur
+        // Gérer les erreurs liées à l'existence des données
         if (phoneNumberExists) {
-            return NextResponse.json({error: "Phone number already exists"}, {status: 400});
+            return NextResponse.json({error: 'Phone number already exists'}, {status: 400});
         }
 
-        // Vérifier si l'email existe déjà dans la base de données (pour éviter les conflits des contraintes de clé unique sur le champ email)
-        const emailExists = await prisma.user.findFirst({
-            where: {
-                email: email
-            }
+        if (emailExists) {
+            return NextResponse.json({error: 'Email already exists'}, {status: 400});
+        }
+
+
+        // Créer l'adresse si elle n'existe pas
+        const addressToUse = existingAddress || await prisma.address.create({
+            data: formattedUser.address,
         });
 
-        // Si l'email existe déjà, renvoyer une erreur
-        if (emailExists) {
-            return NextResponse.json({error: "Email already exists"}, {status: 400});
-        }
-
-        // Vérifier si l'adresse a été créée avec succès dans la base de données pour éviter typescript errors (car newAddress peut être null)
-        if (!newAddress) {
-            return NextResponse.json({error: "Failed to register user"}, {status: 500});
-        }
         // Hashes le mot de passe et créer un nouvel utilisateur dans la base de données
         const hashedPassword = await bcrypt.hash(password, 10);
-        const user = await prisma.user.create({
+        const newUser = await prisma.user.create({
             data: {
-                firstName,
-                lastName,
-                dateOfBirth: new Date(birthDate),
-                gender,
-                phoneNumber,
-                email,
+                firstName: formattedUser.firstName,
+                lastName: formattedUser.lastName,
+                dateOfBirth: new Date(formattedUser.birthDate),
+                gender: formattedUser.gender,
+                phoneNumber: formattedUser.phoneNumber,
+                email: formattedUser.email,
                 password: hashedPassword,
-                addressId: newAddress.id,
+                addressId: addressToUse.id,
                 createdAt: new Date(),
                 updatedAt: new Date(),
             },
@@ -114,31 +137,32 @@ export async function POST(request: NextRequest) {
         });
 
         // Vérifier si l'utilisateur a été créé avec succès dans la base de données pour éviter typescript errors (car user peut être null)
-        if (!user) {
+        if (!newUser) {
             return NextResponse.json({error: "Failed to register user"}, {status: 500});
         }
 
-        // Convertir les données de l'utilisateur en un objet UserResponseDto
-        const userResponse: UserResponseDto = {
-            id: user.id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            dateOfBirth: user.dateOfBirth?.toISOString() || "",
-            gender: user.gender ?? "",
-            phoneNumber: user.phoneNumber ?? "",
-            email: user.email,
-            role: user.role
-        };
-
         // Générer un cookie JWT avec les informations de l'utilisateur
         const jwtPayload: JWTPayload = {
-            id: user.id,
-            role: user.role,
-            userEmail: user.email,
+            id: newUser.id,
+            role: newUser.role,
+            userEmail: newUser.email,
         };
 
         // Générer le cookie JWT
         const cookie = setCookie(jwtPayload);
+
+        // Convertir les données de l'utilisateur en un objet UserResponseDto
+        const userResponse: UserResponseDto = {
+            id: newUser.id,
+            firstName: newUser.firstName,
+            lastName: newUser.lastName,
+            dateOfBirth: newUser.dateOfBirth?.toISOString() || "",
+            gender: newUser.gender ?? "",
+            phoneNumber: newUser.phoneNumber ?? "",
+            email: newUser.email,
+            role: newUser.role
+        };
+
 
         // Renvoyer les données de l'utilisateur et le message de succès (201 pour création réussie)
         return NextResponse.json(

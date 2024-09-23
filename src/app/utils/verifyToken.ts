@@ -2,6 +2,8 @@
 // vérification du token JWT
 // src/app/utils/verifyToken.ts
 
+
+
 import {NextRequest} from 'next/server';
 import {JWTPayload} from './types';
 import jwt from "jsonwebtoken";
@@ -23,19 +25,20 @@ export function verifyToken(request: NextRequest): JWTPayload | null {
     }
 }
 
-export function verifyTokenFromCookies(): string | null {
-    // Accéder au cookie auth via le document.cookie (ou utiliser une librairie comme js-cookie)
-    const cookieString = document.cookie;
+export function verifyTokenFromCookies(token: string): JWTPayload | null {
+    try {
+        // récupérer la clé secrète de l'environnement
+        const privateKey = process.env.JWT_SECRET as string;
 
-    // Recherche du cookie d'authentification (auth)
-    const authCookie = cookieString.split('; ').find(row => row.startsWith('auth='));
+        // vérifier le token et extraire les informations de l'utilisateur
+        const userPayload = jwt.verify(token, privateKey) as JWTPayload;
 
-    // Si le cookie existe, extraire le token
-    if (authCookie) {
-        const token = authCookie.split('=')[1];
-        return token || null;
+        // si l'utilisateur n'est pas authentifié, retournez null
+        if(!userPayload) return null;
+
+        // retournez le payload de l'utilisateur authentifié
+        return userPayload;
+    } catch (error) {
+        return null;
     }
-
-    // Retourner null si pas de cookie trouvé
-    return null;
 }

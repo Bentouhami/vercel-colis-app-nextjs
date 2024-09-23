@@ -32,136 +32,7 @@ const RegisterForm = () => {
     const [password, setPassword] = useState("");
     const [checkPassword, setCheckPassword] = useState("");
     const [loading, setLoading] = useState(false);
-    // async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    //     event.preventDefault();
-    //
-    //     // Créer l'objet newUser
-    //     const newUser: CreateUserDto = {
-    //         firstName: firstName,
-    //         lastName: lastName,
-    //         birthDate: birthDate,
-    //         gender: gender,
-    //         phoneNumber: phone,
-    //         email: email,
-    //         password: password,
-    //         checkPassword: checkPassword,
-    //         address: {
-    //             street: streetName,
-    //             number: streetNumber,
-    //             city: city,
-    //             zipCode: zipCode,
-    //             country: country,
-    //         }
-    //     };
-    //
-    //     // Validation des données
-    //     const validated = registerUserSchema.safeParse(newUser);
-    //     if (!validated.success) {
-    //         toast.error(validated.error.errors[0].message, {
-    //             autoClose: 5000,
-    //             hideProgressBar: false,
-    //             closeOnClick: true,
-    //             pauseOnHover: true,
-    //             draggable: true,
-    //             progress: undefined,
-    //         });
-    //         return;
-    //     }
-    //
-    //     // Enregistrement de l'utilisateur
-    //     try {
-    //         setLoading(true);
-    //         const response = await registerUser(newUser);
-    //
-    //         if (response.status === 201) {
-    //             toast.success("Utilisateur enregistré avec succès");
-    //             // Vérifier si l'utilisateur a une simulation en cours (dans localStorage)
-    //             const lastSimulation = localStorage.getItem('lastSimulation');
-    //             if (lastSimulation) {
-    //                 // Rediriger vers la page de simulation avec les derniers résultats
-    //                 router.push('/simulation/results?data=' + encodeURIComponent(lastSimulation));
-    //             } else {
-    //                 // Rediriger vers la page de connexion
-    //                 router.push('/login');
-    //             }
-    //         } else if (response.status === 400) {
-    //             toast.error(response.error);
-    //         } else {
-    //             toast.error("Une erreur est survenue lors de l'enregistrement de votre compte");
-    //         }
-    //     } catch (error) {
-    //         console.error(error);
-    //         toast.error("Erreur lors de l'inscription");
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // }
 
-    // async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    //     event.preventDefault();
-    //
-    //     // newUser est un objet qui contient toutes les informations de l'utilisateur qui a été saisie dans le formulaire de création de compte.
-    //     // J'ai créé un nouvel objet newUser qui contient toutes les informations de l'utilisateur pour la vérification de la saisie puis l'envoie au serveur via l'API de l'application.
-    //     const newUser: CreateUserDto = {
-    //         firstName: firstName,
-    //         lastName: lastName,
-    //         birthDate: birthDate,
-    //         gender: gender,
-    //         phoneNumber: phone,
-    //         email: email,
-    //         password: password,
-    //         checkPassword: checkPassword,
-    //         address: {
-    //             street: streetName,
-    //             number: streetNumber,
-    //             city: city,
-    //             zipCode: zipCode,
-    //             country: country,
-    //         }
-    //     }
-    //
-    //     // validation du nouvel utilisateur
-    //     const validated = registerUserSchema.safeParse(newUser);
-    //
-    //     if (!validated.success) {
-    //         toast.error(validated.error.errors[0].message, {
-    //             autoClose: 5000, // 5 seconds
-    //             hideProgressBar: false,
-    //             closeOnClick: true,
-    //             pauseOnHover: true,
-    //             draggable: true,
-    //             progress: undefined,
-    //         });
-    //         return;
-    //     }
-    //
-    //     // Si la validation est réussie, vous pouvez effectuer d'autres actions ici
-    //     try {
-    //         setLoading(true);
-    //         const response = await registerUser(newUser); // Appeler la fonction registerUser pour enregistrer l'utilisateur
-    //
-    //         // Vérifier le statut de la réponse HTTP (201 pour création réussie, 400 pour erreur de validation)
-    //         if (response.status === 201) {
-    //             toast.success("Utilisateur enregistré avec succès");
-    //             // Vérifier si l'utilisateur a une simulation en cours (dans localStorage)
-    //             const lastSimulation = localStorage.getItem('lastSimulation');
-    //             if (lastSimulation) {
-    //                 // Rediriger vers la page de simulation avec les derniers résultats (en utilisant l'URL de l'API)
-    //                 router.push('/simulation/results?data=' + encodeURIComponent(lastSimulation));
-    //             } else {
-    //                 // Rediriger vers la page de connexion
-    //                 router.push('/login');
-    //             }
-    //
-    //         } else {
-    //             toast.error("Une erreur est survenue lors de l'enregistrement de votre compte");
-    //         }
-    //     } catch (error) {
-    //         toast.error(error?.response?.data.message);
-    //         console.log(error);
-    //     }
-    //
-    // }
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -184,7 +55,7 @@ const RegisterForm = () => {
             },
         };
 
-        // Valider les données
+        // Valider les données avant l'envoi
         const validated = registerUserSchema.safeParse(newUser);
 
         if (!validated.success) {
@@ -200,11 +71,22 @@ const RegisterForm = () => {
         }
 
         try {
-            setLoading(true);
-            const response = await registerUser(newUser); // Appel de la fonction d'enregistrement
+            setLoading(true); // Démarre l'animation de chargement
 
-            toast.success("Utilisateur enregistré avec succès");
+            // Appel à l'API d'enregistrement
+            await registerUser(newUser);
 
+            // Si succès, affiche un message de succès
+            toast.success("Utilisateur enregistré avec succès", {
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+
+            // Rediriger vers la page de simulation ou login
             const lastSimulation = localStorage.getItem('lastSimulation');
             if (lastSimulation) {
                 router.push('/simulation/results?data=' + encodeURIComponent(lastSimulation));
@@ -213,17 +95,31 @@ const RegisterForm = () => {
             }
 
         } catch (error) {
-            if (error instanceof ZodError) {
-                toast.error(error.errors[0]?.message || "Erreur de validation");
-            } else if (error instanceof Error) {
-                toast.error(error.message || "Une erreur est survenue lors de l'enregistrement de votre compte");
+            // Capturer les erreurs renvoyées par l'API et les afficher via Toast
+            if (error instanceof Error) {
+                toast.error(error.message || "Une erreur est survenue lors de l'enregistrement de votre compte", {
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
             } else {
-                toast.error("Une erreur inconnue est survenue");
+                toast.error("Une erreur inconnue est survenue", {
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
             }
         } finally {
-            setLoading(false);
+            setLoading(false); // Arrête l'animation de chargement
         }
     }
+
 
     return (
         <Form onSubmit={handleSubmit} className="mt-5">
@@ -276,7 +172,7 @@ const RegisterForm = () => {
                     <Form.Group className="mb-3" controlId="formBasicEmail">
                         {/*<Form.Label>Adresse e-mail</Form.Label>*/}
                         <Form.Control type="email" placeholder="Enter votre email"
-                                      onChange={(e) => setEmail(e.target.value)}/>
+                                      onChange={(e)=>setEmail(e.target.value)}/>
                     </Form.Group>
                 </Col>
             </Row>
@@ -292,7 +188,7 @@ const RegisterForm = () => {
                     <Form.Group className="mb-3" controlId="formBasicStreetNumber">
                         {/*<Form.Label>Numéro</Form.Label>*/}
                         <Form.Control type="text" placeholder="Enter votre numéro de rue"
-                                      onChange={(e) => setStreetNumber(e.target.value)}/>
+                                      onChange={e => setStreetNumber(e.target.value)}/>
                     </Form.Group>
                 </Col>
             </Row>

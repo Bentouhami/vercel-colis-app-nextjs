@@ -1,54 +1,24 @@
-'use client';
-import {useState} from 'react';
-import Container from 'react-bootstrap/Container';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
-import ColisBrand from "@/components/navigations/brand/ColisBrand";
-import {Button} from "react-bootstrap";
-import Link from "next/link";
-import styles from './Header.module.css'; // Assurez-vous d'importer le fichier CSS
+// path : /src/app/layout.tsx
+
+
+import { cookies } from 'next/headers';
+import {verifyTokenFromCookies} from "@/app/utils/verifyToken";
+import HeaderNavbar from "@/components/navigations/header/HeaderNavbar";
+
 
 const Header = () => {
-    const [expanded, setExpanded] = useState(false);
+    const token = cookies().get(process.env.COOKIE_NAME)?.value || "";
+    const payload = verifyTokenFromCookies(token);
 
-    const handleSelect = () => {
-        setExpanded(false);
-    };
+    const isLoggedIn = !!payload;
+    const userEmail = payload?.userEmail || "";
+    const firstName = payload?.firstName || "";
+    const lastName = payload?.lastName || "";
 
     return (
-        <Navbar expand="lg" bg="light" data-bs-theme="light" expanded={expanded}>
-            <Container>
-                <Link href={"/home"} passHref>
-                    <Navbar.Brand><ColisBrand/></Navbar.Brand>
-                </Link>
-                <Navbar.Toggle aria-controls="basic-navbar-nav" onClick={() => setExpanded(!expanded)}/>
-                <Navbar.Collapse id="basic-navbar-nav">
-                    <Nav className={`mx-auto justify-content-center flex-lg-row flex-column ${styles.navLinks}`}
-                         onSelect={handleSelect}>
-                        <Link href="/home" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`}
-                              onClick={handleSelect}>Accueil</Link>
-                        <Link href="/simulation" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`}
-                              onClick={handleSelect}>Simulation</Link>
-                        <Link href="/services" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`}
-                              onClick={handleSelect}>Services</Link>
-                        <Link href="/tarifs" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`}
-                              onClick={handleSelect}>Tarifs</Link>
-                        <Link href="/about" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`}
-                              onClick={handleSelect}>About</Link>
-                    </Nav>
-                    <div className="d-flex flex-column flex-lg-row justify-content-end">
-                        <Link href="/login" passHref>
-                            <Button variant="outline-primary" className="me-lg-2 mb-2 mb-lg-0"
-                                    onClick={handleSelect}>Login</Button>
-                        </Link>
-                        <Link href="/register" passHref>
-                            <Button variant="outline-primary"
-                                    onClick={handleSelect}>Sign Up</Button>
-                        </Link>
-                    </div>
-                </Navbar.Collapse>
-            </Container>
-        </Navbar>
+        <header >
+            <HeaderNavbar isAdmin={payload?.role || false} isLoggedIn={isLoggedIn} userEmail={userEmail} firstName={firstName} lastName={lastName} />
+        </header>
     );
 }
 
