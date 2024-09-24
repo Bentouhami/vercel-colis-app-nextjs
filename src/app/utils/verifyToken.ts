@@ -16,8 +16,8 @@ export function verifyToken(request: NextRequest): JWTPayload | null {
         const token = jwtToken?.value as string;
         if (!token) return null;
 
-        const privetKey = process.env.JWT_SECRET as string;
-        const userPayload = jwt.verify(token, privetKey) as JWTPayload;
+        const privateKey = process.env.JWT_SECRET as string;
+        const userPayload = jwt.verify(token, privateKey) as JWTPayload;
 
         return userPayload;
     } catch (error) {
@@ -27,18 +27,17 @@ export function verifyToken(request: NextRequest): JWTPayload | null {
 
 export function verifyTokenFromCookies(token: string): JWTPayload | null {
     try {
-        // récupérer la clé secrète de l'environnement
         const privateKey = process.env.JWT_SECRET as string;
-
-        // vérifier le token et extraire les informations de l'utilisateur
-        const userPayload = jwt.verify(token, privateKey) as JWTPayload;
-
-        // si l'utilisateur n'est pas authentifié, retournez null
-        if(!userPayload) return null;
-
-        // retournez le payload de l'utilisateur authentifié
-        return userPayload;
+        return jwt.verify(token, privateKey) as JWTPayload;
     } catch (error) {
+        if (error instanceof jwt.TokenExpiredError) {
+            console.error("Token expired");
+        } else if (error instanceof jwt.JsonWebTokenError) {
+            console.error("Invalid token");
+        } else {
+            console.error("Error verifying token", error);
+        }
         return null;
     }
 }
+

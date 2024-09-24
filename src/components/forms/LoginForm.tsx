@@ -1,118 +1,80 @@
-'use client';
+// /src/components/forms/LoginForm.tsx
+'use client'; // Ce composant est client side
+
 import { Button, Form, InputGroup } from "react-bootstrap";
 import React, { useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { login } from "@/app/utils/api";
-import { useRouter } from "next/navigation"; // Déplacer useRouter au début du composant
+import { useRouter, useSearchParams } from "next/navigation";
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { LoginUserDto } from "@/app/utils/dtos";
 import { loginUserSchema } from "@/app/utils/validationSchema";
 
-const LoginForm = () => {
-    const router = useRouter(); // Utiliser useRouter au niveau supérieur du composant
+interface LoginFormProps {
+    onSuccess?: () => void; // Propriété pour gérer la redirection
+}
+
+const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
+    const router = useRouter();
+    const searchParams = useSearchParams();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [showPassword, setShowPassword] = useState(false); // État pour contrôler la visibilité du mot de passe
+    const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
-        const loginData: LoginUserDto = {
-            email,
-            password,
-        };
-
+        const loginData: LoginUserDto = { email, password };
         const validated = loginUserSchema.safeParse(loginData);
 
         if (!validated.success) {
-            toast.error(validated.error.errors[0].message, {
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            });
+            toast.error(validated.error.errors[0].message);
             return;
         }
 
         try {
             setLoading(true);
             await login(email, password);
+            toast.success("Connexion réussie");
 
-            toast.success("Connexion réussie", {
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            });
-
-            // Redirection vers la page de simulation
-            router.replace("/simulation"); // Utiliser router ici, après la validation du login
-            router.refresh(); // Rafraîchir la page pour afficher les nouveaux composants
-        } catch (error) {
-            if (error instanceof Error) {
-                toast.error(error.message || "Une erreur s'est produite lors de la connexion", {
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
+            if (onSuccess) {
+                onSuccess();
             } else {
-                toast.error("Erreur inconnue", {
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
+                const redirectUrl = searchParams.get('redirect') || '/simulation';
+                router.replace(redirectUrl);
+                router.refresh();
             }
+        } catch (error) {
+            toast.error("Erreur lors de la connexion");
         } finally {
             setLoading(false);
         }
     }
 
     return (
-        <Form onSubmit={handleSubmit} className="mt-3">
-            <Form.Group className="mb-3" controlId="formBasicEmail">
-                <Form.Control
-                    type="email"
-                    placeholder="Entrez votre email"
-                    onChange={(e) => setEmail(e.target.value)}
-                />
+        <Form onSubmit={handleSubmit}>
+            <Form.Group className="mb-3">
+                <Form.Control type="email" placeholder="Entrez votre email" onChange={(e) => setEmail(e.target.value)} />
             </Form.Group>
-
-            <Form.Group className="mb-3" controlId="formBasicPassword">
+            <Form.Group className="mb-3">
                 <InputGroup>
                     <Form.Control
-                        type={showPassword ? "text" : "password"} // Changer le type de champ en fonction de showPassword
+                        type={showPassword ? "text" : "password"}
                         placeholder="Entrez votre mot de passe"
                         onChange={(e) => setPassword(e.target.value)}
                     />
-                    <Button
-                        variant="outline-secondary"
-                        onClick={() => setShowPassword(!showPassword)} // Inverser l'état de showPassword
-                    >
-                        {showPassword ? <FaEyeSlash /> : <FaEye />} {/* Utiliser les icônes FaEye et FaEyeSlash de react-icons */}
+                    <Button variant="outline-secondary" onClick={() => setShowPassword(!showPassword)}>
+                        {showPassword ? <FaEyeSlash /> : <FaEye />}
                     </Button>
                 </InputGroup>
             </Form.Group>
-
-            <Button type="submit" variant="primary" className="mb-3" disabled={loading}>
+            <Button type="submit" variant="primary" disabled={loading}>
                 {loading ? "Connexion en cours..." : "Se connecter"}
             </Button>
-            <ToastContainer
-                theme="colored"
-                position="bottom-right"
-            />
+            <ToastContainer position="bottom-right" />
         </Form>
     );
-}
+};
 
 export default LoginForm;

@@ -1,32 +1,29 @@
 // middleware.ts
-// middleware pour vérifier si le token est valide avant d'accéder à une route
-// path : /middleware.ts
 import { NextRequest, NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
 
+// Middleware pour vérifier si le token est présent avant d'accéder à une route protégée
 export function middleware(request: NextRequest) {
+    const cookieName = process.env.COOKIE_NAME || "auth";
+    const jwtToken = request.cookies.get(cookieName);
+    const token = jwtToken?.value;
 
-    const jwtToken = request.cookies.get("process.env.COOKIE_NAME");
-    const token = jwtToken?.value as string;
-
+    // Vérification basique : si aucun token n'est trouvé
     if (!token) {
-        if (request.nextUrl.pathname.startsWith("/api/users/profile/")) {
-            return NextResponse.json(
-                { message: 'no token provided, access denied' },
-                { status: 401 } // Unauthorized
-            );
+        if (request.nextUrl.pathname === "/login" || request.nextUrl.pathname === "/register") {
+            return NextResponse.next();
         }
-    } else {
-        if (
-            request.nextUrl.pathname === "/login" ||
-            request.nextUrl.pathname === "/register"
-        ) {
-            return NextResponse.redirect(new URL("/", request.url));
-        }
+        return NextResponse.redirect(new URL("/login", request.url));
     }
+
+    // Laisser passer si un token est trouvé (sans vérifier la validité ici)
+    return NextResponse.next();
 }
 
 // Configurer les routes où le middleware doit être appliqué
 export const config = {
-    matcher: ["/api/users/profile/:path*", "/login", "/register"]
+    matcher: [
+        "/api/users/profile/:path*",  // Protection des routes profil utilisateur
+        // "/simulation/results/:path*", // Protéger l'accès aux résultats de simulation
+        "/payment/:path*",        // Protéger l'accès au paiement
+    ],
 };

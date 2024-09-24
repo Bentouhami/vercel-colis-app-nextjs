@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
             firstName: capitalizeFirstLetter(firstName),
             lastName: capitalizeFirstLetter(lastName),
             birthDate,
-            gender: capitalizeFirstLetter(gender),
+            gender: gender,
             phoneNumber,
             email: toLowerCase(email),
             password,
@@ -146,6 +146,8 @@ export async function POST(request: NextRequest) {
             id: newUser.id,
             role: newUser.role,
             userEmail: newUser.email,
+            firstName: newUser.firstName,
+            lastName: newUser.lastName,
         };
 
         // Générer le cookie JWT

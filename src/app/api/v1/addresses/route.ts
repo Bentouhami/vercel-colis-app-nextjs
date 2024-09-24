@@ -61,19 +61,19 @@ export async function POST(request: NextRequest) {
         }
         // Vérifier si l'adresse existe déjà dans la base de données
 
-        // const address = await prisma.address.findFirst({
-        //     where: {
-        //         street: formattedAddress.street,
-        //         number: formattedAddress.number,
-        //         city: formattedAddress.city,
-        //         zipCode: formattedAddress.zipCode,
-        //         country: formattedAddress.country
-        //     },
-        // });
-        const existingAddress = await prisma.user.findFirst({
-                where: formattedAddress,
-            }
-        )
+        const existingAddress = await prisma.address.findFirst({
+            where: {
+                street: formattedAddress.street,
+                number: formattedAddress.number,
+                city: formattedAddress.city,
+                zipCode: formattedAddress.zipCode,
+                country: formattedAddress.country
+            },
+        });
+        // const existingAddress = await prisma.user.findFirst({
+        //         where: formattedAddress,
+        //     }
+        // )
 
         // Si l'adresse existe, renvoyer une erreur 400 avec l'adresse existante comme donnée et renvoyer une erreur 400
         if (existingAddress) {

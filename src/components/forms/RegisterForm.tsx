@@ -9,7 +9,6 @@ import {CreateUserDto} from "@/app/utils/dtos";
 import {registerUserSchema} from "@/app/utils/validationSchema";
 import {useRouter} from "next/navigation";
 import {registerUser} from "@/app/utils/api";
-import {ZodError} from "zod";
 
 const RegisterForm = () => {
     const router = useRouter();

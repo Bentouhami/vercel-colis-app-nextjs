@@ -11,7 +11,9 @@ const LogoutButton = () => {
     const router = useRouter();
     const logoutHandler = async () => {
         try {
+
             await axios.get(`${DOMAIN}/api/v1/users/logout`);
+            localStorage.removeItem("simulationResults");
             router.push("/");
             router.refresh();
         } catch (error) {

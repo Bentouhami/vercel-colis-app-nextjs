@@ -1,24 +1,27 @@
-// /src/app/(user)/login/page.tsx : page de connexion
-
+// /src/app/(user)/login/page.tsx
 import Image from "next/image";
-import LoginForm from "@/components/forms/LoginForm";
 import React from "react";
+import LoginForm from "@/components/forms/LoginForm"; // Le formulaire devient un composant client
 
 const LoginPage = () => {
     return (
         <div className="container">
             <h1 className="text-center mt-5 text-6xl">Se connecter à votre compte</h1>
+            <Image
+                priority
+                className="p-3 d-flex flex-column flex-sm-row align-items-center justify-content-center order-1 order-md-2"
+                src="/svg/login/login.svg"
+                alt="Welcome"
+                width={500}
+                height={500}
+            />
             <div className="d-flex flex-column flex-md-row align-items-center justify-content-center">
-                <Image priority
-                       className="p-3 d-flex flex-column flex-sm-row align-items-center justify-content-center order-1 order-md-2"
-                       src="/svg/login/login.svg" alt="Welcome" width={500} height={500}/>
                 <div className="text-center order-2 order-md-1 mb-5">
-                    <LoginForm />
-
+                    <LoginForm /> {/* LoginForm gère le côté client */}
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
 export default LoginPage;

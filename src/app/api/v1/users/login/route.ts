@@ -46,6 +46,8 @@ export async function POST(request: NextRequest) {
                 id: true,
                 role: true,
                 email: true,
+                firstName: true,
+                lastName: true,
             }
         });
 
@@ -62,7 +64,9 @@ export async function POST(request: NextRequest) {
         const jwtPayload: JWTPayload = {
             id: user.id,
             role: user.role,
-            userEmail: user.email
+            userEmail: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
         };
 
         // Générez un cookie avec JWT

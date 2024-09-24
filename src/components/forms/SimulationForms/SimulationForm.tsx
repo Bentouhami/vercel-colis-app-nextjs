@@ -1,6 +1,6 @@
+// path : /src/components/forms/SimulationForms/SimulationForm.tsx
+
 "use client";
-// SimulationForm.tsx : Formulaire de simulation
-// api/v1/simulation/route.ts : Route de simulation d'envoi
 import React, {ChangeEvent, useEffect, useState} from 'react';
 import {Button, Col, Container, Form, Pagination, Row} from 'react-bootstrap';
 import PackageForm from './PackageForm';
