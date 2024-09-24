@@ -1,14 +1,14 @@
 // /src/components/forms/LoginForm.tsx
 'use client'; // Ce composant est client side
 
-import { Button, Form, InputGroup } from "react-bootstrap";
-import React, { useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
-import { login } from "@/app/utils/api";
-import { useRouter, useSearchParams } from "next/navigation";
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import { LoginUserDto } from "@/app/utils/dtos";
-import { loginUserSchema } from "@/app/utils/validationSchema";
+import {Button, Form, InputGroup} from "react-bootstrap";
+import React, {useState} from "react";
+import {toast, ToastContainer} from "react-toastify";
+import {login} from "@/app/utils/api";
+import {useRouter, useSearchParams} from "next/navigation";
+import {FaEye, FaEyeSlash} from 'react-icons/fa';
+import {LoginUserDto} from "@/app/utils/dtos";
+import {loginUserSchema} from "@/app/utils/validationSchema";
 
 interface LoginFormProps {
     onSuccess?: () => void; // Propriété pour gérer la redirection

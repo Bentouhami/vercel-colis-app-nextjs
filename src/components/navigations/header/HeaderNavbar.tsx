@@ -2,10 +2,10 @@
 
 
 "use client";
-import React, { useState } from 'react';
-import { Container, Nav, Navbar, Button } from 'react-bootstrap';
+import React, {useState} from 'react';
+import {Button, Container, Nav, Navbar} from 'react-bootstrap';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import {usePathname} from 'next/navigation';
 import styles from './Header.module.css';
 import LogoutButton from './LogoutButton';
 import ColisBrand from "@/components/navigations/brand/ColisBrand";

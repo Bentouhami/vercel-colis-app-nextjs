@@ -1,9 +1,9 @@
 // api/v1/simulation/results/route.ts : Route de simulation d'envoi
 
-import { NextRequest, NextResponse } from 'next/server';
-import { errorHandler } from "@/app/utils/handelErrors";
-import { SimulationEnvoisDto } from "@/app/utils/dtos";
-import { simulationEnvoisSchema } from "@/app/utils/validationSchema";
+import {NextRequest, NextResponse} from 'next/server';
+import {errorHandler} from "@/app/utils/handelErrors";
+import {SimulationEnvoisDto} from "@/app/utils/dtos";
+import {simulationEnvoisSchema} from "@/app/utils/validationSchema";
 import {calculateEnvoiDetails} from "@/services/envois/SimulationEnvoisService";
 
 /**

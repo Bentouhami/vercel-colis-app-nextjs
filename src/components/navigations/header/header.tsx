@@ -1,7 +1,7 @@
 // path : /src/app/layout.tsx
 
-import { cookies } from 'next/headers';
-import { verifyTokenFromCookies } from "@/app/utils/verifyToken";
+import {cookies} from 'next/headers';
+import {verifyTokenFromCookies} from "@/app/utils/verifyToken";
 import HeaderNavbar from "@/components/navigations/header/HeaderNavbar";
 
 const Header = () => {

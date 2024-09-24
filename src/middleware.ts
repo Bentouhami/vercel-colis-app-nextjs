@@ -1,5 +1,5 @@
 // middleware.ts
-import { NextRequest, NextResponse } from "next/server";
+import {NextRequest, NextResponse} from "next/server";
 
 // Middleware pour vérifier si le token est présent avant d'accéder à une route protégée
 export function middleware(request: NextRequest) {

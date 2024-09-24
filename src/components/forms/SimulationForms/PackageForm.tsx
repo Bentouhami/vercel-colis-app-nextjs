@@ -1,5 +1,5 @@
-import { Form, FormGroup } from 'react-bootstrap';
-import { CreateParcelDto } from '@/app/utils/dtos';
+import {Form, FormGroup} from 'react-bootstrap';
+import {CreateParcelDto} from '@/app/utils/dtos';
 import React from "react";
 
 interface PackageFormProps {

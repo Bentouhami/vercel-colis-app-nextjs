@@ -1,5 +1,5 @@
-import { Form } from 'react-bootstrap';
-import { ChangeEvent } from 'react';
+import {Form} from 'react-bootstrap';
+import {ChangeEvent} from 'react';
 
 interface AgencySelectProps {
     label: string;

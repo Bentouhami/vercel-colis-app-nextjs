@@ -5,7 +5,7 @@ import Image from "next/image";
 import Pricing from "@/components/pricing/Pricing";
 import Styles from "./Home.module.css";
 import Link from "next/link";
-import { Button } from "react-bootstrap";
+import {Button} from "react-bootstrap";
 
 const HomePage = () => {
     return (

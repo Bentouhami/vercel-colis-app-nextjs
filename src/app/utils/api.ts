@@ -2,9 +2,7 @@
 // path : src/app/utils/api.ts
 
 // Récupérer les pays de départ disponibles pour la simulation
-import {CreateUserDto, SimulationEnvoisDto, SimulationResultsDto} from "@/app/utils/dtos";
-import {verifyToken} from "@/app/utils/verifyToken";
-import {forEach} from "react-bootstrap/ElementChildren";
+import {CreateUserDto, SimulationEnvoisDto} from "@/app/utils/dtos";
 
 export async function fetchCountries() {
 

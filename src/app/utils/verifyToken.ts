@@ -3,7 +3,6 @@
 // src/app/utils/verifyToken.ts
 
 
-
 import {NextRequest} from 'next/server';
 import {JWTPayload} from './types';
 import jwt from "jsonwebtoken";

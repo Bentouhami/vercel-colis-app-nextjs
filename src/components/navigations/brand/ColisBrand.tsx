@@ -1,6 +1,6 @@
 'use client';
 import styles from './brand.module.css';
-import { RiSendToBack } from "react-icons/ri";
+import {RiSendToBack} from "react-icons/ri";
 
 const ColisBrand = () => {
     return (

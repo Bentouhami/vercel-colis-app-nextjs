@@ -1,6 +1,4 @@
-
-
-import { Form } from 'react-bootstrap';
+import {Form} from 'react-bootstrap';
 import React from "react";
 
 interface CountrySelectProps {

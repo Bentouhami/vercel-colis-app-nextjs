@@ -3,9 +3,9 @@
 
 "use client";
 import axios from "axios";
-import { DOMAIN } from '@/app/utils/constants';
-import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
+import {DOMAIN} from '@/app/utils/constants';
+import {toast} from "react-toastify";
+import {useRouter} from "next/navigation";
 
 const LogoutButton = () => {
     const router = useRouter();

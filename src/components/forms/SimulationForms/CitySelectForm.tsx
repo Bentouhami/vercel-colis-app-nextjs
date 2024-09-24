@@ -1,5 +1,4 @@
-
-import { Form } from 'react-bootstrap';
+import {Form} from 'react-bootstrap';
 import {ChangeEvent} from "react";
 
 interface CitySelectProps {

@@ -1,6 +1,6 @@
 // path: /src/components/LoginPromptModal.tsx
 import React from 'react';
-import { Modal, Button } from 'react-bootstrap';
+import {Button, Modal} from 'react-bootstrap';
 
 interface LoginPromptModalProps {
     show: boolean;
