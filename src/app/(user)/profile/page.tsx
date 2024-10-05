@@ -1,10 +1,12 @@
-// show profile page of user logged in
+import ProfileComponent from "@/components/users/ProfileComponent";
 
-import React from 'react'
 
-const UserProfile = () => {
+function Profile() {
     return (
-        <div>UserProfile</div>
+        <div>
+            <ProfileComponent />
+        </div>
     )
 }
-export default UserProfile
+
+export default Profile

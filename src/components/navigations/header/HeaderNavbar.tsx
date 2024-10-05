@@ -1,7 +1,6 @@
 // path : /src/components/navigations/header/HeaderNavbar.tsx
+"use client"; // Obligatoire pour indiquer que ce composant est côté client
 
-
-"use client";
 import React, {useState} from 'react';
 import {Button, Container, Nav, Navbar} from 'react-bootstrap';
 import Link from 'next/link';
@@ -32,20 +31,14 @@ const HeaderNavbar: React.FC<NavbarProps> = ({ isAdmin, isLoggedIn, userEmail, f
                 <Link href={"/"} passHref>
                     <Navbar.Brand><ColisBrand /></Navbar.Brand>
                 </Link>
-                <Navbar.Toggle aria-controls="basic-navbar-nav" onClick={() => setExpanded(!expanded)}/>
+                <Navbar.Toggle aria-controls="basic-navbar-nav" onClick={() => setExpanded(!expanded)} />
                 <Navbar.Collapse id="basic-navbar-nav">
-                    <Nav className={`mx-auto justify-content-center flex-lg-row flex-column ${styles.navLinks}`}
-                         onSelect={handleSelect}>
-                        <Link href="/home" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`}
-                              onClick={handleSelect}>Accueil</Link>
-                        <Link href="/simulation" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`}
-                              onClick={handleSelect}>Simulation</Link>
-                        <Link href="/services" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`}
-                              onClick={handleSelect}>Services</Link>
-                        <Link href="/tarifs" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`}
-                              onClick={handleSelect}>Tarifs</Link>
-                        <Link href="/about" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`}
-                              onClick={handleSelect}>About</Link>
+                    <Nav className={`mx-auto justify-content-center flex-lg-row flex-column ${styles.navLinks}`} onSelect={handleSelect}>
+                        <Link href="/home" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`} onClick={handleSelect}>Accueil</Link>
+                        <Link href="/simulation" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`} onClick={handleSelect}>Simulation</Link>
+                        <Link href="/services" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`} onClick={handleSelect}>Services</Link>
+                        <Link href="/tarifs" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`} onClick={handleSelect}>Tarifs</Link>
+                        <Link href="/contact-us" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`} onClick={handleSelect}>Contact-nous</Link>
                     </Nav>
                     <div className="d-flex flex-column flex-lg-row justify-content-end align-items-center">
                         {isLoggedIn ? (

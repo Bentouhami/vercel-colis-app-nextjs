@@ -1,7 +1,7 @@
 // /src/app/utils/generateToken.ts : génération de jeton
 
 import jwt from "jsonwebtoken";
-import {JWTPayload} from "@/app/utils/types";
+import {JWTPayload} from "@/utils/types";
 import {serialize} from "cookie";
 
 /**

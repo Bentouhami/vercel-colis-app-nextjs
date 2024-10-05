@@ -2,11 +2,20 @@
 
 import {Suspense} from "react";
 import SimulationResults from "@/components/forms/SimulationResults";
+import PricingComponent from "@/components/pricing";
 
-export default function WrappedSimulationResults() {
+export default function WrappedSimulationResults()
+
+{
+
     return (
         <Suspense fallback={<div>Loading...</div>}>
-            <SimulationResults />
+            <div className="d-flex justify-content-around">
+                <SimulationResults />
+                <PricingComponent  />
+
+            </div>
+
         </Suspense>
     );
 }

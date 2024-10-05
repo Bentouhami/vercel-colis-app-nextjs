@@ -1,9 +1,11 @@
 /* SimulationResults.module.css */
 
 .container {
-    margin-top: 2rem;
+    margin-top: 1rem;
     font-family: Arial, sans-serif;
     color: #d30202;
+    min-width: 300px;
+    padding: 4rem;
 }
 
 .heading {

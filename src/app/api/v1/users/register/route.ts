@@ -1,13 +1,13 @@
 // url : /api/v1/users/register
 import {NextRequest, NextResponse} from 'next/server';
-import {CreateUserDto, UserResponseDto} from '@/app/utils/dtos';
-import {prisma} from "@/app/utils/db";
+import {CreateUserDto, UserResponseDto} from '@/utils/dtos';
+import {prisma} from "@/utils/db";
 import bcrypt from "bcryptjs";
-import {JWTPayload} from "@/app/utils/types";
-import {setCookie} from "@/app/utils/generateToken";
-import {errorHandler} from "@/app/utils/handelErrors";
-import {capitalizeFirstLetter, toLowerCase} from "@/app/utils/stringUtils";
-import {registerUserSchema} from "@/app/utils/validationSchema";
+import {JWTPayload} from "@/utils/types";
+import {setCookie} from "@/utils/generateToken";
+import {errorHandler} from "@/utils/handelErrors";
+import {capitalizeFirstLetter, toLowerCase} from "@/utils/stringUtils";
+import {registerUserSchema} from "@/utils/validationSchema";
 
 /**
  * Register a new user

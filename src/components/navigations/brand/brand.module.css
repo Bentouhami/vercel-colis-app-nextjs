@@ -1,6 +1,7 @@
 .logoBrand {
     display: flex;
     align-items: center;
+    margin-top: 2rem;
 }
 
 .logo {

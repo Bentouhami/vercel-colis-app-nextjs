@@ -2,7 +2,7 @@
 // logout route.ts : route pour la déconnexion d'un utilisateur
 
 import {NextRequest, NextResponse} from 'next/server';
-import {errorHandler} from '@/app/utils/handelErrors';
+import {errorHandler} from '@/utils/handelErrors';
 import {cookies} from 'next/headers';
 
 /** logout route.ts

@@ -1,10 +1,10 @@
 import {NextRequest, NextResponse} from 'next/server';
-import {addressSchema} from "@/app/utils/validationSchema";
-import {CreateAddressDto} from "@/app/utils/dtos";
-import {errorHandler} from "@/app/utils/handelErrors";
+import {addressSchema} from "@/utils/validationSchema";
+import {CreateAddressDto} from "@/utils/dtos";
+import {errorHandler} from "@/utils/handelErrors";
 import {Address} from "@prisma/client";
-import {prisma} from "@/app/utils/db";
-import {capitalizeFirstLetter, toLowerCase} from "@/app/utils/stringUtils";
+import {prisma} from "@/utils/db";
+import {capitalizeFirstLetter, toLowerCase} from "@/utils/stringUtils";
 
 
 /**

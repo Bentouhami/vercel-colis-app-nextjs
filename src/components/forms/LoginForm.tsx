@@ -4,11 +4,11 @@
 import {Button, Form, InputGroup} from "react-bootstrap";
 import React, {useState} from "react";
 import {toast, ToastContainer} from "react-toastify";
-import {login} from "@/app/utils/api";
+import {login} from "@/utils/api";
 import {useRouter, useSearchParams} from "next/navigation";
 import {FaEye, FaEyeSlash} from 'react-icons/fa';
-import {LoginUserDto} from "@/app/utils/dtos";
-import {loginUserSchema} from "@/app/utils/validationSchema";
+import {LoginUserDto} from "@/utils/dtos";
+import {loginUserSchema} from "@/utils/validationSchema";
 
 interface LoginFormProps {
     onSuccess?: () => void; // Propriété pour gérer la redirection
@@ -41,6 +41,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
             if (onSuccess) {
                 onSuccess();
             } else {
+                //
                 const redirectUrl = searchParams.get('redirect') || '/simulation';
                 router.replace(redirectUrl);
                 router.refresh();

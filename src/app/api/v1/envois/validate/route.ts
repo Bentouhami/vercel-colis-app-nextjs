@@ -1,9 +1,9 @@
 // api/v1/envois/validate/route.ts : Route de validation d'envoi
 
 import {NextRequest, NextResponse} from 'next/server';
-import {errorHandler} from "@/app/utils/handelErrors";
-import {CreateDestinataireDto, CreateParcelDto, ValidatedEnvoisDto} from "@/app/utils/dtos";
-import {verifyToken} from "@/app/utils/verifyToken";
+import {errorHandler} from "@/utils/handelErrors";
+import {CreateDestinataireDto, CreateParcelDto, ValidatedEnvoisDto} from "@/utils/dtos";
+import {verifyToken} from "@/utils/verifyToken";
 
 /**
  * @route: POST /api/v1/envois/validate

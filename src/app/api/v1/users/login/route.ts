@@ -1,14 +1,14 @@
 // /api/v1/users/login : route pour la connexion d'un utilisateur
 
 import {NextRequest, NextResponse} from 'next/server';
-import {errorHandler} from "@/app/utils/handelErrors";
-import {prisma} from "@/app/utils/db";
-import {loginUserSchema} from "@/app/utils/validationSchema";
+import {errorHandler} from "@/utils/handelErrors";
+import {prisma} from "@/utils/db";
+import {loginUserSchema} from "@/utils/validationSchema";
 import bcrypt from "bcryptjs";
-import {LoginUserDto} from "@/app/utils/dtos";
-import {setCookie} from "@/app/utils/generateToken";
-import {JWTPayload} from "@/app/utils/types";
-import {toLowerCase} from "@/app/utils/stringUtils";
+import {LoginUserDto} from "@/utils/dtos";
+import {setCookie} from "@/utils/generateToken";
+import {JWTPayload} from "@/utils/types";
+import {toLowerCase} from "@/utils/stringUtils";
 
 /**
  * @method POST

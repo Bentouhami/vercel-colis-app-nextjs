@@ -7,11 +7,11 @@ import PackageForm from './PackageForm';
 import CountrySelect from "@/components/forms/SimulationForms/CountrySelectForm";
 import CitySelect from "@/components/forms/SimulationForms/CitySelectForm";
 import AgencySelect from "@/components/forms/SimulationForms/AgencySelectForm";
-import {fetchAgencies, fetchCities, fetchCountries, fetchDestinationCountries, submitSimulation} from "@/app/utils/api";
+import {fetchAgencies, fetchCities, fetchCountries, fetchDestinationCountries, submitSimulation} from "@/utils/api";
 import {toast, ToastContainer} from "react-toastify";
 import {useRouter} from 'next/navigation';
-import {SimulationEnvoisDto} from "@/app/utils/dtos";
-import {simulationEnvoisSchema} from "@/app/utils/validationSchema";
+import {SimulationEnvoisDto} from "@/utils/dtos";
+import {simulationEnvoisSchema} from "@/utils/validationSchema";
 
 const SimulationForm = () => {
     const router = useRouter(); // Initialize useRouter

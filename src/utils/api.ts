@@ -2,7 +2,7 @@
 // path : src/app/utils/api.ts
 
 // Récupérer les pays de départ disponibles pour la simulation
-import {CreateUserDto, SimulationEnvoisDto} from "@/app/utils/dtos";
+import {CreateUserDto, SimulationEnvoisDto} from "@/utils/dtos";
 
 export async function fetchCountries() {
 
@@ -132,6 +132,21 @@ export async function registerUser(newUser: CreateUserDto) {
     } catch (error) {
         console.error('Error registering user:', error);
         throw error; // Relancer l'erreur pour la capturer dans RegisterForm
+    }
+}
+
+// Récupérer les informations de l'utilisateur connecté
+export async function getUserProfile() {
+    try {
+        const response = await fetch('/api/v1/users/profile/{id}');
+        if (response.ok) {
+            return await response.json();
+        } else {
+            throw new Error('Failed to fetch user profile');
+        }
+    } catch (error) {
+        console.error('Error fetching user profile:', error);
+        throw error; // Re-throw the error so it can be caught by the calling function
     }
 }
 

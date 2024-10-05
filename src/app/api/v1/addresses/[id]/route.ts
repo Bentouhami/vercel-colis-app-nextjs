@@ -1,8 +1,8 @@
 import {NextRequest, NextResponse} from "next/server";
-import {UpdateAddressDto} from "@/app/utils/dtos";
-import {errorHandler} from "@/app/utils/handelErrors";
+import {UpdateAddressDto} from "@/utils/dtos";
+import {errorHandler} from "@/utils/handelErrors";
 import {Address} from "@prisma/client";
-import {prisma} from "@/app/utils/db";
+import {prisma} from "@/utils/db";
 
 interface Props {
     params: {

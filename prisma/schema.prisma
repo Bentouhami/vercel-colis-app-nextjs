@@ -48,6 +48,8 @@ model User {
   phoneNumber String?   @unique
   email       String    @unique
   password    String    @default("")
+  // image       String?   @default("")
+  // verified    Boolean   @default(false)
   addressId   Int
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt

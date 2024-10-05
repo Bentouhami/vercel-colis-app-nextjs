@@ -1,7 +1,7 @@
 // route.ts : Route pour les simulations
 // api/v1/simulation : Route pour les simulations
 import {NextRequest, NextResponse} from 'next/server';
-import {prisma} from "@/app/utils/db";
+import {prisma} from "@/utils/db";
 
 /**
  * @method GET

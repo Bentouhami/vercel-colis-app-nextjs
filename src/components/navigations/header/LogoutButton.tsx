@@ -3,7 +3,7 @@
 
 "use client";
 import axios from "axios";
-import {DOMAIN} from '@/app/utils/constants';
+import {DOMAIN} from '@/utils/constants';
 import {toast} from "react-toastify";
 import {useRouter} from "next/navigation";
 

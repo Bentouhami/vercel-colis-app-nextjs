@@ -1,5 +1,5 @@
-import {errorHandler} from "@/app/utils/handelErrors";
-import {prisma} from "@/app/utils/db";
+import {errorHandler} from "@/utils/handelErrors";
+import {prisma} from "@/utils/db";
 import {NextRequest, NextResponse} from "next/server";
 
 

@@ -1,242 +1,248 @@
-// src/app/forms/RegisterForm.tsx
-
 "use client";
 
-import React, {useState} from 'react';
-import {Button, Col, Form, Row} from "react-bootstrap";
-import {Slide, toast, ToastContainer} from "react-toastify";
-import {CreateUserDto} from "@/app/utils/dtos";
-import {registerUserSchema} from "@/app/utils/validationSchema";
-import {useRouter} from "next/navigation";
-import {registerUser} from "@/app/utils/api";
+import React, { useState } from 'react';
+import { Button, Col, Form, Row } from "react-bootstrap";
+import { Slide, toast, ToastContainer } from "react-toastify";
+import { useRouter } from "next/navigation";
+import { registerUser } from "@/utils/api";
+import { RegisterUserInput, validateForm, registerUserSchema } from "@/utils/validationSchema";
 
 const RegisterForm = () => {
     const router = useRouter();
-    // user information
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
-    const [birthDate, setBirthDate] = useState("");
-    const [gender, setGender] = useState("");
-    const [phone, setPhone] = useState("");
-
-    // user address information
-    const [streetName, setStreetName] = useState("");
-    const [streetNumber, setStreetNumber] = useState("");
-    const [city, setCity] = useState("");
-    const [zipCode, setZipCode] = useState("");
-    const [country, setCountry] = useState("");
-
-    // user login information
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [checkPassword, setCheckPassword] = useState("");
+    const [formData, setFormData] = useState<Partial<RegisterUserInput>>({
+        firstName: "",
+        lastName: "",
+        birthDate: "",
+        gender: undefined,
+        phoneNumber: "",
+        email: "",
+        password: "",
+        checkPassword: "",
+        address: {
+            street: "",
+            number: "",
+            city: "",
+            zipCode: "",
+            country: "",
+        },
+    });
     const [loading, setLoading] = useState(false);
 
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        if (name.startsWith("address.")) {
+            const addressField = name.split(".")[1];
+            setFormData(prev => ({
+                ...prev,
+                address: {
+                    ...prev.address,
+                    [addressField]: value
+                }
+            }));
+        } else {
+            setFormData(prev => ({ ...prev, [name]: value }));
+        }
+    };
 
-    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        const newUser: CreateUserDto = {
-            firstName,
-            lastName,
-            birthDate,
-            gender,
-            phoneNumber: phone,
-            email,
-            password,
-            checkPassword,
-            address: {
-                street: streetName,
-                number: streetNumber,
-                city,
-                zipCode,
-                country,
-            },
-        };
+        const validationResult = validateForm(registerUserSchema, formData);
 
-        // Valider les données avant l'envoi
-        const validated = registerUserSchema.safeParse(newUser);
-
-        if (!validated.success) {
-            toast.error(validated.error.errors[0].message, {
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            });
+        if (!validationResult.success) {
+            toast.error(validationResult.error);
             return;
         }
 
         try {
-            setLoading(true); // Démarre l'animation de chargement
+            setLoading(true);
+            await registerUser(validationResult.data);
+            toast.success("Compte créé avec succès !");
 
-            // Appel à l'API d'enregistrement
-            await registerUser(newUser);
 
-            // Si succès, affiche un message de succès
-            toast.success("Utilisateur enregistré avec succès", {
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            });
-
-            // Rediriger vers la page de simulation ou login
             const lastSimulation = localStorage.getItem('lastSimulation');
             if (lastSimulation) {
                 router.push('/simulation/results?data=' + encodeURIComponent(lastSimulation));
             } else {
-                router.push('/login');
+                router.push('/');
+                router.refresh();
             }
-
         } catch (error) {
-            // Capturer les erreurs renvoyées par l'API et les afficher via Toast
-            if (error instanceof Error) {
-                toast.error(error.message || "Une erreur est survenue lors de l'enregistrement de votre compte", {
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
-            } else {
-                toast.error("Une erreur inconnue est survenue", {
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
-            }
+            toast.error(error instanceof Error ? error.message : "Une erreur est survenue");
         } finally {
-            setLoading(false); // Arrête l'animation de chargement
+            setLoading(false);
         }
-    }
-
+    };
 
     return (
         <Form onSubmit={handleSubmit} className="mt-5">
+            <Row>
+                <Col md={6}>
+                    <Form.Group className="mb-3">
+                        <Form.Control
+                            type="text"
+                            name="firstName"
+                            placeholder="Votre prénom"
+                            value={formData.firstName}
+                            onChange={handleInputChange}
+                        />
+                    </Form.Group>
+                </Col>
+                <Col md={6}>
+                    <Form.Group className="mb-3">
+                        <Form.Control
+                            type="text"
+                            name="lastName"
+                            placeholder="Votre nom"
+                            value={formData.lastName}
+                            onChange={handleInputChange}
+                        />
+                    </Form.Group>
+                </Col>
+            </Row>
 
             <Row>
                 <Col md={6}>
-                    <Form.Group className="mb-3" controlId="formBasicFirstName">
-                        {/*<Form.Label>Nom</Form.Label>*/}
-                        <Form.Control type="text" placeholder="Enter votre nom"
-                                      onChange={(e) => setFirstName(e.target.value)}/>
+                    <Form.Group className="mb-3">
+                        <Form.Control
+                            type="date"
+                            name="birthDate"
+                            placeholder="Votre date de naissance"
+                            value={formData.birthDate}
+                            onChange={handleInputChange}
+                        />
                     </Form.Group>
                 </Col>
                 <Col md={6}>
-                    <Form.Group className="mb-3" controlId="formBasicLastName">
-                        {/*<Form.Label>Prénom</Form.Label>*/}
-                        <Form.Control type="text" placeholder="Enter votre prénom"
-                                      onChange={(e) => setLastName(e.target.value)}/>
+                    <Form.Group className="mb-3">
+                        <Form.Select
+                            name="gender"
+                            value={formData.gender}
+                            onChange={handleInputChange}
+                        >
+                            <option value="">Choisir un genre...</option>
+                            <option value="Masculin">Masculin</option>
+                            <option value="Féminin">Féminin</option>
+                            <option value="Autre">Autre</option>
+                        </Form.Select>
                     </Form.Group>
                 </Col>
             </Row>
+
             <Row>
                 <Col md={6}>
-                    <Form.Group className="mb-3" controlId="formBasicBirthDate">
-                        {/*<Form.Label>Date de naissance</Form.Label>*/}
-                        <Form.Control type="date" placeholder="Enter votre date de naissance"
-                                      onChange={(e) => setBirthDate(e.target.value)}/>
+                    <Form.Group className="mb-3">
+                        <Form.Control
+                            type="text"
+                            name="phoneNumber"
+                            placeholder="Votre numéro de téléphone"
+                            value={formData.phoneNumber}
+                            onChange={handleInputChange}
+                        />
                     </Form.Group>
                 </Col>
                 <Col md={6}>
-                    <Form.Group className="mb-3" controlId="formBasicGender">
-                        {/*<Form.Label>Sexe</Form.Label>*/}
-                        <Form.Control as="select" onChange={(e) => setGender(e.target.value)}>
-                            <option>Choisir un sexe...</option>
-                            <option>Masculin</option>
-                            <option>Féminin</option>
-                            <option>Autre</option>
-                        </Form.Control>
+                    <Form.Group className="mb-3">
+                        <Form.Control
+                            type="email"
+                            name="email"
+                            placeholder="Votre adresse e-mail"
+                            value={formData.email}
+                            onChange={handleInputChange}
+                        />
                     </Form.Group>
                 </Col>
             </Row>
+
+            {/* Adresse */}
             <Row>
                 <Col md={6}>
-                    <Form.Group className="mb-3" controlId="formBasicPhone">
-                        {/*<Form.Label>Téléphone</Form.Label>*/}
-                        <Form.Control type="text" placeholder="Enter votre numéro de téléphone"
-                                      onChange={(e) => setPhone(e.target.value)}/>
+                    <Form.Group className="mb-3">
+                        <Form.Control
+                            type="text"
+                            name="address.street"
+                            placeholder="Votre rue"
+                            value={formData.address?.street}
+                            onChange={handleInputChange}
+                        />
                     </Form.Group>
                 </Col>
                 <Col md={6}>
-                    <Form.Group className="mb-3" controlId="formBasicEmail">
-                        {/*<Form.Label>Adresse e-mail</Form.Label>*/}
-                        <Form.Control type="email" placeholder="Enter votre email"
-                                      onChange={(e)=>setEmail(e.target.value)}/>
+                    <Form.Group className="mb-3">
+                        <Form.Control
+                            type="text"
+                            name="address.number"
+                            placeholder="Votre numéro de rue"
+                            value={formData.address?.number}
+                            onChange={handleInputChange}
+                        />
                     </Form.Group>
                 </Col>
             </Row>
+
             <Row>
                 <Col md={6}>
-                    <Form.Group className="mb-3" controlId="formBasicStreetName">
-                        {/*<Form.Label>Rue</Form.Label>*/}
-                        <Form.Control type="text" placeholder="Enter votre rue"
-                                      onChange={(e) => setStreetName(e.target.value)}/>
+                    <Form.Group className="mb-3">
+                        <Form.Control
+                            type="text"
+                            name="address.city"
+                            placeholder="Votre ville"
+                            value={formData.address?.city}
+                            onChange={handleInputChange}
+                        />
                     </Form.Group>
                 </Col>
                 <Col md={6}>
-                    <Form.Group className="mb-3" controlId="formBasicStreetNumber">
-                        {/*<Form.Label>Numéro</Form.Label>*/}
-                        <Form.Control type="text" placeholder="Enter votre numéro de rue"
-                                      onChange={e => setStreetNumber(e.target.value)}/>
+                    <Form.Group className="mb-3">
+                        <Form.Control
+                            type="text"
+                            name="address.zipCode"
+                            placeholder="Votre code postal"
+                            value={formData.address?.zipCode}
+                            onChange={handleInputChange}
+                        />
                     </Form.Group>
                 </Col>
             </Row>
-            <Row>
-                <Col md={6}>
-                    <Form.Group className="mb-3" controlId="formBasicCity">
-                        {/*<Form.Label>Ville</Form.Label>*/}
-                        <Form.Control type="text" placeholder="Enter votre ville"
-                                      onChange={(e) => setCity(e.target.value)}/>
-                    </Form.Group>
-                </Col>
-                <Col md={6}>
-                    <Form.Group className="mb-3" controlId="formBasicZipCode">
-                        {/*<Form.Label>Code postal</Form.Label>*/}
-                        <Form.Control type="text" placeholder="Enter votre code postal"
-                                      onChange={(e) => setZipCode(e.target.value)}/>
-                    </Form.Group>
-                </Col>
-            </Row>
-            <Form.Group className="mb-3" controlId="formBasicCountry">
-                {/*<Form.Label>Pays</Form.Label>*/}
-                <Form.Control type="text" placeholder="Enter votre pays" onChange={(e) => setCountry(e.target.value)}/>
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formBasicPassword">
-                {/*<Form.Label>Mot de passe</Form.Label>*/}
-                <Form.Control type="password" placeholder="Enter votre mot de passe"
-                              onChange={(e) => setPassword(e.target.value)}/>
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formBasicCheckPassword">
-                {/*<Form.Label>Confirmer mot de passe</Form.Label>*/}
-                <Form.Control type="password" placeholder="Enter votre mot de passe à nouveau"
-                              onChange={(e) => setCheckPassword(e.target.value)}/>
+
+            <Form.Group className="mb-3">
+                <Form.Control
+                    type="text"
+                    name="address.country"
+                    placeholder="Votre pays"
+                    value={formData.address?.country}
+                    onChange={handleInputChange}
+                />
             </Form.Group>
 
-            <Button type="submit" variant="primary" className="mb-3">Créer mon compte</Button>
-            <ToastContainer
-                theme="colored"
-                position="bottom-right"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                transition={Slide}
-            />
+            {/* Mot de passe */}
+            <Form.Group className="mb-3">
+                <Form.Control
+                    type="password"
+                    name="password"
+                    placeholder="Votre mot de passe"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+                <Form.Control
+                    type="password"
+                    name="checkPassword"
+                    placeholder="Confirmez votre mot de passe"
+                    value={formData.checkPassword}
+                    onChange={handleInputChange}
+                />
+            </Form.Group>
+
+            <Button type="submit" disabled={loading}>
+                {loading ? "Création en cours..." : "Créer mon compte"}
+            </Button>
+
+            <ToastContainer position="bottom-right" transition={Slide} />
         </Form>
-    )
-}
+    );
+};
+
 export default RegisterForm;

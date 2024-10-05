@@ -1,6 +1,6 @@
-import {prisma} from "@/app/utils/db";
-import {SimulationEnvoisDto, TarifsDto} from "@/app/utils/dtos";
-import {parcelsSchema, simulationEnvoisSchema, tarifsSchema} from "@/app/utils/validationSchema";
+import {prisma} from "@/utils/db";
+import {SimulationEnvoisDto, TarifsDto} from "@/utils/dtos";
+import {parcelsSchema, simulationEnvoisSchema, tarifsSchema} from "@/utils/validationSchema";
 
 // Trouver le prochain mardi à partir d'une date donnée
 function getNextTuesday(date: Date): Date {

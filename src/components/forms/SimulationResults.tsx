@@ -3,8 +3,8 @@ import {useRouter, useSearchParams} from 'next/navigation';
 import React, {useEffect, useState} from 'react';
 import {Button, Card, Col, Row} from 'react-bootstrap';
 import styles from './SimulationResults.module.css';
-import {SimulationResultsDto} from "@/app/utils/dtos";
-import {submitSimulation} from "@/app/utils/api";
+import {SimulationResultsDto} from "@/utils/dtos";
+import {submitSimulation} from "@/utils/api";
 import LoginPromptModal from '@/components/LoginPromptModal';
 import {CiCalculator2, CiCircleInfo} from "react-icons/ci";
 import {MdEmojiSymbols} from "react-icons/md";
@@ -34,7 +34,7 @@ const SimulationResults = () => {
     useEffect(() => {
         const checkAuthStatus = async () => {
             try {
-                const response = await fetch('/api/v1/auth/status');
+                const response = await fetch('/api/auth/status');
                 const authStatus = await response.json();
                 setIsAuthenticated(authStatus.isAuthenticated);
             } catch (error) {
@@ -78,7 +78,7 @@ const SimulationResults = () => {
 
     return (
         <motion.div
-            className={`container mb-40 ${styles.container}`}
+            className={`mb-40 ${styles.container}`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -87,7 +87,7 @@ const SimulationResults = () => {
 
             <Row>
                 <Card className={styles.card}>
-                    <Card.Header className="text-center bg-blue-600 text-white p-5 rounded-3 mb-3">
+                    <Card.Header className="text-center bg-blue-600 text-white p-5  mb-3">
                         <motion.h2
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -100,7 +100,7 @@ const SimulationResults = () => {
                     <Card.Body>
                         {/* Informations de l'envoi */}
                         <motion.div
-                            className="bg-blue-600 d-flex align-items-center mb-3 p-3 rounded"
+                            className="bg-blue-600 d-flex align-items-center mb-3 p-3 "
                             initial={{ opacity: 0, x: -50 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.5 }}
