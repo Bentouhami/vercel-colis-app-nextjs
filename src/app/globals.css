@@ -1,4 +1,6 @@
 @import 'bootstrap/dist/css/bootstrap.min.css';
+@import '~react-toastify/dist/ReactToastify.min.css';
+
 
 @tailwind base;
 @tailwind components;

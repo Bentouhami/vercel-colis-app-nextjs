@@ -6,9 +6,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 // import Header from "@/components/navigations/header/Header";
 import Footer from "@/components/navigations/footer/Footer";
 import React from "react";
-import 'react-toastify/dist/ReactToastify.css';
+// import 'react-toastify/dist/ReactToastify.css';
 // import HeaderWithPathname from "@/components/HeaderWithPathname";
-import HeaderWrapper from "@/components/navigations/header/HeaderWrapper";
+// import HeaderWrapper from "@/components/navigations/header/HeaderWrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,7 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <html lang="en">
         <body className={inter.className} data-theme="dark">
         {/*<HeaderWithPathname />*/}
-        <HeaderWrapper />
+
         <main>
             {children}
         </main>
