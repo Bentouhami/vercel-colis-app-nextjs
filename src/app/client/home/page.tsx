@@ -11,8 +11,7 @@ import {authOptions} from "@/lib/nextAuth";
 import {getServerSession} from "next-auth";
 
 const HomePage = async () => {
-    const session = await getServerSession(authOptions);
-    console.log(session)
+
 
     return (
         <div className="container">
@@ -25,13 +24,13 @@ const HomePage = async () => {
                         Bienvenue sur Colis App, une application de gestion de colis.
                         La solution la plus simple et la plus rapide pour gérer vos colis.
                     </h1>
-                    <Link href="/simulation" passHref>
+                    <Link href="/client/simulation" passHref>
                         <Button variant="primary" className="mt-3 mb-5">Faire une simulation</Button>
                     </Link>
                 </div>
             </div>
             <div className="my-5">
-                <Pricing/>
+                <Pricing />
             </div>
         </div>
     )

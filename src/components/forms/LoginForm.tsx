@@ -42,7 +42,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
                 onSuccess();
             } else {
                 //
-                const redirectUrl = searchParams.get('redirect') || '/simulation';
+                const redirectUrl = searchParams.get('redirect') || '/client/simulation';
                 router.replace(redirectUrl);
                 router.refresh();
             }

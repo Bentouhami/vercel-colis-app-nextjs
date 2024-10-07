@@ -1,10 +1,12 @@
+// path: src/app/client/page.tsx
+
 import React from 'react'
-import HomePage from "@/app/(clients)/home/page";
+import HomePage from "@/app/client/home/page";
 
 function Page() {
     return (
         <main>
-            <HomePage/>
+            <HomePage />
         </main>
     )
 }

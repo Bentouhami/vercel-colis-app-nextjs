@@ -137,7 +137,7 @@ const SimulationForm = () => {
 
             toast.success("Simulation successful!");
             const query = new URLSearchParams({data: JSON.stringify(result)}).toString();
-            router.push(`/simulation/results?${query}`);
+            router.push(`/client/simulation/results?${query}`);
         } catch (error) {
             console.error('Error submitting simulation:', error);
 

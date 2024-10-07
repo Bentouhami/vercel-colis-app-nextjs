@@ -62,7 +62,7 @@ const RegisterForm = () => {
 
             const lastSimulation = localStorage.getItem('lastSimulation');
             if (lastSimulation) {
-                router.push('/simulation/results?data=' + encodeURIComponent(lastSimulation));
+                router.push('/client/simulation/results?data=' + encodeURIComponent(lastSimulation));
             } else {
                 router.push('/');
                 router.refresh();

@@ -1,5 +1,5 @@
-// path : /src/components/navigations/header/HeaderNavbar.tsx
-"use client"; // Obligatoire pour indiquer que ce composant est côté client
+// path: src/components/navigations/header/HeaderNavbar.tsx
+"use client";
 
 import React, {useState} from 'react';
 import {Button, Container, Nav, Navbar} from 'react-bootstrap';
@@ -21,6 +21,15 @@ const HeaderNavbar: React.FC<NavbarProps> = ({ isAdmin, isLoggedIn, userEmail, f
     const [expanded, setExpanded] = useState(false);
     const pathname = usePathname();
 
+    const loggedUser = {
+        isLoggedIn: isLoggedIn,
+        userEmail: userEmail,
+        isAdmin: isAdmin,
+        firstName: firstName,
+        lastName: lastName
+    }
+    console.log(loggedUser);
+
     const handleSelect = () => {
         setExpanded(false);
     };
@@ -28,24 +37,24 @@ const HeaderNavbar: React.FC<NavbarProps> = ({ isAdmin, isLoggedIn, userEmail, f
     return (
         <Navbar className="sticky-top" expand="lg" bg="light" data-bs-theme="light" expanded={expanded}>
             <Container>
-                <Link href={"/"} passHref>
+                <Link href={"/client"} passHref>
                     <Navbar.Brand><ColisBrand /></Navbar.Brand>
                 </Link>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" onClick={() => setExpanded(!expanded)} />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className={`mx-auto justify-content-center flex-lg-row flex-column ${styles.navLinks}`} onSelect={handleSelect}>
-                        <Link href="/home" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`} onClick={handleSelect}>Accueil</Link>
-                        <Link href="/simulation" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`} onClick={handleSelect}>Simulation</Link>
-                        <Link href="/services" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`} onClick={handleSelect}>Services</Link>
-                        <Link href="/tarifs" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`} onClick={handleSelect}>Tarifs</Link>
-                        <Link href="/contact-us" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`} onClick={handleSelect}>Contact-nous</Link>
+                        <Link href="/client/home" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`} onClick={handleSelect}>Accueil</Link>
+                        <Link href="/client/simulation" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`} onClick={handleSelect}>Simulation</Link>
+                        <Link href="/client/services" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`} onClick={handleSelect}>Services</Link>
+                        <Link href="/client/tarifs" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`} onClick={handleSelect}>Tarifs</Link>
+                        <Link href="/client/contact-us" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`} onClick={handleSelect}>Contact-nous</Link>
                     </Nav>
                     <div className="d-flex flex-column flex-lg-row justify-content-end align-items-center">
                         {isLoggedIn ? (
                             <div className="d-flex flex-column justify-content-center align-items-center mt-3">
                                 <strong>
                                     {`Bienvenue: ${firstName} ${lastName}`}
-                                    {isAdmin ? ' (admin)' : ' (utilisateur)'}
+                                    {isAdmin ? ' (ADMIN)' : ' (utilisateur)'}
                                 </strong>
                                 <strong>{userEmail}</strong>
 
@@ -59,12 +68,12 @@ const HeaderNavbar: React.FC<NavbarProps> = ({ isAdmin, isLoggedIn, userEmail, f
                             </div>
                         ) : (
                             <>
-                                <Link href="/login" passHref legacyBehavior>
+                                <Link href="/client/login" passHref legacyBehavior>
                                     <Button variant="outline-primary" className="btn-custom me-lg-2 mb-2 mb-lg-0">
                                         SE CONNECTER
                                     </Button>
                                 </Link>
-                                <Link href="/register" passHref legacyBehavior>
+                                <Link href="/client/register" passHref legacyBehavior>
                                     <Button variant="outline-primary" className="btn-custom">
                                         S&apos;INSCRIRE
                                     </Button>
@@ -77,5 +86,6 @@ const HeaderNavbar: React.FC<NavbarProps> = ({ isAdmin, isLoggedIn, userEmail, f
         </Navbar>
     );
 };
+
 
 export default HeaderNavbar;

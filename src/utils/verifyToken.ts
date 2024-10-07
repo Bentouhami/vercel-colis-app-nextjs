@@ -9,17 +9,39 @@ import jwt from "jsonwebtoken";
 
 export function verifyToken(request: NextRequest): JWTPayload | null {
     try {
-        // récupérer le token JWT
+        // Récupérer le token JWT
         const jwtToken = request.cookies.get(process.env.COOKIE_NAME as string);
-        // récupérer la valeur du token JWT
         const token = jwtToken?.value as string;
-        if (!token) return null;
 
+        console.log("Token from cookie:", token);
+
+        if (!token) {
+            console.log("No token found in cookies");
+            return null;
+        }
+
+        // Clé secrète utilisée pour vérifier le token
         const privateKey = process.env.JWT_SECRET as string;
+
+        if (!privateKey) {
+            console.error("JWT_SECRET is not defined");
+            return null;
+        }
+
+        // Vérification du token
         const userPayload = jwt.verify(token, privateKey) as JWTPayload;
+        console.log("Verified token payload:", userPayload);
 
         return userPayload;
     } catch (error) {
+        console.error("Error verifying token:", error);
+
+        // Gérer les erreurs JWT spécifiques
+        if (error instanceof jwt.TokenExpiredError) {
+            console.error("Token expired");
+        } else if (error instanceof jwt.JsonWebTokenError) {
+            console.error("Invalid token");
+        }
         return null;
     }
 }

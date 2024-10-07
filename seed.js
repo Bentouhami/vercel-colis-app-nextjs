@@ -10,8 +10,6 @@ async function main() {
             city: 'Bruxelles',
             zipCode: '2000',
             country: 'Belgique',
-            createdAt: new Date(),
-            updatedAt: new Date(),
         },
     });
 
@@ -22,8 +20,6 @@ async function main() {
             city: 'Anvers',
             zipCode: '2000',
             country: 'Belgique',
-            createdAt: new Date(),
-            updatedAt: new Date(),
         },
     });
 
@@ -34,8 +30,6 @@ async function main() {
             city: 'Mons',
             zipCode: '7000',
             country: 'Belgique',
-            createdAt: new Date(),
-            updatedAt: new Date(),
         },
     });
 
@@ -46,8 +40,6 @@ async function main() {
             city: 'Casablanca',
             zipCode: '20000',
             country: 'Maroc',
-            createdAt: new Date(),
-            updatedAt: new Date(),
         },
     });
 
@@ -58,18 +50,16 @@ async function main() {
             city: 'Marrakech',
             zipCode: '40000',
             country: 'Maroc',
-            createdAt: new Date(),
-            updatedAt: new Date(),
         },
     });
 
-    // Insérer des agences
+    // Insérer des agences avec capacity et availableSlots
     const agency1 = await prisma.agency.create({
         data: {
             name: 'Agence Bruxelles',
             location: 'Bruxelles',
-            createdAt: new Date(),
-            updatedAt: new Date(),
+            capacity: 100, // Capacité maximale de stockage
+            availableSlots: 10, // Places disponibles pour les rendez-vous ou dépôts
             addressId: address1.id,
         },
     });
@@ -78,8 +68,8 @@ async function main() {
         data: {
             name: 'Agence Anvers',
             location: 'Anvers',
-            createdAt: new Date(),
-            updatedAt: new Date(),
+            capacity: 80,
+            availableSlots: 15,
             addressId: address2.id,
         },
     });
@@ -88,8 +78,8 @@ async function main() {
         data: {
             name: 'Agence Mons',
             location: 'Mons',
-            createdAt: new Date(),
-            updatedAt: new Date(),
+            capacity: 120,
+            availableSlots: 20,
             addressId: address3.id,
         },
     });
@@ -98,8 +88,8 @@ async function main() {
         data: {
             name: 'Agence Casablanca',
             location: 'Casablanca',
-            createdAt: new Date(),
-            updatedAt: new Date(),
+            capacity: 150,
+            availableSlots: 25,
             addressId: address4.id,
         },
     });
@@ -108,8 +98,8 @@ async function main() {
         data: {
             name: 'Agence Marrakech',
             location: 'Marrakech',
-            createdAt: new Date(),
-            updatedAt: new Date(),
+            capacity: 90,
+            availableSlots: 12,
             addressId: address5.id,
         },
     });
@@ -123,23 +113,20 @@ async function main() {
             baseWeight: 15000.0,
             currentVolume: 0,
             baseVolume: 42000000.0,
-            createdAt: new Date(),
-            updatedAt: new Date(),
         },
     });
 
     // Insérer des tarifs
     const tarifs = await prisma.tarifs.create({
         data: {
-            weightRate: 1.60, // € per kg for weights over 10 kg
-            volumeRate: 0,    // Assuming no additional charge for volume in this scenario
-            baseRate: 0,      // Base rate if any
-            fixedRate: 15.00, // Fixed rate for weights <= 10 kg
-            createdAt: new Date(),
-            updatedAt: new Date(),
+            weightRate: 1.60, // € par kg pour les poids > 10 kg
+            volumeRate: 0,    // Pas de frais supplémentaires pour le volume
+            baseRate: 0,      // Tarif de base
+            fixedRate: 15.00, // Tarif fixe pour les poids <= 10 kg
         },
     });
 
+    // Afficher les données insérées
     console.log({
         address1, address2, address3, address4, address5,
         agency1, agency2, agency3, agency4, agency5,

@@ -25,18 +25,34 @@ model Address {
 }
 
 model Agency {
-  id        Int      @id @default(autoincrement())
-  name      String
-  location  String?
-  addressId Int      @unique
-  Address   Address  @relation(fields: [addressId], references: [id])
-  updatedAt DateTime @updatedAt
-  createdAt DateTime @default(now())
+  id             Int      @id @default(autoincrement())
+  name           String
+  location       String?
+  addressId      Int      @unique
+  capacity       Int // Capacité maximale pour stocker les colis
+  availableSlots Int // Nombre de places disponibles pour les rendez-vous ou dépôts
+  Address        Address  @relation(fields: [addressId], references: [id])
+  updatedAt      DateTime @updatedAt
+  createdAt      DateTime @default(now())
 
-  ArrivalEnvoi   Envoi[] @relation("ArrivalAgency")
-  DepartureEnvoi Envoi[] @relation("DepartureAgency")
+  ArrivalEnvoi   Envoi[]        @relation("ArrivalAgency")
+  DepartureEnvoi Envoi[]        @relation("DepartureAgency")
+  Notification   Notification[]
+  Appointment    Appointment[]
 
   @@map("agencies")
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  message   String
+  agencyId  Int
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Agency    Agency   @relation(fields: [agencyId], references: [id])
+
+  @@map("notifications")
 }
 
 model User {
@@ -48,8 +64,8 @@ model User {
   phoneNumber String?   @unique
   email       String    @unique
   password    String    @default("")
-  // image       String?   @default("")
-  // verified    Boolean   @default(false)
+  image       String?   @default("")
+  verified    Boolean   @default(false)
   addressId   Int
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -131,6 +147,7 @@ model Transport {
 model Envoi {
   id                Int         @id @default(autoincrement())
   trackingNumber    String      @unique
+  qrCodeUrl         String? // URL du QR code pour le dépôt en agence
   clientId          Int
   destinationId     Int
   dateSent          DateTime
@@ -153,8 +170,24 @@ model Envoi {
 
   EnvoiCoupon EnvoiCoupon[]
   Parcel      Parcel[]
+  Appointment Appointment?
 
   @@map("envois")
+}
+
+model Appointment {
+  id        Int      @id @default(autoincrement())
+  envoiId   Int      @unique
+  agencyId  Int
+  date      DateTime
+  status    String   @default("PENDING") // Statuts possibles : PENDING, CONFIRMED, CANCELLED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Envoi  Envoi  @relation(fields: [envoiId], references: [id])
+  Agency Agency @relation(fields: [agencyId], references: [id])
+
+  @@map("appointments")
 }
 
 model EnvoiCoupon {

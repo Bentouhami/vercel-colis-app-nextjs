@@ -1,3 +1,5 @@
+// path: src/app/client/layout.tsx
+
 import React from 'react'
 import HeaderWrapper from "@/components/navigations/header/HeaderWrapper";
 import Footer from "@/components/navigations/footer/Footer";

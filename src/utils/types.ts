@@ -1,6 +1,4 @@
-// path : /api/v1/users/login
-// types pour la connexion d'un utilisateur (login) et la récupération des données de la base de données
-
+// path: src/utils/types.ts
 export type JWTPayload = {
     id: number;
     role: string;

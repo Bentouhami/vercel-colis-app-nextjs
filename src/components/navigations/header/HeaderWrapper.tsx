@@ -1,3 +1,5 @@
+// path: src/components/navigations/header/HeaderWrapper.ts
+
 import { cookies } from 'next/headers';
 import { verifyTokenFromCookies } from "@/utils/verifyToken";
 import HeaderNavbar from "@/components/navigations/header/HeaderNavbar";
@@ -17,10 +19,13 @@ const HeaderWrapper = async () => {
         try {
             const decodedToken = await verifyTokenFromCookies(token);
             isLoggedIn = true;
-            userEmail = decodedToken.email;
-            isAdmin = decodedToken.isAdmin || false;
-            firstName = decodedToken.firstName || '';
-            lastName = decodedToken.lastName || '';
+            // Vérification basée sur le rôle de l'utilisateur
+            if (decodedToken) {
+                userEmail = decodedToken.userEmail;
+                isAdmin = decodedToken.role === 'ADMIN';
+                firstName = decodedToken.firstName || '';
+                lastName = decodedToken.lastName || '';
+            }
         } catch (error) {
             console.error('Token verification failed:', error);
         }

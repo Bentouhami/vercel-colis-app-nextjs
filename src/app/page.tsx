@@ -10,7 +10,7 @@ export default function Home() {
             {/*</h1>*/}
             <a
                 className="group relative inline-flex items-center overflow-hidden rounded border border-current px-8 py-3 text-indigo-600 focus:outline-none focus:ring active:text-indigo-500"
-                href="/home"
+                href="/client"
             >
 
 
@@ -38,7 +38,7 @@ export default function Home() {
             {/* Bouton pour les admins */}
             <a
                 className="group relative inline-flex items-center overflow-hidden rounded bg-indigo-600 px-8 py-3 text-white focus:outline-none focus:ring active:bg-indigo-500"
-                href="/dashboard"
+                href="/admin"
             >
                 <span className="absolute -end-full transition-all group-hover:end-4">
                     <svg

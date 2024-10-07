@@ -10,13 +10,13 @@ export default function DashboardNavbar() {
         <nav className="dashboard-navbar bg-dark text-white p-4">
             <ul className="nav-list flex">
                 <li className="nav-item me-4">
-                    <Link href="/dashboard">Dashboard Overview</Link>
+                    <Link href="/admin">Dashboard Overview</Link>
                 </li>
                 <li className="nav-item me-4">
-                    <Link href="/dashboard/customers">Customers</Link>
+                    <Link href="/admin/customers">Customers</Link>
                 </li>
                 <li className="nav-item">
-                    <Link href="/dashboard/invoices">Invoices</Link>
+                    <Link href="/admin/invoices">Invoices</Link>
                 </li>
             </ul>
         </nav>

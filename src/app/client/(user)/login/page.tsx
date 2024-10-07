@@ -1,4 +1,6 @@
-// /src/app/(user)/login/page.tsx
+// path: src/app/client/(user)/login/page.tsx
+
+
 import Image from "next/image";
 import React from "react";
 import LoginForm from "@/components/forms/LoginForm"; // Le formulaire devient un composant client

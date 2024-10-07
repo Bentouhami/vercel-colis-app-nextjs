@@ -1,3 +1,5 @@
+// path: src/app/client/(user)/register/page.tsx
+
 import Image from "next/image";
 import RegisterForm from "@/components/forms/RegisterForm";
 import React from "react";

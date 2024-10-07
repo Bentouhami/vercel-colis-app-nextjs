@@ -26,7 +26,7 @@ const SimulationResults = () => {
             if (savedResults) {
                 setResults(JSON.parse(savedResults));
             } else {
-                router.push('/simulation');
+                router.push('client/simulation');
             }
         }
     }, [searchParams, router]);
@@ -50,11 +50,13 @@ const SimulationResults = () => {
     }
 
     async function handleValidate() {
+        // si l'utilisateur est authentifié, soumettre la simulation
         if (isAuthenticated) {
             try {
+                // soumettre la simulation
                 if (results) {
                     await submitSimulation(results);
-                    router.push('/payment');
+                    router.push('/client/add-receiver');
                 }
             } catch (error) {
                 console.error("Erreur lors de la soumission de la simulation", error);
@@ -67,13 +69,13 @@ const SimulationResults = () => {
 
     const handleLoginRedirect = () => {
         setShowLoginPrompt(false);
-        const redirectUrl = encodeURIComponent('/simulation/results');
-        router.push(`/login?redirect=${redirectUrl}`);
+        const redirectUrl = encodeURIComponent('/client/simulation/results');
+        router.push(`/client/login?redirect=${redirectUrl}`);
     };
 
     function handleCancel() {
         localStorage.removeItem('simulationResults');
-        router.push('/simulation');
+        router.push('/client/simulation');
     }
 
     return (
