@@ -3,6 +3,7 @@
 
 // Récupérer les pays de départ disponibles pour la simulation
 import {CreateUserDto, SimulationEnvoisDto} from "@/utils/dtos";
+import {DOMAIN} from '@/utils/constants';
 
 export async function fetchCountries() {
 
@@ -146,6 +147,28 @@ export async function getUserProfile() {
         }
     } catch (error) {
         console.error('Error fetching user profile:', error);
+        throw error; // Re-throw the error so it can be caught by the calling function
+    }
+}
+
+// logout
+export async function logout() {
+    try {
+        const response = await fetch(`${DOMAIN}/api/v1/users/logout`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+        if (response.ok) {
+            return await response.json();
+        } else {
+            throw new Error('Failed to logout');
+        }
+    } catch (error) {
+        console.error('Error logging out:', error);
         throw error; // Re-throw the error so it can be caught by the calling function
     }
 }

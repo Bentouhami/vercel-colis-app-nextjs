@@ -1,5 +1,8 @@
-import React from 'react'
+
+// path: src/components/forms/AddReceiverForm.tsx
+'use client';
 import {Form} from "react-bootstrap";
+
 
 export default function AddReceiverForm() {
     return (

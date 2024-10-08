@@ -1,4 +1,4 @@
-// DTOs for my project - ColiApp
+// DTOs for my project – ColiApp
 import {Address} from "@prisma/client";
 
 export interface CreateAddressDto {

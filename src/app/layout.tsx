@@ -3,12 +3,9 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
-// import Header from "@/components/navigations/header/Header";
 import Footer from "@/components/navigations/footer/Footer";
 import React from "react";
-// import 'react-toastify/dist/ReactToastify.css';
-// import HeaderWithPathname from "@/components/HeaderWithPathname";
-// import HeaderWrapper from "@/components/navigations/header/HeaderWrapper";
+
 
 const inter = Inter({ subsets: ["latin"] });
 

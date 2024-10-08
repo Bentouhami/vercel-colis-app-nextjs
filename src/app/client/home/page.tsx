@@ -6,9 +6,7 @@ import Pricing from "@/components/pricing/Pricing";
 import Styles from "./Home.module.css";
 import Link from "next/link";
 import {Button} from "react-bootstrap";
-import {session} from "next-auth/core/routes";
-import {authOptions} from "@/lib/nextAuth";
-import {getServerSession} from "next-auth";
+
 
 const HomePage = async () => {
 

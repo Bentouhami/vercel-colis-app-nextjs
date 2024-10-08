@@ -37,11 +37,12 @@ const phoneValidation = z.string()
 // Address schema
 export const addressSchema = z.object({
     street: z.string().min(1, { message: "La rue est requise" }),
-    number: z.string().min(1, { message: "Le numéro est requis" }),
+    number: z.string().min(1, { message: "Le numéro est requis" }), // Assurez-vous que c'est `string`
     zipCode: z.string().min(1, { message: "Le code postal est requis" }),
     city: z.string().min(1, { message: "La ville est requise" }),
     country: z.string().min(1, { message: "Le pays est requis" }),
 });
+
 
 // Schema pour l'inscription
 export const registerUserSchema = z.object({

@@ -102,7 +102,7 @@ function AboutForm() {
                                 onChange={(e) => setMessage(e.target.value)}
                                 className="w-full rounded-lg border-gray-200 p-3 text-sm border-2"
                                 placeholder="Message"
-                                rows="8"
+                                rows={8}
                                 id="message"
                             ></textarea>
                         </div>

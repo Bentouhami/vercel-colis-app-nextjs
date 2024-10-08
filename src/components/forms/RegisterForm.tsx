@@ -1,19 +1,23 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, {ChangeEvent, useState} from 'react';
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { Slide, toast, ToastContainer } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { registerUser } from "@/utils/api";
-import { RegisterUserInput, validateForm, registerUserSchema } from "@/utils/validationSchema";
+import {  validateForm, registerUserSchema } from "@/utils/validationSchema";
+import {FormData} from "@/utils/types";
+import {CreateUserDto} from "@/utils/dtos";
+
+
 
 const RegisterForm = () => {
     const router = useRouter();
-    const [formData, setFormData] = useState<Partial<RegisterUserInput>>({
+    const [formData, setFormData] = useState<FormData>({
         firstName: "",
         lastName: "",
         birthDate: "",
-        gender: undefined,
+        gender: "",
         phoneNumber: "",
         email: "",
         password: "",
@@ -26,12 +30,14 @@ const RegisterForm = () => {
             country: "",
         },
     });
+
     const [loading, setLoading] = useState(false);
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const handleInputChange = (e: ChangeEvent<any>) => {
         const { name, value } = e.target;
+
         if (name.startsWith("address.")) {
-            const addressField = name.split(".")[1];
+            const addressField = name.split(".")[1] as keyof FormData['address'];
             setFormData(prev => ({
                 ...prev,
                 address: {
@@ -40,7 +46,10 @@ const RegisterForm = () => {
                 }
             }));
         } else {
-            setFormData(prev => ({ ...prev, [name]: value }));
+            setFormData(prev => ({
+                ...prev,
+                [name]: value
+            }));
         }
     };
 
@@ -49,16 +58,15 @@ const RegisterForm = () => {
 
         const validationResult = validateForm(registerUserSchema, formData);
 
-        if (!validationResult.success) {
-            toast.error(validationResult.error);
+        if (!validationResult.success || !validationResult.data) {
+            toast.error(validationResult.error || "Une erreur est survenue lors de la validation du formulaire");
             return;
         }
 
         try {
             setLoading(true);
-            await registerUser(validationResult.data);
+            await registerUser(validationResult.data as CreateUserDto); // Utilisation de "as CreateUserDto" pour garantir le type correct
             toast.success("Compte créé avec succès !");
-
 
             const lastSimulation = localStorage.getItem('lastSimulation');
             if (lastSimulation) {
@@ -72,6 +80,7 @@ const RegisterForm = () => {
         } finally {
             setLoading(false);
         }
+
     };
 
     return (

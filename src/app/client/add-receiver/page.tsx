@@ -1,4 +1,8 @@
-import React from 'react'
+
+// path: src/app/client/add-receiver/page.tsx
+
+
+import AddReceiverForm from "@/components/forms/AddReceiverForm";
 
 function AddReceiverPage() {
     return (

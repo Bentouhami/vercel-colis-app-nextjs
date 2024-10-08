@@ -13,9 +13,9 @@ export async function GET(request: NextRequest) {
         // get user from db by id
         const user = await prisma.user.findUnique({
             where: {
-                id: parseInt(request.nextUrl.searchParams.get('id'))
+                id: parseInt(request.nextUrl.searchParams.get('id') as string)
             }
-        }) as User | null;
+        });
 
         if (!user) {
             return NextResponse.json(
