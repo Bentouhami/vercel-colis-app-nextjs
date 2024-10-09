@@ -14,7 +14,7 @@ interface LoginFormProps {
     onSuccess?: () => void; // Propriété pour gérer la redirection
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
+const LoginForm: React.FC<LoginFormProps> = ({onSuccess}) => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [email, setEmail] = useState("");
@@ -25,7 +25,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
-        const loginData: LoginUserDto = { email, password };
+        const loginData: LoginUserDto = {email, password};
         const validated = loginUserSchema.safeParse(loginData);
 
         if (!validated.success) {
@@ -56,7 +56,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
     return (
         <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3">
-                <Form.Control type="email" placeholder="Entrez votre email" onChange={(e) => setEmail(e.target.value)} />
+                <Form.Control type="email" placeholder="Entrez votre email" onChange={(e) => setEmail(e.target.value)}/>
             </Form.Group>
             <Form.Group className="mb-3">
                 <InputGroup>
@@ -66,14 +66,14 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
                         onChange={(e) => setPassword(e.target.value)}
                     />
                     <Button variant="outline-secondary" onClick={() => setShowPassword(!showPassword)}>
-                        {showPassword ? <FaEyeSlash /> : <FaEye />}
+                        {showPassword ? <FaEyeSlash/> : <FaEye/>}
                     </Button>
                 </InputGroup>
             </Form.Group>
             <Button type="submit" variant="primary" disabled={loading}>
                 {loading ? "Connexion en cours..." : "Se connecter"}
             </Button>
-            <ToastContainer position="bottom-right" />
+            <ToastContainer position="bottom-right"/>
         </Form>
     );
 };

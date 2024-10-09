@@ -1,3 +1,4 @@
+// path: src/components/forms/SimulationResults.tsx
 'use client';
 import {useRouter, useSearchParams} from 'next/navigation';
 import React, {useEffect, useState} from 'react';
@@ -56,7 +57,7 @@ const SimulationResults = () => {
                 // soumettre la simulation
                 if (results) {
                     await submitSimulation(results);
-                    router.push('/client/add-receiver');
+                    router.push('/client/ajouter-destinataire');
                 }
             } catch (error) {
                 console.error("Erreur lors de la soumission de la simulation", error);

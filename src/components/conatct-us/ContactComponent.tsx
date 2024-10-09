@@ -1,11 +1,11 @@
-// path: components/forms/AboutForm.tsx => this is the about form component that is used in the about page
+// path: components/forms/ContactComponent.tsx => this is the about form component that is used in the about page
 
 'use client';
 
 import {FormEvent, useState} from "react";
 import {toast} from "react-toastify";
 
-function AboutForm() {
+function ContactComponent() {
 
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -123,4 +123,4 @@ function AboutForm() {
     )
 }
 
-export default AboutForm
+export default ContactComponent

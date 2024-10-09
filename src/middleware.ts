@@ -22,7 +22,9 @@ export async function middleware(req: NextRequest) {
             "/client/simulation/results",
             "/client/services",
             "/client/tarifs",
-            "/client/contact-us"
+            "/client/contact-us",
+            "/client/unauthorized",
+            "/client/tracking/*"
         ];
 
         if (publicRoutes.includes(req.nextUrl.pathname)) {
@@ -31,8 +33,8 @@ export async function middleware(req: NextRequest) {
         }
 
         if (!token) {
-            console.log('No token found, redirecting to login');
-            return NextResponse.redirect(new URL("/client/login", req.nextUrl.origin));
+            console.log('No token found, redirecting to client home page');
+            return NextResponse.redirect(new URL("/client", req.nextUrl.origin));
         }
 
         // Vérification du token JWT avec jose
@@ -49,13 +51,13 @@ export async function middleware(req: NextRequest) {
         }
 
         const isAdmin = userPayload.role === 'ADMIN';
-        console.log('Is Admin:', isAdmin);
-        console.log('User Role:', userPayload.role);
+        // console.log('Is Admin:', isAdmin);
+        // console.log('User Role:', userPayload.role);
 
         if (req.nextUrl.pathname.startsWith('/admin')) {
-            console.log('Attempting to access admin route');
+            // console.log('Attempting to access admin route');
             if (!isAdmin) {
-                console.log('Unauthorized access to admin route');
+                // console.log('Unauthorized access to admin route');
                 return NextResponse.redirect(new URL('/client/unauthorized', req.nextUrl.origin));
             }
             console.log('Admin access granted');
@@ -87,9 +89,10 @@ async function verifyTokenWithJose(token: string) {
 
 export const config = {
     matcher: [
-        "/client/:path*",
+        // "/client/:path*",
         "/admin/:path*",
         "/api/users/profile/:path*",
-        "/payment/:path*",
+        "/client/payment/:path*",
+        "/client/ajouter-destinataire",
     ],
 };

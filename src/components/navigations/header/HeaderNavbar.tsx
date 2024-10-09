@@ -8,6 +8,7 @@ import {usePathname} from 'next/navigation';
 import styles from './Header.module.css';
 import LogoutButton from './LogoutButton';
 import ColisBrand from "@/components/navigations/brand/ColisBrand";
+import Image from "next/image";
 
 interface NavbarProps {
     isLoggedIn: boolean;
@@ -15,9 +16,11 @@ interface NavbarProps {
     isAdmin: boolean;
     firstName: string;
     lastName: string;
+    imageUrl: string;
+
 }
 
-const HeaderNavbar: React.FC<NavbarProps> = ({ isAdmin, isLoggedIn, userEmail, firstName, lastName }) => {
+const HeaderNavbar: React.FC<NavbarProps> = ({ isAdmin, isLoggedIn, userEmail, firstName, lastName, imageUrl }) => {
     const [expanded, setExpanded] = useState(false);
     const pathname = usePathname();
 
@@ -26,7 +29,8 @@ const HeaderNavbar: React.FC<NavbarProps> = ({ isAdmin, isLoggedIn, userEmail, f
         userEmail: userEmail,
         isAdmin: isAdmin,
         firstName: firstName,
-        lastName: lastName
+        lastName: lastName,
+        imageUrl: "https://placehold.co/400"
     }
     console.log(loggedUser);
 
@@ -52,6 +56,7 @@ const HeaderNavbar: React.FC<NavbarProps> = ({ isAdmin, isLoggedIn, userEmail, f
                     <div className="d-flex flex-column flex-lg-row justify-content-end align-items-center">
                         {isLoggedIn ? (
                             <div className="d-flex flex-column justify-content-center align-items-center mt-3">
+                                <Image src={"https://placehold.co/600x400.png"} priority={true} alt={"avatar"} width={50} height={50} />
                                 <strong>
                                     {`Bienvenue: ${firstName} ${lastName}`}
                                     {isAdmin ? ' (ADMIN)' : ' (utilisateur)'}

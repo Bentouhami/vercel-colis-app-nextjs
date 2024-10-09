@@ -29,6 +29,17 @@ export interface CreateUserDto {
     email: string;
     password: string;
     checkPassword: string;
+    imageUrl: string;
+    address: CreateAddressDto;
+
+}
+
+// create Destinataire DTO
+export interface CreateDestinataireDto {
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+    email: string;
     address: CreateAddressDto;
 }
 

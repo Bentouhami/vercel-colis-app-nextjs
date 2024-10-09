@@ -1,5 +1,5 @@
-// page.tsx : Page de simulation d'envoi
-// api/v1/simulation/route.ts : Route de simulation d'envoi
+// path: src/app/client/simulation
+
 import SimulationForm from "@/components/forms/SimulationForms/SimulationForm";
 import React from "react";
 

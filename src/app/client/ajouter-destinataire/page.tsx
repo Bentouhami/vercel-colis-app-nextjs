@@ -7,7 +7,9 @@ import AddReceiverForm from "@/components/forms/AddReceiverForm";
 function AddReceiverPage() {
     return (
 
-        <AddReceiverForm />
+        <div className={'container'}>
+            <AddReceiverForm />
+        </div>
     )
 }
 

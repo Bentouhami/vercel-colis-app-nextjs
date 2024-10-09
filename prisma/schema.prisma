@@ -61,10 +61,10 @@ model User {
   lastName    String
   dateOfBirth DateTime?
   gender      String?
-  phoneNumber String?   @unique
+  phoneNumber String    @unique
   email       String    @unique
   password    String    @default("")
-  image       String?   @default("")
+  imageUrl    String?   @default("")
   verified    Boolean   @default(false)
   addressId   Int
   createdAt   DateTime  @default(now())
@@ -72,11 +72,23 @@ model User {
   Address     Address   @relation(fields: [addressId], references: [id])
   role        UserRole  @default(USER)
 
-  ClientEnvoi      Envoi[]      @relation("ClientEnvoi")
-  DestinatireEnvoi Envoi[]      @relation("DestinatireEnvoi")
-  UserCoupon       UserCoupon[]
+  ClientEnvoi Envoi[]      @relation("ClientEnvoi")
+  UserCoupon  UserCoupon[]
 
   @@map("users")
+}
+
+model Destinataire {
+  id          Int      @id @default(autoincrement())
+  firstName   String
+  lastName    String
+  email       String   @unique
+  phoneNumber String   @unique
+  envois      Envoi[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("destinataires")
 }
 
 enum UserRole {
@@ -149,7 +161,6 @@ model Envoi {
   trackingNumber    String      @unique
   qrCodeUrl         String? // URL du QR code pour le dépôt en agence
   clientId          Int
-  destinationId     Int
   dateSent          DateTime
   departureAgencyId Int
   dateDelivered     DateTime
@@ -158,6 +169,7 @@ model Envoi {
   totalWeight       Float
   totalVolume       Float
   totalPrice        Float
+  comment           String?     @db.Text()
   transportId       Int
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @updatedAt
@@ -165,12 +177,13 @@ model Envoi {
   ArrivalAgency   Agency    @relation("ArrivalAgency", fields: [arrivalAgencyId], references: [id])
   Client          User      @relation("ClientEnvoi", fields: [clientId], references: [id])
   DepartureAgency Agency    @relation("DepartureAgency", fields: [departureAgencyId], references: [id])
-  Destinatire     User      @relation("DestinatireEnvoi", fields: [destinationId], references: [id])
   Transport       Transport @relation(fields: [transportId], references: [id])
 
-  EnvoiCoupon EnvoiCoupon[]
-  Parcel      Parcel[]
-  Appointment Appointment?
+  EnvoiCoupon    EnvoiCoupon[]
+  Parcel         Parcel[]
+  Appointment    Appointment?
+  Destinataire   Destinataire? @relation(fields: [destinataireId], references: [id])
+  destinataireId Int?
 
   @@map("envois")
 }

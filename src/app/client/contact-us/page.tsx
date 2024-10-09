@@ -1,10 +1,10 @@
-import AboutForm from "@/components/forms/AboutForm";
+import ContactComponent from "@/components/conatct-us/ContactComponent";
 
 console.log("about page loaded")
 const AboutPage = () => {
     return (
         <div>
-            <AboutForm />
+            <ContactComponent />
 
         </div>
     )

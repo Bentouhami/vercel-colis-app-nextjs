@@ -5,6 +5,7 @@ export type JWTPayload = {
     userEmail: string;
     firstName: string;
     lastName: string;
+    imageUrl?: string;
 };
 
 export type Country = {
@@ -29,6 +30,15 @@ export type FormData = {
         country: string;
     };
 };
+
+export type DestinataireData = {
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+    email: string;
+}
+
+
 
 // export interface SimulationResults {
 //     departureCountry: string;

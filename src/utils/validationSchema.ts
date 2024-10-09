@@ -137,11 +137,20 @@ export const tarifsSchema = z.object({
         .default(0),
 });
 
+
+// Schema pour la formule de destinataire
+export const destinataireSchema = z.object({
+    firstName: z.string().min(1, {message: "Nom is required"}),
+    lastName: z.string().min(1, {message: "Prenom is required"}),
+    email: emailValidation,
+    phoneNumber: phoneValidation,
+})
+
 // Types exportés
 export type RegisterUserInput = z.infer<typeof registerUserSchema>;
 export type LoginUserInput = z.infer<typeof loginUserSchema>;
 export type AddressInput = z.infer<typeof addressSchema>;
-
+export type DestinataireInput = z.infer<typeof destinataireSchema>;
 // Fonction utilitaire pour la validation
 export function validateForm<T>(schema: z.ZodSchema<T>, data: unknown): {
     success: boolean;
@@ -155,3 +164,4 @@ export function validateForm<T>(schema: z.ZodSchema<T>, data: unknown): {
     }
     return { success: true, data: result.data };
 }
+

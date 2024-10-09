@@ -1,7 +1,10 @@
+import TarifsComp from "@/components/tarifs/TarifsComp";
 
 const TarifsPage = () => {
     return (
-        <div>TarifsPage</div>
+        <div>
+            <TarifsComp />
+        </div>
     )
 }
 export default TarifsPage
