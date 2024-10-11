@@ -3,7 +3,6 @@
 import {NextRequest, NextResponse} from "next/server";
 import {prisma} from "@/utils/db";
 import {errorHandler} from "@/utils/handelErrors";
-import { User} from "@prisma/client";
 
 
 

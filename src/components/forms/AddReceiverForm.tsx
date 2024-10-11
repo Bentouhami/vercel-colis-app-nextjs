@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 export default function AddReceiverForm() {
     const router = useRouter();
     const [destinataireFormData, setDestinataireFormData] = useState<DestinataireInput>({
+        id: null,
         firstName: "",
         lastName: "",
         email: "",

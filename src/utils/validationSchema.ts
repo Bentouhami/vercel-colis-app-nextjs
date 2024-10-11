@@ -3,7 +3,7 @@ import { z } from "zod";
 // Constants for validation
 const PASSWORD_MIN_LENGTH = 8;
 const PHONE_REGEX = /^\+\d{1,3}\d{9,12}$/;
-const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&+]{8,}$/;
 
 // Liste des domaines d'emails temporaires
 const TEMP_EMAIL_DOMAINS = [

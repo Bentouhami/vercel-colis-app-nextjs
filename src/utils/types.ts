@@ -5,6 +5,7 @@ export type JWTPayload = {
     userEmail: string;
     firstName: string;
     lastName: string;
+    phoneNumber : string;
     imageUrl?: string;
 };
 

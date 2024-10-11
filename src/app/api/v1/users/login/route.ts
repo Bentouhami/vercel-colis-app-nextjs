@@ -48,6 +48,7 @@ export async function POST(request: NextRequest) {
                 email: true,
                 firstName: true,
                 lastName: true,
+                phoneNumber : true,
             }
         });
 
@@ -67,6 +68,7 @@ export async function POST(request: NextRequest) {
             userEmail: user.email,
             firstName: user.firstName,
             lastName: user.lastName,
+            phoneNumber: user.phoneNumber,
         };
 
         // Générez un cookie avec JWT

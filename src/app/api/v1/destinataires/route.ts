@@ -6,6 +6,8 @@ import { prisma } from "@/utils/db";
 import { capitalizeFirstLetter, toLowerCase } from "@/utils/stringUtils";
 import { CreateDestinataireDto } from "@/utils/dtos";
 import { destinataireSchema } from "@/utils/validationSchema";
+import {getDefaultAutoSelectFamilyAttemptTimeout} from "node:net";
+import {getCurrentUser} from "@/utils/api";
 
 export async function POST(req: NextRequest) {
     try {
@@ -23,20 +25,86 @@ export async function POST(req: NextRequest) {
 
         const { firstName, lastName, phoneNumber, email } = validationResult.data;
 
-        const existingDestinataire = await prisma.destinataire.findFirst({
+
+        let destinataire = await prisma.destinataire.findFirst({
             where: {
                 OR: [
                     { email: toLowerCase(email) },
                     { phoneNumber: phoneNumber }
                 ]
+            },
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                phoneNumber: true,
+                email: true
             }
         });
 
-        if (existingDestinataire) {
-            return NextResponse.json({ error: "Destinataire already exists" }, { status: 400 });
+        if (!destinataire) {
+            destinataire = await prisma.user.findFirst({
+                where: {
+                    email: email
+                },
+                select: {
+                    id: true,
+                    firstName: true,
+                    lastName: true,
+                    phoneNumber: true,
+                    email: true
+                }
+            });
+
+            const payload = getCurrentUser(req);
+
+            console.log("uer connected payload: ", payload);
+
+
+            if(destinataire && payload) {
+                console.log("destinataire and payload: ", destinataire, payload);
+
+
+                if((destinataire.email === payload.userEmail ) || (destinataire.phoneNumber === payload.phoneNumber)) {
+
+                    console.log("email match", payload.email);
+
+                    return NextResponse.json({ error: "Vous ne pouvez pas utiliser vos propres informations comme destinataire." }, { status: 400 });
+                }
+
+                // Créer un nouveau destinataire si aucune correspondance trouvée et si l'utilisateur est connecté et pas le destinataire lui-même
+                destinataire = await prisma.destinataire.create({
+                    data: {
+                        firstName: payload.firstName,
+                        lastName: payload.lastName,
+                        phoneNumber: payload.phoneNumber,
+                        email: payload.email,
+
+                    },
+                    select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        phoneNumber: true,
+                        email: true
+                    }
+                });
+
+            }
+        }
+        if (destinataire) {
+            const isProduction = process.env.NODE_ENV === 'production';
+
+            // Définir le cookie, sans l'attribut `Secure` en développement local
+            return NextResponse.json({ destinatire: destinataire }, {
+                status: 201,
+                headers: {
+                    'Set-Cookie': `destinataireId=${destinataire.id}; Path=/; HttpOnly; ${isProduction ? 'Secure;' : ''} SameSite=Strict`
+                }
+            });
         }
 
-        const newDestinataire = await prisma.destinataire.create({
+        destinataire = await prisma.destinataire.create({
             data: {
                 firstName: capitalizeFirstLetter(firstName),
                 lastName: capitalizeFirstLetter(lastName),
@@ -56,10 +124,10 @@ export async function POST(req: NextRequest) {
         const isProduction = process.env.NODE_ENV === 'production';
 
         // Définir le cookie, sans l'attribut `Secure` en développement local
-        return NextResponse.json({ newDestinataire }, {
+        return NextResponse.json({ destinatire: destinataire }, {
             status: 201,
             headers: {
-                'Set-Cookie': `destinataireId=${newDestinataire.id}; Path=/; HttpOnly; ${isProduction ? 'Secure;' : ''} SameSite=Strict`
+                'Set-Cookie': `destinataireId=${destinataire.id}; Path=/; HttpOnly; ${isProduction ? 'Secure;' : ''} SameSite=Strict`
             }
         });
     } catch (error) {

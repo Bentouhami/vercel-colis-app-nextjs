@@ -148,6 +148,7 @@ export async function POST(request: NextRequest) {
             userEmail: newUser.email,
             firstName: newUser.firstName,
             lastName: newUser.lastName,
+            phoneNumber : newUser.phoneNumber,
         };
 
         // Générer le cookie JWT

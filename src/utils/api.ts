@@ -5,6 +5,8 @@
 import {CreateDestinataireDto, CreateUserDto, SimulationEnvoisDto} from "@/utils/dtos";
 import {DOMAIN} from '@/utils/constants';
 import {User} from "@prisma/client";
+import {verifyTokenFromCookies} from "@/utils/verifyToken";
+import {NextRequest} from "next/server";
 
 export async function fetchCountries() {
 
@@ -161,6 +163,20 @@ export async function registerDestinataire(newDestinataire: CreateDestinataireDt
     } catch (error) {
         console.error('Error registering destinataire:', error);
         throw error; // Relancer l'erreur pour la capturer dans RegisterForm
+    }
+}
+
+export async function getCurrentUser (req: NextRequest) {
+    try {
+        const token = req.cookies.get(process.env.COOKIE_NAME as string);
+        const userPayload = verifyTokenFromCookies(token as string);
+        if (!userPayload) {
+            throw new Error('Invalid token');
+        }
+        return userPayload;
+    } catch (error) {
+        console.error('Error getting current user:', error);
+        throw error;
     }
 }
 

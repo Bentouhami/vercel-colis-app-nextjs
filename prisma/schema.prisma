@@ -39,18 +39,24 @@ model Agency {
   DepartureEnvoi Envoi[]        @relation("DepartureAgency")
   Notification   Notification[]
   Appointment    Appointment[]
+  Tarifs         Tarifs[]
 
   @@map("agencies")
 }
 
 model Notification {
-  id        Int      @id @default(autoincrement())
-  message   String
-  agencyId  Int
-  isRead    Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Agency    Agency   @relation(fields: [agencyId], references: [id])
+  id             Int      @id @default(autoincrement())
+  message        String
+  agencyId       Int
+  userId         Int
+  destinataireId Int
+  isRead         Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  User         User          @relation(fields: [userId], references: [id])
+  Agency       Agency        @relation(fields: [agencyId], references: [id])
+  Destinataire Destinataire? @relation(fields: [destinataireId], references: [id])
 
   @@map("notifications")
 }
@@ -72,21 +78,23 @@ model User {
   Address     Address   @relation(fields: [addressId], references: [id])
   role        UserRole  @default(USER)
 
-  ClientEnvoi Envoi[]      @relation("ClientEnvoi")
-  UserCoupon  UserCoupon[]
+  ClientEnvoi  Envoi[]        @relation("ClientEnvoi")
+  UserCoupon   UserCoupon[]
+  Notification Notification[]
 
   @@map("users")
 }
 
 model Destinataire {
-  id          Int      @id @default(autoincrement())
-  firstName   String
-  lastName    String
-  email       String   @unique
-  phoneNumber String   @unique
-  envois      Envoi[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           Int            @id @default(autoincrement())
+  firstName    String
+  lastName     String
+  email        String         @unique
+  phoneNumber  String         @unique
+  envois       Envoi[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  Notification Notification[]
 
   @@map("destinataires")
 }
@@ -183,7 +191,7 @@ model Envoi {
   Parcel         Parcel[]
   Appointment    Appointment?
   Destinataire   Destinataire? @relation(fields: [destinataireId], references: [id])
-  destinataireId Int?
+  destinataireId Int
 
   @@map("envois")
 }
@@ -231,12 +239,15 @@ model Parcel {
 
 model Tarifs {
   id         Int      @id @default(autoincrement())
-  weightRate Float // Prix par kilogramme
-  volumeRate Float // Prix par mètre cube
-  baseRate   Float // Prix de base pour chaque envoi
-  fixedRate  Float // Tarif fixe pour les envois <= 10 kg
+  agencyId   Int?
+  weightRate Float
+  volumeRate Float
+  baseRate   Float
+  fixedRate  Float
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  Agency Agency? @relation(fields: [agencyId], references: [id])
 
   @@map("tarifs")
 }
