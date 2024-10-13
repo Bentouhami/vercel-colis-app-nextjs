@@ -5,8 +5,6 @@
 import {CreateDestinataireDto, CreateUserDto, SimulationEnvoisDto} from "@/utils/dtos";
 import {DOMAIN} from '@/utils/constants';
 import {User} from "@prisma/client";
-import {verifyTokenFromCookies} from "@/utils/verifyToken";
-import {NextRequest} from "next/server";
 
 export async function fetchCountries() {
 
@@ -87,29 +85,29 @@ export async function submitSimulation(simulationData: SimulationEnvoisDto) {
  */
 // Login user via API
 export async function login(email: string, password: string) {
-   try {
-       // envoyer l'email et le mot de passe au serveur via l'API /api/v1/users/login : route pour la connexion d'un utilisateur
-       const response = await fetch('/api/v1/users/login', {
-           method: 'POST',
-           headers: {
-               'Content-Type': 'application/json',
-           },
-           body: JSON.stringify({email, password}),
-       });
+    try {
+        // envoyer l'email et le mot de passe au serveur via l'API /api/v1/users/login : route pour la connexion d'un utilisateur
+        const response = await fetch('/api/v1/users/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({email, password}),
+        });
 
-       // Lire la réponse et la retourner directement
-       const data = await response.json();
+        // Lire la réponse et la retourner directement
+        const data = await response.json();
 
-       if (!response.ok) {
-           // Si la réponse n'est pas ok (2xx), lever une erreur avec le message retourné par l'API
-           throw new Error(data.error || 'Une erreur est survenue lors de l\'enregistrement.');
-       }
+        if (!response.ok) {
+            // Si la réponse n'est pas ok (2xx), lever une erreur avec le message retourné par l'API
+            throw new Error(data.error || 'Une erreur est survenue lors de l\'enregistrement.');
+        }
 
-       return data;
-   } catch (error) {
-       console.error('Error logging in:', error);
-       throw error; // Re-throw the error so it can be caught by the calling function
-   }
+        return data;
+    } catch (error) {
+        console.error('Error logging in:', error);
+        throw error; // Re-throw the error so it can be caught by the calling function
+    }
 }
 
 // register new user via API
@@ -165,21 +163,6 @@ export async function registerDestinataire(newDestinataire: CreateDestinataireDt
         throw error; // Relancer l'erreur pour la capturer dans RegisterForm
     }
 }
-
-export async function getCurrentUser (req: NextRequest) {
-    try {
-        const token = req.cookies.get(process.env.COOKIE_NAME as string);
-        const userPayload = verifyTokenFromCookies(token as string);
-        if (!userPayload) {
-            throw new Error('Invalid token');
-        }
-        return userPayload;
-    } catch (error) {
-        console.error('Error getting current user:', error);
-        throw error;
-    }
-}
-
 
 
 

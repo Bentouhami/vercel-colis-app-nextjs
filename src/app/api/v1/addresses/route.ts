@@ -70,26 +70,12 @@ export async function POST(request: NextRequest) {
                 country: formattedAddress.country
             },
         });
-        // const existingAddress = await prisma.user.findFirst({
-        //         where: formattedAddress,
-        //     }
-        // )
+
 
         // Si l'adresse existe, renvoyer une erreur 400 avec l'adresse existante comme donnée et renvoyer une erreur 400
         if (existingAddress) {
             return NextResponse.json({error: "Address already exists", address: existingAddress}, {status: 400});
         }
-        // on crée une adresse avec la fonction create de prisma et on donne les données du body
-
-        // await prisma.address.create({
-        //     data: {
-        //         street: formattedAddress.street,
-        //         number: formattedAddress.number,
-        //         city: formattedAddress.city,
-        //         zipCode: formattedAddress.zipCode,
-        //         country: formattedAddress.country
-        //     }
-        // });
 
         const newAddress = await prisma.address.create({
             data: formattedAddress

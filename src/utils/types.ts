@@ -2,10 +2,10 @@
 export type JWTPayload = {
     id: number;
     role: string;
+    phoneNumber: string;
     userEmail: string;
     firstName: string;
     lastName: string;
-    phoneNumber : string;
     imageUrl?: string;
 };
 
@@ -33,6 +33,7 @@ export type FormData = {
 };
 
 export type DestinataireData = {
+    id: number;
     firstName: string;
     lastName: string;
     phoneNumber: string;

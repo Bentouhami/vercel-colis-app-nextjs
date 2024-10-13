@@ -69,8 +69,8 @@ export async function POST(request: NextRequest) {
                 country: capitalizeFirstLetter(address.country)
             }
         }
-        // Vérifier si l'adresse et les informations utilisateur existent déjà
 
+        // Vérifier si l'adresse et les informations utilisateur existent déjà
         const [existingAddress, phoneNumberExists, emailExists] = await Promise.all([
             prisma.address.findFirst({
                 where: {
@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
         ]);
 
 
-        // Gérer les erreurs liées à l'existence des données
+        // Gérer les erreurs liées à l'existence des données (si l'adresse ou l'email ou le numéro de téléphone existe déjà)
         if (phoneNumberExists) {
             return NextResponse.json({error: 'Phone number already exists'}, {status: 400});
         }
@@ -132,6 +132,7 @@ export async function POST(request: NextRequest) {
                 gender: true,
                 phoneNumber: true,
                 email: true,
+                imageUrl: true,
                 role: true
             }
         });
@@ -141,6 +142,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({error: "Failed to register user"}, {status: 500});
         }
 
+
         // Générer un cookie JWT avec les informations de l'utilisateur
         const jwtPayload: JWTPayload = {
             id: newUser.id,
@@ -149,6 +151,7 @@ export async function POST(request: NextRequest) {
             firstName: newUser.firstName,
             lastName: newUser.lastName,
             phoneNumber : newUser.phoneNumber,
+            imageUrl: newUser.imageUrl
         };
 
         // Générer le cookie JWT
@@ -163,6 +166,7 @@ export async function POST(request: NextRequest) {
             gender: newUser.gender ?? "",
             phoneNumber: newUser.phoneNumber ?? "",
             email: newUser.email,
+            imageUrl: newUser.imageUrl,
             role: newUser.role
         };
 

@@ -2,7 +2,7 @@ import { z } from "zod";
 
 // Constants for validation
 const PASSWORD_MIN_LENGTH = 8;
-const PHONE_REGEX = /^\+\d{1,3}\d{9,12}$/;
+const PHONE_REGEX = /^\+?\d{1,3}[ -]?\d{9,12}$/;
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&+]{8,}$/;
 
 // Liste des domaines d'emails temporaires
@@ -31,8 +31,9 @@ const passwordValidation = z.string()
 
 const phoneValidation = z.string()
     .regex(PHONE_REGEX, {
-        message: "Le numéro de téléphone doit être au format international (+33612345678)"
+        message: "Le numéro de téléphone doit être au format international, commencer par un '+' suivi de l'indicatif du pays (1 à 3 chiffres), et contenir entre 9 et 12 chiffres."
     });
+
 
 // Address schema
 export const addressSchema = z.object({

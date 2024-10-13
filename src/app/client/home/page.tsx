@@ -7,7 +7,6 @@ import Styles from "./Home.module.css";
 import Link from "next/link";
 import {Button} from "react-bootstrap";
 import TarifsPage from "@/app/client/tarifs/page";
-import ServicesPage from "@/app/client/services/page";
 
 
 const HomePage = async () => {

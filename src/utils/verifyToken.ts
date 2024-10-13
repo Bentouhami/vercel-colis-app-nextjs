@@ -61,4 +61,3 @@ export function verifyTokenFromCookies(token: string): JWTPayload | null {
         return null;
     }
 }
-

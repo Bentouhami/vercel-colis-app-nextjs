@@ -40,7 +40,6 @@ export interface CreateDestinataireDto {
     lastName: string;
     phoneNumber: string;
     email: string;
-    address: CreateAddressDto;
 }
 
 // DTO for User response
@@ -52,6 +51,7 @@ export interface UserResponseDto {
     gender: string;
     phoneNumber: string;
     email: string;
+    imageUrl: string;
     role: string;
 }
 
@@ -90,13 +90,6 @@ export interface CreateParcelDto {
     weight: number; // poids en kg
 }
 
-// DTP for Parcel
-export interface ParcelDto {
-    height: number;
-    width: number;
-    length: number;
-    weight: number;
-}
 
 // DTO for simulation envoi
 export interface SimulationEnvoisDto {
@@ -107,7 +100,7 @@ export interface SimulationEnvoisDto {
     destinationCity: string;
     destinationAgency: string;
 
-    packages: ParcelDto[];
+    packages: CreateParcelDto[];
 }
 
 // STO for Tarifs

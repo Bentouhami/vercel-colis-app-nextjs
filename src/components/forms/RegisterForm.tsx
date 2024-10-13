@@ -14,6 +14,7 @@ import {CreateUserDto} from "@/utils/dtos";
 const RegisterForm = () => {
     const router = useRouter();
     const [formData, setFormData] = useState<FormData>({
+
         firstName: "",
         lastName: "",
         birthDate: "",
@@ -56,15 +57,20 @@ const RegisterForm = () => {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
+        // Validation du formulaire
         const validationResult = validateForm(registerUserSchema, formData);
 
+        // Si la validation a échoué, envoyer une erreur avec le message d'erreur fourni par Zod
         if (!validationResult.success || !validationResult.data) {
             toast.error(validationResult.error || "Une erreur est survenue lors de la validation du formulaire");
             return;
         }
 
+        // Envoi du formulaire de création de compte
         try {
             setLoading(true);
+
+            // Envoi du formulaire de création de compte
             await registerUser(validationResult.data as CreateUserDto); // Utilisation de "as CreateUserDto" pour garantir le type correct
             toast.success("Compte créé avec succès !");
 

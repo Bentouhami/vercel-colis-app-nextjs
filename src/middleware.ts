@@ -4,36 +4,16 @@ import {jwtVerify} from "jose";
 
 export async function middleware(req: NextRequest) {
     try {
-        // logs the request
         console.log('--------------------------------');
         console.log('Middleware Started');
         console.log('Current Path:', req.nextUrl.pathname);
 
-        // get the token from the cookies and verify it with jose
         const cookieName = process.env.COOKIE_NAME || "auth";
         const jwtToken = req.cookies.get(cookieName);
         const token = jwtToken?.value;
 
-        // log the token and its validity
         console.log('Token exists:', !!token);
 
-        // if no token is found, redirect to the client home page
-        if (!token) {
-            console.log('No token found, redirecting to client home page');
-            return NextResponse.redirect(new URL("/client", req.nextUrl.origin));
-        }
-
-        // Vérification du token JWT avec jose
-        const userPayload = await verifyTokenWithJose(token);
-        console.log('User Payload:', userPayload);
-
-        // if no userPayload is found, redirect to the client login page
-        if (!userPayload) {
-            console.log('Invalid token, redirecting to login');
-            return NextResponse.redirect(new URL("/client/login", req.nextUrl.origin));
-        }
-
-        // Prepare the public routes for access control
         const publicRoutes = [
             "/client/login",
             "/client/register",
@@ -47,49 +27,50 @@ export async function middleware(req: NextRequest) {
             "/client/tracking/*"
         ];
 
-        // if the current path is a public route, skip access control
         if (publicRoutes.includes(req.nextUrl.pathname)) {
             console.log('Public route accessed');
             return NextResponse.next();
         }
 
-        // else if the current path is a protected route, check if the user has the correct role 'USER'
-        // or 'ADMIN' and redirect to the client home page if not
+        if (!token) {
+            console.log('No token found, redirecting to client home page');
+            return NextResponse.redirect(new URL("/client", req.nextUrl.origin));
+        }
+
+        // Vérification du token JWT avec jose
+        const userPayload = await verifyTokenWithJose(token);
+        console.log('User Payload:', userPayload);
+
+        if (!userPayload) {
+            console.log('Invalid token, redirecting to login');
+            return NextResponse.redirect(new URL("/client/login", req.nextUrl.origin));
+        }
+
         if ((req.nextUrl.pathname.startsWith('/client/login' || req.nextUrl.pathname.startsWith('/client/register'))) && (userPayload.role === 'USER' || userPayload.role === 'ADMIN')) {
             return NextResponse.redirect(new URL('/client', req.nextUrl.origin));
         }
 
-        // create a variable to check if the user has the correct role ''USER'
         const isAdmin = userPayload.role === 'ADMIN';
         // console.log('Is Admin:', isAdmin);
         // console.log('User Role:', userPayload.role);
 
-        // if the route is an admin route and the user is not an admin,
-        // redirect to unauthorized page /client/unauthorized
         if (req.nextUrl.pathname.startsWith('/admin')) {
             // console.log('Attempting to access admin route');
             if (!isAdmin) {
                 // console.log('Unauthorized access to admin route');
                 return NextResponse.redirect(new URL('/client/unauthorized', req.nextUrl.origin));
             }
-
-            // log admin access granted
             console.log('Admin access granted');
             return NextResponse.next();
         }
 
-        // and finally, if the user is connected but not and access to protected route passed all the checks,
-        // allow access to the route
         console.log('Access granted to protected route');
         return NextResponse.next();
 
     } catch (error) {
-
-        // log the error and redirect to the client login page
         console.error("Error in middleware:", error);
         return NextResponse.redirect(new URL("/client/login", req.nextUrl.origin));
     } finally {
-        // END
         console.log('--------------------------------');
     }
 }

@@ -1,16 +1,15 @@
 // path: src/components/forms/AddReceiverForm.tsx
 
 'use client';
-import { Button, Form } from "react-bootstrap";
-import { DestinataireInput, destinataireSchema } from "@/utils/validationSchema";
-import { Slide, toast, ToastContainer } from "react-toastify";
-import React, { ChangeEvent, useState } from "react";
-import { useRouter } from "next/navigation";
+import {Button, Form} from "react-bootstrap";
+import {DestinataireInput, destinataireSchema} from "@/utils/validationSchema";
+import {Slide, toast, ToastContainer} from "react-toastify";
+import React, {ChangeEvent, useState} from "react";
+import {useRouter} from "next/navigation";
 
 export default function AddReceiverForm() {
     const router = useRouter();
     const [destinataireFormData, setDestinataireFormData] = useState<DestinataireInput>({
-        id: null,
         firstName: "",
         lastName: "",
         email: "",
@@ -44,12 +43,23 @@ export default function AddReceiverForm() {
                 },
                 body: JSON.stringify(destinataireFormData),
             });
+
+
             if (!response.ok) {
-                throw new Error('Une erreur est survenue lors de la création du destinataire');
+                const errorData = await response.json();
+                if (errorData.error) {
+                    // Affiche l'erreur spécifique retournée par le backend
+                    toast.error(errorData.error);
+                } else {
+                    throw new Error('Une erreur est survenue lors de la création du destinataire');
+                }
+                return; // Arrête l'exécution en cas d'erreur
             }
 
             // Récupérer les données du destinataire créées via l'API
-            const destinataireData = await response.json();
+            const sendingData = await response.json();
+            console.log("Received sendingData from API:", sendingData);
+
 
             // Récupérer les données de la simulation
             let simulationResults = localStorage.getItem('simulationResults');
@@ -58,14 +68,16 @@ export default function AddReceiverForm() {
             if (simulationResults) {
                 let simulationData = JSON.parse(simulationResults);
 
-                // Ajouter le destinataire aux données de simulation
-                simulationData.destinataireData = {
-                    ...destinataireData,
-                    ...simulationData.destinataireData
-                };
+                // Remplacer ou ajouter les données du destinataire et du sender
+                simulationData.senderData = sendingData.data.sender;
+                simulationData.destinataireData = sendingData.data.destinataire;
+
+                console.log("simulationData: ", simulationData.destinataireData, simulationData.senderData);
+
 
                 // Enregistrer les nouvelles données de simulation dans localStorage
                 localStorage.setItem('simulationResults', JSON.stringify(simulationData));
+
 
                 // Rediriger vers la page recapitulatif
                 toast.success("Destinataire ajouté avec succès !");
@@ -82,7 +94,7 @@ export default function AddReceiverForm() {
     }
 
     function handleInputChange(e: ChangeEvent<any>) {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
 
         setDestinataireFormData((prev) => ({
             ...prev,
@@ -156,7 +168,7 @@ export default function AddReceiverForm() {
                 <Button type="submit" disabled={loading}>
                     {loading ? "l'Ajout est en cours" : "Ajouter"}
                 </Button>
-                <ToastContainer position="bottom-right" transition={Slide} />
+                <ToastContainer position="bottom-right" transition={Slide}/>
             </Form>
         </div>
     );
