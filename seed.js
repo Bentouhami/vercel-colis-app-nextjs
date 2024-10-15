@@ -4,7 +4,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
-    // Insérer des adresses
+    // Insérer des adresses avec latitude et longitude
     const address1 = await prisma.address.create({
         data: {
             street: 'rue de Bruxelles 1',
@@ -12,6 +12,8 @@ async function main() {
             city: 'Bruxelles',
             zipCode: '2000',
             country: 'Belgique',
+            latitude: 50.8503,
+            longitude: 4.3517,
         },
     });
 
@@ -22,6 +24,8 @@ async function main() {
             city: 'Anvers',
             zipCode: '2000',
             country: 'Belgique',
+            latitude: 51.2194,
+            longitude: 4.4025,
         },
     });
 
@@ -32,6 +36,8 @@ async function main() {
             city: 'Mons',
             zipCode: '7000',
             country: 'Belgique',
+            latitude: 50.4542,
+            longitude: 3.9567,
         },
     });
 
@@ -42,6 +48,8 @@ async function main() {
             city: 'Casablanca',
             zipCode: '20000',
             country: 'Maroc',
+            latitude: 33.5731,
+            longitude: -7.5898,
         },
     });
 
@@ -52,6 +60,8 @@ async function main() {
             city: 'Marrakech',
             zipCode: '40000',
             country: 'Maroc',
+            latitude: 31.6295,
+            longitude: -7.9811,
         },
     });
 
@@ -118,9 +128,14 @@ async function main() {
         },
     });
 
-    // Insérer des tarifs
+// Insérer des tarifs globaux (sans agence spécifique)
+    // Supprimer tous les anciens tarifs, si nécessaire (optionnel)
+    // await prisma.tarifs.deleteMany();
+
+    // Insérer des tarifs globaux (sans agence)
     const tarifs = await prisma.tarifs.create({
         data: {
+            agencyId: null, // Pas d'agence spécifique
             weightRate: 1.60, // € par kg pour les poids > 10 kg
             volumeRate: 0,    // Pas de frais supplémentaires pour le volume
             baseRate: 0,      // Tarif de base
@@ -128,11 +143,14 @@ async function main() {
         },
     });
 
+    console.log('Tarifs globaux créés:', tarifs);
+
+
     // Afficher les données insérées
     console.log({
         address1, address2, address3, address4, address5,
         agency1, agency2, agency3, agency4, agency5,
-        transport1, tarifs,
+        transport1, tarifs
     });
 }
 

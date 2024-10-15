@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
         console.log("user payload & token: ", userPayload, token);
 
         if (!userPayload) {
-            return new NextResponse.json('Unauthorized', {status: 401});
+            return NextResponse.json('Unauthorized', {status: 401});
         }
 
 
@@ -70,14 +70,19 @@ export async function POST(req: NextRequest) {
 
         // vérifier si le client à utiliser ses propres informations comme destinataire et retourner une erreur si c'est le cas
         if ((destinataireData && userPayload) &&
-            (destinataireData.id === userPayload.id)) {
+            (destinataireData.id === userPayload.id) ) {
 
-            console.log("same data between destinataire and user: ", destinataireData, userPayload);
-
-            return NextResponse.json(
-                {error: "Vous ne pouvez pas utiliser vos propres informations comme destinataire."},
-                {status: 400}
-            );
+            // vérifier si les données sont les mêmes pour éviter les doublons
+            if(destinataireData.phoneNumber === userPayload.phoneNumber && destinataireData.email === userPayload.userEmail) {
+                console.log("same data between destinataire and user: ", destinataireData, userPayload);
+                return NextResponse.json(
+                    {error: "Vous ne pouvez pas utiliser vos propres informations comme destinataire."},
+                    {status: 400}
+                );
+            }
+            else {
+                console.log("different data between destinataire and user: ", destinataireData, userPayload);
+            }
         }
 
 

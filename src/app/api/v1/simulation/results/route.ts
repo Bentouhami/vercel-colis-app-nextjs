@@ -29,8 +29,11 @@ export async function POST(request: NextRequest) {
             return errorHandler(validated.error.errors[0].message, 400);
         }
 
+        console.log("Validated data:", validated.data);
+        const envoiDetails = await calculateEnvoiDetails(validated.data);
+
         // Utiliser le service pour calculer les détails de l'envoi
-        const envoiDetails = await calculateEnvoiDetails(body);
+        // const envoiDetails = await calculateEnvoiDetails(body);
 
 
         return NextResponse.json(envoiDetails, { status: 200 });

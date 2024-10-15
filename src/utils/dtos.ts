@@ -51,7 +51,7 @@ export interface UserResponseDto {
     gender: string;
     phoneNumber: string;
     email: string;
-    imageUrl: string;
+    imageUrl?: string | null;
     role: string;
 }
 

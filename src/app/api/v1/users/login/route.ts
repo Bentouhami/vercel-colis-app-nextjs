@@ -42,8 +42,8 @@ export async function POST(request: NextRequest) {
         const user = await prisma.user.findFirst({
             where: { email: formattedEmail },
             select: {
-                password: true,  // On récupère le mot de passe pour le comparer
                 id: true,
+                password: true,
                 role: true,
                 email: true,
                 firstName: true,
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
         });
 
         // Si l'utilisateur n'est pas trouvé ou si le mot de passe est incorrect
-        if (!user || !(await bcrypt.compare(data.password, user.password))) {
+        if (!user || !user.password || !(await bcrypt.compare(data.password, user.password))) {
             // Utiliser un message générique pour des raisons de sécurité
             return NextResponse.json(
                 { error: "Invalid email or password" },

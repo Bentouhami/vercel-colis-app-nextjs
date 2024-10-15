@@ -1,3 +1,5 @@
+// path: prisma/schema.prisma 
+
 datasource db {
   provider  = "postgresql"
   url       = env("POSTGRES_PRISMA_URL")
@@ -10,11 +12,13 @@ generator client {
 
 model Address {
   id        Int      @id @default(autoincrement())
-  street    String
-  number    String?
-  city      String
-  zipCode   String
-  country   String
+  street    String   @db.VarChar(50)
+  number    String?  @db.VarChar(50)
+  city      String   @db.VarChar(50)
+  zipCode   String   @db.VarChar(50)
+  country   String   @db.VarChar(50)
+  latitude  Float? // Latitude de l'adresse, stockée en Float
+  longitude Float? // Longitude de l'adresse, stockée en Float
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -26,11 +30,11 @@ model Address {
 
 model Agency {
   id             Int      @id @default(autoincrement())
-  name           String
-  location       String?
+  name           String   @db.VarChar(50)
+  location       String?  @db.VarChar(250)
   addressId      Int      @unique
-  capacity       Int // Capacité maximale pour stocker les colis
-  availableSlots Int // Nombre de places disponibles pour les rendez-vous ou dépôts
+  capacity       Int      @db.Integer // Capacité maximale pour stocker les colis
+  availableSlots Int      @db.Integer // Nombre de places disponibles pour les rendez-vous ou dépôts
   Address        Address  @relation(fields: [addressId], references: [id])
   updatedAt      DateTime @updatedAt
   createdAt      DateTime @default(now())
@@ -46,12 +50,12 @@ model Agency {
 
 model Notification {
   id             Int      @id @default(autoincrement())
-  message        String
-  envoisId       Int
-  agencyId       Int
-  userId         Int
-  destinataireId Int
-  envoiId        Int
+  message        String   @db.VarChar(255)
+  envoisId       Int      @db.Integer
+  agencyId       Int      @db.Integer
+  userId         Int      @db.Integer
+  destinataireId Int      @db.Integer
+  envoiId        Int      @db.Integer
   isRead         Boolean  @default(false)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
@@ -66,14 +70,14 @@ model Notification {
 
 model User {
   id          Int       @id @default(autoincrement())
-  firstName   String
-  lastName    String
-  dateOfBirth DateTime?
-  gender      String?
-  email       String    @unique
-  phoneNumber String    @unique
-  password    String?   @default("")
-  imageUrl    String?   @default("")
+  firstName   String    @db.VarChar(50)
+  lastName    String    @db.VarChar(50)
+  dateOfBirth DateTime? @db.Timestamp(3)
+  gender      String?   @db.VarChar(50)
+  email       String    @unique @db.VarChar(150)
+  phoneNumber String    @unique @db.VarChar(50)
+  password    String?   @default("") @db.VarChar(255)
+  imageUrl    String?   @default("") @db.VarChar(255)
   isVerified  Boolean?  @default(false)
   addressId   Int?
   role        Role      @default(CLIENT)
@@ -109,13 +113,13 @@ enum EnvoiStatus {
 
 model Coupon {
   id                 Int       @id @default(autoincrement())
-  couponCode         String
-  discountAmount     Float
-  discountPercentage Float
+  couponCode         String    @db.VarChar(50)
+  discountAmount     Decimal   @db.Decimal(10, 2) // 10 chiffres au total, 2 chiffres après la virgule
+  discountPercentage Decimal   @db.Decimal(5, 2) // 5 chiffres au total, 2 chiffres après la virgule
   numberOfUses       Int
-  startDate          DateTime
-  expirationDate     DateTime?
-  termsAndConditions String?
+  startDate          DateTime  @db.Timestamp(3)
+  expirationDate     DateTime? @db.Timestamp(3)
+  termsAndConditions String?   @db.VarChar(255)
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
 
@@ -137,35 +141,32 @@ model UserCoupon {
 }
 
 model Transport {
-  id            Int      @id @default(autoincrement())
-  number        String // Numéro de la camion de transport
-  baseVolume    Float
-  baseWeight    Float
-  currentVolume Float
-  currentWeight Float
-  isAvailable   Boolean
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
+  id                Int                 @id @default(autoincrement())
+  number            String              @db.VarChar(15)
+  baseVolume        Decimal             @db.Decimal(12, 2) // Augmentation de la précision
+  baseWeight        Decimal             @db.Decimal(10, 2) // Augmentation de la précision
+  currentVolume     Decimal             @db.Decimal(12, 2) // Augmentation de la précision
+  currentWeight     Decimal             @db.Decimal(10, 2) // Augmentation de la précision
+  isAvailable       Boolean             @default(true)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
   Envoi             Envoi[]
   TransportSchedule TransportSchedule[]
-
-  @@map("transports")
 }
 
 model Envoi {
   id                Int         @id @default(autoincrement())
-  trackingNumber    String      @unique
-  qrCodeUrl         String? // URL du QR code pour le dépôt en agence
+  trackingNumber    String      @unique @db.VarChar(50)
+  qrCodeUrl         String?     @db.VarChar(255) // URL du QR code pour le dépôt en agence
   clientId          Int
-  dateSent          DateTime
+  dateSent          DateTime    @db.Timestamp(3)
   departureAgencyId Int
-  dateDelivered     DateTime
+  dateDelivered     DateTime    @db.Timestamp(3)
   arrivalAgencyId   Int
   status            EnvoiStatus @default(PENDING)
-  totalWeight       Float
-  totalVolume       Float
-  totalPrice        Float
+  totalWeight       Decimal     @db.Decimal(5, 2)
+  totalVolume       Decimal     @db.Decimal(5, 2)
+  totalPrice        Decimal     @db.Decimal(5, 2)
   comment           String?     @db.Text()
   transportId       Int
   destinataireId    Int
@@ -187,18 +188,28 @@ model Envoi {
 }
 
 model Appointment {
-  id        Int      @id @default(autoincrement())
-  envoiId   Int      @unique
+  id        Int               @id @default(autoincrement())
+  envoiId   Int               @unique
   agencyId  Int
-  date      DateTime
-  status    String   @default("PENDING") // Statuts possibles : PENDING, CONFIRMED, CANCELLED
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  date      DateTime          @db.Timestamp(3)
+  status    AppointmentStatus @default(PENDING) // Statuts possibles : PENDING, CONFIRMED, CANCELLED
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
 
   Envoi  Envoi  @relation(fields: [envoiId], references: [id])
   Agency Agency @relation(fields: [agencyId], references: [id])
 
   @@map("appointments")
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  RESCHEDULED
+  COMPLETED
+  MISSED
+  IN_PROGRESS
 }
 
 model EnvoiCoupon {
@@ -214,11 +225,11 @@ model EnvoiCoupon {
 
 model Parcel {
   id        Int      @id @default(autoincrement())
-  height    Float
-  volume    Float
-  weight    Float
-  width     Float
-  length    Float
+  height    Decimal  @db.Decimal(5, 2)
+  volume    Decimal  @db.Decimal(5, 2)
+  weight    Decimal  @db.Decimal(5, 2)
+  width     Decimal  @db.Decimal(5, 2)
+  length    Decimal  @db.Decimal(5, 2)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   envoiId   Int
@@ -230,10 +241,10 @@ model Parcel {
 model Tarifs {
   id         Int      @id @default(autoincrement())
   agencyId   Int?
-  weightRate Float
-  volumeRate Float
-  baseRate   Float
-  fixedRate  Float
+  weightRate Decimal  @db.Decimal(5, 2)
+  volumeRate Decimal  @db.Decimal(5, 2)
+  baseRate   Decimal  @db.Decimal(5, 2)
+  fixedRate  Decimal  @db.Decimal(5, 2)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
@@ -245,9 +256,9 @@ model Tarifs {
 model TransportSchedule {
   id            Int      @id @default(autoincrement())
   transportId   Int
-  departureDate DateTime
-  arrivalDate   DateTime
-  isHoliday     Boolean
+  departureDate DateTime @db.Timestamp(3)
+  arrivalDate   DateTime @db.Timestamp(3)
+  isHoliday     Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 

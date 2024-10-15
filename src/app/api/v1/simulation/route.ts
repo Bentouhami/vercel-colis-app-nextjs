@@ -1,5 +1,6 @@
-// route.ts : Route pour les simulations
-// api/v1/simulation : Route pour les simulations
+// path: src/app/api/v1/simulation
+
+
 import {NextRequest, NextResponse} from 'next/server';
 import {prisma} from "@/utils/db";
 

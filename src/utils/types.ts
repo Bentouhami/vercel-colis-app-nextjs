@@ -6,7 +6,7 @@ export type JWTPayload = {
     userEmail: string;
     firstName: string;
     lastName: string;
-    imageUrl?: string;
+    imageUrl?: string | null;
 };
 
 export type Country = {
