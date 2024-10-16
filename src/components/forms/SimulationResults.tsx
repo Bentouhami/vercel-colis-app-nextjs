@@ -193,8 +193,8 @@ const SimulationResults = () => {
                                 animate={{opacity: 1}}
                                 transition={{delay: 1.7}}
                             >
-                                <p><strong>Poids total:</strong> {results.totalWeight} kg</p>
-                                <p><strong>Volume total:</strong> {results.totalVolume} cm²</p>
+                                <p><strong>Poids total:</strong> {results.totalWeight.toNumber()} kg</p>
+                                <p><strong>Volume total:</strong> {results.totalVolume.toNumber()} cm²</p>
                             </motion.div>
 
                             <motion.div
@@ -203,7 +203,7 @@ const SimulationResults = () => {
                                 animate={{opacity: 1}}
                                 transition={{delay: 1.9}}
                             >
-                                <p><strong>Prix total:</strong> {results.totalPrice} €</p>
+                                <p><strong>Prix total:</strong> {results.totalPrice.toNumber()} €</p>
                                 <p><strong>Date de
                                     départ:</strong> {new Date(results.departureDate).toLocaleDateString()}</p>
                                 <p><strong>Date
