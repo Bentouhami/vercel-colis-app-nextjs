@@ -122,9 +122,9 @@ export interface SimulationResultsDto {
     destinationCity: string;
     destinationAgency: string;
     packages: CreateParcelDto[];
-    totalWeight: Decimal;
-    totalVolume: Decimal;
-    totalPrice: Decimal;
+    totalWeight: number;
+    totalVolume: number;
+    totalPrice: number;
     departureDate: string;
     arrivalDate: string;
 }
