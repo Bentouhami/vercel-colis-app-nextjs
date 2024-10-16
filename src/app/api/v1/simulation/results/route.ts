@@ -30,8 +30,11 @@ export async function POST(request: NextRequest) {
         }
 
         console.log("Validated data:", validated.data);
+
+        console.log("trying to calculate EnvoisDetails (validated.data) : ", validated.data);
         const envoiDetails = await calculateEnvoiDetails(validated.data);
 
+        console.log("Validation passed & the envoiDetails is : ", envoiDetails)
         // Utiliser le service pour calculer les détails de l'envoi
         // const envoiDetails = await calculateEnvoiDetails(body);
 

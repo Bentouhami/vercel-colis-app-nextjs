@@ -1,5 +1,6 @@
 // DTOs for my project – ColiApp
 import {Address} from "@prisma/client";
+import { Decimal } from "@prisma/client/runtime/library";
 
 export interface CreateAddressDto {
     street: string;
@@ -121,9 +122,9 @@ export interface SimulationResultsDto {
     destinationCity: string;
     destinationAgency: string;
     packages: CreateParcelDto[];
-    totalWeight: number;
-    totalVolume: number;
-    totalPrice: number;
+    totalWeight: Decimal;
+    totalVolume: Decimal;
+    totalPrice: Decimal;
     departureDate: string;
     arrivalDate: string;
 }

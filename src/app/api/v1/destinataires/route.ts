@@ -1,6 +1,5 @@
 // path: src/app/api/v1/destinataires/route.ts
 
-
 import {NextRequest, NextResponse} from "next/server";
 import {prisma} from "@/utils/db";
 import {capitalizeFirstLetter, toLowerCase} from "@/utils/stringUtils";
@@ -19,75 +18,56 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({error: "Missing required fields"}, {status: 400});
         }
 
-        // debug le contenu de la requête POST
-        console.log("body debug & BREAK", body);
-
         // Valider les données avec Zod
         const validationResult = destinataireSchema.safeParse(body);
-
 
         // Si la validation a échoué, retourner une erreur 400 avec le message d'erreur
         if (!validationResult.success) {
             return NextResponse.json({error: validationResult.error.errors[0].message}, {status: 400});
         }
 
-        // Récupérer les données du destinataire destructeur à partir de la validation
+        // Récupérer les données du destinataire
         const {firstName, lastName, phoneNumber, email} = validationResult.data;
 
-
-
-        // récupérer le token de l'utilisateur connecté
+        // Récupérer le token de l'utilisateur connecté
         const token = req.cookies.get(process.env.COOKIE_NAME as string);
         if (!token) {
             return new Response('Unauthorized', {status: 401});
         }
 
         const userPayload = verifyToken(req);
-        console.log("user payload & token: ", userPayload, token);
-
         if (!userPayload) {
             return NextResponse.json('Unauthorized', {status: 401});
         }
 
-
-        // chercher le destinataire dans la base de données s'il existe déjà et renvoyer une erreur si c'est
+        // Chercher le destinataire dans la base de données
         let destinataireData = await prisma.user.findFirst({
             where: {
                 email: toLowerCase(email),
                 phoneNumber: phoneNumber
             },
             select: {
-                // id: true,
+                id: true,
                 firstName: true,
                 lastName: true,
                 phoneNumber: true,
                 email: true,
-
             }
         }) as DestinataireData;
 
-        console.log("existed destinataire data: ", destinataireData, userPayload);
+        // Vérifier si le client a utilisé ses propres informations comme destinataire
+        if (destinataireData && userPayload && (destinataireData.id === userPayload.id)) {
+            console.log("User attempted to use their own information as destinataire: ", destinataireData, userPayload);
 
-        // vérifier si le client à utiliser ses propres informations comme destinataire et retourner une erreur si c'est le cas
-        if ((destinataireData && userPayload) &&
-            (destinataireData.id === userPayload.id) ) {
-
-            // vérifier si les données sont les mêmes pour éviter les doublons
-            if(destinataireData.phoneNumber === userPayload.phoneNumber && destinataireData.email === userPayload.userEmail) {
-                console.log("same data between destinataire and user: ", destinataireData, userPayload);
-                return NextResponse.json(
-                    {error: "Vous ne pouvez pas utiliser vos propres informations comme destinataire."},
-                    {status: 400}
-                );
-            }
-            else {
-                console.log("different data between destinataire and user: ", destinataireData, userPayload);
-            }
+            // Retourner un message d'erreur générique pour éviter de divulguer des informations spécifiques
+            return NextResponse.json(
+                {error: "Vous ne pouvez pas utiliser vos propres informations comme destinataire."},
+                {status: 400}
+            );
         }
 
-
+        // Créer un nouveau destinataire si aucun n'existe avec ces informations
         if (!destinataireData) {
-            // créer le destinataire dans la base de données s'il n'existe pas
             destinataireData = await prisma.user.create({
                 data: {
                     firstName: capitalizeFirstLetter(firstName),
@@ -96,33 +76,27 @@ export async function POST(req: NextRequest) {
                     email: toLowerCase(email),
                 },
                 select: {
-                    // id: true,
                     firstName: true,
                     lastName: true,
                     phoneNumber: true,
                     email: true
-
                 }
             }) as DestinataireData;
         }
 
-
+        // Si le destinataire a été créé ou trouvé, créer un cookie et renvoyer la réponse
         if (destinataireData) {
-            // Vérification si l'environnement est HTTPS ou non
             const isProduction = process.env.NODE_ENV === 'production';
-            // Définir le cookie, sans l'attribut `Secure` en développement local
-            console.log("Setting destinatire cookie with destinataireData :", destinataireData);
 
             const data = {
                 sender: {
-                    // id: userPayload.id,
                     firstName: userPayload.firstName,
                     lastName: userPayload.lastName,
                     phoneNumber: userPayload.phoneNumber,
                     email: userPayload.userEmail,
                 },
                 destinataire: destinataireData
-            }
+            };
 
             return NextResponse.json({data: data}, {
                 status: 201,
@@ -133,9 +107,8 @@ export async function POST(req: NextRequest) {
         } else {
             return NextResponse.json({error: "Error creating destinataire"}, {status: 500});
         }
-    } catch
-        (error) {
+    } catch (error) {
         console.error("Error creating destinataire:", error);
-        return NextResponse.json({error: "Error creating destinataire"}, {status: 500});
+        return NextResponse.json({error: "Oups Error creating destinataire"}, {status: 500});
     }
 }

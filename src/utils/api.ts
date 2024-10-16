@@ -57,6 +57,10 @@ export async function fetchAgencies(country:string, city:string) {
 // Envoyer les données de la simulation au serveur via l'API
 export async function submitSimulation(simulationData: SimulationEnvoisDto) {
     try {
+
+        // debug console.log("simulationData", simulationData);
+        console.log("simulationData in submitSimulation function", simulationData);
+
         // Envoyer les données de la simulation au serveur via l'API
         const response = await fetch('/api/v1/simulation/results', {
             method: 'POST',
@@ -66,9 +70,14 @@ export async function submitSimulation(simulationData: SimulationEnvoisDto) {
             body: JSON.stringify(simulationData),
         });
 
+        // debug 
+        console.log("reponse request passed to API in submitSimulation function");
+
         if (response.ok) {
+            console.log("reposne OK from API returning response.json")
             return await response.json();
         } else {
+            console.log("respone NOT OK from API in submitSimulation")
             throw new Error('Failed to submit simulation');
         }
     } catch (error) {

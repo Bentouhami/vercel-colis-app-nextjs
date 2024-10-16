@@ -16,6 +16,8 @@ import {registerUserSchema} from "@/utils/validationSchema";
  */
 export async function POST(request: NextRequest) {
     try {
+        console.log("POST request received");
+
         // Récupérer les données de l'utilisateur à partir de la requête
         const body = (await request.json()) as CreateUserDto;
 
@@ -23,6 +25,7 @@ export async function POST(request: NextRequest) {
         if (!body) {
             return NextResponse.json({error: "Missing required fields"}, {status: 400});
         }
+        console.log("Register user request body: ", body);
 
         // Valider les données de l'utilisateur avec le schéma de validation
         const
@@ -32,6 +35,7 @@ export async function POST(request: NextRequest) {
                 data: validatedData
             } = registerUserSchema.safeParse(body);
 
+        console.log("Register user request validation result: ", success, error);
         // Vérifier si les données sont valides
         if (!success) {
             return NextResponse.json(
@@ -39,6 +43,9 @@ export async function POST(request: NextRequest) {
                 {status: 400}
             );
         }
+
+        console.log("Register user request validation result success: ", success, error);
+
 
         // Récupérer les données de l'utilisateur à partir de la validation réussie
         const {
@@ -70,6 +77,8 @@ export async function POST(request: NextRequest) {
             }
         }
 
+        console.log("Register user request formatted user: ", formattedUser);
+
         // Vérifier si l'adresse et les informations utilisateur existent déjà
         const [existingAddress, phoneNumberExists, emailExists] = await Promise.all([
             prisma.address.findFirst({
@@ -93,24 +102,31 @@ export async function POST(request: NextRequest) {
             })
         ]);
 
+        console.log("Register user request existing data: ", existingAddress, phoneNumberExists, emailExists);
+
 
         // Gérer les erreurs liées à l'existence des données (si l'adresse ou l'email ou le numéro de téléphone existe déjà)
-        if (phoneNumberExists) {
-            return NextResponse.json({error: 'Phone number already exists'}, {status: 400});
+        if (phoneNumberExists || emailExists) {
+            console.log("account already exists");
+            return NextResponse.json({error: 'account already exists, please try to connect'}, {status: 400});
         }
-
-        if (emailExists) {
-            return NextResponse.json({error: 'Email already exists'}, {status: 400});
-        }
-
 
         // Créer l'adresse si elle n'existe pas
         const addressToUse = existingAddress || await prisma.address.create({
             data: formattedUser.address,
         });
 
+        if(!addressToUse) {
+            console.log("Failed to create address");
+            return NextResponse.json({error: "Failed to create address"}, {status: 500});
+        }
+
+        console.log("Register user request address to use: ", addressToUse);
         // Hashes le mot de passe et créer un nouvel utilisateur dans la base de données
         const hashedPassword = await bcrypt.hash(password, 10);
+
+        console.log("Register user request hashed password");
+
         const newUser = await prisma.user.create({
             data: {
                 firstName: formattedUser.firstName,
@@ -137,11 +153,14 @@ export async function POST(request: NextRequest) {
             }
         });
 
+
         // Vérifier si l'utilisateur a été créé avec succès dans la base de données pour éviter typescript errors (car user peut être null)
         if (!newUser) {
+            console.log("Failed to register user");
             return NextResponse.json({error: "Failed to register user"}, {status: 500});
         }
 
+        console.log("Register user request new user created successfully : ", newUser);
 
         // Générer un cookie JWT avec les informations de l'utilisateur
         const jwtPayload: JWTPayload = {
@@ -150,9 +169,18 @@ export async function POST(request: NextRequest) {
             userEmail: newUser.email,
             firstName: newUser.firstName,
             lastName: newUser.lastName,
-            phoneNumber : newUser.phoneNumber,
+            phoneNumber: newUser.phoneNumber,
             imageUrl: newUser.imageUrl
         };
+
+
+        if (!jwtPayload) {
+            return NextResponse.json(
+                {error: "Error creating jwt"},
+                {status: 500}
+            );
+        }
+        console.log("Register user request jwt payload: ", jwtPayload);
 
         // Générer le cookie JWT
         const cookie = setCookie(jwtPayload);
