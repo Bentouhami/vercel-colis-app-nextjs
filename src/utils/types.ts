@@ -6,7 +6,7 @@ export type JWTPayload = {
     userEmail: string;
     firstName: string;
     lastName: string;
-    imageUrl?: string | null;
+    image?: string | null;
 };
 
 export type Country = {
@@ -18,7 +18,6 @@ export type FormData = {
     firstName: string;
     lastName: string;
     birthDate: string;
-    gender: "Masculin" | "Féminin" | "Autre" | "";
     phoneNumber: string;
     email: string;
     password: string;
@@ -38,6 +37,7 @@ export type DestinataireData = {
     lastName: string;
     phoneNumber: string;
     email: string;
+    role: string;
 }
 
 

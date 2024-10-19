@@ -1,7 +1,7 @@
 // path: /src/app/api/v1/users/profile/[id]/route.ts (Route pour l'API de profil utilisateur) route for the user profile api
 
 import {NextRequest, NextResponse} from "next/server";
-import {prisma} from "@/utils/db";
+import prisma from "@/utils/db";
 import {errorHandler} from "@/utils/handelErrors";
 
 

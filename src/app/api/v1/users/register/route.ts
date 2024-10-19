@@ -1,25 +1,27 @@
-// url : /api/v1/users/register
 import {NextRequest, NextResponse} from 'next/server';
-import {CreateUserDto, UserResponseDto} from '@/utils/dtos';
-import {prisma} from "@/utils/db";
+import {UserResponseDto} from '@/utils/dtos';
 import bcrypt from "bcryptjs";
-import {JWTPayload} from "@/utils/types";
-import {setCookie} from "@/utils/generateToken";
 import {errorHandler} from "@/utils/handelErrors";
 import {capitalizeFirstLetter, toLowerCase} from "@/utils/stringUtils";
-import {registerUserSchema} from "@/utils/validationSchema";
+import {registerUserBackendSchema, RegisterUserBackendType} from "@/utils/validationSchema";
+import prisma from "@/utils/db";
+import {randomBytes} from "crypto";
+import {createAddress, isAddressAlreadyExist} from "@/services/address/AddresseService";
+import {isUserAlreadyExist} from "@/services/users/UserService";
+import { sendVerificationEmail} from "@/lib/mailer";
+import {hashPassword} from "@/lib/auth";
 
-/**
- * Register a new user
- * @param request - The request object
- * @returns - The response object
- */
 export async function POST(request: NextRequest) {
+
+    if (request.method !== "POST") {
+        return NextResponse.json({error: "Method not allowed"}, {status: 405});
+    }
+
     try {
         console.log("POST request received");
 
         // Récupérer les données de l'utilisateur à partir de la requête
-        const body = (await request.json()) as CreateUserDto;
+        const body = (await request.json()) as RegisterUserBackendType;
 
         // Vérifier que les données sont renseignées
         if (!body) {
@@ -28,15 +30,8 @@ export async function POST(request: NextRequest) {
         console.log("Register user request body: ", body);
 
         // Valider les données de l'utilisateur avec le schéma de validation
-        const
-            {
-                success,
-                error,
-                data: validatedData
-            } = registerUserSchema.safeParse(body);
+        const {success, error, data: validatedData} = registerUserBackendSchema.safeParse(body);
 
-        console.log("Register user request validation result: ", success, error);
-        // Vérifier si les données sont valides
         if (!success) {
             return NextResponse.json(
                 {error: error?.errors[0].message},
@@ -44,27 +39,21 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        console.log("Register user request validation result success: ", success, error);
-
-
-        // Récupérer les données de l'utilisateur à partir de la validation réussie
         const {
             firstName,
             lastName,
             birthDate,
-            gender,
             phoneNumber,
             email,
             password,
             address
         } = validatedData;
 
-        // formated user data
+        // Formater les données de l'utilisateur
         const formattedUser = {
             firstName: capitalizeFirstLetter(firstName),
             lastName: capitalizeFirstLetter(lastName),
             birthDate,
-            gender: gender,
             phoneNumber,
             email: toLowerCase(email),
             password,
@@ -75,67 +64,86 @@ export async function POST(request: NextRequest) {
                 zipCode: address.zipCode,
                 country: capitalizeFirstLetter(address.country)
             }
-        }
+        } as RegisterUserBackendType;
 
-        console.log("Register user request formatted user: ", formattedUser);
+        // Vérifier si l'utilisateur existe déjà dans la base de données
+        const existedUser = await isUserAlreadyExist(formattedUser.email, formattedUser.phoneNumber);
 
-        // Vérifier si l'adresse et les informations utilisateur existent déjà
-        const [existingAddress, phoneNumberExists, emailExists] = await Promise.all([
-            prisma.address.findFirst({
-                where: {
-                    street: formattedUser.address.street,
-                    number: formattedUser.address.number,
-                    city: formattedUser.address.city,
-                    zipCode: formattedUser.address.zipCode,
-                    country: formattedUser.address.country
-                }
-            }),
-            prisma.user.findFirst({
-                where: {
-                    phoneNumber: formattedUser.phoneNumber
-                }
-            }),
-            prisma.user.findFirst({
-                where: {
-                    email: formattedUser.email
-                }
-            })
-        ]);
-
-        console.log("Register user request existing data: ", existingAddress, phoneNumberExists, emailExists);
-
-
-        // Gérer les erreurs liées à l'existence des données (si l'adresse ou l'email ou le numéro de téléphone existe déjà)
-        if (phoneNumberExists || emailExists) {
-            console.log("account already exists");
-            return NextResponse.json({error: 'account already exists, please try to connect'}, {status: 400});
-        }
+        // Si l'utilisateur n'existe pas, créer un nouvel utilisateur
+        const existingAddress = await isAddressAlreadyExist(formattedUser.address);
 
         // Créer l'adresse si elle n'existe pas
-        const addressToUse = existingAddress || await prisma.address.create({
-            data: formattedUser.address,
-        });
-
-        if(!addressToUse) {
-            console.log("Failed to create address");
+        const addressToUse = existingAddress || await createAddress(formattedUser.address);
+        if (!addressToUse) {
             return NextResponse.json({error: "Failed to create address"}, {status: 500});
         }
 
-        console.log("Register user request address to use: ", addressToUse);
-        // Hashes le mot de passe et créer un nouvel utilisateur dans la base de données
-        const hashedPassword = await bcrypt.hash(password, 10);
+        // Générer un token de vérification de l'email
+        // Générer un token de vérification
+        const verificationToken = randomBytes(32).toString("hex");
+        const verificationTokenExpires = new Date(Date.now() + 1000 * 60 * 15); // Expiration en 15 minutes
 
-        console.log("Register user request hashed password");
+        // hash password
+        const hashedPassword = await hashPassword(formattedUser.password);
+        if (existedUser) {
 
+            if (!existedUser.password) {
+                existedUser.role = "DESTINATAIRE";
+            }
+            // L'utilisateur existe déjà, vérifions son rôle et l'état de vérification
+            if (existedUser.role === "DESTINATAIRE" && !existedUser.isVerified) {
+                // Mettre à jour l'utilisateur avec le token de vérification
+                await prisma.user.update({
+                    where: {id: existedUser.id},
+                    data: {
+                        name: formattedUser.firstName + " " + formattedUser.lastName,
+                        dateOfBirth: new Date(formattedUser.birthDate),
+                        password: hashedPassword,
+                        role: "CLIENT",
+                        addressId: addressToUse.id,
+                        verificationToken: verificationToken,
+                        verificationTokenExpires: verificationTokenExpires
+                    }
+                });
+
+                // Envoyer un email de vérification à l'utilisateur
+                await sendVerificationEmail(existedUser.email, verificationToken);
+
+                return NextResponse.json({message: "Vérification de l'email envoyée, valable pour 15 mins"}, {status: 200});
+            } else if ((existedUser.role === "CLIENT" || existedUser.role === "ADMIN") && existedUser.isVerified) {
+                // Si l'utilisateur est déjà un client ou un admin vérifié
+                return NextResponse.json({error: "User already exists and is verified. Please log in."}, {status: 400});
+            } else {
+                // Si l'utilisateur est client ou admin, mais non vérifié, renvoyer un email de vérification
+                const token = randomBytes(32).toString("hex");
+
+                await prisma.user.update({
+                    where: {id: existedUser.id},
+                    data: {
+                        verificationToken: token,
+                        verificationTokenExpires: new Date(Date.now() + 1000 * 60 * 15)
+                    }
+                });
+
+                await sendVerificationEmail(existedUser.email, token);
+                return NextResponse.json({message: "Vérification de l'email envoyée, valable pour 15 mins"}, {status: 200});
+            }
+        }
+
+
+
+        // Créer le nouvel utilisateur
         const newUser = await prisma.user.create({
             data: {
                 firstName: formattedUser.firstName,
                 lastName: formattedUser.lastName,
+                name: formattedUser.firstName + " " + formattedUser.lastName,
                 dateOfBirth: new Date(formattedUser.birthDate),
-                gender: formattedUser.gender,
                 phoneNumber: formattedUser.phoneNumber,
                 email: formattedUser.email,
                 password: hashedPassword,
+                verificationToken,
+                verificationTokenExpires,
                 addressId: addressToUse.id,
                 createdAt: new Date(),
                 updatedAt: new Date(),
@@ -145,71 +153,38 @@ export async function POST(request: NextRequest) {
                 firstName: true,
                 lastName: true,
                 dateOfBirth: true,
-                gender: true,
                 phoneNumber: true,
                 email: true,
-                imageUrl: true,
+                image: true,
                 role: true
             }
-        });
+        }) as UserResponseDto;
 
-
-        // Vérifier si l'utilisateur a été créé avec succès dans la base de données pour éviter typescript errors (car user peut être null)
         if (!newUser) {
-            console.log("Failed to register user");
             return NextResponse.json({error: "Failed to register user"}, {status: 500});
         }
 
-        console.log("Register user request new user created successfully : ", newUser);
-
-        // Générer un cookie JWT avec les informations de l'utilisateur
-        const jwtPayload: JWTPayload = {
-            id: newUser.id,
-            role: newUser.role,
-            userEmail: newUser.email,
-            firstName: newUser.firstName,
-            lastName: newUser.lastName,
-            phoneNumber: newUser.phoneNumber,
-            imageUrl: newUser.imageUrl
-        };
+        // lig created user data et BREAK
+        console.log("User created successfully: ", newUser);
 
 
-        if (!jwtPayload) {
-            return NextResponse.json(
-                {error: "Error creating jwt"},
-                {status: 500}
-            );
-        }
-        console.log("Register user request jwt payload: ", jwtPayload);
-
-        // Générer le cookie JWT
-        const cookie = setCookie(jwtPayload);
-
-        // Convertir les données de l'utilisateur en un objet UserResponseDto
-        const userResponse: UserResponseDto = {
-            id: newUser.id,
-            firstName: newUser.firstName,
-            lastName: newUser.lastName,
-            dateOfBirth: newUser.dateOfBirth?.toISOString() || "",
-            gender: newUser.gender ?? "",
-            phoneNumber: newUser.phoneNumber ?? "",
-            email: newUser.email,
-            imageUrl: newUser.imageUrl,
-            role: newUser.role
-        };
+        // Envoyer un email de vérification pour le nouvel utilisateur
+        await sendVerificationEmail(newUser.email, verificationToken);
 
 
         // Renvoyer les données de l'utilisateur et le message de succès (201 pour création réussie)
         return NextResponse.json(
-            {user: userResponse, message: "Registered & authenticated"},
+            {
+                message:
+                    "Registered & verification email sent"
+            },
             {
                 status: 201,
-                headers: {'Set-Cookie': cookie}
             }
-        );
+        )
+            ;
 
     } catch (error) {
-        // console.error("Error in user registration: ", error);
         return errorHandler(`Internal server error: ${error}`, 500);
     }
 }

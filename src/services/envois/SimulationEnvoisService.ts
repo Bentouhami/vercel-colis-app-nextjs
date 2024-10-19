@@ -1,9 +1,8 @@
-// path:
+// path: src/services/envois/SimulationEnvoisService.ts
 
-
-import {prisma} from "@/utils/db";
 import {SimulationEnvoisDto, TarifsDto} from "@/utils/dtos";
 import {parcelsSchema, simulationEnvoisSchema} from "@/utils/validationSchema";
+import prisma from "@/utils/db";
 
 // Trouver le prochain mardi à partir d'une date donnée
 function getNextTuesday(date: Date): Date {
@@ -144,7 +143,7 @@ export const calculateEnvoiDetails = async (envoiData: SimulationEnvoisDto) => {
     // Round to two decimal places
     totalPrice = parseFloat(totalPrice.toFixed(2));
     
-    console.log("Round to tow decomal palces passed :", totalPrice);
+    console.log("Round to tow decimal  :", totalPrice);
 
     // Calculer les dates de départ et d'arrivée
     const today = new Date();

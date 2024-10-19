@@ -3,7 +3,7 @@ import {addressSchema} from "@/utils/validationSchema";
 import {CreateAddressDto} from "@/utils/dtos";
 import {errorHandler} from "@/utils/handelErrors";
 import {Address} from "@prisma/client";
-import {prisma} from "@/utils/db";
+import prisma from "@/utils/db";
 import {capitalizeFirstLetter, toLowerCase} from "@/utils/stringUtils";
 
 

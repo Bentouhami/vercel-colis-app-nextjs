@@ -1,3 +1,6 @@
+// path     : src/app/client/(user)/register/page.tsx
+
+
 "use client";
 
 import React, {ChangeEvent, useState} from 'react';
@@ -5,7 +8,7 @@ import { Button, Col, Form, Row } from "react-bootstrap";
 import { Slide, toast, ToastContainer } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { registerUser } from "@/utils/api";
-import {  validateForm, registerUserSchema } from "@/utils/validationSchema";
+import {validateForm, registerUserFrontendSchema, RegisterUserBackendType} from "@/utils/validationSchema";
 import {FormData} from "@/utils/types";
 import {CreateUserDto} from "@/utils/dtos";
 
@@ -18,7 +21,6 @@ const RegisterForm = () => {
         firstName: "",
         lastName: "",
         birthDate: "",
-        gender: "",
         phoneNumber: "",
         email: "",
         password: "",
@@ -58,7 +60,7 @@ const RegisterForm = () => {
         event.preventDefault();
 
         // Validation du formulaire
-        const validationResult = validateForm(registerUserSchema, formData);
+        const validationResult = validateForm(registerUserFrontendSchema, formData);
 
         // Si la validation a échoué, envoyer une erreur avec le message d'erreur fourni par Zod
         if (!validationResult.success || !validationResult.data) {
@@ -69,9 +71,25 @@ const RegisterForm = () => {
         // Envoi du formulaire de création de compte
         try {
             setLoading(true);
+            const {firstName, lastName, birthDate, phoneNumber, email, password, address} = validationResult.data;
 
+            const newUser: RegisterUserBackendType = {
+                firstName,
+                lastName,
+                birthDate,
+                phoneNumber,
+                email,
+                password,
+                address: {
+                    street:address.street,
+                    number:address.number,
+                    city:address.city,
+                    zipCode:address.zipCode,
+                    country:address.country
+                }
+            }
             // Envoi du formulaire de création de compte
-            await registerUser(validationResult.data as CreateUserDto); // Utilisation de "as CreateUserDto" pour garantir le type correct
+            await registerUser(newUser); // Utilisation de "as CreateUserDto" pour garantir le type correct
             toast.success("Compte créé avec succès !");
 
             const lastSimulation = localStorage.getItem('lastSimulation');
@@ -128,20 +146,7 @@ const RegisterForm = () => {
                         />
                     </Form.Group>
                 </Col>
-                <Col md={6}>
-                    <Form.Group className="mb-3">
-                        <Form.Select
-                            name="gender"
-                            value={formData.gender}
-                            onChange={handleInputChange}
-                        >
-                            <option value="">Choisir un genre...</option>
-                            <option value="Masculin">Masculin</option>
-                            <option value="Féminin">Féminin</option>
-                            <option value="Autre">Autre</option>
-                        </Form.Select>
-                    </Form.Group>
-                </Col>
+
             </Row>
 
             <Row>

@@ -1,6 +1,6 @@
 import {NextRequest, NextResponse} from 'next/server';
 import {errorHandler} from "@/utils/handelErrors";
-import {prisma} from "@/utils/db";
+import prisma from "@/utils/db";
 
 /**
  * @method GET

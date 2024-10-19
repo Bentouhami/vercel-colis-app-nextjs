@@ -1,6 +1,4 @@
 // DTOs for my project – ColiApp
-import {Address} from "@prisma/client";
-import { Decimal } from "@prisma/client/runtime/library";
 
 export interface CreateAddressDto {
     street: string;
@@ -25,12 +23,11 @@ export interface CreateUserDto {
     firstName: string;
     lastName: string;
     birthDate: string;
-    gender: string;
     phoneNumber: string;
     email: string;
     password: string;
-    checkPassword: string;
-    imageUrl: string;
+    // checkPassword: string;
+    image: string;
     address: CreateAddressDto;
 
 }
@@ -49,10 +46,9 @@ export interface UserResponseDto {
     firstName: string;
     lastName: string;
     dateOfBirth: string;
-    gender: string;
     phoneNumber: string;
     email: string;
-    imageUrl?: string | null;
+    image?: string | null;
     role: string;
 }
 
@@ -62,24 +58,15 @@ export interface LoginUserDto {
     password: string;
 }
 
-// DTO for User update profile
-export interface UpdateUserProfileDto {
-    firstName?: string;
-    lastName?: string;
-    dateOfBirth?: string;
-    gender?: string;
-    phoneNumber?: string;
-    email?: string;
-    password?: string;
-    Address?: CreateAddressDto;
-}
 
-// DTO for Agency
-export interface AgencyDto {
-    id: number;
-    name: string;
-    location: string;
-    address: Address;
+export interface RegisterUserDto {
+    firstName: string;
+    lastName: string;
+    birthDate: string;
+    phoneNumber: string;
+    email: string;
+    password: string;
+    address: CreateAddressDto;
 }
 
 

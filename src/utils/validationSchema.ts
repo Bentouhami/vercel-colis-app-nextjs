@@ -1,4 +1,4 @@
-import { z } from "zod";
+import {z} from "zod";
 
 // Constants for validation
 const PASSWORD_MIN_LENGTH = 8;
@@ -13,18 +13,18 @@ const TEMP_EMAIL_DOMAINS = [
 
 // Base validations
 const emailValidation = z.string()
-    .min(1, { message: "L'email est requis" })
-    .email({ message: "Format d'email invalide" })
+    .min(1, {message: "L'email est requis"})
+    .email({message: "Format d'email invalide"})
     .refine(
         (email) => {
             const domain = email.toLowerCase().split('@')[1];
             return !TEMP_EMAIL_DOMAINS.includes(domain);
         },
-        { message: "Les adresses email temporaires ne sont pas acceptées" }
+        {message: "Les adresses email temporaires ne sont pas acceptées"}
     );
 
 const passwordValidation = z.string()
-    .min(PASSWORD_MIN_LENGTH, { message: `Le mot de passe doit contenir au moins ${PASSWORD_MIN_LENGTH} caractères` })
+    .min(PASSWORD_MIN_LENGTH, {message: `Le mot de passe doit contenir au moins ${PASSWORD_MIN_LENGTH} caractères`})
     .regex(PASSWORD_REGEX, {
         message: "Le mot de passe doit contenir au moins une majuscule, une minuscule, un chiffre et un caractère spécial"
     });
@@ -37,20 +37,20 @@ const phoneValidation = z.string()
 
 // Address schema
 export const addressSchema = z.object({
-    street: z.string().min(1, { message: "La rue est requise" }),
-    number: z.string().min(1, { message: "Le numéro est requis" }), // Assurez-vous que c'est `string`
-    zipCode: z.string().min(1, { message: "Le code postal est requis" }),
-    city: z.string().min(1, { message: "La ville est requise" }),
-    country: z.string().min(1, { message: "Le pays est requis" }),
+    street: z.string().min(1, {message: "La rue est requise"}),
+    number: z.string().min(1, {message: "Le numéro est requis"}), // Assurez-vous que c'est `string`
+    zipCode: z.string().min(1, {message: "Le code postal est requis"}),
+    city: z.string().min(1, {message: "La ville est requise"}),
+    country: z.string().min(1, {message: "Le pays est requis"}),
 });
 
 
-// Schema pour l'inscription
-export const registerUserSchema = z.object({
-    firstName: z.string().min(1, { message: "Le prénom est requis" }),
-    lastName: z.string().min(1, { message: "Le nom est requis" }),
+// Schema pour l'inscription frontend
+export const registerUserFrontendSchema = z.object({
+    firstName: z.string().min(1, {message: "Le prénom est requis"}),
+    lastName: z.string().min(1, {message: "Le nom est requis"}),
     birthDate: z.string()
-        .min(1, { message: "La date de naissance est requise" })
+        .min(1, {message: "La date de naissance est requise"})
         .refine((val) => !isNaN(Date.parse(val)), {
             message: "La date de naissance doit être une date valide"
         })
@@ -60,10 +60,7 @@ export const registerUserSchema = z.object({
             const minAge = 18;
             const userAge = now.getFullYear() - date.getFullYear();
             return userAge >= minAge;
-        }, { message: "Vous devez avoir au moins 18 ans pour vous inscrire" }),
-    gender: z.enum(['Masculin', 'Féminin', 'Autre'], {
-        errorMap: () => ({ message: "Veuillez sélectionner un genre valide" })
-    }),
+        }, {message: "Vous devez avoir au moins 18 ans pour vous inscrire"}),
     phoneNumber: phoneValidation,
     email: emailValidation,
     password: passwordValidation,
@@ -74,6 +71,18 @@ export const registerUserSchema = z.object({
     path: ["checkPassword"],
 });
 
+// Schema pour l'inscription backend
+export const registerUserBackendSchema = z.object({
+    firstName: z.string().min(1, {message: "Le prénom est requis"}),
+    lastName: z.string().min(1, {message: "Le nom est requis"}),
+    birthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {message: "La date de naissance est invalide"}),
+    phoneNumber: phoneValidation,
+    email: emailValidation,
+    password: passwordValidation,
+    address: addressSchema,
+});
+
+
 // Schema pour la connexion
 export const loginUserSchema = z.object({
     email: emailValidation,
@@ -81,14 +90,6 @@ export const loginUserSchema = z.object({
 });
 
 
-// agency schema
-export const agenceyShcema = z.object({
-    name: z.string()
-        .min(1, {message: "Agency name is required"}),
-    location: z.string()
-        .min(1, {message: " Agency location is required"}),
-    address: addressSchema,
-})
 export const parcelsSchema = z.object({
     height: z.number()
         .positive("Height must be positive"),
@@ -147,11 +148,16 @@ export const destinataireSchema = z.object({
     phoneNumber: phoneValidation,
 })
 
+
 // Types exportés
-export type RegisterUserInput = z.infer<typeof registerUserSchema>;
-export type LoginUserInput = z.infer<typeof loginUserSchema>;
-export type AddressInput = z.infer<typeof addressSchema>;
+export type RegisterUserType = z.infer<typeof registerUserFrontendSchema>;
+export type LoginUserType = z.infer<typeof loginUserSchema>;
+export type AddressType = z.infer<typeof addressSchema>;
+export type RegisterUserBackendType = z.infer<typeof registerUserBackendSchema>;
+
 export type DestinataireInput = z.infer<typeof destinataireSchema>;
+
+
 // Fonction utilitaire pour la validation
 export function validateForm<T>(schema: z.ZodSchema<T>, data: unknown): {
     success: boolean;
@@ -161,8 +167,8 @@ export function validateForm<T>(schema: z.ZodSchema<T>, data: unknown): {
     const result = schema.safeParse(data);
     if (!result.success) {
         const errorMessage = result.error.errors[0].message;
-        return { success: false, error: errorMessage };
+        return {success: false, error: errorMessage};
     }
-    return { success: true, data: result.data };
+    return {success: true, data: result.data};
 }
 

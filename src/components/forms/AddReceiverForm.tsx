@@ -36,7 +36,7 @@ export default function AddReceiverForm() {
         try {
             setLoading(true);
             // Appel API pour envoyer les données vers le backend
-            const response = await fetch('/api/v1/destinataires', {
+            const response = await fetch('/api/v1/users/destinataires', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

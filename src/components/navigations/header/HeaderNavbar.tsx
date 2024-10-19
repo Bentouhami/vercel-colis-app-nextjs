@@ -16,11 +16,11 @@ interface NavbarProps {
     isAdmin: boolean;
     firstName: string;
     lastName: string;
-    imageUrl: string;
+    image: string;
 
 }
 
-const HeaderNavbar: React.FC<NavbarProps> = ({ isAdmin, isLoggedIn, userEmail, firstName, lastName, imageUrl }) => {
+const HeaderNavbar: React.FC<NavbarProps> = ({ isAdmin, isLoggedIn, userEmail, firstName, lastName, image }) => {
     const [expanded, setExpanded] = useState(false);
     const pathname = usePathname();
 
@@ -30,7 +30,7 @@ const HeaderNavbar: React.FC<NavbarProps> = ({ isAdmin, isLoggedIn, userEmail, f
         isAdmin: isAdmin,
         firstName: firstName,
         lastName: lastName,
-        imageUrl: "https://placehold.co/400"
+        image: image
     }
     console.log(loggedUser);
 

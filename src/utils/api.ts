@@ -1,10 +1,8 @@
-// API.ts : API pour les fonctions de simulation
 // path : src/app/utils/api.ts
 
-// Récupérer les pays de départ disponibles pour la simulation
-import {CreateDestinataireDto, CreateUserDto, SimulationEnvoisDto} from "@/utils/dtos";
-import {DOMAIN} from '@/utils/constants';
-import {User} from "@prisma/client";
+import {CreateDestinataireDto, SimulationEnvoisDto} from "@/utils/dtos";
+
+import {RegisterUserBackendType} from "@/utils/validationSchema";
 
 export async function fetchCountries() {
 
@@ -71,13 +69,13 @@ export async function submitSimulation(simulationData: SimulationEnvoisDto) {
         });
 
         // debug 
-        console.log("reponse request passed to API in submitSimulation function");
+        console.log("response request passed to API in submitSimulation function");
 
         if (response.ok) {
-            console.log("reposne OK from API returning response.json")
+            console.log("response OK from API returning response.json")
             return await response.json();
         } else {
-            console.log("respone NOT OK from API in submitSimulation")
+            console.log("response NOT OK from API in submitSimulation")
             throw new Error('Failed to submit simulation');
         }
     } catch (error) {
@@ -95,6 +93,10 @@ export async function submitSimulation(simulationData: SimulationEnvoisDto) {
 // Login user via API
 export async function login(email: string, password: string) {
     try {
+
+        // log email and password
+        console.log("email", email);
+        console.log("password", password);
         // envoyer l'email et le mot de passe au serveur via l'API /api/v1/users/login : route pour la connexion d'un utilisateur
         const response = await fetch('/api/v1/users/login', {
             method: 'POST',
@@ -120,7 +122,7 @@ export async function login(email: string, password: string) {
 }
 
 // register new user via API
-export async function registerUser(newUser: CreateUserDto) {
+export async function registerUser(newUser: RegisterUserBackendType) {
     try {
         const response = await fetch('/api/v1/users/register', {
             method: 'POST',

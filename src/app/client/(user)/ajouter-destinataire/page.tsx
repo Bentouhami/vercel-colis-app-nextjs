@@ -1,6 +1,5 @@
-
-// path: src/app/client/add-receiver/page.tsx
-
+// path: src/app/client/ajouter-destinataire/page.tsx
+'use server';
 
 import AddReceiverForm from "@/components/forms/AddReceiverForm";
 

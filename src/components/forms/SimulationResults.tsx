@@ -22,12 +22,17 @@ const SimulationResults = () => {
     useEffect(() => {
         const data = searchParams.get('data');
         if (data) {
+            console.log('Data from search params:', data);
+
             setResults(JSON.parse(data));
         } else {
+            console.log('No data from search params try to get it from localStorage');
             const savedResults = localStorage.getItem('simulationResults');
             if (savedResults) {
+                console.log('Found results in localStorage:', savedResults);
                 setResults(JSON.parse(savedResults));
             } else {
+                console.log('No results found in localStorage, redirecting to simulation page');
                 router.push('client/simulation');
             }
         }
@@ -38,6 +43,7 @@ const SimulationResults = () => {
             try {
                 const response = await fetch('/api/auth/status');
                 const authStatus = await response.json();
+                console.log('Auth status:', authStatus); // Ajoutez ce log
                 setIsAuthenticated(authStatus.isAuthenticated);
             } catch (error) {
                 console.error("Erreur lors de la vérification de l'authentification", error);
@@ -46,6 +52,7 @@ const SimulationResults = () => {
         };
         checkAuthStatus();
     }, []);
+
 
     if (!results) {
         return <p className={styles.loading}>Loading...</p>;

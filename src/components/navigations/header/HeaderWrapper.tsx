@@ -14,7 +14,7 @@ const HeaderWrapper = async () => {
     let isAdmin = false;
     let firstName = '';
     let lastName = '';
-    let imageUrl = ''
+    let image = ''
 
     if (token) {
         try {
@@ -26,7 +26,7 @@ const HeaderWrapper = async () => {
                 isAdmin = decodedToken.role === 'ADMIN';
                 firstName = decodedToken.firstName || '';
                 lastName = decodedToken.lastName || '';
-                imageUrl = decodedToken.imageUrl || '';
+                image = decodedToken.image || "https://placehold.co/400";
             }
         } catch (error) {
             console.error('Token verification failed:', error);
@@ -40,7 +40,7 @@ const HeaderWrapper = async () => {
             isAdmin={isAdmin}
             firstName={firstName}
             lastName={lastName}
-            imageUrl={imageUrl}
+            image={image}
            
         />
     );

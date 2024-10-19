@@ -1,4 +1,4 @@
-import {prisma} from "@/utils/db";
+import prisma from "@/utils/db";
 
 export async function getDistinctCities() {
     const cities = await prisma.address.groupBy({

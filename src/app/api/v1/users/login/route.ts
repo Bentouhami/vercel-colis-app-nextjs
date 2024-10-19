@@ -2,7 +2,7 @@
 
 import {NextRequest, NextResponse} from 'next/server';
 import {errorHandler} from "@/utils/handelErrors";
-import {prisma} from "@/utils/db";
+import prisma from "@/utils/db";
 import {loginUserSchema} from "@/utils/validationSchema";
 import bcrypt from "bcryptjs";
 import {LoginUserDto} from "@/utils/dtos";

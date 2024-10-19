@@ -7,7 +7,8 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 model Address {
@@ -21,6 +22,8 @@ model Address {
   longitude Float? // Longitude de l'adresse, stockée en Float
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Relations
 
   Agency Agency?
   User   User[]
@@ -38,6 +41,8 @@ model Agency {
   Address        Address  @relation(fields: [addressId], references: [id])
   updatedAt      DateTime @updatedAt
   createdAt      DateTime @default(now())
+
+  // Relations
 
   ArrivalEnvoi   Envoi[]        @relation("ArrivalAgency")
   DepartureEnvoi Envoi[]        @relation("DepartureAgency")
@@ -60,6 +65,8 @@ model Notification {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
+  // Relations
+
   Agency                   Agency @relation(fields: [agencyId], references: [id])
   Envoi                    Envoi  @relation(fields: [envoiId], references: [id])
   DestinataireNotification User   @relation("NotificationDestinataire", fields: [destinataireId], references: [id])
@@ -70,33 +77,100 @@ model Notification {
 
 model User {
   id          Int       @id @default(autoincrement())
-  firstName   String    @db.VarChar(50)
-  lastName    String    @db.VarChar(50)
+  firstName   String?   @db.VarChar(50)
+  lastName    String?   @db.VarChar(50)
+  name        String?
   dateOfBirth DateTime? @db.Timestamp(3)
-  gender      String?   @db.VarChar(50)
   email       String    @unique @db.VarChar(150)
-  phoneNumber String    @unique @db.VarChar(50)
+  phoneNumber String?   @unique @db.VarChar(50)
   password    String?   @default("") @db.VarChar(255)
-  imageUrl    String?   @default("") @db.VarChar(255)
-  isVerified  Boolean?  @default(false)
-  addressId   Int?
-  role        Role      @default(CLIENT)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  Address     Address?  @relation(fields: [addressId], references: [id])
+  image       String?   @default("") @db.VarChar(255)
+  role        Role?     @default(CLIENT)
 
-  sentEnvois                  Envoi[]        @relation("ClientEnvoi")
-  receivedEnvois              Envoi[]        @relation("DestinataireEnvoi")
-  notificationsAsUser         Notification[] @relation("NotificationUser")
-  notificationsAsDestinataire Notification[] @relation("NotificationDestinataire")
+  isVerified               Boolean   @default(false) // Indique si l'utilisateur a vérifié son email
+  emailVerified            DateTime? // Date de vérification de l'email
+  verificationToken        String?   @unique @db.VarChar(255) // Token de vérification de l'email
+  verificationTokenExpires DateTime? // Date d'expiration du token de vérification de l'email
+
+  addressId Int?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Address   Address?  @relation(fields: [addressId], references: [id])
+  accounts  Account[]
+  sessions  Session[]
+
+  // Relations
+  sentEnvois                  Envoi[]         @relation("ClientEnvoi")
+  receivedEnvois              Envoi[]         @relation("DestinataireEnvoi")
+  notificationsAsUser         Notification[]  @relation("NotificationUser")
+  notificationsAsDestinataire Notification[]  @relation("NotificationDestinataire")
   UserCoupon                  UserCoupon[]
+  Authenticator               Authenticator[]
 
   @@map("users")
+}
+
+model Account {
+  userId            Int
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       Int
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Optional for WebAuthn support
+model Authenticator {
+  credentialID         String  @unique
+  userId               Int
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, credentialID])
 }
 
 enum Role {
   CLIENT
   ADMIN
+  DESTINATAIRE
 
   @@map("roles")
 }
@@ -123,6 +197,8 @@ model Coupon {
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
 
+  // Relations
+
   UserCoupon  UserCoupon[]
   EnvoiCoupon EnvoiCoupon[]
 
@@ -133,6 +209,8 @@ model UserCoupon {
   userId   Int
   couponId Int
 
+  // Relations
+
   User   User   @relation(fields: [userId], references: [id])
   Coupon Coupon @relation(fields: [couponId], references: [id])
 
@@ -141,15 +219,18 @@ model UserCoupon {
 }
 
 model Transport {
-  id                Int                 @id @default(autoincrement())
-  number            String              @db.VarChar(15)
-  baseVolume        Decimal             @db.Decimal(12, 2) // Augmentation de la précision
-  baseWeight        Decimal             @db.Decimal(10, 2) // Augmentation de la précision
-  currentVolume     Decimal             @db.Decimal(12, 2) // Augmentation de la précision
-  currentWeight     Decimal             @db.Decimal(10, 2) // Augmentation de la précision
-  isAvailable       Boolean             @default(true)
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @updatedAt
+  id            Int      @id @default(autoincrement())
+  number        String   @db.VarChar(15)
+  baseVolume    Decimal  @db.Decimal(12, 2) // Augmentation de la précision
+  baseWeight    Decimal  @db.Decimal(10, 2) // Augmentation de la précision
+  currentVolume Decimal  @db.Decimal(12, 2) // Augmentation de la précision
+  currentWeight Decimal  @db.Decimal(10, 2) // Augmentation de la précision
+  isAvailable   Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+
   Envoi             Envoi[]
   TransportSchedule TransportSchedule[]
 }
@@ -172,6 +253,8 @@ model Envoi {
   destinataireId    Int
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @updatedAt
+
+  // Relations
 
   ArrivalAgency   Agency    @relation("ArrivalAgency", fields: [arrivalAgencyId], references: [id])
   DepartureAgency Agency    @relation("DepartureAgency", fields: [departureAgencyId], references: [id])
@@ -196,6 +279,8 @@ model Appointment {
   createdAt DateTime          @default(now())
   updatedAt DateTime          @updatedAt
 
+  // Relations
+
   Envoi  Envoi  @relation(fields: [envoiId], references: [id])
   Agency Agency @relation(fields: [agencyId], references: [id])
 
@@ -216,6 +301,8 @@ model EnvoiCoupon {
   envoiId  Int
   couponId Int
 
+  // Relations
+
   Envoi  Envoi  @relation(fields: [envoiId], references: [id])
   Coupon Coupon @relation(fields: [couponId], references: [id])
 
@@ -233,7 +320,10 @@ model Parcel {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   envoiId   Int
-  Envoi     Envoi    @relation(fields: [envoiId], references: [id])
+
+  // Relations
+
+  Envoi Envoi @relation(fields: [envoiId], references: [id])
 
   @@map("parcels")
 }
@@ -248,6 +338,8 @@ model Tarifs {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
+  // Relations
+
   Agency Agency? @relation(fields: [agencyId], references: [id])
 
   @@map("tarifs")
@@ -261,6 +353,8 @@ model TransportSchedule {
   isHoliday     Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  // Relations
 
   Transport Transport @relation(fields: [transportId], references: [id])
 
