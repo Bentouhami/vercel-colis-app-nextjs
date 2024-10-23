@@ -1,7 +1,9 @@
+// path: src/app/client/(user)/verify-email/page.tsx
+
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
 const VerifyEmail = () => {
     const searchParams = useSearchParams();
@@ -19,6 +21,9 @@ const VerifyEmail = () => {
 
         const verifyEmail = async () => {
             try {
+
+                console.log(" méthode de verifyEmail lancé Token envoyé via le front: ", token);
+
                 const response = await fetch('/api/v1/users/verify', {
                     method: 'POST',
                     headers: {

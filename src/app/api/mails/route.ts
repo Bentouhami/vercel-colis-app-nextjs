@@ -1,38 +1,52 @@
 // path: src/lib/mailer
 
-import {sendMail} from "@/utils/mail.utils";
+import { sendMail } from "@/utils/mail.utils";
 
-export async function POST(){
+export async function POST() {
     const sender = {
         name: "Coli",
         address: "coli@colisapp.com"
-    }
+    };
 
     const recipients = [
         {
             name: "Colis Reception",
             address: "coli.reception@colisapp.com"
         }
-    ]
+    ];
 
-    const subject = "Test Mail"
-    const message = "This is a test mail"
+    const subject = "Test Mail";
+    const message = "This is a test mail";
 
-   try{
+    try {
         await sendMail({
             sender,
             recipients,
             subject,
             message
-        })
-        return {
-            status: 200,
-            message: "Mail sent successfully"
-        }
+        });
+        return new Response(
+            JSON.stringify({
+                message: "Mail sent successfully",
+            }),
+            {
+                status: 200,
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
     } catch (error) {
-        return {
-            status: 500,
-            message: "Error sending mail"
-        }
+        return new Response(
+            JSON.stringify({
+                message: "Error sending mail",
+            }),
+            {
+                status: 500,
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
     }
 }

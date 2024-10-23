@@ -1,5 +1,4 @@
 import {NextRequest, NextResponse} from "next/server";
-import {UpdateAddressDto} from "@/utils/dtos";
 import {errorHandler} from "@/utils/handelErrors";
 import {Address} from "@prisma/client";
 import prisma from "@/utils/db";
@@ -60,7 +59,7 @@ export async function PUT(request: NextRequest, {params}: Props) {
         if (!address) {
             return errorHandler("No address found", 404);
         }
-        const body = (await request.json()) as UpdateAddressDto;
+        const body = (await request.json()) ;
 
         const updatedAddress = await prisma.address.update({
             where: {

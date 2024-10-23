@@ -13,7 +13,7 @@ export default function AddReceiverForm() {
         firstName: "",
         lastName: "",
         email: "",
-        phoneNumber: "",
+        phoneNumber: ""
     });
 
     const [errors, setErrors] = useState<Record<string, string>>({});

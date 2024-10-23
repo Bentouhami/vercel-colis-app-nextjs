@@ -80,7 +80,7 @@ model User {
   firstName   String?   @db.VarChar(50)
   lastName    String?   @db.VarChar(50)
   name        String?
-  dateOfBirth DateTime? @db.Timestamp(3)
+  birthDate   DateTime? @db.Timestamp(3)
   email       String    @unique @db.VarChar(150)
   phoneNumber String?   @unique @db.VarChar(50)
   password    String?   @default("") @db.VarChar(255)
@@ -107,7 +107,24 @@ model User {
   UserCoupon                  UserCoupon[]
   Authenticator               Authenticator[]
 
+  clientLinks       ClientDestinataire[] @relation("Client")
+  destinataireLinks ClientDestinataire[] @relation("Destinataire")
+
   @@map("users")
+}
+
+model ClientDestinataire {
+  id             Int      @id @default(autoincrement())
+  clientId       Int
+  destinataireId Int
+  createdAt      DateTime @default(now())
+
+  // Relations
+  client       User @relation("Client", fields: [clientId], references: [id])
+  destinataire User @relation("Destinataire", fields: [destinataireId], references: [id])
+
+  @@unique([clientId, destinataireId]) // Empêche un client d'ajouter deux fois le même destinataire
+  @@map("clients_destinataires")
 }
 
 model Account {

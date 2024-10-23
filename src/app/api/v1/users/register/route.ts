@@ -1,18 +1,30 @@
 import {NextRequest, NextResponse} from 'next/server';
-import {UserResponseDto} from '@/utils/dtos';
-import bcrypt from "bcryptjs";
+import {
+    BaseAddressDTO,
+    BaseClientDto,
+    CreateFullUserDto,
+    FullAddressDTO,
+    FullUserDto,
+    FullUserResponseDto,
+    Role, UserModelDto,
+    UserResponseDto
+} from '@/utils/dtos';
 import {errorHandler} from "@/utils/handelErrors";
 import {capitalizeFirstLetter, toLowerCase} from "@/utils/stringUtils";
 import {registerUserBackendSchema, RegisterUserBackendType} from "@/utils/validationSchema";
-import prisma from "@/utils/db";
-import {randomBytes} from "crypto";
 import {createAddress, isAddressAlreadyExist} from "@/services/address/AddresseService";
-import {isUserAlreadyExist} from "@/services/users/UserService";
-import { sendVerificationEmail} from "@/lib/mailer";
+import {
+    createUser,
+    isUserAlreadyExist,
+    updateDestinataireToClient,
+    updateVerificationTokenForOldUser,
+} from "@/services/users/UserService";
+import {sendVerificationEmail} from "@/lib/mailer";
 import {hashPassword} from "@/lib/auth";
+import {getVerificationData} from "@/utils/generateToken";
+import {VerificationDataType} from "@/utils/types";
 
 export async function POST(request: NextRequest) {
-
     if (request.method !== "POST") {
         return NextResponse.json({error: "Method not allowed"}, {status: 405});
     }
@@ -23,166 +35,132 @@ export async function POST(request: NextRequest) {
         // Récupérer les données de l'utilisateur à partir de la requête
         const body = (await request.json()) as RegisterUserBackendType;
 
-        // Vérifier que les données sont renseignées
         if (!body) {
             return NextResponse.json({error: "Missing required fields"}, {status: 400});
         }
+
         console.log("Register user request body: ", body);
 
         // Valider les données de l'utilisateur avec le schéma de validation
         const {success, error, data: validatedData} = registerUserBackendSchema.safeParse(body);
 
         if (!success) {
-            return NextResponse.json(
-                {error: error?.errors[0].message},
-                {status: 400}
-            );
+            return NextResponse.json({error: error?.errors[0].message}, {status: 400});
         }
 
-        const {
-            firstName,
-            lastName,
-            birthDate,
-            phoneNumber,
-            email,
-            password,
-            address
-        } = validatedData;
+        const {firstName, lastName, birthDate , phoneNumber, email, password, address} = validatedData;
+
+        const extractedBaseAddresse: BaseAddressDTO = {
+            street: toLowerCase(address.street),
+            number: address.number,
+            city: capitalizeFirstLetter(address.city),
+            zipCode: address.zipCode,
+            country: capitalizeFirstLetter(address.country),
+        };
 
         // Formater les données de l'utilisateur
-        const formattedUser = {
+        const formattedUser: BaseClientDto = {
             firstName: capitalizeFirstLetter(firstName),
             lastName: capitalizeFirstLetter(lastName),
-            birthDate,
+            name: `${capitalizeFirstLetter(firstName)} ${capitalizeFirstLetter(lastName)}`,
+            birthDate: new Date(birthDate),
             phoneNumber,
             email: toLowerCase(email),
             password,
-            address: {
-                street: toLowerCase(address.street),
-                number: address.number,
-                city: capitalizeFirstLetter(address.city),
-                zipCode: address.zipCode,
-                country: capitalizeFirstLetter(address.country)
-            }
-        } as RegisterUserBackendType;
+            address: extractedBaseAddresse as BaseAddressDTO
+        };
 
-        // Vérifier si l'utilisateur existe déjà dans la base de données
-        const existedUser = await isUserAlreadyExist(formattedUser.email, formattedUser.phoneNumber);
+        console.log("Formatted address user:", formattedUser.address);
 
-        // Si l'utilisateur n'existe pas, créer un nouvel utilisateur
-        const existingAddress = await isAddressAlreadyExist(formattedUser.address);
+        // Vérifier l'existence de l'adresse
+        let addressToUse: FullAddressDTO | null = await isAddressAlreadyExist(extractedBaseAddresse);
 
-        // Créer l'adresse si elle n'existe pas
-        const addressToUse = existingAddress || await createAddress(formattedUser.address);
         if (!addressToUse) {
-            return NextResponse.json({error: "Failed to create address"}, {status: 500});
+            addressToUse = await createAddress(extractedBaseAddresse);
+            if (!addressToUse) {
+                return NextResponse.json({error: "Failed to create address"}, {status: 500});
+            }
         }
 
-        // Générer un token de vérification de l'email
-        // Générer un token de vérification
-        const verificationToken = randomBytes(32).toString("hex");
-        const verificationTokenExpires = new Date(Date.now() + 1000 * 60 * 15); // Expiration en 15 minutes
+        console.log("addressToUse is: ", addressToUse);
 
-        // hash password
+        // Générer les données de vérification et le mot de passe haché
+        const verificationData = getVerificationData() as VerificationDataType;
+
+        if (!verificationData) {
+            return NextResponse.json({error: "Failed to generate verification data"}, {status: 500});
+        }
+
         const hashedPassword = await hashPassword(formattedUser.password);
-        if (existedUser) {
 
-            if (!existedUser.password) {
-                existedUser.role = "DESTINATAIRE";
-            }
-            // L'utilisateur existe déjà, vérifions son rôle et l'état de vérification
-            if (existedUser.role === "DESTINATAIRE" && !existedUser.isVerified) {
-                // Mettre à jour l'utilisateur avec le token de vérification
-                await prisma.user.update({
-                    where: {id: existedUser.id},
-                    data: {
-                        name: formattedUser.firstName + " " + formattedUser.lastName,
-                        dateOfBirth: new Date(formattedUser.birthDate),
-                        password: hashedPassword,
-                        role: "CLIENT",
-                        addressId: addressToUse.id,
-                        verificationToken: verificationToken,
-                        verificationTokenExpires: verificationTokenExpires
-                    }
-                });
+        // Vérifier si l'utilisateur existe déjà
+        let existedUser: UserModelDto | null = await isUserAlreadyExist(formattedUser.email, formattedUser.phoneNumber);
 
-                // Envoyer un email de vérification à l'utilisateur
-                await sendVerificationEmail(existedUser.email, verificationToken);
+        console.log("isUserAlreadyExist returned:", existedUser);
 
-                return NextResponse.json({message: "Vérification de l'email envoyée, valable pour 15 mins"}, {status: 200});
-            } else if ((existedUser.role === "CLIENT" || existedUser.role === "ADMIN") && existedUser.isVerified) {
-                // Si l'utilisateur est déjà un client ou un admin vérifié
-                return NextResponse.json({error: "User already exists and is verified. Please log in."}, {status: 400});
-            } else {
-                // Si l'utilisateur est client ou admin, mais non vérifié, renvoyer un email de vérification
-                const token = randomBytes(32).toString("hex");
+        let user : FullUserResponseDto | null = null;
 
-                await prisma.user.update({
-                    where: {id: existedUser.id},
-                    data: {
-                        verificationToken: token,
-                        verificationTokenExpires: new Date(Date.now() + 1000 * 60 * 15)
-                    }
-                });
+        // Créer un nouvel utilisateur s'il n'existe pas
+        if (!existedUser) {
+            const {firstName, lastName, name, birthDate, phoneNumber, email} = formattedUser;
 
-                await sendVerificationEmail(existedUser.email, token);
-                return NextResponse.json({message: "Vérification de l'email envoyée, valable pour 15 mins"}, {status: 200});
-            }
-        }
-
-
-
-        // Créer le nouvel utilisateur
-        const newUser = await prisma.user.create({
-            data: {
-                firstName: formattedUser.firstName,
-                lastName: formattedUser.lastName,
-                name: formattedUser.firstName + " " + formattedUser.lastName,
-                dateOfBirth: new Date(formattedUser.birthDate),
-                phoneNumber: formattedUser.phoneNumber,
-                email: formattedUser.email,
+            const userData: CreateFullUserDto = {
+                firstName: firstName,
+                lastName: lastName,
+                name: name,
+                birthDate: birthDate,
+                email: email,
+                phoneNumber: phoneNumber,
                 password: hashedPassword,
-                verificationToken,
-                verificationTokenExpires,
-                addressId: addressToUse.id,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-            },
-            select: {
-                id: true,
-                firstName: true,
-                lastName: true,
-                dateOfBirth: true,
-                phoneNumber: true,
-                email: true,
-                image: true,
-                role: true
+                address: addressToUse,
+                role: Role.CLIENT,
+                verificationToken: verificationData.verificationToken,
+                verificationTokenExpires: verificationData.verificationTokenExpires,
             }
-        }) as UserResponseDto;
 
-        if (!newUser) {
-            return NextResponse.json({error: "Failed to register user"}, {status: 500});
+            user = await createUser(userData, addressToUse) as FullUserResponseDto;
+
+            if (!user) {
+                return NextResponse.json({error: "Failed to create user"}, {status: 500});
+            }
+
+            await sendVerificationEmail(user.name, user.email, verificationData.verificationToken);
+
+            return NextResponse.json({message: "User created successfully, please check your email to verify your account"}, {status: 201});
         }
 
-        // lig created user data et BREAK
-        console.log("User created successfully: ", newUser);
+        // Gérer les autres cas si l'utilisateur existe déjà
+        if (existedUser.role === Role.CLIENT && !existedUser.isVerified) {
+            await updateVerificationTokenForOldUser(existedUser.id, verificationData);
+            await sendVerificationEmail(existedUser.name, existedUser.email, verificationData.verificationToken);
+            return NextResponse.json({
+                message: "User already exists, please login or verify your email to activate your account",
+                status: 200
+            });
+        }
 
+        if (existedUser.role === Role.DESTINATAIRE) {
+            user = await updateDestinataireToClient(
+                existedUser,
+                formattedUser.birthDate,
+                hashedPassword,
+                addressToUse,
+                verificationData
+            );
 
-        // Envoyer un email de vérification pour le nouvel utilisateur
-        await sendVerificationEmail(newUser.email, verificationToken);
-
-
-        // Renvoyer les données de l'utilisateur et le message de succès (201 pour création réussie)
-        return NextResponse.json(
-            {
-                message:
-                    "Registered & verification email sent"
-            },
-            {
-                status: 201,
+            if (!user) {
+                return NextResponse.json({error: "Failed to update destinataire"}, {status: 500});
             }
-        )
-            ;
+
+            await sendVerificationEmail(user.name, user.email, verificationData.verificationToken);
+
+            return NextResponse.json({message: "User created successfully, please check your email to verify your account"}, {status: 201});
+        }
+
+        if ((existedUser.role === Role.CLIENT || existedUser.role === Role.ADMIN) && existedUser.isVerified) {
+            console.log("User is a client or admin and verified, returning error");
+            return NextResponse.json({error: "User already exists and is verified. Please log in."}, {status: 400});
+        }
 
     } catch (error) {
         return errorHandler(`Internal server error: ${error}`, 500);

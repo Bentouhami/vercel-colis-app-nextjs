@@ -1,8 +1,8 @@
-import prisma from "@/utils/db";
+// path: src/app/api/v1/users/verify/route.ts
+
 import {NextRequest, NextResponse} from "next/server";
-import {JWTPayload} from "@/utils/types";
-import {setCookie} from "@/utils/generateToken";
-import {UserResponseDto} from "@/utils/dtos";
+import { Role, UserResponseDto} from "@/utils/dtos";
+import {getUserByValidToken, updateUserAndResetTokenVerificationAfterVerification} from "@/services/users/UserService";
 
 export async function POST(req: NextRequest) {
     // Récupérer le token depuis le corps de la requête
@@ -12,18 +12,13 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({message: "Token is missing"}, {status: 400});
     }
 
-    console.log("Verify token: ", token);
+    console.log("log=> Verify token: ", token);
 
     try {
         // Rechercher l'utilisateur avec le token et vérifier si le token n'a pas expiré
-        const user = await prisma.user.findFirst({
-            where: {
-                verificationToken: token,
-                verificationTokenExpires: {
-                    gt: new Date() // Le token doit être encore valide (pas expiré)
-                },
-            },
-        });
+
+        const user = await getUserByValidToken(token);
+        console.log("log => path: src/app/api/v1/users/verify/route.ts : user", user);
 
         if (!user) {
             console.log("Token invalide");
@@ -31,40 +26,22 @@ export async function POST(req: NextRequest) {
         }
 
         // Mettre à jour l'état de l'utilisateur pour indiquer que son email est vérifié
-        await prisma.user.update({
-            where: {id: user.id},
-            data: {
-                isVerified: true,
-                emailVerified: new Date(),
-                verificationToken: null,
-                verificationTokenExpires: null,
-            },
-        });
-
-        // Générer un cookie JWT avec les informations de l'utilisateur
-        const jwtPayload: JWTPayload = {
-            id: user.id,
-            role: user.role,
-            userEmail: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            phoneNumber: user.phoneNumber,
-            image: user.image
-        };
-
-        const cookie = setCookie(jwtPayload);
+        await updateUserAndResetTokenVerificationAfterVerification(user.id);
 
         // Créer l'objet de réponse utilisateur
         const userResponse: UserResponseDto = {
             id: user.id,
             firstName: user.firstName,
             lastName: user.lastName,
-            dateOfBirth: user.dateOfBirth,
-            phoneNumber: user.phoneNumber ?? "",
+            birthDate: user.birthDate,
+            phoneNumber: user.phoneNumber,
             email: user.email,
             image: user.image,
-            role: user.role
+            role: Role.CLIENT
         };
+
+        console.log("log => userResponse retourné après vérification du token: ", userResponse);
+
         return NextResponse.json(
             {
                 user: userResponse,
@@ -72,7 +49,6 @@ export async function POST(req: NextRequest) {
             },
             {
                 status: 200,
-                headers: {'Set-Cookie': cookie}
             }
         );
 

@@ -31,13 +31,10 @@ export type FormData = {
     };
 };
 
-export type DestinataireData = {
-    id: number;
-    firstName: string;
-    lastName: string;
-    phoneNumber: string;
-    email: string;
-    role: string;
+
+export type VerificationDataType = {
+    verificationToken: string;
+    verificationTokenExpires: Date;
 }
 
 

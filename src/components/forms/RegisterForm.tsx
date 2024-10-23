@@ -10,7 +10,6 @@ import { useRouter } from "next/navigation";
 import { registerUser } from "@/utils/api";
 import {validateForm, registerUserFrontendSchema, RegisterUserBackendType} from "@/utils/validationSchema";
 import {FormData} from "@/utils/types";
-import {CreateUserDto} from "@/utils/dtos";
 
 
 

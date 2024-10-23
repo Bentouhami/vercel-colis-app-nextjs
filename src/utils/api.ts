@@ -1,8 +1,9 @@
 // path : src/app/utils/api.ts
 
-import {CreateDestinataireDto, SimulationEnvoisDto} from "@/utils/dtos";
+import {BaseDestinataireDto, SimulationEnvoisDto} from "@/utils/dtos";
 
 import {RegisterUserBackendType} from "@/utils/validationSchema";
+
 
 export async function fetchCountries() {
 
@@ -43,7 +44,7 @@ export async function fetchCities(country: string) {
 }
 
 // Récupérer les agences disponibles pour une ville donnée
-export async function fetchAgencies(country:string, city:string) {
+export async function fetchAgencies(country: string, city: string) {
     const response = await fetch(`/api/v1/simulation/${encodeURIComponent(country)}/cities/${encodeURIComponent(city)}/agencies`);
     if (response.ok) {
         return response.json();
@@ -149,7 +150,7 @@ export async function registerUser(newUser: RegisterUserBackendType) {
 }
 
 // register new destinataire via API
-export async function registerDestinataire(newDestinataire: CreateDestinataireDto) {
+export async function registerDestinataire(newDestinataire: BaseDestinataireDto) {
     try {
         const response = await fetch('/api/v1/destinataires', {
             method: 'POST',

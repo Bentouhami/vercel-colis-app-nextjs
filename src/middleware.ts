@@ -46,7 +46,7 @@ export async function middleware(req: NextRequest) {
             return NextResponse.redirect(new URL("/client/login", req.nextUrl.origin));
         }
 
-        if ((req.nextUrl.pathname.startsWith('/client/login' || req.nextUrl.pathname.startsWith('/client/register'))) && (userPayload.role === 'USER' || userPayload.role === 'ADMIN')) {
+        if ((req.nextUrl.pathname.startsWith('/client/login') || req.nextUrl.pathname.startsWith('/client/register')) && (userPayload.role === 'USER' || userPayload.role === 'ADMIN')) {
             return NextResponse.redirect(new URL('/client', req.nextUrl.origin));
         }
 

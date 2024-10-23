@@ -3,6 +3,7 @@
 import jwt from "jsonwebtoken";
 import {JWTPayload} from "@/utils/types";
 import {serialize} from "cookie";
+import {randomBytes} from "crypto";
 
 /**
  * Generate a JWT token
@@ -12,13 +13,14 @@ import {serialize} from "cookie";
  */
 export function generateJwt(jwtPayload: JWTPayload) {
     const privateKey = process.env.JWT_SECRET as string;
-    const token = jwt.sign(
+
+    // return token
+    return jwt.sign(
         jwtPayload,
         privateKey,
         {
             expiresIn: "2h"
         });
-    return token;
 }
 
 /**
@@ -33,7 +35,7 @@ export function setCookie(jwtPayload: JWTPayload): string {
     }
 
     const token = generateJwt(jwtPayload);
-    const cookie = serialize(cookieName, token,  // nom du cookie
+    return serialize(cookieName, token,  // nom du cookie
         {
             httpOnly: true,  // cookie non accessible par le client
             secure: process.env.NODE_ENV === "production",  // cookie uniquement en HTTP pour le développement ou en HTTPS pour la production
@@ -41,5 +43,18 @@ export function setCookie(jwtPayload: JWTPayload): string {
             path: '/',  // cookie utilisé uniquement sur le domaine courant
             maxAge: 60 * 60 * 2 // 2 heures en secondes
         });
-    return cookie;
+}
+
+
+export  function getVerificationData() {
+
+    // Générer un token de vérification de l'email
+    // Générer un token de vérification
+    const verificationToken = randomBytes(32).toString("hex");
+    const verificationTokenExpires = new Date(Date.now() + 1000 * 60 * 15); // Expiration en 15 minutes
+
+    return {
+        verificationToken,
+        verificationTokenExpires
+    };
 }

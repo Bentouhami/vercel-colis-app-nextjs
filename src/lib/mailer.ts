@@ -15,16 +15,17 @@ const transporter = nodemailer.createTransport({
 
 /**
  * Envoie un email de vérification générique pour tous les utilisateurs
+ * @param name
  * @param email - L'adresse email de l'utilisateur
  * @param token - Le token de vérification
  */
-export async function sendVerificationEmail(email: string, token: string) {
+export async function sendVerificationEmail(name: string, email: string, token: string) {
     const verificationUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/client/verify-email?token=${token}`;
 
     await transporter.sendMail({
         from: process.env.EMAIL_FROM,
         to: email,
         subject: "Verify your email address",
-        html: `<>Thank you for registering. Please click <a href="${verificationUrl}">here</a> to verify your email address, this link is actif for 15 minutes. </>`,
+        html: `<><strong>${name}</strong> Welcome to ColisApp, Ans thank you for registering. Please click <a href="${verificationUrl}">here</a> to verify your email address, this link is actif for 15 minutes. </>`,
     });
 }

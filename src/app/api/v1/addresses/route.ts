@@ -1,6 +1,5 @@
 import {NextRequest, NextResponse} from 'next/server';
 import {addressSchema} from "@/utils/validationSchema";
-import {CreateAddressDto} from "@/utils/dtos";
 import {errorHandler} from "@/utils/handelErrors";
 import {Address} from "@prisma/client";
 import prisma from "@/utils/db";
@@ -41,7 +40,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
     try {
         // récupérer le body de la requête et le transformer en adresse DTO
-        const body = (await request.json()) as CreateAddressDto;
+        const body = (await request.json());
 
         // valider le body avec le schema de l'adresse
         const validated = addressSchema.safeParse(body);

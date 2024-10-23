@@ -2,13 +2,17 @@
 
 import {NextRequest, NextResponse} from 'next/server';
 import {errorHandler} from "@/utils/handelErrors";
-import prisma from "@/utils/db";
 import {loginUserSchema} from "@/utils/validationSchema";
 import bcrypt from "bcryptjs";
 import {LoginUserDto} from "@/utils/dtos";
-import {setCookie} from "@/utils/generateToken";
-import {JWTPayload} from "@/utils/types";
 import {toLowerCase} from "@/utils/stringUtils";
+import {
+    generateJWTPayloadAndSetCookie,
+    getUserByEmail,
+    updateVerificationTokenForOldUser
+} from "@/services/users/UserService";
+import {getVerificationData} from "@/utils/generateToken";
+import {VerificationDataType} from "@/utils/types";
 
 /**
  * @method POST
@@ -17,66 +21,66 @@ import {toLowerCase} from "@/utils/stringUtils";
  * @access public
  */
 export async function POST(request: NextRequest) {
+
+    if (request.method !== "POST") {
+        return NextResponse.json({error: "Method not allowed"}, {status: 405});
+    }
     try {
         // Obtenez le corps de la requête
         const body = (await request.json()) as LoginUserDto;
 
         if (!body) {
-            return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+            return NextResponse.json({error: "Missing required fields"}, {status: 400});
         }
 
         // Valider les données du formulaire avec Zod
-        const { success, error, data } = loginUserSchema.safeParse(body);
+        const {success, error, data} = loginUserSchema.safeParse(body);
 
-        if(!data) {
-            return NextResponse.json({ error: "Invalid data" }, { status: 400 });
+        if (!data) {
+            return NextResponse.json({error: "Invalid data"}, {status: 400});
         }
         if (!success || !data.email) {  // Vérifier que l'email est bien présent
-            return NextResponse.json({ error: "Invalid email or password" }, { status: 400 });
+            return NextResponse.json({error: "Invalid email or password"}, {status: 400});
         }
 
         // Nettoyage des données (conversion de l'email en minuscule)
-        const formattedEmail = toLowerCase(data.email);
+        const formatedEmail = toLowerCase(data.email);
 
-        // Vérifier si l'utilisateur existe et récupérer les informations nécessaires
-        const user = await prisma.user.findFirst({
-            where: { email: formattedEmail },
-            select: {
-                id: true,
-                password: true,
-                role: true,
-                email: true,
-                firstName: true,
-                lastName: true,
-                phoneNumber : true,
-            }
-        });
 
+        const user = await getUserByEmail(formatedEmail);
         // Si l'utilisateur n'est pas trouvé ou si le mot de passe est incorrect
         if (!user || !user.password || !(await bcrypt.compare(data.password, user.password))) {
             // Utiliser un message générique pour des raisons de sécurité
             return NextResponse.json(
-                { error: "Invalid email or password" },
-                { status: 400 }
+                {error: "Invalid email or password"},
+                {status: 400}
             );
         }
 
-        // Générez un jeton et retournez l'objet de réponse utilisateur
-        const jwtPayload: JWTPayload = {
-            id: user.id,
-            role: user.role,
-            userEmail: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            phoneNumber: user.phoneNumber,
-        };
+        const verificationData = getVerificationData() as VerificationDataType;
 
-        // Générez un cookie avec JWT
-        const cookie = setCookie(jwtPayload);
+        // si le n'a pas vérifié son email
+        if (user && !user.isVerified && user.emailVerified && user.emailVerified < new Date()) {
+
+            await updateVerificationTokenForOldUser(user.id, verificationData)
+
+        }
+
+
+        // Generate JWTPayload object and setCookies
+        const cookie = await generateJWTPayloadAndSetCookie(
+            user.id,
+            user.role,
+            user.email,
+            user.firstName,
+            user.lastName,
+            user.phoneNumber,
+            user.image || ""
+        );
 
         // Retourner la réponse avec le cookie
         return NextResponse.json(
-            { message: "Authenticated" },
+            {message: "Authenticated"},
             {
                 status: 200,
                 headers: {
