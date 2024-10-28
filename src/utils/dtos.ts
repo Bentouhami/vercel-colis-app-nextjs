@@ -1,6 +1,7 @@
 // DTOs for ColisApp
 
 // Base DTOs
+
 export enum Role {
     CLIENT = "CLIENT",
     DESTINATAIRE = "DESTINATAIRE",
@@ -13,7 +14,6 @@ export interface BaseDestinataireDto {
     name: string;
     email: string;
     phoneNumber: string;
-
 }
 
 // DTO for User response without a password
@@ -54,7 +54,6 @@ export interface BaseUserDto extends BaseDestinataireDto {
     address: BaseAddressDTO | FullAddressDTO;
 }
 
-
 export interface BaseClientDto extends BaseUserDto {
     password: string;
 }
@@ -94,11 +93,9 @@ export interface CreateFullUserDto extends BaseClientDto {
     verificationTokenExpires: Date;
 }
 
-
 export interface DestinataireResponseDto extends BaseDestinataireDto {
     id: number;
 }
-
 
 export interface LoginUserDto {
     email: string;
@@ -120,7 +117,6 @@ export interface UserLoginResponseDto {
     verificationTokenExpires: Date | null;
 }
 
-
 // Address DTOs
 export interface BaseAddressDTO {
     street: string;
@@ -130,7 +126,7 @@ export interface BaseAddressDTO {
     country: string;
 }
 
-// full Address DTO
+// Full Address DTO
 export interface FullAddressDTO extends BaseAddressDTO {
     id: number;
 }
@@ -143,16 +139,6 @@ export interface CreateParcelDto {
     weight: number; // en kg
 }
 
-// Simulation DTOs
-export interface SimulationEnvoisDto {
-    departureCountry: string;
-    departureCity: string;
-    departureAgency: string;
-    destinationCountry: string;
-    destinationCity: string;
-    destinationAgency: string;
-    packages: CreateParcelDto[];
-}
 
 // Tarifs and results
 export interface TarifsDto {
@@ -162,17 +148,72 @@ export interface TarifsDto {
     fixedRate: number;
 }
 
-export interface SimulationResultsDto {
-    departureCountry: string;
-    departureCity: string;
-    departureAgency: string;
-    destinationCountry: string;
-    destinationCity: string;
-    destinationAgency: string;
-    packages: CreateParcelDto[];
+// SimulationResultsDto: used when returning simulation details
+export interface BaseSimulationDto {
+    departureCountry: string | null;
+    departureCity: string | null;
+    departureAgency: string | null;
+    destinationCountry: string | null;
+    destinationCity: string | null;
+    destinationAgency: string | null;
+    parcels: CreateParcelDto[] | null;
+
+}
+
+
+// New DTOs for storing simulations
+export interface CreateSimulationDto extends BaseSimulationDto, SimulationCalculationTotalsDto {
+    userId: number | null;
+    destinataireId: number | null;
+}
+
+export interface SimulationWithoutIds extends BaseSimulationDto, SimulationCalculationTotalsDto {
+    status: SimulationStatus;
+
+}
+
+export interface FullSimulationDto extends CreateSimulationDto {
+    id: number;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+
+export enum SimulationStatus {
+    DRAFT = "DRAFT",
+    CONFIRMED = "CONFIRMED",
+    COMPLETED = "COMPLETED",
+    CANCELLED = "CANCELLED",
+}
+
+
+// Agency DTOs
+export interface BaseAgencyDto {
+    name: string;
+    location: string;
+    addressId: number;
+    capacity: number;
+    availableSlots: number;
+}
+
+export interface AgencyResponseDto extends BaseAgencyDto {
+    id: number;
+}
+
+export interface AgencyFullResponseDto extends BaseAgencyDto, AgencyResponseDto {
+
+    Address: FullAddressDTO;
+    updatedAt: Date;
+    createdAt: Date;
+}
+
+
+// Simulation DTOs
+export interface SimulationCalculationTotalsDto {
     totalWeight: number;
     totalVolume: number;
     totalPrice: number;
-    departureDate: string;
-    arrivalDate: string;
+    departureDate: Date;
+    arrivalDate: Date;
+
 }

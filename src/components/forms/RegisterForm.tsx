@@ -1,15 +1,14 @@
 // path     : src/app/client/(user)/register/page.tsx
 
-
 "use client";
 
 import React, {ChangeEvent, useState} from 'react';
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { Slide, toast, ToastContainer } from "react-toastify";
 import { useRouter } from "next/navigation";
-import { registerUser } from "@/utils/api";
 import {validateForm, registerUserFrontendSchema, RegisterUserBackendType} from "@/utils/validationSchema";
 import {FormData} from "@/utils/types";
+import {registerUser} from "@/services/frontend-services/UserService";
 
 
 

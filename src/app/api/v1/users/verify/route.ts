@@ -2,7 +2,18 @@
 
 import {NextRequest, NextResponse} from "next/server";
 import { Role, UserResponseDto} from "@/utils/dtos";
-import {getUserByValidToken, updateUserAndResetTokenVerificationAfterVerification} from "@/services/users/UserService";
+import {
+    getUserByValidToken,
+    updateUserAndResetTokenVerificationAfterVerification
+} from "@/services/backend-services/UserService";
+
+
+/**
+ * @method POST
+ * @route /api/v1/users/verify
+ * @desc Verify email
+ * @return {UserResponseDto} user object
+ */
 
 export async function POST(req: NextRequest) {
     // Récupérer le token depuis le corps de la requête

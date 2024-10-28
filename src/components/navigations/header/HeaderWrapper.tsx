@@ -41,7 +41,7 @@ const HeaderWrapper = async () => {
             firstName={firstName}
             lastName={lastName}
             image={image}
-           
+
         />
     );
 };

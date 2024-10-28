@@ -1,201 +1,246 @@
-// path: /src/components/forms/SimulationForms/SimulationForm.tsx
+// path: src/components/forms/SimulationForm.tsx
+'use client';
 
-"use client";
-import React, {ChangeEvent, useEffect, useState} from 'react';
-import {Button, Col, Container, Form, Pagination, Row} from 'react-bootstrap';
+
+import React, { ChangeEvent, useEffect, useState } from 'react';
+import { Button, Col, Container, Form, Pagination, Row } from 'react-bootstrap';
 import PackageForm from './PackageForm';
 import CountrySelect from "@/components/forms/SimulationForms/CountrySelectForm";
 import CitySelect from "@/components/forms/SimulationForms/CitySelectForm";
 import AgencySelect from "@/components/forms/SimulationForms/AgencySelectForm";
-import {fetchAgencies, fetchCities, fetchCountries, fetchDestinationCountries, submitSimulation} from "@/utils/api";
-import {toast, ToastContainer} from "react-toastify";
-import {useRouter} from 'next/navigation';
-import {SimulationEnvoisDto} from "@/utils/dtos";
-import {simulationEnvoisSchema} from "@/utils/validationSchema";
+import {  submitSimulation } from "@/services/frontend-services/simulation/SimulationService";
+import { toast, ToastContainer } from "react-toastify";
+import { useRouter } from 'next/navigation';
+import { simulationEnvoisSchema } from "@/utils/validationSchema";
+import {
+    fetchAgencies,
+    fetchCities,
+    fetchCountries,
+    fetchDestinationCountries
+} from "@/services/frontend-services/AddresseService";
+import {BaseSimulationDto} from "@/utils/dtos";
+
 
 const SimulationForm = () => {
-    const router = useRouter(); // Initialize useRouter
-    const [departureCountry, setDepartureCountry] = useState('');
-    const [departureCity, setDepartureCity] = useState('');
-    const [departureAgency, setDepartureAgency] = useState('');
-    const [destinationCountry, setDestinationCountry] = useState('');
-    const [destinationCity, setDestinationCity] = useState('');
-    const [destinationAgency, setDestinationAgency] = useState('');
+    const router = useRouter();
+
+    // États regroupés pour les informations de départ et de destination
+    const [departure, setDeparture] = useState({
+        country: '',
+        city: '',
+        agency: ''
+    });
+
+    const [destination, setDestination] = useState({
+        country: '',
+        city: '',
+        agency: ''
+    });
+
+    // États regroupés pour les options de pays, villes et agences
+    const [options, setOptions] = useState({
+        countries: [], // tous les pays
+        destinationCountries: [], // les pays de destination
+        departureCities: [],
+        departureAgencies: [],
+        destinationCities: [],
+        destinationAgencies: []
+    });
+
     const [packageCount, setPackageCount] = useState(1);
-    const [packages, setPackages] = useState([{height: 0, width: 0, length: 0, weight: 0}]);
+    const [parcels, setParcels] = useState([{ height: 0, width: 0, length: 0, weight: 0 }]);
     const [currentPackage, setCurrentPackage] = useState(0);
 
-
-    // pays / villes / agences de départ
-    const [countries, setCountries] = useState([]);
-    const [destinationCountries, setDestinationCountries] = useState([]);
-    const [departureCities, setDepartureCities] = useState([]);
-    const [departureAgencies, setDepartureAgencies] = useState([]);
-    const [destinationCities, setDestinationCities] = useState([]);
-    const [destinationAgencies, setDestinationAgencies] = useState([]);
-
-
-    // Récupérer les pays de départ disponibles pour le départ d'envoi
+    // Récupérer les pays de départ disponibles
     useEffect(() => {
-        fetchCountries().then(setCountries).catch(console.error);
+        // appel de service pour récupérer les pays de départ
+        fetchCountries().then((data) => setOptions((prev) => ({ ...prev, countries: data }))).catch(console.error);
     }, []);
 
-    // Récupérer les pays de destination disponibles pour le départ d'envoi
+    // Récupérer les pays de destination disponibles
     useEffect(() => {
-        fetchDestinationCountries(departureCountry).then(setDestinationCountries).catch(console.error);
-    }, [departureCountry]);
+        // vérification si le pays de départ est bien choisi
+        if (departure.country) {
 
-    // Récupérer les villes disponibles pour le départ d'envoi
-    useEffect(() => {
-        if (departureCountry) {
-            fetchCities(departureCountry).then(setDepartureCities).catch(console.error);
-            setDepartureCity('');
-            setDepartureAgency('');
+            // appel la méthod de la couche service
+            fetchDestinationCountries(departure.country).then((data) =>
+                setOptions((prev) => ({ ...prev, destinationCountries: data }))
+            ).catch(console.error);
         }
-    }, [departureCountry]);
+    }, [departure.country]);
 
-    // Récupérer les agences disponibles pour la destination
+    // Récupérer les villes disponibles pour le départ
     useEffect(() => {
-        if (departureCity && departureCountry) {
-            fetchAgencies(departureCountry, departureCity).then(setDepartureAgencies).catch(console.error);
-            setDepartureAgency('');
+        if (departure.country) {
+            fetchCities(departure.country).then((data) =>
+                setOptions((prev) => ({ ...prev, departureCities: data }))
+            ).catch(console.error);
+            setDeparture((prev) => ({ ...prev, city: '', agency: '' }));
         }
-    }, [departureCity, departureCountry]);
+    }, [departure.country]);
+
+    // Récupérer les agences disponibles pour le départ
+    useEffect(() => {
+        if (departure.city && departure.country) {
+            console.log("Fetching agencies for city:", departure.city);
+            fetchAgencies(departure.city).then((data) =>
+                setOptions((prev) => ({ ...prev, departureAgencies: data }))
+            ).catch(console.error);
+            setDeparture((prev) => ({ ...prev, agency: '' }));
+        }
+    }, [departure.city, departure.country]);
+
 
     // Récupérer les villes disponibles pour la destination
     useEffect(() => {
-        if (destinationCountry) {
-            fetchCities(destinationCountry).then(setDestinationCities).catch(console.error);
-            setDestinationCity('');
-            setDestinationAgency('');
+        if (destination.country) {
+            fetchCities(destination.country).then((data) =>
+                setOptions((prev) => ({ ...prev, destinationCities: data }))
+            ).catch(console.error);
+            setDestination((prev) => ({ ...prev, city: '', agency: '' }));
         }
-    }, [destinationCountry]);
+    }, [destination.country]);
 
     // Récupérer les agences disponibles pour la destination
     useEffect(() => {
-        if (destinationCity && destinationCountry) {
-            fetchAgencies(destinationCountry, destinationCity).then(setDestinationAgencies).catch(console.error);
-            setDestinationAgency('');
+        if (destination.city) {
+            // Passez uniquement la ville à la fonction fetchAgencies
+            fetchAgencies(destination.city).then((data) =>
+                setOptions((prev) => ({ ...prev, destinationAgencies: data }))
+            ).catch(console.error);
+            setDestination((prev) => ({ ...prev, agency: '' }));
         }
-    }, [destinationCity, destinationCountry]);
+    }, [destination.city]);
 
+
+    // Mise à jour des états pour les informations de départ et de destination
+    const handleDepartureChange = (field: keyof typeof departure, value: string) => {
+        setDeparture((prev) => ({ ...prev, [field]: value }));
+    };
+
+    const handleDestinationChange = (field: keyof typeof destination, value: string) => {
+        setDestination((prev) => ({ ...prev, [field]: value }));
+    };
 
     // Mettre à jour les dimensions du colis en fonction de l'index
     const handlePackageChange = (index: number, field: string, value: number) => {
-        const updatedPackages = packages.map((pkg, i) => (
-            i === index ? {...pkg, [field]: value} : pkg
-        ));
-        setPackages(updatedPackages);
+        const updatedPackages = parcels.map((pkg, i) => (i === index ? { ...pkg, [field]: value } : pkg));
+        setParcels(updatedPackages);
     };
 
     // Mettre à jour le nombre de colis en fonction de l'entrée de l'utilisateur
     const handlePackageCountChange = (e: ChangeEvent<HTMLInputElement>) => {
         const count = parseInt(e.target.value, 10);
         setPackageCount(count);
-        const newPackages = Array.from({length: count}, (_, i) => packages[i] || {
-            height: 0,
-            width: 0,
-            length: 0,
-            weight: 0
-        });
-        setPackages(newPackages);
+        const newPackages = Array.from({ length: count }, (_, i) => parcels[i] || { height: 0, width: 0, length: 0, weight: 0 });
+        setParcels(newPackages);
     };
 
-    // Function to handle form submission
     const handlePageChange = (pageIndex: number) => {
         setCurrentPackage(pageIndex);
     };
 
-// Function to handle form submission
+    // Fonction pour soumettre le formulaire
     const handleSubmit = async (e: ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        // Create a new simulation object with the form data and send it to the server
-        const simulationData: SimulationEnvoisDto = {
-            departureCountry, // pays de départ
-            departureCity, // ville de départ
-            departureAgency, // agence de départ
-            destinationCountry, // pays de destination
-            destinationCity, // ville de destination
-            destinationAgency, // agence de destination
-            packages, // les colis à envoyer
-
+        console.log("handleSubmit function called");
+        // Préparer les types de données pour l'envoi de la simulation
+        const simulationData: BaseSimulationDto = {
+            departureCountry: departure.country,
+            departureCity: departure.city,
+            departureAgency: departure.agency,
+            destinationCountry: destination.country,
+            destinationCity: destination.city,
+            destinationAgency: destination.agency,
+            parcels
         };
 
-        // validation du SimulationEnvoisDto
+
+        // log ⇒ simulationData in handleSubmit function:
+        console.log("simulationData in handleSubmit function: ", simulationData);
+
+        // validation avec ZOD
         const validated = simulationEnvoisSchema.safeParse(simulationData);
 
-        if(!validated.success){
+        if (!validated.success) {
             toast.error(validated.error.errors[0].message);
             return;
         }
-        // Send the simulation data to the server
+
+
+        // log ⇒ validated in handleSubmit function:
+        console.log("validated in handleSubmit function: ", validated.data);
+
         try {
-            const result = await submitSimulation(simulationData);
-            console.log(result);
+            console.log("trying to submit simulationData to function submitSimulation in SimulationService.ts");
+
+            // apple le service de simulation pour envoyer la simulation et retourné l'id de la simulation
+            console.log("about to send simulationData to submitSimulation function in SimulationService.ts from the frontend side as BaseSimulationDto");
+            const simulation = await submitSimulation(simulationData);
+            console.log("simulation in handleSubmit function: ", simulation);
+
+            if(!simulation) {
+                toast.error(" 1 . An error occurred while submitting the simulation.");
+                return;
+            }
+
+            // ici, j'appelle la function de calcul de simulation en passant son id et je renvoie les résultats de la simulation
 
 
             toast.success("Simulation successful!");
-            const query = new URLSearchParams({data: JSON.stringify(result)}).toString();
+            const query = new URLSearchParams({ data: JSON.stringify(simulation) }).toString();
             router.push(`/client/simulation/results?${query}`);
         } catch (error) {
             console.error('Error submitting simulation:', error);
-
-            if (error instanceof Error) {
-                toast.error(`Error: ${error.message}`);
-            } else {
-                toast.error('oups.');
-            }
+            toast.error('An error occurred while submitting the simulation.');
         }
     };
 
-
     return (
-        <Container
-            className="mt-2 mb-5 bg-purple-800 text-white p-5 rounded-3 drop-shadow-2xl shadow border border-purple-700">
-
+        <Container className="mt-2 mb-5 bg-purple-800 text-white p-5 rounded-3 drop-shadow-2xl shadow border border-purple-700">
             <Form className="w-100" onSubmit={handleSubmit}>
                 <Row>
                     <Col lg={6} xs={12}>
                         <CountrySelect
                             label="Pays de départ"
-                            value={departureCountry}
-                            onChange={(e) => setDepartureCountry(e.target.value)}
-                            countries={countries}
+                            value={departure.country}
+                            onChange={(e) => handleDepartureChange('country', e.target.value)}
+                            countries={options.countries}
                         />
                         <CitySelect
                             label="Ville de départ"
-                            value={departureCity}
-                            onChange={(e) => setDepartureCity(e.target.value)}
-                            cities={departureCities}
-                            disabled={!departureCountry}
+                            value={departure.city}
+                            onChange={(e) => handleDepartureChange('city', e.target.value)}
+                            cities={options.departureCities}
+                            disabled={!departure.country}
                         />
                         <AgencySelect
                             label="Agence de départ"
-                            value={departureAgency}
-                            onChange={(e) => setDepartureAgency(e.target.value)}
-                            agencies={departureAgencies}
-                            disabled={!departureCity}
+                            value={departure.agency}
+                            onChange={(e) => handleDepartureChange('agency', e.target.value)}
+                            agencies={options.departureAgencies}
+                            disabled={!departure.city}
                         />
                         <CountrySelect
                             label="Pays de destination"
-                            value={destinationCountry}
-                            onChange={(e) => setDestinationCountry(e.target.value)}
-                            countries={destinationCountries}
+                            value={destination.country}
+                            onChange={(e) => handleDestinationChange('country', e.target.value)}
+                            countries={options.destinationCountries}
                         />
                         <CitySelect
                             label="Ville de destination"
-                            value={destinationCity}
-                            onChange={(e) => setDestinationCity(e.target.value)}
-                            cities={destinationCities}
-                            disabled={!destinationCountry}
+                            value={destination.city}
+                            onChange={(e) => handleDestinationChange('city', e.target.value)}
+                            cities={options.destinationCities}
+                            disabled={!destination.country}
                         />
                         <AgencySelect
                             label="Agence d'arrivée"
-                            value={destinationAgency}
-                            onChange={(e) => setDestinationAgency(e.target.value)}
-                            agencies={destinationAgencies}
-                            disabled={!destinationCity}
+                            value={destination.agency}
+                            onChange={(e) => handleDestinationChange('agency', e.target.value)}
+                            agencies={options.destinationAgencies}
+                            disabled={!destination.city}
                         />
                     </Col>
                     <Col lg={6} xs={12} className="mt-3 mt-lg-0">
@@ -208,8 +253,7 @@ const SimulationForm = () => {
                                 onChange={handlePackageCountChange}
                                 min="1"
                             />
-
-                            {packages.map((pkg, index) => (
+                            {parcels.map((pkg, index) => (
                                 index === currentPackage && (
                                     <PackageForm
                                         key={index}
@@ -219,9 +263,9 @@ const SimulationForm = () => {
                                     />
                                 )
                             ))}
-                            {packages.length > 1 && (
+                            {parcels.length > 1 && (
                                 <Pagination className="justify-content-center mt-3 mt-lg-0">
-                                    {packages.map((_, index) => (
+                                    {parcels.map((_, index) => (
                                         <Pagination.Item
                                             key={index}
                                             active={index === currentPackage}
@@ -236,7 +280,7 @@ const SimulationForm = () => {
                     </Col>
                 </Row>
                 <div className="d-flex justify-content-center mt-3">
-                    <Button className="me-2" title="Soumettre les informations de l&apos;envoi et aller à la page de résultats" type="submit" variant="primary">Soumettre</Button>
+                    <Button className="me-2" type="submit" variant="primary">Soumettre</Button>
                 </div>
             </Form>
             <ToastContainer

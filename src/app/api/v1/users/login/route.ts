@@ -7,12 +7,11 @@ import bcrypt from "bcryptjs";
 import {LoginUserDto} from "@/utils/dtos";
 import {toLowerCase} from "@/utils/stringUtils";
 import {
-    generateJWTPayloadAndSetCookie,
-    getUserByEmail,
-    updateVerificationTokenForOldUser
-} from "@/services/users/UserService";
+    generateJWTPayloadAndSetCookie
+} from "@/services/frontend-services/UserService";
 import {getVerificationData} from "@/utils/generateToken";
 import {VerificationDataType} from "@/utils/types";
+import {getUserByEmail, updateVerificationTokenForOldUser} from "@/services/backend-services/UserService";
 
 /**
  * @method POST

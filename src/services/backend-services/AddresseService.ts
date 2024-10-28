@@ -1,9 +1,13 @@
-// path: src/services/address/AddresseService.ts
-
+// path: src/backend-services/AddresseService.ts
 
 import {BaseAddressDTO, FullAddressDTO} from "@/utils/dtos";
 import prisma from "@/utils/db";
 
+/**
+ * Check if address already exists in the database by street, number, city, zipCode and country fields
+ * @param address - address object
+ * @returns {Promise<FullAddressDTO | null>} address or null
+ */
 export async function isAddressAlreadyExist(address: BaseAddressDTO): Promise<FullAddressDTO | null> {
     try {
         const addressFound = await prisma.address.findFirst({
@@ -35,7 +39,12 @@ export async function isAddressAlreadyExist(address: BaseAddressDTO): Promise<Fu
     }
 }
 
-
+/**
+ * Create address in the database
+ * @param address - address object
+ * @param address
+ * @returns {Promise<FullAddressDTO | null>} address or null
+ */
 export async function createAddress(address: BaseAddressDTO): Promise<FullAddressDTO | null> {
     try {
         const addressCreated = await prisma.address.create({

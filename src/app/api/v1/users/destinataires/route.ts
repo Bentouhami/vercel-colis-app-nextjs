@@ -10,7 +10,7 @@ import {
     checkExistingAssociation,
     createDestinataire,
     isDestinataireAlreadyExist,
-} from "@/services/users/UserService";
+} from "@/services/backend-services/UserService";
 
 export async function POST(req: NextRequest) {
     if (req.method !== "POST") {

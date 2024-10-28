@@ -4,8 +4,8 @@ import {useRouter, useSearchParams} from 'next/navigation';
 import React, {useEffect, useState} from 'react';
 import {Button, Card, Row} from 'react-bootstrap';
 import styles from './SimulationResults.module.css';
-import {SimulationResultsDto} from "@/utils/dtos";
-import {submitSimulation} from "@/utils/api";
+import {CreateSimulationDto, SimulationResultsDto} from "@/utils/dtos";
+import {submitSimulation} from "@/services/frontend-services/simulation/SimulationService";
 import LoginPromptModal from '@/components/LoginPromptModal';
 import {CiCalculator2, CiCircleInfo} from "react-icons/ci";
 import {MdEmojiSymbols} from "react-icons/md";
@@ -15,7 +15,7 @@ import {toast} from "react-toastify"; // Import Framer Motion
 const SimulationResults = () => {
     const searchParams = useSearchParams();
     const router = useRouter();
-    const [results, setResults] = useState<SimulationResultsDto | null>(null);
+    const [results, setResults] = useState<CreateSimulationDto | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
     const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
@@ -43,7 +43,7 @@ const SimulationResults = () => {
             try {
                 const response = await fetch('/api/auth/status');
                 const authStatus = await response.json();
-                console.log('Auth status:', authStatus); // Ajoutez ce log
+                console.log('Auth status:', authStatus); // log pour s'assurer le contenu authStatus
                 setIsAuthenticated(authStatus.isAuthenticated);
             } catch (error) {
                 console.error("Erreur lors de la vérification de l'authentification", error);
@@ -165,7 +165,7 @@ const SimulationResults = () => {
                         </motion.div>
 
                         <Row>
-                            {results.packages.map((pkg, index) => (
+                            {results.parcels?.map((pkg, index) => (
                                 <motion.div
                                     key={index}
                                     className="p-5 rounded-3 shadow mb-3"

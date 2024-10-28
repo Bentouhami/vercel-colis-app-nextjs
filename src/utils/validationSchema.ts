@@ -122,7 +122,7 @@ export const simulationEnvoisSchema = z.object({
         .min(1, {message: "Destination city is required"}),
     destinationAgency: z.string()
         .min(1, {message: "Destination agency is required"}),
-    packages: z.array(parcelsSchema),
+    parcels: z.array(parcelsSchema),
 });
 
 // Schéma pour valider les tarifs
@@ -150,9 +150,6 @@ export const destinataireSchema = z.object({
 
 
 // Types exportés
-export type RegisterUserType = z.infer<typeof registerUserFrontendSchema>;
-export type LoginUserType = z.infer<typeof loginUserSchema>;
-export type AddressType = z.infer<typeof addressSchema>;
 export type RegisterUserBackendType = z.infer<typeof registerUserBackendSchema>;
 
 export type DestinataireInput = z.infer<typeof destinataireSchema>;

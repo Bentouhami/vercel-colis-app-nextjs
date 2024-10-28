@@ -1,22 +1,17 @@
-// path: src/services/users/UserService.ts
-'use server';
-import prisma from "@/utils/db";
+// path: src/services/backend-services/UserService.ts
+
+
 import {
     BaseDestinataireDto,
     CreateFullUserDto,
-    DestinataireResponseDto,
-    DestinataireResponseWithRoleDto,
+    DestinataireResponseDto, DestinataireResponseWithRoleDto,
     FullAddressDTO,
-    FullUserDto,
-    FullUserResponseDto,
-    Role, UserLoginResponseDto,
-    UserModelDto,
-    UserResponseDto,
+    FullUserResponseDto, Role, UserLoginResponseDto,
+    UserModelDto, UserResponseDto
 } from "@/utils/dtos";
-import {JWTPayload, VerificationDataType} from "@/utils/types";
-import {setCookie} from "@/utils/generateToken";
+import prisma from "@/utils/db";
+import {VerificationDataType} from "@/utils/types";
 import {sendVerificationEmail} from "@/lib/mailer";
-
 
 /**
  *  Create new user as CLIENT
@@ -25,7 +20,7 @@ import {sendVerificationEmail} from "@/lib/mailer";
  * @param address
  * @returns new created user data
  */
-export async function createUser(newUser: CreateFullUserDto, address: FullAddressDTO): Promise<FullUserResponseDto | null> {
+export async function registerUser(newUser: CreateFullUserDto, address: FullAddressDTO): Promise<FullUserResponseDto | null> {
     console.log("newUser.address from createUser: ", newUser.address);
     try {
         const formattedUser = {
@@ -39,7 +34,7 @@ export async function createUser(newUser: CreateFullUserDto, address: FullAddres
             role: newUser.role,
             verificationToken: newUser.verificationToken,
             verificationTokenExpires: newUser.verificationTokenExpires,
-            addressId: address.id, // Utilisation de l'ID de l'adresse directement
+            addressId: address.id,
             isVerified: false,
             image: ''
         };
@@ -227,7 +222,7 @@ export async function getUserByValidToken(token: string): Promise<UserResponseDt
                     gt: new Date(), // Le token doit être encore valide (pas expiré)
                 },
             },
-            select: { // Le `select` doit être en dehors de `where`
+            select: {
                 id: true,
                 firstName: true,
                 lastName: true,
@@ -289,6 +284,12 @@ export async function updateUserAndResetTokenVerificationAfterVerification(userI
 }
 
 
+/**
+ * Update user and reset token verification for old user
+ * @param userId - user id
+ * @param verificationData - verification data object
+ * @returns {Promise<void>} void
+ */
 export async function updateVerificationTokenForOldUser(userId: number, verificationData: VerificationDataType) {
     await prisma.user.update({
         where: {id: userId},
@@ -302,40 +303,6 @@ export async function updateVerificationTokenForOldUser(userId: number, verifica
     });
 }
 
-
-/**
- * Generate JWTPayload object and setCookies with JWT token and cookie
- * @param userId
- * @param role
- * @param userEmail
- * @param firstName
- * @param lastName
- * @param phoneNumber
- * @param image
- * @returns {string} cookie
- */
-export async function generateJWTPayloadAndSetCookie(
-    userId: number,
-    role: string,
-    userEmail: string,
-    firstName: string,
-    lastName: string,
-    phoneNumber: string,
-    image: string) {
-
-    const jwtPayload: JWTPayload = {
-        id: userId,
-        role: role,
-        userEmail: userEmail,
-        firstName: firstName,
-        lastName: lastName,
-        phoneNumber: phoneNumber,
-        image: image
-    };
-
-    // return cookie
-    return setCookie(jwtPayload);
-}
 
 /**
  * find user by email
@@ -441,6 +408,13 @@ export async function updateDestinataireToClient(
     }
 }
 
+
+/**
+ * Check if association exists between client and destinataire
+ * @param clientId - client id
+ * @param destinataireId - destinataire id
+ * @returns {Promise<ClientDestinataire | null>} client destinataire or null
+ */
 export async function checkExistingAssociation(clientId: number, destinataireId: number) {
     try {
         return await prisma.clientDestinataire.findFirst({
@@ -476,3 +450,4 @@ export async function associateDestinataireToCurrentClient(userId: number, desti
         throw error;
     }
 }
+

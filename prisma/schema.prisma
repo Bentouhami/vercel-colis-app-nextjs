@@ -11,69 +11,7 @@ generator client {
   previewFeatures = ["driverAdapters"]
 }
 
-model Address {
-  id        Int      @id @default(autoincrement())
-  street    String   @db.VarChar(50)
-  number    String?  @db.VarChar(50)
-  city      String   @db.VarChar(50)
-  zipCode   String   @db.VarChar(50)
-  country   String   @db.VarChar(50)
-  latitude  Float? // Latitude de l'adresse, stockée en Float
-  longitude Float? // Longitude de l'adresse, stockée en Float
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-
-  Agency Agency?
-  User   User[]
-
-  @@map("addresses")
-}
-
-model Agency {
-  id             Int      @id @default(autoincrement())
-  name           String   @db.VarChar(50)
-  location       String?  @db.VarChar(250)
-  addressId      Int      @unique
-  capacity       Int      @db.Integer // Capacité maximale pour stocker les colis
-  availableSlots Int      @db.Integer // Nombre de places disponibles pour les rendez-vous ou dépôts
-  Address        Address  @relation(fields: [addressId], references: [id])
-  updatedAt      DateTime @updatedAt
-  createdAt      DateTime @default(now())
-
-  // Relations
-
-  ArrivalEnvoi   Envoi[]        @relation("ArrivalAgency")
-  DepartureEnvoi Envoi[]        @relation("DepartureAgency")
-  Notification   Notification[]
-  Appointment    Appointment[]
-  Tarifs         Tarifs[]
-
-  @@map("agencies")
-}
-
-model Notification {
-  id             Int      @id @default(autoincrement())
-  message        String   @db.VarChar(255)
-  envoisId       Int      @db.Integer
-  agencyId       Int      @db.Integer
-  userId         Int      @db.Integer
-  destinataireId Int      @db.Integer
-  envoiId        Int      @db.Integer
-  isRead         Boolean  @default(false)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  // Relations
-
-  Agency                   Agency @relation(fields: [agencyId], references: [id])
-  Envoi                    Envoi  @relation(fields: [envoiId], references: [id])
-  DestinataireNotification User   @relation("NotificationDestinataire", fields: [destinataireId], references: [id])
-  User                     User   @relation("NotificationUser", fields: [userId], references: [id])
-
-  @@map("notifications")
-}
+// User models
 
 model User {
   id          Int       @id @default(autoincrement())
@@ -110,23 +48,22 @@ model User {
   clientLinks       ClientDestinataire[] @relation("Client")
   destinataireLinks ClientDestinataire[] @relation("Destinataire")
 
+  // Nouvelles relations pour la gestion des simulations
+  createdSimulations  Simulation[] @relation("ClientSimulations")
+  receivedSimulations Simulation[] @relation("DestinataireSimulations")
+
   @@map("users")
 }
 
-model ClientDestinataire {
-  id             Int      @id @default(autoincrement())
-  clientId       Int
-  destinataireId Int
-  createdAt      DateTime @default(now())
+enum Role {
+  CLIENT
+  ADMIN
+  DESTINATAIRE
 
-  // Relations
-  client       User @relation("Client", fields: [clientId], references: [id])
-  destinataire User @relation("Destinataire", fields: [destinataireId], references: [id])
-
-  @@unique([clientId, destinataireId]) // Empêche un client d'ajouter deux fois le même destinataire
-  @@map("clients_destinataires")
+  @@map("roles")
 }
 
+// Authentication models
 model Account {
   userId            Int
   type              String
@@ -147,6 +84,7 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([provider, providerAccountId])
+  @@map("accounts")
 }
 
 model VerificationToken {
@@ -155,6 +93,7 @@ model VerificationToken {
   expires    DateTime
 
   @@id([identifier, token])
+  @@map("verification_tokens")
 }
 
 model Session {
@@ -165,6 +104,8 @@ model Session {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("sessions")
 }
 
 // Optional for WebAuthn support
@@ -182,14 +123,120 @@ model Authenticator {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, credentialID])
+  @@map("authenticators")
 }
 
-enum Role {
-  CLIENT
-  ADMIN
-  DESTINATAIRE
+model Notification {
+  id             Int      @id @default(autoincrement())
+  message        String   @db.VarChar(255)
+  envoisId       Int      @db.Integer
+  agencyId       Int      @db.Integer
+  userId         Int      @db.Integer
+  destinataireId Int      @db.Integer
+  envoiId        Int      @db.Integer
+  isRead         Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  @@map("roles")
+  // Relations
+
+  Agency                   Agency @relation(fields: [agencyId], references: [id])
+  Envoi                    Envoi  @relation(fields: [envoiId], references: [id])
+  DestinataireNotification User   @relation("NotificationDestinataire", fields: [destinataireId], references: [id])
+  User                     User   @relation("NotificationUser", fields: [userId], references: [id])
+
+  @@map("notifications")
+}
+
+model Address {
+  id        Int      @id @default(autoincrement())
+  street    String   @db.VarChar(50)
+  number    String?  @db.VarChar(50)
+  city      String   @db.VarChar(50)
+  zipCode   String   @db.VarChar(50)
+  country   String   @db.VarChar(50)
+  latitude  Float? // Latitude de l'adresse, stockée en Float
+  longitude Float? // Longitude de l'adresse, stockée en Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+
+  Agency Agency?
+  User   User[]
+
+  @@map("addresses")
+}
+
+model Agency {
+  id             Int      @id @default(autoincrement())
+  name           String   @db.VarChar(50)
+  location       String?  @db.VarChar(250)
+  addressId      Int      @unique
+  capacity       Int      @db.Integer // Capacité maximale pour stocker les colis
+  availableSlots Int      @db.Integer // Nombre de places disponibles pour les rendez-vous ou dépôts
+  address        Address  @relation(fields: [addressId], references: [id])
+  updatedAt      DateTime @updatedAt
+  createdAt      DateTime @default(now())
+
+  // Relations
+
+  ArrivalEnvoi   Envoi[]        @relation("ArrivalAgency")
+  DepartureEnvoi Envoi[]        @relation("DepartureAgency")
+  Notification   Notification[]
+  Appointment    Appointment[]
+  Tarifs         Tarifs[]
+
+  @@map("agencies")
+}
+
+enum SimulationStatus {
+  DRAFT
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+
+  @@map("simulation_status")
+}
+
+model Simulation {
+  id                 Int      @id @default(autoincrement())
+  userId             Int? // Référence à l'ID de l'utilisateur qui effectue la simulation
+  destinataireId     Int? // Référence à l'ID du destinataire
+  departureCountry   String
+  departureCity      String
+  departureAgency    String
+  destinationCountry String
+  destinationCity    String
+  destinationAgency  String
+  parcels            Json
+  status             String
+  totalWeight        Float
+  totalVolume        Float
+  totalPrice         Float?
+  departureDate      DateTime
+  arrivalDate        DateTime
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  client       User? @relation("ClientSimulations", fields: [userId], references: [id])
+  destinataire User? @relation("DestinataireSimulations", fields: [destinataireId], references: [id])
+
+  @@map("simulations")
+}
+
+model ClientDestinataire {
+  id             Int      @id @default(autoincrement())
+  clientId       Int // Référence au (client) l'utilisateur qui effectue la simulation
+  destinataireId Int // Référence au destinataire (utilisateur qui va récupérer l'envoi)
+  createdAt      DateTime @default(now())
+
+  // Relations
+  client       User @relation("Client", fields: [clientId], references: [id]) //
+  destinataire User @relation("Destinataire", fields: [destinataireId], references: [id])
+
+  @@unique([clientId, destinataireId]) // Empêche un client d'ajouter deux fois le même destinataire
+  @@map("clients_destinataires")
 }
 
 enum EnvoiStatus {
@@ -250,6 +297,8 @@ model Transport {
 
   Envoi             Envoi[]
   TransportSchedule TransportSchedule[]
+
+  @@map("transports")
 }
 
 model Envoi {
@@ -312,6 +361,8 @@ enum AppointmentStatus {
   COMPLETED
   MISSED
   IN_PROGRESS
+
+  @@map("appointment_status")
 }
 
 model EnvoiCoupon {

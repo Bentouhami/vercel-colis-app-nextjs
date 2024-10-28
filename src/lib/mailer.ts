@@ -1,17 +1,5 @@
 // path: src/utils/email.utils.ts
 
-import nodemailer from "nodemailer";
-
-// Transporteur Nodemailer configuré
-const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_SERVER_HOST,
-    port: Number(process.env.EMAIL_SERVER_PORT),
-    auth: {
-        user: process.env.EMAIL_SERVER_USER,
-        pass: process.env.EMAIL_SERVER_PASSWORD,
-    },
-});
-
 
 /**
  * Envoie un email de vérification générique pour tous les utilisateurs
@@ -19,13 +7,16 @@ const transporter = nodemailer.createTransport({
  * @param email - L'adresse email de l'utilisateur
  * @param token - Le token de vérification
  */
-export async function sendVerificationEmail(name: string, email: string, token: string) {
-    const verificationUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/client/verify-email?token=${token}`;
+// src/lib/mailer.ts
 
-    await transporter.sendMail({
-        from: process.env.EMAIL_FROM,
-        to: email,
-        subject: "Verify your email address",
-        html: `<><strong>${name}</strong> Welcome to ColisApp, Ans thank you for registering. Please click <a href="${verificationUrl}">here</a> to verify your email address, this link is actif for 15 minutes. </>`,
-    });
+import axios from 'axios';
+import {DOMAIN} from "@/utils/constants";
+
+export async function sendVerificationEmail(name: string, email: string, token: string) {
+    try {
+        await axios.post(`${DOMAIN}/api/send-email`, { name, email, token });
+    } catch (error) {
+        console.error('Error sending verification email:', error);
+        throw error;
+    }
 }

@@ -4,25 +4,25 @@ import {
     BaseClientDto,
     CreateFullUserDto,
     FullAddressDTO,
-    FullUserDto,
     FullUserResponseDto,
     Role, UserModelDto,
-    UserResponseDto
+
 } from '@/utils/dtos';
 import {errorHandler} from "@/utils/handelErrors";
 import {capitalizeFirstLetter, toLowerCase} from "@/utils/stringUtils";
 import {registerUserBackendSchema, RegisterUserBackendType} from "@/utils/validationSchema";
-import {createAddress, isAddressAlreadyExist} from "@/services/address/AddresseService";
-import {
-    createUser,
-    isUserAlreadyExist,
-    updateDestinataireToClient,
-    updateVerificationTokenForOldUser,
-} from "@/services/users/UserService";
-import {sendVerificationEmail} from "@/lib/mailer";
+
 import {hashPassword} from "@/lib/auth";
 import {getVerificationData} from "@/utils/generateToken";
 import {VerificationDataType} from "@/utils/types";
+import {createAddress, isAddressAlreadyExist} from "@/services/backend-services/AddresseService";
+import {
+    isUserAlreadyExist,
+    registerUser,
+    updateDestinataireToClient,
+    updateVerificationTokenForOldUser
+} from "@/services/backend-services/UserService";
+import {sendVerificationEmail} from "@/lib/mailer";
 
 export async function POST(request: NextRequest) {
     if (request.method !== "POST") {
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({error: "Missing required fields"}, {status: 400});
         }
 
-        console.log("Register user request body: ", body);
+        console.log("Register registeredUser request body: ", body);
 
         // Valider les données de l'utilisateur avec le schéma de validation
         const {success, error, data: validatedData} = registerUserBackendSchema.safeParse(body);
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
             address: extractedBaseAddresse as BaseAddressDTO
         };
 
-        console.log("Formatted address user:", formattedUser.address);
+        console.log("Formatted address registeredUser:", formattedUser.address);
 
         // Vérifier l'existence de l'adresse
         let addressToUse: FullAddressDTO | null = await isAddressAlreadyExist(extractedBaseAddresse);
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
 
         console.log("isUserAlreadyExist returned:", existedUser);
 
-        let user : FullUserResponseDto | null = null;
+        let registeredUser : FullUserResponseDto | null = null;
 
         // Créer un nouvel utilisateur s'il n'existe pas
         if (!existedUser) {
@@ -118,13 +118,13 @@ export async function POST(request: NextRequest) {
                 verificationTokenExpires: verificationData.verificationTokenExpires,
             }
 
-            user = await createUser(userData, addressToUse) as FullUserResponseDto;
+            registeredUser = await registerUser(userData, addressToUse) as FullUserResponseDto;
 
-            if (!user) {
-                return NextResponse.json({error: "Failed to create user"}, {status: 500});
+            if (!registeredUser) {
+                return NextResponse.json({error: "Failed to create registeredUser"}, {status: 500});
             }
 
-            await sendVerificationEmail(user.name, user.email, verificationData.verificationToken);
+            await sendVerificationEmail(registeredUser.name, registeredUser.email, verificationData.verificationToken);
 
             return NextResponse.json({message: "User created successfully, please check your email to verify your account"}, {status: 201});
         }
@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
         }
 
         if (existedUser.role === Role.DESTINATAIRE) {
-            user = await updateDestinataireToClient(
+            registeredUser = await updateDestinataireToClient(
                 existedUser,
                 formattedUser.birthDate,
                 hashedPassword,
@@ -148,11 +148,11 @@ export async function POST(request: NextRequest) {
                 verificationData
             );
 
-            if (!user) {
+            if (!registeredUser) {
                 return NextResponse.json({error: "Failed to update destinataire"}, {status: 500});
             }
 
-            await sendVerificationEmail(user.name, user.email, verificationData.verificationToken);
+            await sendVerificationEmail(registeredUser.name, registeredUser.email, verificationData.verificationToken);
 
             return NextResponse.json({message: "User created successfully, please check your email to verify your account"}, {status: 201});
         }

@@ -4,7 +4,7 @@
 import {Button, Form, InputGroup} from "react-bootstrap";
 import React, {useState} from "react";
 import {toast, ToastContainer} from "react-toastify";
-import {login} from "@/utils/api";
+import {login} from "@/services/frontend-services/AuthService";
 import {useRouter, useSearchParams} from "next/navigation";
 import {FaEye, FaEyeSlash} from 'react-icons/fa';
 import {LoginUserDto} from "@/utils/dtos";
