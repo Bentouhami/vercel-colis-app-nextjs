@@ -1,41 +1,63 @@
-// path: src/components/forms/SimulationResults.tsx
 'use client';
-import {useRouter, useSearchParams} from 'next/navigation';
-import React, {useEffect, useState} from 'react';
-import {Button, Card, Row} from 'react-bootstrap';
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { Button, Card, Row } from 'react-bootstrap';
 import styles from './SimulationResults.module.css';
-import {CreateSimulationDto, SimulationResultsDto} from "@/utils/dtos";
-import {submitSimulation} from "@/services/frontend-services/simulation/SimulationService";
+import { FullSimulationDto } from "@/utils/dtos";
+import { getSimulationById, submitSimulation } from "@/services/frontend-services/simulation/SimulationService";
 import LoginPromptModal from '@/components/LoginPromptModal';
-import {CiCalculator2, CiCircleInfo} from "react-icons/ci";
-import {MdEmojiSymbols} from "react-icons/md";
-import {motion} from 'framer-motion';
-import {toast} from "react-toastify"; // Import Framer Motion
+import { CiCalculator2, CiCircleInfo } from "react-icons/ci";
+import { MdEmojiSymbols } from "react-icons/md";
+import { motion } from 'framer-motion';
+import { toast } from "react-toastify";
 
 const SimulationResults = () => {
     const searchParams = useSearchParams();
     const router = useRouter();
-    const [results, setResults] = useState<CreateSimulationDto | null>(null);
+    const [results, setResults] = useState<FullSimulationDto | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
     const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
     useEffect(() => {
-        const data = searchParams.get('data');
-        if (data) {
-            console.log('Data from search params:', data);
+        const getSimulationResults = async () => {
+            const data = searchParams.get('data');
 
-            setResults(JSON.parse(data));
-        } else {
-            console.log('No data from search params try to get it from localStorage');
-            const savedResults = localStorage.getItem('simulationResults');
-            if (savedResults) {
-                console.log('Found results in localStorage:', savedResults);
-                setResults(JSON.parse(savedResults));
-            } else {
-                console.log('No results found in localStorage, redirecting to simulation page');
-                router.push('client/simulation');
+            if (!data) {
+                console.log('No data from search params');
+                router.push('/client/simulation');
+                return;
             }
-        }
+
+            try {
+                const parsedData = JSON.parse(data);
+                const { id } = parsedData;
+                console.log('ID simulation from search params:', id);
+
+                const simulationData = await getSimulationById(id);
+
+                if (!simulationData) {
+                    console.log('No simulation found, redirecting to simulation page');
+                    router.push('/client/simulation');
+                    return;
+                }
+
+                console.log('Found simulation data:', simulationData);
+
+                // Convert parcels if necessary to ensure it's an array
+                const formattedResults = {
+                    ...simulationData,
+                    parcels: Array.isArray(simulationData.parcels) ? simulationData.parcels : JSON.parse(simulationData.parcels)
+                };
+
+                setResults(formattedResults);
+
+            } catch (error) {
+                console.error("Can't get Simulation results:", error);
+                toast.error("Erreur de chargement des résultats.");
+            }
+        };
+
+        getSimulationResults();
     }, [searchParams, router]);
 
     useEffect(() => {
@@ -43,7 +65,7 @@ const SimulationResults = () => {
             try {
                 const response = await fetch('/api/auth/status');
                 const authStatus = await response.json();
-                console.log('Auth status:', authStatus); // log pour s'assurer le contenu authStatus
+                console.log('Auth status:', authStatus);
                 setIsAuthenticated(authStatus.isAuthenticated);
             } catch (error) {
                 console.error("Erreur lors de la vérification de l'authentification", error);
@@ -53,35 +75,28 @@ const SimulationResults = () => {
         checkAuthStatus();
     }, []);
 
-
     if (!results) {
         return <p className={styles.loading}>Loading...</p>;
     }
 
     async function handleValidate() {
-        // Toujours enregistrer les résultats dans le localStorage avant toute validation ou soumission
         if (results) {
             localStorage.setItem('simulationResults', JSON.stringify(results));
 
-            // Si l'utilisateur est authentifié, soumettre la simulation
             if (isAuthenticated) {
                 try {
-                    // Soumettre la simulation
                     await submitSimulation(results);
                     router.push('/client/ajouter-destinataire');
                 } catch (error) {
                     console.error("Erreur lors de la soumission de la simulation", error);
                 }
             } else {
-                // Si non authentifié, montrer l'invite de connexion
                 setShowLoginPrompt(true);
             }
-
         } else {
             setShowLoginPrompt(false);
             toast.error("Vous devez être connecté pour accéder à cette page");
             router.push('/client/simulation');
-
         }
     }
 
@@ -99,42 +114,37 @@ const SimulationResults = () => {
     return (
         <motion.div
             className={`mb-40 ${styles.container}`}
-            initial={{opacity: 0, y: 20}}
-            animate={{opacity: 1, y: 0}}
-            transition={{duration: 0.5}}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
         >
             <h2 className={styles.heading}>Résultats de la Simulation</h2>
 
             <Row>
                 <Card className={styles.card}>
-                    <Card.Header className="text-center bg-blue-600 text-white p-5  mb-3">
-                        <motion.h2
-                            initial={{opacity: 0}}
-                            animate={{opacity: 1}}
-                            transition={{delay: 0.3}}
-                        >
+                    <Card.Header className="text-center bg-blue-600 text-white p-5 mb-3">
+                        <motion.h2 initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
                             Récapitulatif de votre envoi
                         </motion.h2>
                     </Card.Header>
 
                     <Card.Body>
-                        {/* Informations de l'envoi */}
                         <motion.div
-                            className="bg-blue-600 d-flex align-items-center mb-3 p-3 "
-                            initial={{opacity: 0, x: -50}}
-                            animate={{opacity: 1, x: 0}}
-                            transition={{delay: 0.5}}
+                            className="bg-blue-600 d-flex align-items-center mb-3 p-3"
+                            initial={{ opacity: 0, x: -50 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.5 }}
                         >
-                            <CiCircleInfo className="size-5 mt-3 me-2"/>
-                            <h4 className="text-white">Informations de l&apos;envoi</h4>
+                            <CiCircleInfo className="size-5 mt-3 me-2" />
+                            <h4 className="text-white">Informations de l&#39;envoi</h4>
                         </motion.div>
 
                         <Row>
                             <motion.div
-                                className=" p-5 rounded-3 shadow mb-3"
-                                initial={{opacity: 0}}
-                                animate={{opacity: 1}}
-                                transition={{delay: 0.7}}
+                                className="p-5 rounded-3 shadow mb-3"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.7 }}
                             >
                                 <p><strong>Pays de départ:</strong> {results.departureCountry}</p>
                                 <p><strong>Ville de départ:</strong> {results.departureCity}</p>
@@ -143,9 +153,9 @@ const SimulationResults = () => {
 
                             <motion.div
                                 className="p-5 rounded-3 shadow mb-3"
-                                initial={{opacity: 0}}
-                                animate={{opacity: 1}}
-                                transition={{delay: 0.9}}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.9 }}
                             >
                                 <p><strong>Pays de destination:</strong> {results.destinationCountry}</p>
                                 <p><strong>Ville de destination:</strong> {results.destinationCity}</p>
@@ -153,14 +163,13 @@ const SimulationResults = () => {
                             </motion.div>
                         </Row>
 
-                        {/* Résultats des Colis */}
                         <motion.div
                             className="d-flex align-items-center mb-3 bg-green-600 text-white p-3 rounded"
-                            initial={{opacity: 0, x: 50}}
-                            animate={{opacity: 1, x: 0}}
-                            transition={{delay: 1.1}}
+                            initial={{ opacity: 0, x: 50 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 1.1 }}
                         >
-                            <MdEmojiSymbols className="size-5 mt-3 me-2"/>
+                            <MdEmojiSymbols className="size-5 mt-3 me-2" />
                             <h4 className="text-white">Résultats des Colis</h4>
                         </motion.div>
 
@@ -169,9 +178,9 @@ const SimulationResults = () => {
                                 <motion.div
                                     key={index}
                                     className="p-5 rounded-3 shadow mb-3"
-                                    initial={{opacity: 0, scale: 0.9}}
-                                    animate={{opacity: 1, scale: 1}}
-                                    transition={{delay: 1.3}}
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ delay: 1.3 }}
                                 >
                                     <p><strong>Colis {index + 1}:</strong></p>
                                     <p>Hauteur: {pkg.height} cm</p>
@@ -182,39 +191,26 @@ const SimulationResults = () => {
                             ))}
                         </Row>
 
-                        {/* Calculs */}
                         <motion.div
                             className="d-flex align-items-center mb-3 bg-orange-600 text-white p-3 rounded"
-                            initial={{opacity: 0, x: -50}}
-                            animate={{opacity: 1, x: 0}}
-                            transition={{delay: 1.5}}
+                            initial={{ opacity: 0, x: -50 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 1.5 }}
                         >
-                            <CiCalculator2 className="size-5 mt-3 me-2"/>
+                            <CiCalculator2 className="size-5 mt-3 me-2" />
                             <h4 className="text-white">Calculs</h4>
                         </motion.div>
 
                         <Row>
-                            <motion.div
-                                className=" p-5 rounded-3 shadow mb-3"
-                                initial={{opacity: 0}}
-                                animate={{opacity: 1}}
-                                transition={{delay: 1.7}}
-                            >
+                            <motion.div className="p-5 rounded-3 shadow mb-3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.7 }}>
                                 <p><strong>Poids total:</strong> {results.totalWeight} kg</p>
                                 <p><strong>Volume total:</strong> {results.totalVolume} cm²</p>
                             </motion.div>
 
-                            <motion.div
-                                className="p-5 rounded-3 shadow mb-3"
-                                initial={{opacity: 0}}
-                                animate={{opacity: 1}}
-                                transition={{delay: 1.9}}
-                            >
+                            <motion.div className="p-5 rounded-3 shadow mb-3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.9 }}>
                                 <p><strong>Prix total:</strong> {results.totalPrice} €</p>
-                                <p><strong>Date de
-                                    départ:</strong> {new Date(results.departureDate).toLocaleDateString()}</p>
-                                <p><strong>Date
-                                    d&apos;arrivée:</strong> {new Date(results.arrivalDate).toLocaleDateString()}</p>
+                                <p><strong>Date de départ:</strong> {new Date(results.departureDate).toLocaleDateString()}</p>
+                                <p><strong>Date d&#39;arrivée:</strong> {new Date(results.arrivalDate).toLocaleDateString()}</p>
                             </motion.div>
                         </Row>
                     </Card.Body>
@@ -226,8 +222,7 @@ const SimulationResults = () => {
                     Valider
                 </Button>
 
-                <Button className="m-5" title="Annuler l&apos;envoi, et revenir à la page de simulation"
-                        onClick={handleCancel} type="button" variant="secondary">
+                <Button className="m-5" title="Annuler l'envoi, et revenir à la page de simulation" onClick={handleCancel} type="button" variant="secondary">
                     Annuler
                 </Button>
             </div>

@@ -2,7 +2,7 @@
 
 import {NextRequest, NextResponse} from 'next/server';
 import {errorHandler} from "@/utils/handelErrors";
-import {CreateParcelDto, CreateSimulationDto,  SimulationStatus} from "@/utils/dtos";
+import {CreateParcelDto, SimulationWithIds,  SimulationStatus} from "@/utils/dtos";
 import {simulationEnvoisSchema} from "@/utils/validationSchema";
 import prisma from "@/utils/db";
 import {verifyToken} from "@/utils/verifyToken";
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
 
 
         // Préparer les données pour la création de la simulation
-        const createSimulationData: CreateSimulationDto = {
+        const createSimulationData: SimulationWithIds = {
             departureAgencyId: departureAgencyId.id,
             destinationAgencyId: destinationAgencyId.id,
             userId: userId,

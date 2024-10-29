@@ -1,7 +1,7 @@
 // path: src/app/api/v1/simulations/route.ts
 
 import {NextRequest, NextResponse} from 'next/server';
-import {BaseSimulationDto, CreateSimulationDto, SimulationStatus, SimulationWithoutIds} from "@/utils/dtos";
+import {BaseSimulationDto, SimulationWithIds, SimulationStatus, SimulationWithoutIds} from "@/utils/dtos";
 import {simulationEnvoisSchema} from "@/utils/validationSchema";
 import {verifyToken} from "@/utils/verifyToken";
 import {saveSimulation} from "@/services/backend-services/simulationService";
@@ -62,10 +62,10 @@ export async function POST(request: NextRequest) {
 
     console.log("clientId before setting in simulationData:", clientId);
 
-    const simulationData: CreateSimulationDto = {
-        userId: clientId,
-        destinataireId: null,
-       ...body,
+    const simulationData: SimulationWithIds = {
+        userId: clientId, // ajoutée pour la CreateSimulationDto interface
+        destinataireId: null, // ajoutée pour la CreateSimulationDto interface
+       ...body, // représente SimulationWithoutIds pour le status en plus les (BaseSimulationDto, SimulationCalculationTotalsDto interfaces)
     };
 
     console.log("simulationData after setting userId:", simulationData.userId);
@@ -74,8 +74,8 @@ export async function POST(request: NextRequest) {
 
     try {
         // Sauvegarder la simulation dans la base de données
-        const simulation = await saveSimulation(simulationData);
-        return NextResponse.json(simulation);
+        const simulationId = await saveSimulation(simulationData);
+        return NextResponse.json(simulationId);
     } catch (error) {
         return NextResponse.json({error: 'Failed to create simulation'}, {status: 500});
     }

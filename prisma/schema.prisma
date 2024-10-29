@@ -1,5 +1,4 @@
-// path: prisma/schema.prisma 
-
+// path: prisma/schema.prisma
 datasource db {
   provider  = "postgresql"
   url       = env("POSTGRES_PRISMA_URL")
@@ -63,7 +62,6 @@ enum Role {
   @@map("roles")
 }
 
-// Authentication models
 model Account {
   userId            Int
   type              String
@@ -108,7 +106,6 @@ model Session {
   @@map("sessions")
 }
 
-// Optional for WebAuthn support
 model Authenticator {
   credentialID         String  @unique
   userId               Int

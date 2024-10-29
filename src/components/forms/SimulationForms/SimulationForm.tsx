@@ -1,7 +1,5 @@
 // path: src/components/forms/SimulationForm.tsx
 'use client';
-
-
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Button, Col, Container, Form, Pagination, Row } from 'react-bootstrap';
 import PackageForm from './PackageForm';
@@ -18,7 +16,7 @@ import {
     fetchCountries,
     fetchDestinationCountries
 } from "@/services/frontend-services/AddresseService";
-import {BaseSimulationDto} from "@/utils/dtos";
+import {BaseSimulationDto, FullSimulationDto} from "@/utils/dtos";
 
 
 const SimulationForm = () => {
@@ -177,19 +175,20 @@ const SimulationForm = () => {
 
             // apple le service de simulation pour envoyer la simulation et retourné l'id de la simulation
             console.log("about to send simulationData to submitSimulation function in SimulationService.ts from the frontend side as BaseSimulationDto");
-            const simulation = await submitSimulation(simulationData);
-            console.log("simulation in handleSubmit function: ", simulation);
+            const simulationId = await submitSimulation(simulationData);
+            console.log("simulation in handleSubmit function in frontend: ", simulationId);
 
-            if(!simulation) {
+            if(!simulationId) {
                 toast.error(" 1 . An error occurred while submitting the simulation.");
                 return;
             }
-
-            // ici, j'appelle la function de calcul de simulation en passant son id et je renvoie les résultats de la simulation
-
+            console.log("simulationId in handleSubmit function in frontend: ", simulationId);
 
             toast.success("Simulation successful!");
-            const query = new URLSearchParams({ data: JSON.stringify(simulation) }).toString();
+            // ecrire dans le localStorage la simulationId pour pouvoir la récupérer dans la page de résultats
+            // localStorage.setItem('simulationId', simulationId);
+            const query = new URLSearchParams({data: JSON.stringify(simulationId)}).toString();
+
             router.push(`/client/simulation/results?${query}`);
         } catch (error) {
             console.error('Error submitting simulation:', error);

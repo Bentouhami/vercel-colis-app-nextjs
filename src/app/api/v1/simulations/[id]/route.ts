@@ -11,12 +11,16 @@ interface Props {
 }
 
 export async function GET(req: NextRequest, {params}: Props) {
+    if (req.method !== 'GET') {
+        return NextResponse.json({error: 'Method not allowed'}, {status: 405});
+    }
+
     try {
         // Récupérer l'ID de la simulation
         const simulationId = parseInt(params.id);   // Convertir la chaîne en entier
 
         // Récupérer les détails de la simulation
-        const simulation : FullSimulationDto = await getSimulationById(simulationId);
+        const simulation: FullSimulationDto = await getSimulationById(simulationId);
 
         if (!simulation) {
             return NextResponse.json({error: 'Simulation not found'}, {status: 404});

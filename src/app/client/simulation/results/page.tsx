@@ -1,4 +1,4 @@
-// path: src/app/client/simulation/results/page.tsx
+// path: src/app/client/simulation/[id]/page.tsx
 
 import {Suspense} from "react";
 import SimulationResults from "@/components/forms/SimulationResults";

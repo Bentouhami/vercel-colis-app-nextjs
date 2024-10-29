@@ -148,7 +148,10 @@ export interface TarifsDto {
     fixedRate: number;
 }
 
-// SimulationResultsDto: used when returning simulation details
+
+
+// Simulation DTOs
+// SimulationResultsDto: used when getting simulation details from the frontend
 export interface BaseSimulationDto {
     departureCountry: string | null;
     departureCity: string | null;
@@ -157,14 +160,16 @@ export interface BaseSimulationDto {
     destinationCity: string | null;
     destinationAgency: string | null;
     parcels: CreateParcelDto[] | null;
-
 }
 
+// Calculations DTO
+export interface SimulationCalculationTotalsDto {
+    totalWeight: number;
+    totalVolume: number;
+    totalPrice: number;
+    departureDate: Date;
+    arrivalDate: Date;
 
-// New DTOs for storing simulations
-export interface CreateSimulationDto extends BaseSimulationDto, SimulationCalculationTotalsDto {
-    userId: number | null;
-    destinataireId: number | null;
 }
 
 export interface SimulationWithoutIds extends BaseSimulationDto, SimulationCalculationTotalsDto {
@@ -172,7 +177,14 @@ export interface SimulationWithoutIds extends BaseSimulationDto, SimulationCalcu
 
 }
 
-export interface FullSimulationDto extends CreateSimulationDto {
+
+// New DTOs for storing simulations
+export interface SimulationWithIds extends SimulationWithoutIds {
+    userId: number | null;
+    destinataireId: number | null;
+}
+
+export interface FullSimulationDto extends SimulationWithIds {
     id: number;
     createdAt: Date;
     updatedAt: Date;
@@ -207,13 +219,3 @@ export interface AgencyFullResponseDto extends BaseAgencyDto, AgencyResponseDto 
     createdAt: Date;
 }
 
-
-// Simulation DTOs
-export interface SimulationCalculationTotalsDto {
-    totalWeight: number;
-    totalVolume: number;
-    totalPrice: number;
-    departureDate: Date;
-    arrivalDate: Date;
-
-}

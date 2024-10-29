@@ -1,25 +1,50 @@
 // path: src/services/backend-services/simulationService.ts
 'use server';
-import {CreateSimulationDto, FullSimulationDto} from "@/utils/dtos";
+import {FullSimulationDto, SimulationWithIds} from "@/utils/dtos";
 import prisma from "@/utils/db";
 import Decimal from "decimal.js";
 
 export async function getSimulationById(simulationId: number): Promise<FullSimulationDto | null> {
+
+    console.log("getSimulationById function called, simulationId: ", simulationId);
     try {
-        const simulation = await prisma.simulation.findOne(
+        const simulation = await prisma.simulation.findUnique(
             {
                 where: {id: simulationId},
-                select: {
-                    id: true,
-                    departureAgency: true,
-                    destinationAgency: true,
-                }
+
             }) as FullSimulationDto;
 
         if (!simulation) {
             return null;
         }
-        return simulation;
+
+        console.log("simulation in getSimulationById function: ", simulation);
+
+        // convert to FullSimulationDto
+        const simulationDto: FullSimulationDto = {
+            id: simulation.id,
+            departureCountry: simulation.departureCountry,
+            departureCity: simulation.departureCity,
+            departureAgency: simulation.departureAgency,
+            destinationCountry: simulation.destinationCountry,
+            destinationCity: simulation.destinationCity,
+            destinationAgency: simulation.destinationAgency,
+            parcels: JSON.parse(simulation.parcels),
+            status: simulation.status,
+            totalWeight: simulation.totalWeight,
+            totalVolume: simulation.totalVolume,
+            totalPrice: simulation.totalPrice,
+            departureDate: simulation.departureDate,
+            arrivalDate: simulation.arrivalDate,
+        };
+
+        if (!simulationDto) {
+            throw new Error("Simulation not found");
+        }
+
+        console.log("converted simulation in getSimulationById function: ", simulationDto);
+
+        return simulationDto;
 
     } catch (error) {
         console.error('Error getting simulation:', error);
@@ -27,9 +52,9 @@ export async function getSimulationById(simulationId: number): Promise<FullSimul
     }
 }
 
-export async function saveSimulation(simulationData: CreateSimulationDto): Promise<any> {
+export async function saveSimulation(simulationData: SimulationWithIds): Promise<number> {
     try {
-        const simulation = await prisma.simulation.create({
+        const simulationId = await prisma.simulation.create({
             data: {
                 userId: simulationData.userId,
                 destinataireId: simulationData.destinataireId,
@@ -47,8 +72,16 @@ export async function saveSimulation(simulationData: CreateSimulationDto): Promi
                 departureDate: new Date(simulationData.departureDate),
                 arrivalDate: new Date(simulationData.arrivalDate),
             },
+            select: {
+                id: true,
+            }
         });
-        return simulation;
+
+        if (!simulationId) {
+            throw new Error("Erreur lors de la sauvegarde de la simulation");
+        }
+
+        return simulationId;
     } catch (error) {
         console.error("Erreur lors de la sauvegarde de la simulation:", error);
         throw error;
