@@ -70,7 +70,6 @@
     "next-auth": "^5.0.0-beta.16",
     "next-themes": "^0.3.0",
     "nodemailer": "^6.9.15",
-    "prisma-erd-generator": "^1.11.2",
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.5",
     "react-day-picker": "^8.10.1",

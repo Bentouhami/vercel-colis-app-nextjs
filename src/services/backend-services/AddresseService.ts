@@ -1,5 +1,5 @@
 // path: src/backend-services/AddresseService.ts
-
+'use server';
 import {BaseAddressDTO, FullAddressDTO} from "@/utils/dtos";
 import prisma from "@/utils/db";
 

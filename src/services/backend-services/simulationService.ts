@@ -1,16 +1,20 @@
 // path: src/services/backend-services/simulationService.ts
 'use server';
-import {FullSimulationDto, SimulationWithIds} from "@/utils/dtos";
+import {CreatedSimulationResponseDto, FullSimulationDto, SimulationStatus, SimulationWithIds} from "@/utils/dtos";
 import prisma from "@/utils/db";
 import Decimal from "decimal.js";
 
-export async function getSimulationById(simulationId: number): Promise<FullSimulationDto | null> {
+export async function getSimulationByIdAndToken(id: number, verificationToken: string):
+    Promise<FullSimulationDto | null> {
 
-    console.log("getSimulationById function called, simulationId: ", simulationId);
+    console.log("log ====> getSimulationById function called in path: src/services/backend-services/simulation/SimulationService.ts", "simulationId: ", id, "verificationToken: ", verificationToken);
     try {
         const simulation = await prisma.simulation.findUnique(
             {
-                where: {id: simulationId},
+                where: {
+                    id,
+                    verificationToken,
+                }
 
             }) as FullSimulationDto;
 
@@ -18,11 +22,13 @@ export async function getSimulationById(simulationId: number): Promise<FullSimul
             return null;
         }
 
-        console.log("simulation in getSimulationById function: ", simulation);
+        console.log("log ====> simulation found in getSimulationByIdAndToken function in path: src/services/backend-services/simulation/SimulationService.ts: ", simulation);
 
         // convert to FullSimulationDto
         const simulationDto: FullSimulationDto = {
-            id: simulation.id,
+            // id: simulation.id,
+            userId: simulation.userId,
+            destinataireId: simulation.destinataireId,
             departureCountry: simulation.departureCountry,
             departureCity: simulation.departureCity,
             departureAgency: simulation.departureAgency,
@@ -42,7 +48,7 @@ export async function getSimulationById(simulationId: number): Promise<FullSimul
             throw new Error("Simulation not found");
         }
 
-        console.log("converted simulation in getSimulationById function: ", simulationDto);
+        console.log("log ====> converted simulation found in getSimulationByIdAndToken function in path: src/services/backend-services/simulation/SimulationService.ts: ", simulationDto);
 
         return simulationDto;
 
@@ -52,9 +58,9 @@ export async function getSimulationById(simulationId: number): Promise<FullSimul
     }
 }
 
-export async function saveSimulation(simulationData: SimulationWithIds): Promise<number> {
+export async function saveSimulation(simulationData: SimulationWithIds): Promise<CreatedSimulationResponseDto> {
     try {
-        const simulationId = await prisma.simulation.create({
+        const simulation = await prisma.simulation.create({
             data: {
                 userId: simulationData.userId,
                 destinataireId: simulationData.destinataireId,
@@ -74,16 +80,45 @@ export async function saveSimulation(simulationData: SimulationWithIds): Promise
             },
             select: {
                 id: true,
+                verificationToken: true,
             }
         });
 
-        if (!simulationId) {
+        if (!simulation) {
             throw new Error("Erreur lors de la sauvegarde de la simulation");
         }
 
-        return simulationId;
+        return simulation as CreatedSimulationResponseDto;
     } catch (error) {
         console.error("Erreur lors de la sauvegarde de la simulation:", error);
         throw error;
     }
+}
+
+
+export async function updateSimulationWithSenderAndDestinataireIds(simulation: FullSimulationDto) {
+    try {
+        const updatedSimulation = await prisma.simulation.update({
+            where: {
+                id: simulation.id,
+            },
+            data: {
+                userId: simulation.userId.id,
+                destinataireId: simulation.destinataireId,
+                status: SimulationStatus.CONFIRMED
+            },
+
+        }) as FullSimulationDto;
+
+        if(!updatedSimulation){
+            throw new Error("Error updating simulation");
+        }
+
+        return updatedSimulation as FullSimulationDto;
+
+    } catch (error) {
+        console.error('Error updating simulation with update simulation', error);
+        return null;
+    }
+
 }

@@ -197,7 +197,7 @@ enum SimulationStatus {
 }
 
 model Simulation {
-  id                 Int      @id @default(autoincrement())
+  id                 Int               @id @default(autoincrement())
   userId             Int? // Référence à l'ID de l'utilisateur qui effectue la simulation
   destinataireId     Int? // Référence à l'ID du destinataire
   departureCountry   String
@@ -207,14 +207,15 @@ model Simulation {
   destinationCity    String
   destinationAgency  String
   parcels            Json
-  status             String
+  status             SimulationStatus? @default(DRAFT)
   totalWeight        Float
   totalVolume        Float
   totalPrice         Float?
   departureDate      DateTime
   arrivalDate        DateTime
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  verificationToken  String            @unique @default(uuid()) @db.Uuid
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
 
   client       User? @relation("ClientSimulations", fields: [userId], references: [id])
   destinataire User? @relation("DestinataireSimulations", fields: [destinataireId], references: [id])

@@ -149,7 +149,6 @@ export interface TarifsDto {
 }
 
 
-
 // Simulation DTOs
 // SimulationResultsDto: used when getting simulation details from the frontend
 export interface BaseSimulationDto {
@@ -172,6 +171,11 @@ export interface SimulationCalculationTotalsDto {
 
 }
 
+export interface CreatedSimulationResponseDto {
+    id: number;
+    verificationToken: string;
+}
+
 export interface SimulationWithoutIds extends BaseSimulationDto, SimulationCalculationTotalsDto {
     status: SimulationStatus;
 
@@ -186,8 +190,6 @@ export interface SimulationWithIds extends SimulationWithoutIds {
 
 export interface FullSimulationDto extends SimulationWithIds {
     id: number;
-    createdAt: Date;
-    updatedAt: Date;
 }
 
 

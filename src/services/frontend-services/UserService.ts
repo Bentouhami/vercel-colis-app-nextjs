@@ -1,10 +1,10 @@
 // path: src/services/users/UserService.ts
 
-'use server';
 import {JWTPayload} from "@/utils/types";
 import {setCookie} from "@/utils/generateToken";
-import {RegisterUserBackendType} from "@/utils/validationSchema";
+import { RegisterUserBackendType} from "@/utils/validationSchema";
 import {DOMAIN} from "@/utils/constants";
+import {BaseDestinataireDto} from "@/utils/dtos";
 
 /**
  * Generate JWTPayload object and setCookies with JWT token and cookie
@@ -40,6 +40,34 @@ export async function generateJWTPayloadAndSetCookie(
     return setCookie(jwtPayload);
 }
 
+export async function getUserById(id: number): Promise<BaseDestinataireDto> {
+    console.log("log ====> getUserById called in src/services/frontend-services/UserService.ts")
+
+    try {
+        const response = await fetch(`${DOMAIN}/api/v1/users/${id}`, { // L'ID est maintenant dans l'URL
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch user');
+        }
+
+        const userData = await response.json();
+
+        if (!userData || !userData.data) {
+            throw new Error("User not found");
+        }
+
+        console.log("userData in getUserById function:", userData.data);
+        return userData.data as BaseDestinataireDto;
+    } catch (error) {
+        console.error('Error getting user:', error);
+        throw error;
+    }
+}
 
 // register new user via API
 export async function registerUser(newUser: RegisterUserBackendType) {
@@ -68,5 +96,39 @@ export async function registerUser(newUser: RegisterUserBackendType) {
     }
 }
 
+
+export async function addDestinataire(newUser: BaseDestinataireDto) : Promise<number>{
+    console.log("log ====> addDestinataire function called");
+
+    try {
+        const response = await fetch(`${DOMAIN}/api/v1/users/destinataires`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify(newUser),
+        });
+
+        console.log("log ====> response status: ", response.status);  // Log status
+        console.log("log ====> response headers: ", response.headers);  // Log headers
+
+        if (!response.ok) {
+            // Gestion des erreurs en cas de réponse non OK
+            console.log("log ====> response in addDestinataire function failed, status:", response.status);
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Une erreur est survenue lors de l\'enregistrement.');
+        }
+
+        // Si la réponse est OK, log et parse le JSON
+        const data = await response.json();
+        console.log("log ====> data in addDestinataire function: ", data);
+
+        return data.data;
+    } catch (error) {
+        console.error('Error in addDestinataire function:', error);
+        throw error;
+    }
+}
 
 

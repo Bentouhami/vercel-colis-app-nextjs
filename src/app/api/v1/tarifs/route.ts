@@ -20,6 +20,7 @@ export async function GET(req: NextRequest) {
         }
 
         console.log("tarifs found", tarifs);
+        
         return NextResponse.json({tarifs}, {status: 200});
         // Convertissez les Decimals en nombres
     } catch (error) {

@@ -1,0 +1,33 @@
+.container {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.title {
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.section {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.icon {
+    margin-right: 10px;
+    color: #007bff;
+}
+
+.section p {
+    margin: 0;
+}

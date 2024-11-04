@@ -1,11 +1,16 @@
 // path: src/components/forms/AddReceiverForm.tsx
-
 'use client';
 import {Button, Form} from "react-bootstrap";
 import {DestinataireInput, destinataireSchema} from "@/utils/validationSchema";
 import {Slide, toast, ToastContainer} from "react-toastify";
 import React, {ChangeEvent, useState} from "react";
 import {useRouter} from "next/navigation";
+import {addDestinataire} from "@/services/frontend-services/UserService";
+import {BaseDestinataireDto, DestinataireResponseDto} from "@/utils/dtos";
+import {
+    getSimulationByIdAndToken,
+    updateSimulationWithSenderAndDestinataireIds
+} from "@/services/frontend-services/simulation/SimulationService";
 
 export default function AddReceiverForm() {
     const router = useRouter();
@@ -35,53 +40,35 @@ export default function AddReceiverForm() {
 
         try {
             setLoading(true);
+            const formattedDestinataireData = {
+                ...destinataireFormData,
+            } as BaseDestinataireDto
             // Appel API pour envoyer les données vers le backend
-            const response = await fetch('/api/v1/users/destinataires', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(destinataireFormData),
-            });
-
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                if (errorData.error) {
-                    // Affiche l'erreur spécifique retournée par le backend
-                    toast.error(errorData.error);
-                } else {
-                    throw new Error('Une erreur est survenue lors de la création du destinataire');
-                }
-                return; // Arrête l'exécution en cas d'erreur
-            }
+            const destinataireId : number = await addDestinataire(formattedDestinataireData);
 
             // Récupérer les données du destinataire créées via l'API
-            const sendingData = await response.json();
-            console.log("Received sendingData from API:", sendingData);
+
+            console.log("Received destinataireId from API in AddReceiverForm.tsx:", destinataireId.id);
 
 
             // Récupérer les données de la simulation
-            let simulationResults = localStorage.getItem('simulationResults');
+            let simulationResults = await getSimulationByIdAndToken();
+
 
             // Si la simulation existe, ajouter le destinataire à la simulation
             if (simulationResults) {
-                let simulationData = JSON.parse(simulationResults);
-
-                // Remplacer ou ajouter les données du destinataire et du sender
-                simulationData.senderData = sendingData.data.sender;
-                simulationData.destinataireData = sendingData.data.destinataire;
-
-                console.log("simulationData: ", simulationData.destinataireData, simulationData.senderData);
+                console.log("log ====> simulationResults in AddReceiverForm.tsx before updateSimulationWithSenderAndDestinataireIds function at path: src/components/forms/AddReceiverForm.tsx: ", simulationResults);
 
 
-                // Enregistrer les nouvelles données de simulation dans localStorage
-                localStorage.setItem('simulationResults', JSON.stringify(simulationData));
+                simulationResults.destinataireId = destinataireId.id;
 
+                console.log("simulationResults for after adding destinataire id before updating", simulationResults);
+
+                await updateSimulationWithSenderAndDestinataireIds(simulationResults);
 
                 // Rediriger vers la page recapitulatif
                 toast.success("Destinataire ajouté avec succès !");
-                router.push("/client/envois/recapitulatif?data=" + encodeURIComponent(JSON.stringify(simulationData)));
+                router.push("/client/envois/recapitulatif");
             } else {
                 // Gérer le cas où il n'y a pas de données de simulation
                 toast.error("Aucune simulation trouvée.");

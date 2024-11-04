@@ -1,13 +1,17 @@
 // path: src/services/backend-services/UserService.ts
-
+'use server';
 
 import {
     BaseDestinataireDto,
     CreateFullUserDto,
-    DestinataireResponseDto, DestinataireResponseWithRoleDto,
+    DestinataireResponseDto,
+    DestinataireResponseWithRoleDto,
     FullAddressDTO,
-    FullUserResponseDto, Role, UserLoginResponseDto,
-    UserModelDto, UserResponseDto
+    FullUserResponseDto,
+    Role,
+    UserLoginResponseDto,
+    UserModelDto,
+    UserResponseDto
 } from "@/utils/dtos";
 import prisma from "@/utils/db";
 import {VerificationDataType} from "@/utils/types";
@@ -21,7 +25,11 @@ import {sendVerificationEmail} from "@/lib/mailer";
  * @returns new created user data
  */
 export async function registerUser(newUser: CreateFullUserDto, address: FullAddressDTO): Promise<FullUserResponseDto | null> {
-    console.log("newUser.address from createUser: ", newUser.address);
+
+    console.log("log ====> registerUser called in path: src/services/backend-services/UserService.ts")
+
+
+    console.log("newUser.address from createUser : ", newUser.address);
     try {
         const formattedUser = {
             firstName: newUser.firstName,
@@ -94,6 +102,9 @@ export async function registerUser(newUser: CreateFullUserDto, address: FullAddr
  */
 
 export async function isUserAlreadyExist(email: string, phoneNumber: string): Promise<UserModelDto | null> {
+
+    console.log("log ====> isUserAlreadyExist called in path: src/services/backend-services/UserService.ts")
+
     try {
 
         const existedUser = await prisma.user.findFirst({
@@ -138,16 +149,17 @@ export async function isUserAlreadyExist(email: string, phoneNumber: string): Pr
  * @returns {Promise<DestinataireResponseDto | null>} user or null
  */
 
-export async function isDestinataireAlreadyExist(email: string, phoneNumber: string): Promise<DestinataireResponseDto | null> {
+export async function isDestinataireAlreadyExist(email: string, phoneNumber: string): Promise<DestinataireResponseWithRoleDto | null> {
+
+    console.log("log ====> isDestinataireAlreadyExist function called in path: src/services/backend-services/UserService.ts")
+
     try {
 
         const user = await prisma.user.findFirst({
             where: {
-                OR: [
-                    {email: email},
-                    {phoneNumber: phoneNumber},
-                    {role: Role.DESTINATAIRE}
-                ],
+                email: email,
+                phoneNumber: phoneNumber,
+
             },
             select: {
                 id: true,
@@ -158,7 +170,7 @@ export async function isDestinataireAlreadyExist(email: string, phoneNumber: str
                 email: true,
                 role: true,
             }
-        }) as DestinataireResponseDto;
+        }) as DestinataireResponseWithRoleDto;
 
         if (!user) {
             return null;
@@ -177,14 +189,22 @@ export async function isDestinataireAlreadyExist(email: string, phoneNumber: str
  * @returns {Promise<DestinataireResponseDto>}
  */
 export async function createDestinataire(newDestinataire: BaseDestinataireDto): Promise<DestinataireResponseWithRoleDto | null> {
-    try {
-        const destinataireData = {
-            ...newDestinataire,
-            role: Role.DESTINATAIRE
-        };
 
-        const destinataire = await prisma.user.create({
-            data: destinataireData,
+    console.log("log ====> createDestinataire function called in path: src/services/backend-services/UserService.ts")
+
+
+    try {
+
+
+        const destinataire : DestinataireResponseWithRoleDto = await prisma.user.create({
+            data: {
+                firstName: newDestinataire.firstName,
+                lastName: newDestinataire.lastName,
+                name: `` + newDestinataire.firstName + " " + newDestinataire.lastName,
+                email: newDestinataire.email,
+                phoneNumber: newDestinataire.phoneNumber,
+                role: Role.DESTINATAIRE
+            },
             select: {
                 id: true,
                 firstName: true,
@@ -200,7 +220,11 @@ export async function createDestinataire(newDestinataire: BaseDestinataireDto): 
             return null;
         }
 
-        return destinataire as DestinataireResponseWithRoleDto;
+        console.log("log ====> destinataire created in path: src/services/backend-services/UserService.ts: ", destinataire);
+
+
+        return destinataire;
+
     } catch (error) {
         console.error("Error creating destinataire:", error);
         throw error; // Relancer l'erreur pour la capturer dans RegisterForm
@@ -214,6 +238,9 @@ export async function createDestinataire(newDestinataire: BaseDestinataireDto): 
  * @returns {Promise<UserResponseDto>} user
  */
 export async function getUserByValidToken(token: string): Promise<UserResponseDto | null> {
+
+    console.log("log ====> getUserByValidToken function called in path: src/services/backend-services/UserService.ts")
+
     try {
         const user = await prisma.user.findFirst({
             where: {
@@ -251,6 +278,9 @@ export async function getUserByValidToken(token: string): Promise<UserResponseDt
  * @returns {Promise<void>}
  */
 export async function updateUserAndResetTokenVerificationAfterVerification(userId: number) {
+
+    console.log("log ====> updateUserAndResetTokenVerificationAfterVerification function called in path: src/services/backend-services/UserService.ts")
+
     console.log("path: src/services/users/UserService.ts : updateUserAndResetTokenVerification : userId", userId);
 
     try {
@@ -291,6 +321,9 @@ export async function updateUserAndResetTokenVerificationAfterVerification(userI
  * @returns {Promise<void>} void
  */
 export async function updateVerificationTokenForOldUser(userId: number, verificationData: VerificationDataType) {
+
+    console.log("log ====> updateVerificationTokenForOldUser function called in path: src/services/backend-services/UserService.ts")
+
     await prisma.user.update({
         where: {id: userId},
         data: {
@@ -310,6 +343,9 @@ export async function updateVerificationTokenForOldUser(userId: number, verifica
  * @returns user data
  */
 export async function getUserByEmail(email: string): Promise<UserLoginResponseDto | null> {
+
+    console.log("log ====> getUserByEmail function called in path: src/services/backend-services/UserService.ts")
+
     try {
         const userByEmailFound = await prisma.user.findFirst({
             where: {
@@ -340,6 +376,33 @@ export async function getUserByEmail(email: string): Promise<UserLoginResponseDt
         throw error;
     }
 }
+export async function getUserById(id: number): Promise<BaseDestinataireDto | null> {
+
+    console.log("log ====> getUserByEmail function called in path: src/services/backend-services/UserService.ts")
+
+    try {
+        const userByEmailFound = await prisma.user.findFirst({
+            where: {
+                id: id,
+            },
+            select: {
+                firstName: true,
+                lastName: true,
+                name: true,
+                email: true,
+                phoneNumber: true,
+            }
+        });
+
+        if (!userByEmailFound) {
+            return null;
+        }
+        return userByEmailFound as BaseDestinataireDto;
+    } catch (error) {
+        console.error("Error getting user by email:", error);
+        throw error;
+    }
+}
 
 /**
  * Update destinataire to client
@@ -358,7 +421,14 @@ export async function updateDestinataireToClient(
     addressId: FullAddressDTO,
     verificationData: VerificationDataType
 ): Promise<FullUserResponseDto | null> {
+
+    console.log("log ====> updateDestinataireToClient function called in path: src/services/backend-services/UserService.ts")
+
+
+    console.log("Updating destinataire to client with ID path: src/services/users/UserService.ts :", destinataire.id);
+
     try {
+
         const user = await prisma.user.update({
             where: {
                 id: destinataire.id,
@@ -416,13 +486,24 @@ export async function updateDestinataireToClient(
  * @returns {Promise<ClientDestinataire | null>} client destinataire or null
  */
 export async function checkExistingAssociation(clientId: number, destinataireId: number) {
+    console.log("log ====> checkExistingAssociation function called in path: src/services/backend-services/UserService.ts")
+
+    console.log("Checking if association exists between client and destinataire with IDs path: src/services/users/UserService.ts  :", clientId, destinataireId);
     try {
-        return await prisma.clientDestinataire.findFirst({
+        const association = await prisma.clientDestinataire.findFirst({
             where: {
                 clientId: clientId,
                 destinataireId: destinataireId,
             }
         });
+
+        if (association) {
+            console.log("Association exists between client and destinataire with IDs:", clientId, destinataireId);
+            return association;
+        }
+
+        console.log("Association doesn't exist between client and destinataire with IDs:", clientId, destinataireId);
+        return null;
     } catch (error) {
         console.error("Error association doesn't exists:", error);
         throw error;
@@ -438,16 +519,26 @@ export async function checkExistingAssociation(clientId: number, destinataireId:
 
 export async function associateDestinataireToCurrentClient(userId: number, destinataireId: number) {
     try {
-        // Ajouter l'association entre le destinataire et le client
-        await prisma.clientDestinataire.create({
+        console.log("log ====> function associateDestinataireToCurrentClient called in path: src/services/users/UserService.ts  ")
+
+        console.log("Creating association between client and destinataire with IDs:", userId, destinataireId);
+        const association = await prisma.clientDestinataire.create({
             data: {
                 clientId: userId,
                 destinataireId: destinataireId,
             }
         });
+
+        if (association) {
+            console.log("Association created successfully.");
+            return association;
+        }
+        console.log("Error: can't associate! return null.");
+        return null;
+
     } catch (error) {
         console.error("Error associating user as destinataire:", error);
-        throw error;
+        throw error; // Relancer l'erreur pour remonter jusqu'à l'appelant
     }
 }
 

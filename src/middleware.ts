@@ -37,6 +37,8 @@ export async function middleware(req: NextRequest) {
             return NextResponse.redirect(new URL("/client", req.nextUrl.origin));
         }
 
+        console.log('Cookie Name:', cookieName);
+        console.log('Token:', token ? "Token Found" : "No Token");
         // Vérification du token JWT avec jose
         const userPayload = await verifyTokenWithJose(token);
         console.log('User Payload:', userPayload);

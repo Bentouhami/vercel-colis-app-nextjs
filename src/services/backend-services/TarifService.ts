@@ -15,7 +15,8 @@ export async function findTarifs(): Promise<TarifsDto | null> {
             console.log("Aucun tarif trouvé dans la base de données.");
             return null;
         }
-        console.log("tarifs found in getTarifs backend function", tarifs);
+
+
         return tarifs;
 
     } catch (error) {

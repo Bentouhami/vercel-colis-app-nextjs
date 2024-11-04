@@ -80,7 +80,6 @@ const SimulationForm = () => {
     // Récupérer les agences disponibles pour le départ
     useEffect(() => {
         if (departure.city && departure.country) {
-            console.log("Fetching agencies for city:", departure.city);
             fetchAgencies(departure.city).then((data) =>
                 setOptions((prev) => ({ ...prev, departureAgencies: data }))
             ).catch(console.error);
@@ -142,7 +141,6 @@ const SimulationForm = () => {
     const handleSubmit = async (e: ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        console.log("handleSubmit function called");
         // Préparer les types de données pour l'envoi de la simulation
         const simulationData: BaseSimulationDto = {
             departureCountry: departure.country,
@@ -156,7 +154,6 @@ const SimulationForm = () => {
 
 
         // log ⇒ simulationData in handleSubmit function:
-        console.log("simulationData in handleSubmit function: ", simulationData);
 
         // validation avec ZOD
         const validated = simulationEnvoisSchema.safeParse(simulationData);
@@ -168,28 +165,20 @@ const SimulationForm = () => {
 
 
         // log ⇒ validated in handleSubmit function:
-        console.log("validated in handleSubmit function: ", validated.data);
 
         try {
-            console.log("trying to submit simulationData to function submitSimulation in SimulationService.ts");
 
             // apple le service de simulation pour envoyer la simulation et retourné l'id de la simulation
-            console.log("about to send simulationData to submitSimulation function in SimulationService.ts from the frontend side as BaseSimulationDto");
-            const simulationId = await submitSimulation(simulationData);
-            console.log("simulation in handleSubmit function in frontend: ", simulationId);
+            const response = await submitSimulation(simulationData);
 
-            if(!simulationId) {
+            if(!response) {
                 toast.error(" 1 . An error occurred while submitting the simulation.");
                 return;
             }
-            console.log("simulationId in handleSubmit function in frontend: ", simulationId);
 
             toast.success("Simulation successful!");
-            // ecrire dans le localStorage la simulationId pour pouvoir la récupérer dans la page de résultats
-            // localStorage.setItem('simulationId', simulationId);
-            const query = new URLSearchParams({data: JSON.stringify(simulationId)}).toString();
 
-            router.push(`/client/simulation/results?${query}`);
+            router.push(`/client/simulation/results`);
         } catch (error) {
             console.error('Error submitting simulation:', error);
             toast.error('An error occurred while submitting the simulation.');

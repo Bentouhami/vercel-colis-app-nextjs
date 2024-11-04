@@ -24,15 +24,6 @@ const HeaderNavbar: React.FC<NavbarProps> = ({ isAdmin, isLoggedIn, userEmail, f
     const [expanded, setExpanded] = useState(false);
     const pathname = usePathname();
 
-    const loggedUser = {
-        isLoggedIn: isLoggedIn,
-        userEmail: userEmail,
-        isAdmin: isAdmin,
-        firstName: firstName,
-        lastName: lastName,
-        image: image
-    }
-    console.log(loggedUser);
 
     const handleSelect = () => {
         setExpanded(false);
