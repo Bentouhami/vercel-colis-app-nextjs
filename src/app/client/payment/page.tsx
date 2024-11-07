@@ -1,10 +1,71 @@
 // path: src/app/client/payment/page.tsx
 
-import React from 'react'
+'use client';
+import React, {useEffect, useState} from 'react';
+import {loadStripe} from '@stripe/stripe-js';
+import {Button} from '@/components/ui/button';
+import {toast} from 'react-toastify';
+import {useSearchParams} from "next/navigation";
 
-const PayementPage = () => {
+// Charger la clé publique Stripe depuis les variables d'environnement
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!);
+
+const PaymentPage = () => {
+    const [loading, setLoading] = useState(false);
+    const [amount, setAmount] = useState<number | null>(null);
+    const searchParams = useSearchParams();
+
+    useEffect(() => {
+        const price = searchParams.get("page");
+        if (price) {
+            setAmount(parseFloat(price)); // Convert price to number and set amount
+        } else {
+            toast.error("Erreur : le prix total est introuvable.");
+        }
+    }, [searchParams]);
+    // Fonction pour initier le paiement
+    const handlePayment = async () => {
+        setLoading(true);
+
+        try {
+            // Créer une session de paiement en appelant votre route API
+            const response = await fetch('/api/v1/payment', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({amount: amount}), // Remplacez par le montant dynamique
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur lors de la création de la session de paiement.");
+            }
+
+            const {id: sessionId} = await response.json();
+
+            // Charger Stripe
+            const stripe = await stripePromise;
+            const result = await stripe?.redirectToCheckout({sessionId});
+
+            if (result?.error) {
+                toast.error("Erreur lors de la redirection vers Stripe : " + result.error.message);
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error("Une erreur est survenue. Veuillez réessayer.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
-        <div>PayementPage</div>
-    )
-}
-export default PayementPage
+        <div className="flex flex-col items-center justify-center min-h-screen">
+            <h1 className="text-2xl font-bold mb-4">Paiement de votre commande</h1>
+            <p className="mb-8">Cliquez sur le bouton ci-dessous pour finaliser votre paiement.</p>
+            <Button onClick={handlePayment} disabled={loading}>
+                {loading ? 'Redirection en cours...' : 'Payer maintenant'}
+            </Button>
+        </div>
+    );
+};
+
+// Correction : Assurez-vous que l'export par défaut est bien le nom du composant
+export default PaymentPage;

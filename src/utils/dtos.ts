@@ -231,3 +231,11 @@ export interface AgencyFullResponseDto extends BaseAgencyDto, AgencyResponseDto 
     createdAt: Date;
 }
 
+export interface MessageBodyDto
+{
+    phone: string
+    subject: string
+    name: string
+    message: string
+    email: string
+}

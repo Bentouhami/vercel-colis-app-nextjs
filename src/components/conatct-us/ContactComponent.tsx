@@ -1,16 +1,15 @@
 // path: components/forms/ContactComponent.tsx
 'use client';
 
-import React, { FormEvent, useState } from "react";
-import { toast } from "react-toastify";
-import axios from "axios";
-import { DOMAIN } from "@/utils/constants";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Phone, Mail, MapPin, Send } from "lucide-react";
-import { motion } from "framer-motion";
+import React, {FormEvent, useState} from "react";
+import {toast} from "react-toastify";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
+import {Input} from "@/components/ui/input";
+import {Textarea} from "@/components/ui/textarea";
+import {Button} from "@/components/ui/button";
+import {Mail, MapPin, Phone, Send} from "lucide-react";
+import {motion} from "framer-motion";
+import {sendContactEmail} from "@/services/frontend-services/contact/ContactService";
 
 function ContactComponent() {
     const [name, setName] = useState('');
@@ -24,19 +23,25 @@ function ContactComponent() {
         e.preventDefault();
         setIsSubmitting(true);
 
-        const messageBody = { name, email, phone, subject, message };
+        const messageBody = {name, email, phone, subject, message};
 
         try {
-            await axios.post(`${DOMAIN}/api/v1/contact`, messageBody);
+            const mailSent = await sendContactEmail(messageBody);
             toast.success("Votre message a été envoyé !");
             setName('');
             setEmail('');
             setPhone('');
             setSubject('');
             setMessage('');
+
+            if (mailSent) {
+                toast.success("Votre message a été envoyé !");
+            } else {
+
+                toast.error("Erreur lors de l'envoi du message.");
+            }
         } catch (error) {
             console.error("Erreur lors de l'envoi du message :", error);
-            toast.error("Erreur lors de l'envoi du message.");
         } finally {
             setIsSubmitting(false);
         }
@@ -46,9 +51,9 @@ function ContactComponent() {
         <section className="py-16 bg-gradient-to-b from-gray-50 to-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
+                    initial={{opacity: 0, y: 20}}
+                    animate={{opacity: 1, y: 0}}
+                    transition={{duration: 0.5}}
                     className="text-center mb-12"
                 >
                     <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">Contactez-nous</h2>
@@ -59,9 +64,9 @@ function ContactComponent() {
 
                 <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
                     <motion.div
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.5 }}
+                        initial={{opacity: 0, x: -20}}
+                        animate={{opacity: 1, x: 0}}
+                        transition={{duration: 0.5}}
                         className="lg:col-span-1"
                     >
                         <Card>
@@ -73,7 +78,7 @@ function ContactComponent() {
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <div className="flex items-center space-x-4">
-                                    <Phone className="h-5 w-5 text-blue-600" />
+                                    <Phone className="h-5 w-5 text-blue-600"/>
                                     <div>
                                         <p className="text-sm font-medium text-gray-900">Téléphone</p>
                                         <p className="text-sm text-gray-600">+32 xxx xxx xxx</p>
@@ -81,7 +86,7 @@ function ContactComponent() {
                                 </div>
 
                                 <div className="flex items-center space-x-4">
-                                    <Mail className="h-5 w-5 text-blue-600" />
+                                    <Mail className="h-5 w-5 text-blue-600"/>
                                     <div>
                                         <p className="text-sm font-medium text-gray-900">Email</p>
                                         <p className="text-sm text-gray-600">contact@example.com</p>
@@ -89,7 +94,7 @@ function ContactComponent() {
                                 </div>
 
                                 <div className="flex items-center space-x-4">
-                                    <MapPin className="h-5 w-5 text-blue-600" />
+                                    <MapPin className="h-5 w-5 text-blue-600"/>
                                     <div>
                                         <p className="text-sm font-medium text-gray-900">Adresse</p>
                                         <p className="text-sm text-gray-600">Rue xxx, 12345 Ville</p>
@@ -100,9 +105,9 @@ function ContactComponent() {
                     </motion.div>
 
                     <motion.div
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.5 }}
+                        initial={{opacity: 0, x: 20}}
+                        animate={{opacity: 1, x: 0}}
+                        transition={{duration: 0.5}}
                         className="lg:col-span-2"
                     >
                         <Card>
@@ -115,9 +120,9 @@ function ContactComponent() {
                             <CardContent>
                                 <form onSubmit={handleSubmit} className="space-y-6">
                                     <motion.div
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ duration: 0.3 }}
+                                        initial={{opacity: 0, y: 10}}
+                                        animate={{opacity: 1, y: 0}}
+                                        transition={{duration: 0.3}}
                                         className="grid grid-cols-1 gap-6 sm:grid-cols-2"
                                     >
                                         <div className="space-y-2">
@@ -148,9 +153,9 @@ function ContactComponent() {
                                     </motion.div>
 
                                     <motion.div
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ duration: 0.3, delay: 0.1 }}
+                                        initial={{opacity: 0, y: 10}}
+                                        animate={{opacity: 1, y: 0}}
+                                        transition={{duration: 0.3, delay: 0.1}}
                                         className="grid grid-cols-1 gap-6 sm:grid-cols-2"
                                     >
                                         <div className="space-y-2">
@@ -180,9 +185,9 @@ function ContactComponent() {
                                     </motion.div>
 
                                     <motion.div
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ duration: 0.3, delay: 0.2 }}
+                                        initial={{opacity: 0, y: 10}}
+                                        animate={{opacity: 1, y: 0}}
+                                        transition={{duration: 0.3, delay: 0.2}}
                                         className="space-y-2"
                                     >
                                         <label htmlFor="message" className="text-sm font-medium text-gray-900">
@@ -199,16 +204,16 @@ function ContactComponent() {
                                     </motion.div>
 
                                     <motion.div
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ duration: 0.3, delay: 0.3 }}
+                                        initial={{opacity: 0, y: 10}}
+                                        animate={{opacity: 1, y: 0}}
+                                        transition={{duration: 0.3, delay: 0.3}}
                                     >
                                         <Button
                                             type="submit"
                                             className="w-full sm:w-auto"
                                             disabled={isSubmitting}
                                         >
-                                            <Send className="w-4 h-4 mr-2" />
+                                            <Send className="w-4 h-4 mr-2"/>
                                             {isSubmitting ? "Envoi en cours..." : "Envoyer le message"}
                                         </Button>
                                     </motion.div>

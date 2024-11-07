@@ -75,14 +75,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
 
             {/* Form Section */}
             <div className="flex-grow">
-                <motion.h2
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.1 }}
-                    className="text-center text-3xl font-bold text-gray-800 mb-6"
-                >
-                    Bienvenue sur <span className="text-blue-600">ColisApp</span>
-                </motion.h2>
+
 
                 <Form onSubmit={handleSubmit}>
                     {/* Email Input */}

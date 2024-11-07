@@ -1,4 +1,3 @@
-// path: src/components/forms/RegisterForm.tsx
 'use client';
 
 import React, { ChangeEvent, useState } from 'react';
@@ -36,13 +35,11 @@ const RegisterForm = () => {
         event.preventDefault();
         const validationResult = validateForm(registerUserFrontendSchema, formData);
 
-        // Ensure validation was successful and that data is available
         if (!validationResult.success || !validationResult.data) {
             toast.error(validationResult.error || "Erreur lors de la validation du formulaire");
             return;
         }
 
-        // Type assertion guarantees data exists here
         const { firstName, lastName, birthDate, phoneNumber, email, password, address } = validationResult.data as RegisterUserBackendType;
 
         try {
@@ -68,7 +65,6 @@ const RegisterForm = () => {
         }
     };
 
-
     return (
         <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -76,7 +72,7 @@ const RegisterForm = () => {
             transition={{ duration: 0.6 }}
             className="container mx-auto p-6 mt-10 bg-white rounded-lg shadow-lg flex flex-col md:flex-row items-center space-y-6 md:space-y-0 md:space-x-8"
         >
-            {/* Image Section with smooth animation */}
+            {/* Image Section */}
             <motion.div
                 initial={{ opacity: 0, x: -50 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -95,14 +91,7 @@ const RegisterForm = () => {
 
             {/* Form Section */}
             <div className="flex-grow">
-                <motion.h2
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.1 }}
-                    className="text-center text-3xl font-bold text-gray-800 mb-6"
-                >
-                    Créez votre compte <span className="text-blue-600">ColisApp</span>
-                </motion.h2>
+
 
                 <Form onSubmit={handleSubmit} className="space-y-4">
                     {/* Name Fields */}
@@ -217,6 +206,7 @@ const RegisterForm = () => {
                             </motion.div>
                         </Col>
                     </Row>
+
                     {/* Address Fields */}
                     <Row>
                         <Col md={6}>
@@ -387,7 +377,7 @@ const RegisterForm = () => {
                         </Button>
                     </motion.div>
                 </Form>
-                <ToastContainer position="bottom-right" autoClose={3000} hideProgressBar theme="colored" />
+                <ToastContainer position="bottom-right" autoClose={5000} hideProgressBar theme="colored" />
             </div>
         </motion.div>
     );

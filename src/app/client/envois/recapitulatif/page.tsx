@@ -1,6 +1,8 @@
 // path: src/app/client/envois/recapitulatif/page.tsx
+
 'use client';
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation'; // Importer useRouter pour la navigation
 import { getSimulationByIdAndToken } from "@/services/frontend-services/simulation/SimulationService";
 import { getUserById } from "@/services/frontend-services/UserService";
 import { toast } from "react-toastify";
@@ -8,8 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package, Calendar, MapPin, User, Truck, Weight, DollarSign, CreditCard, XCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import {BaseDestinataireDto, DestinataireResponseDto, FullSimulationDto, UserResponseDto} from "@/utils/dtos";
-
+import { BaseDestinataireDto, FullSimulationDto } from "@/utils/dtos";
 
 interface SimulationDataType extends FullSimulationDto {
     sender: BaseDestinataireDto;
@@ -18,17 +19,16 @@ interface SimulationDataType extends FullSimulationDto {
 export default function RecapitulatifPage() {
     const [simulationData, setSimulationData] = useState<SimulationDataType | null>(null);
     const [loading, setLoading] = useState(true);
-
+    const router = useRouter(); // Initialiser useRouter
 
     useEffect(() => {
         const getSimulation = async () => {
             try {
                 const data = await getSimulationByIdAndToken();
-
                 console.log("log ====> data in RecapitulatifPage.tsx: ", data);
 
                 if (!data) {
-                    toast.error("Impossible de trouver les données de simulation. réessayer ou contacter le support.");
+                    toast.error("Impossible de trouver les données de simulation. Réessayez ou contactez le support.");
                     setLoading(false);
                     return;
                 }
@@ -41,7 +41,7 @@ export default function RecapitulatifPage() {
 
                 const [senderData, destinataireData] = await Promise.all([
                     getUserById(data.userId),
-                    getUserById(data.destinataireId)
+                    getUserById(data.destinataireId),
                 ]) as [BaseDestinataireDto, BaseDestinataireDto];
 
                 if (!senderData || !destinataireData) {
@@ -53,7 +53,7 @@ export default function RecapitulatifPage() {
                 setSimulationData({
                     ...data,
                     sender: senderData,
-                    destinataire: destinataireData
+                    destinataire: destinataireData,
                 });
             } catch (error) {
                 toast.error("Une erreur est survenue lors du chargement des données.");
@@ -81,6 +81,15 @@ export default function RecapitulatifPage() {
             </Alert>
         );
     }
+
+    const handlePaymentRedirect = () => {
+        if (simulationData?.totalPrice) {
+            // Navigate to payment page with totalPrice as a query parameter
+            router.push(`/client/payment?page=${simulationData.totalPrice}`);
+        } else {
+            toast.error("Le prix total est manquant.");
+        }
+    };
 
     return (
         <div className="max-w-4xl mx-auto p-6 space-y-6 mb-52 bg-gray-50 rounded-lg shadow-lg">
@@ -198,10 +207,15 @@ export default function RecapitulatifPage() {
             </Card>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
-                <Button className="flex items-center gap-2 px-8 py-6 text-lg bg-green-500 hover:bg-green-600 text-white">
+                {/* Bouton Payer maintenant */}
+                <Button
+                    className="flex items-center gap-2 px-8 py-6 text-lg bg-green-500 hover:bg-green-600 text-white"
+                    onClick={handlePaymentRedirect}
+                >
                     <CreditCard className="h-5 w-5" />
                     Payer maintenant
                 </Button>
+                {/* Bouton Annuler */}
                 <Button variant="destructive" className="flex items-center gap-2 px-8 py-6 text-lg text-white bg-red-500 hover:bg-red-600">
                     <XCircle className="h-5 w-5" />
                     Annuler
