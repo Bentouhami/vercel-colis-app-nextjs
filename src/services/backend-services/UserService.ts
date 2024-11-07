@@ -153,6 +153,8 @@ export async function isDestinataireAlreadyExist(email: string, phoneNumber: str
 
     console.log("log ====> isDestinataireAlreadyExist function called in path: src/services/backend-services/UserService.ts")
 
+    console.log("log ====> email and phoneNumber passed to isDestinataireAlreadyExist function in path: src/services/backend-services/UserService.ts: ", email, phoneNumber);
+
     try {
 
         const user = await prisma.user.findFirst({
@@ -169,12 +171,17 @@ export async function isDestinataireAlreadyExist(email: string, phoneNumber: str
                 phoneNumber: true,
                 email: true,
                 role: true,
+                image: true,
             }
         }) as DestinataireResponseWithRoleDto;
+
+        console.log("log ====> destinataire found in isDestinataireAlreadyExist function in path: src/services/backend-services/UserService.ts: ", user);
 
         if (!user) {
             return null;
         }
+        console.log("log ====> user found in isDestinataireAlreadyExist function in path: src/services/backend-services/UserService.ts: ", user);
+
         return user;
 
     } catch (error) {
@@ -188,22 +195,22 @@ export async function isDestinataireAlreadyExist(email: string, phoneNumber: str
  * @param newDestinataire
  * @returns {Promise<DestinataireResponseDto>}
  */
+
 export async function createDestinataire(newDestinataire: BaseDestinataireDto): Promise<DestinataireResponseWithRoleDto | null> {
-
-    console.log("log ====> createDestinataire function called in path: src/services/backend-services/UserService.ts")
-
+    console.log("log ====> createDestinataire function called in path: src/services/backend-services/UserService.ts");
 
     try {
-
-
-        const destinataire : DestinataireResponseWithRoleDto = await prisma.user.create({
+        const destinataire = await prisma.user.create({
             data: {
                 firstName: newDestinataire.firstName,
                 lastName: newDestinataire.lastName,
-                name: `` + newDestinataire.firstName + " " + newDestinataire.lastName,
+                name: newDestinataire.firstName && newDestinataire.lastName
+                    ? `${newDestinataire.firstName} ${newDestinataire.lastName}`
+                    : "", // Ensure name is never null
                 email: newDestinataire.email,
                 phoneNumber: newDestinataire.phoneNumber,
-                role: Role.DESTINATAIRE
+                image: newDestinataire.image ?? "", // Default to empty string if null
+                role: Role.DESTINATAIRE,
             },
             select: {
                 id: true,
@@ -212,6 +219,7 @@ export async function createDestinataire(newDestinataire: BaseDestinataireDto): 
                 name: true,
                 phoneNumber: true,
                 email: true,
+                image: true,
                 role: true,
             }
         });
@@ -222,14 +230,14 @@ export async function createDestinataire(newDestinataire: BaseDestinataireDto): 
 
         console.log("log ====> destinataire created in path: src/services/backend-services/UserService.ts: ", destinataire);
 
-
-        return destinataire;
+        return destinataire as DestinataireResponseDto;
 
     } catch (error) {
         console.error("Error creating destinataire:", error);
-        throw error; // Relancer l'erreur pour la capturer dans RegisterForm
+        throw error;
     }
 }
+
 
 
 /**
@@ -376,6 +384,7 @@ export async function getUserByEmail(email: string): Promise<UserLoginResponseDt
         throw error;
     }
 }
+
 export async function getUserById(id: number): Promise<BaseDestinataireDto | null> {
 
     console.log("log ====> getUserByEmail function called in path: src/services/backend-services/UserService.ts")

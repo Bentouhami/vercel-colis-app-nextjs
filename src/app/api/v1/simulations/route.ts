@@ -1,7 +1,7 @@
 // path: src/app/api/v1/simulations/route.ts
 
 import {NextRequest, NextResponse} from 'next/server';
-import {BaseSimulationDto, FullSimulationDto, SimulationWithIds, SimulationWithoutIds} from "@/utils/dtos";
+import {BaseSimulationDto, FullSimulationDto, SimulationWithIds} from "@/utils/dtos";
 import {simulationEnvoisSchema} from "@/utils/validationSchema";
 import {verifyToken} from "@/utils/verifyToken";
 import {
@@ -19,57 +19,60 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({error: 'Method not allowed'}, {status: 405});
     }
 
-
-    const body = await request.json() as SimulationWithoutIds;
-
-    if (!body) {
-        return NextResponse.json({error: 'Invalid request'}, {status: 400});
-    }
-
-    console.log("log ====> body in POST request received in simulations route: ", body);
-
-    // Récupérer que les champs nécessaires pour la validation
-    const simulationToValidate = {
-        departureCountry: body.departureCountry,
-        departureCity: body.departureCity,
-        departureAgency: body.departureAgency,
-        destinationCountry: body.destinationCountry,
-        destinationCity: body.destinationCity,
-        destinationAgency: body.destinationAgency,
-        parcels: body.parcels,
-    } as BaseSimulationDto;
-    const validationResult = simulationEnvoisSchema.safeParse(simulationToValidate);
-
-    // log validation
-
-    if (!validationResult.success) {
-        return NextResponse.json({error: 'Invalid request'}, {status: 400});
-    }
-    console.log("log ====> validationResult in POST request received in simulations route: ", validationResult);
-
-
-    let clientId;
-    const payload = await verifyToken(request);
-    console.log("Payload from verifyToken:", payload);
-
-    clientId = !payload ? null : payload.id;
-
-    console.log("clientId before setting in simulationData:", clientId);
-
-    const simulationData: SimulationWithIds = {
-        userId: clientId,
-        destinataireId: null,
-        ...body,
-    };
-
-    console.log("simulationData in POST request received in simulations route: ", simulationData);
-
     try {
+
+        const body = await request.json() as SimulationWithIds;
+
+        if (!body) {
+            return NextResponse.json({error: 'Invalid request'}, {status: 400});
+        }
+
+        console.log("log ====> body in POST request received in simulations route: ", body);
+
+        // Récupérer que les champs nécessaires pour la validation
+        const simulationToValidate = {
+            departureCountry: body.departureCountry,
+            departureCity: body.departureCity,
+            departureAgency: body.departureAgency,
+            destinationCountry: body.destinationCountry,
+            destinationCity: body.destinationCity,
+            destinationAgency: body.destinationAgency,
+            parcels: body.parcels,
+        } as BaseSimulationDto;
+        const validationResult = simulationEnvoisSchema.safeParse(simulationToValidate);
+
+        // log validation
+
+        if (!validationResult.success) {
+            return NextResponse.json({error: 'Invalid request'}, {status: 400});
+        }
+        console.log("log ====> validationResult in POST request received in simulations route: ", validationResult);
+        if (!body.userId) {
+            const payload = await verifyToken(request);
+            console.log("Payload from verifyToken:", payload);
+            body.userId = !payload ? null : payload.id;
+        }
+
+        if (!body.destinataireId) {
+            body.destinataireId = null;
+        }
+
+        console.log("clientId before setting in simulationData:", body.userId);
+        console.log("clientId before setting in simulationData:", body.destinataireId);
+
+        const simulationData: SimulationWithIds = {
+            ...body
+        };
+
+        console.log("log ====> simulationData in POST request received in simulations route before saving path: src/app/api/v1/simulations/route.ts: ", simulationData);
         // Sauvegarder la simulation dans la base de données
         const simulationIdAndVerificationToken = await saveSimulation(simulationData);
+
         if (!simulationIdAndVerificationToken) {
             return NextResponse.json({error: 'Failed to create simulation'}, {status: 500});
         }
+
+        console.log("log ====> simulationIdAndVerificationToken in POST request received in simulations route after saving path: src/app/api/v1/simulations/route.ts: ", simulationIdAndVerificationToken);
 
         // Générer le cookie JWT
         const simulationCookie = setSimulationResponseCookie(simulationIdAndVerificationToken);
@@ -84,9 +87,15 @@ export async function POST(request: NextRequest) {
             {status: 201}
         );
 
+        console.log("log ====> simulationCookie in POST request received in simulations route after saving path: src/app/api/v1/simulations/route.ts: ", simulationCookie);
+
+
         response.headers.set('Set-Cookie', simulationCookie);
 
+        console.log("log ====> response in POST request received in simulations route after saving path: src/app/api/v1/simulations/route.ts: ", response);
+
         return response;
+
     } catch (error) {
         return NextResponse.json({error: 'Failed to create simulation'}, {status: 500});
     }
@@ -129,50 +138,39 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
-
-    console.log("log ====> PUT function called in path: src/app/api/simulations/route.ts");
-
-    if (request.method !== 'PUT') {
-        return NextResponse.json({error: 'Method not allowed'}, {status: 405});
-    }
+    console.log("PUT request received with body:", request.body);
 
     try {
         const body = (await request.json()) as FullSimulationDto;
-
-
-        console.log("log ====> body in PUT request received in simulations route: ", body);
+        console.log("Parsed body in PUT request:", body);
 
         if (!body) {
-            return NextResponse.json({error: 'Missing required fields'}, {status: 400});
-        }
-
-        let sender = body.userId;
-
-        if (!sender) {
-            const userId = verifyToken(request);
-
-            if (!userId) {
-                return NextResponse.json({error: 'Unauthorized'}, {status: 401});
-            }
-
-            body.userId = userId;
-        }
-
-        if (sender && sender === body.destinataireId) {
-            return NextResponse.json({error: 'You can not send to yourself'}, {status: 400});
+            console.error("Error: Missing required fields in the request body.");
+            return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
 
 
-        const updatedSimulation = await updateSimulationWithSenderAndDestinataireIds(body);
+        if (!body.userId) {
+            const userPayload = verifyToken(request);
+            console.log("Payload from verifyToken:", userPayload);
+            body.userId = !userPayload ? null : userPayload.id;
+
+        }
+
+        const updatedSimulation  = await updateSimulationWithSenderAndDestinataireIds(body);
 
         if (!updatedSimulation) {
-            return NextResponse.json({error: 'Failed to update simulation'}, {status: 500});
+            console.error("Error: Failed to update simulation - updateSimulationWithSenderAndDestinataireIds returned null.");
+            return NextResponse.json({ error: 'Failed to update simulation' }, { status: 500 });
         }
 
-        return NextResponse.json({data: updatedSimulation, message: 'Simulation updated successfully'}, {status: 200});
+        console.log("Updated simulation:", updatedSimulation);
+        console.log("Updated parcels:", updatedSimulation.parcels);
+
+        return NextResponse.json({ data: updatedSimulation }, { status: 200 });
 
     } catch (error) {
-        return NextResponse.json({error: 'Failed to update simulation'}, {status: 500});
+        console.error("Error in PUT route during simulation update:", error);
+        return NextResponse.json({ error: 'Internal server error in simulation update' }, { status: 500 });
     }
-
 }

@@ -1,44 +1,59 @@
 // path: src/services/envois/SimulationCalculationService.ts
 
-import { CreateParcelDto, SimulationCalculationTotalsDto, TarifsDto} from "@/utils/dtos";
+import {CreateParcelDto, SimulationCalculationTotalsDto, TarifsDto} from "@/utils/dtos";
 import Decimal from "decimal.js";
+
 // import Decimal from 'decimal.js';
 
-function calculateTotalWeight(parcels: CreateParcelDto[]) : number {
+function calculateTotalWeight(parcels: CreateParcelDto[]): number {
     // this function is to calculate the total weight of the parcels by summing up the weights of each parcel
     console.log("log ====> calculateTotalWeight function called");
     return parcels.reduce((acc, pkg) => acc + pkg.weight, 0) as number;
 }
 
 
-function calculateTotalVolume(parcels): number {
+function calculateTotalVolume(parcels: CreateParcelDto[]): number {
     console.log("log ====> calculateTotalVolume function called");
     const totalVolume = parcels.reduce((acc, pkg) => {
         const volume = new Decimal(pkg.height)
             .times(pkg.width)
             .times(pkg.length)
-            .div(1000000); // Convertir cm³ en m³
+            .div(1000000); // Convert cm³ to m³
         return acc.plus(volume);
     }, new Decimal(0));
 
-    return totalVolume.toDecimalPlaces(2) as number; // Arrondir à deux décimales, si nécessaire
+    return totalVolume.toDecimalPlaces(2).toNumber(); // Return as number with two decimal places
 }
 
-function calculateTotalPrice(totalWeight: number, tarifs: TarifsDto) : number {
-    console.log("log ====> calculateTotalPrice function called");
+
+function calculateTotalPrice(totalWeight: number, tarifs: TarifsDto): number {
+
+
     if (totalWeight <= 10) {
-        return tarifs.fixedRate;
+        return Number(tarifs.fixedRate);
     }
-    return parseFloat((totalWeight * tarifs.weightRate).toFixed(2)) as  number;
+
+    // Using Decimal.js for precision and keeping result as a number
+    const total = new Decimal(totalWeight).times(tarifs.weightRate).toDecimalPlaces(2);
+    console.log("log ====> total in calculateTotalPrice is : ", total);
+
+    return total.toNumber(); // Convert Decimal back to number
 }
 
 export async function calculateEnvoiDetails(parcels: CreateParcelDto[], tarifs: TarifsDto): Promise<SimulationCalculationTotalsDto> {
-    
-    console.log("tarifs in calculateEnvoiDetails function: ", tarifs);
-    console.log("Parcels in calculateEnvoiDetails function: ", parcels);
 
-    const totalWeight: number = calculateTotalWeight(parcels );
-    const totalVolume : number = calculateTotalVolume(parcels);
+    console.log("log ====> parcels in calculateEnvoiDetails function: ", parcels);
+
+    console.log("log ====> tarifs in calculateEnvoiDetails function: ", tarifs);
+
+    console.log(tarifs.baseRate);
+    console.log(tarifs.volumeRate);
+    console.log(tarifs.weightRate);
+    console.log(tarifs.fixedRate);
+
+
+    const totalWeight: number = calculateTotalWeight(parcels);
+    const totalVolume: number = calculateTotalVolume(parcels);
     const totalPrice: number = calculateTotalPrice(totalWeight, tarifs);
 
 
@@ -51,13 +66,17 @@ export async function calculateEnvoiDetails(parcels: CreateParcelDto[], tarifs: 
     const departureDate: Date = getNextTuesday(today);
     const arrivalDate: Date = getNextMondayAfter(departureDate);
 
-    return {
+    const formatedCalculationResults: SimulationCalculationTotalsDto = {
         totalWeight,
         totalVolume,
         totalPrice,
         departureDate,
         arrivalDate,
-    } as SimulationCalculationTotalsDto;
+    };
+
+    console.log("log ====> formatedCalculationResults in calculateEnvoiDetails function: ", formatedCalculationResults);
+
+    return formatedCalculationResults;
 }
 
 // Trouver le prochain mardi à partir d'une date donnée

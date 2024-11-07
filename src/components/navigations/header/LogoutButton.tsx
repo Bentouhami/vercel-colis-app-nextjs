@@ -4,14 +4,16 @@
 "use client";
 import {toast} from "react-toastify";
 import {useRouter} from "next/navigation";
+import {DOMAIN} from "@/utils/constants";
+
 
 const LogoutButton = () => {
     const router = useRouter();
 
     const logoutHandler = async () => {
         try {
-            // Utilisation de fetch au lieu d'axios pour envoyer la requête
-            const response = await fetch('/api/v1/users/logout', {
+            // Utilisation de fetch au lieu axios pour envoyer la requête
+            const response = await fetch(`${DOMAIN}/api/v1/users/logout`, {
                 method: 'GET',
                 credentials: 'include', // Cela permet d'envoyer les cookies avec la requête
             });

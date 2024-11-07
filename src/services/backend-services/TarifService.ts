@@ -3,24 +3,29 @@
 'use server';
 
 import prisma from "@/utils/db";
-import { TarifsDto } from "@/utils/dtos";
+import {TarifsDto} from "@/utils/dtos";
+import Decimal from "decimal.js";
 
 export async function findTarifs(): Promise<TarifsDto | null> {
-    console.log("getTarifs function called");
     try {
 
         const tarifs = await prisma.tarifs.findFirst();
 
         if (!tarifs) {
-            console.log("Aucun tarif trouvé dans la base de données.");
             return null;
         }
 
+        // Convert `Decimal` fields to `number`
+        const formattedTarifs: TarifsDto = {
+            weightRate: (tarifs.weightRate as Decimal).toNumber(),
+            volumeRate: (tarifs.volumeRate as Decimal).toNumber(),
+            baseRate: (tarifs.baseRate as Decimal).toNumber(),
+            fixedRate: (tarifs.fixedRate as Decimal).toNumber(),
+        };
 
-        return tarifs;
+        return formattedTarifs;
 
     } catch (error) {
-        console.error("Erreur lors de la récupération des tarifs:", error);
         return null;
     }
 }

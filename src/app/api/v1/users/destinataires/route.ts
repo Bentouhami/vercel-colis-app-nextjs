@@ -2,7 +2,7 @@
 
 import {NextRequest, NextResponse} from "next/server";
 import {capitalizeFirstLetter, toLowerCase} from "@/utils/stringUtils";
-import {BaseDestinataireDto, DestinataireResponseWithRoleDto} from "@/utils/dtos";
+import {BaseDestinataireDto, DestinataireResponseWithRoleDto, Role} from "@/utils/dtos";
 import {destinataireSchema} from "@/utils/validationSchema";
 import {verifyToken} from "@/utils/verifyToken";
 import {
@@ -95,12 +95,15 @@ export async function POST(req: NextRequest) {
         }
 
         // Normalisation des données du nouveau destinataire
-        const newDestinataireData: BaseDestinataireDto = {
+        const newDestinataireData = {
             firstName: capitalizeFirstLetter(firstName),
             lastName: capitalizeFirstLetter(lastName),
             name: capitalizeFirstLetter(firstName) + " " + capitalizeFirstLetter(lastName),
             email: toLowerCase(email),
             phoneNumber: phoneNumber,
+            image: null,
+            role: Role.DESTINATAIRE,
+
         };
 
         console.log("About to create new destinataire of type BaseDestinataireDto:", newDestinataireData);

@@ -14,15 +14,15 @@ generator client {
 
 model User {
   id          Int       @id @default(autoincrement())
-  firstName   String?   @db.VarChar(50)
-  lastName    String?   @db.VarChar(50)
+  firstName   String    @db.VarChar(50)
+  lastName    String    @db.VarChar(50)
   name        String?
   birthDate   DateTime? @db.Timestamp(3)
   email       String    @unique @db.VarChar(150)
-  phoneNumber String?   @unique @db.VarChar(50)
+  phoneNumber String    @unique @db.VarChar(50)
   password    String?   @default("") @db.VarChar(255)
   image       String?   @default("") @db.VarChar(255)
-  role        Role?     @default(CLIENT)
+  role        Role      @default(CLIENT)
 
   isVerified               Boolean   @default(false) // Indique si l'utilisateur a vérifié son email
   emailVerified            DateTime? // Date de vérification de l'email
@@ -206,7 +206,7 @@ model Simulation {
   destinationCountry String
   destinationCity    String
   destinationAgency  String
-  parcels            Json
+  parcels            Json              @db.Json
   status             SimulationStatus? @default(DRAFT)
   totalWeight        Float
   totalVolume        Float

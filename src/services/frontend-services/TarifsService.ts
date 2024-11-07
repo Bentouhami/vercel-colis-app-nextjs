@@ -17,10 +17,10 @@ export async function getTarifs(): Promise<TarifsDto> {
             const errorData = await response.json();
             throw new Error(errorData.error || 'Failed to get tarifs');
         }
-        const tarifs = await response.json();
-        console.log("tarifs found in getTarifs frontend function", tarifs);
 
-        return tarifs as TarifsDto; // Retourne directement le résultat de response.json()
+        const tarifs = await response.json();
+
+        return tarifs as TarifsDto; // This should now be properly typed as TarifsDto
     } catch (error) {
         console.error('Error getting tarifs:', error);
         throw error;

@@ -1,6 +1,6 @@
-import {Form, FormGroup} from 'react-bootstrap';
-import {CreateParcelDto} from '@/utils/dtos';
+import { Form, FormGroup } from 'react-bootstrap';
 import React from "react";
+import { CreateParcelDto } from '@/utils/dtos';
 
 interface PackageFormProps {
     index: number;
@@ -15,37 +15,46 @@ const PackageForm = ({ index, pkg, onChange }: PackageFormProps) => {
     };
 
     return (
-        <div className="mt-3">
-            <FormGroup className="mb-3" controlId={`packageHeight${index}`}>
-                <Form.Label>Hauteur (cm)</Form.Label>
+        <div className="p-4 bg-gray-50 rounded-md shadow-sm mb-4">
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">Colis {index + 1}</h3>
+            <FormGroup className="mb-3">
+                <Form.Label className="text-sm font-medium">Hauteur (cm)</Form.Label>
                 <Form.Control
                     type="number"
                     value={pkg.height}
                     onChange={handleInputChange('height')}
+                    className="border-2 border-gray-300 rounded-lg p-2"
+                    min="0"
                 />
             </FormGroup>
-            <FormGroup className="mb-3" controlId={`packageWidth${index}`}>
-                <Form.Label>Largeur (cm)</Form.Label>
+            <FormGroup className="mb-3">
+                <Form.Label className="text-sm font-medium">Largeur (cm)</Form.Label>
                 <Form.Control
                     type="number"
                     value={pkg.width}
                     onChange={handleInputChange('width')}
+                    className="border-2 border-gray-300 rounded-lg p-2"
+                    min="0"
                 />
             </FormGroup>
-            <FormGroup className="mb-3" controlId={`packageLength${index}`}>
-                <Form.Label>Longueur (cm)</Form.Label>
+            <FormGroup className="mb-3">
+                <Form.Label className="text-sm font-medium">Longueur (cm)</Form.Label>
                 <Form.Control
                     type="number"
                     value={pkg.length}
                     onChange={handleInputChange('length')}
+                    className="border-2 border-gray-300 rounded-lg p-2"
+                    min="0"
                 />
             </FormGroup>
-            <FormGroup className="mb-3" controlId={`packageWeight${index}`}>
-                <Form.Label>Poids (kg)</Form.Label>
+            <FormGroup className="mb-3">
+                <Form.Label className="text-sm font-medium">Poids (kg)</Form.Label>
                 <Form.Control
                     type="number"
                     value={pkg.weight}
                     onChange={handleInputChange('weight')}
+                    className="border-2 border-gray-300 rounded-lg p-2"
+                    min="0"
                 />
             </FormGroup>
         </div>

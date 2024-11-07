@@ -1,23 +1,47 @@
 // path : src/app/client/unauthorized/page.tsx
 
-import React from 'react';
+'use client';
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from "next/link";
+import { FaHome } from 'react-icons/fa';
 
 export default function UnauthorizedPage() {
+    const [countdown, setCountdown] = useState(5);
+    const router = useRouter();
 
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCountdown((prev) => {
+                if (prev <= 1) {
+                    clearInterval(timer);
+                    router.push('/');
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [router]);
 
     return (
-        <div className="d-flex items-center justify-center h-screen">
-            <h1 className="text-4xl font-bold">Accès refusé</h1>
-            <p className="mt-4">Vous n&apos;avez pas les droits suffisants pour accéder à cette page.</p>
-
-            <p className="mt-4">
-                Redirecting to home page... in <span id="redirect-timer">5</span> seconds
-
-            </p>
-            {/*<Link href="/client/login" className="btn btn-primary mt-4">*/}
-            {/*    Retourner à la page de connexion*/}
-            {/*</Link>*/}
+        <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 text-center p-6">
+            <div className="bg-white shadow-lg rounded-lg p-8 md:p-12 max-w-md w-full">
+                <h1 className="text-4xl font-bold text-red-600 mb-4">Accès refusé</h1>
+                <p className="text-gray-700 text-lg mb-6">
+                    Vous n&#39;avez pas les droits nécessaires pour accéder à cette page.
+                </p>
+                <p className="text-gray-600 mb-6">
+                    Vous serez redirigé vers la page d&#39;accueil dans <span className="font-semibold text-blue-600">{countdown}</span> secondes.
+                </p>
+                <div className="flex justify-center mt-4">
+                    <Link href="/" className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 transition ease-in-out duration-150">
+                        <FaHome className="mr-2" />
+                        Retourner à l&#39;accueil
+                    </Link>
+                </div>
+            </div>
         </div>
     );
 }

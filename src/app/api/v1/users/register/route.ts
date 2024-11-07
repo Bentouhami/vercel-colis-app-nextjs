@@ -66,6 +66,8 @@ export async function POST(request: NextRequest) {
             birthDate: new Date(birthDate),
             phoneNumber,
             email: toLowerCase(email),
+            image: null,
+            role: Role.CLIENT,
             password,
             address: extractedBaseAddresse as BaseAddressDTO
         };
@@ -111,6 +113,7 @@ export async function POST(request: NextRequest) {
                 birthDate: birthDate,
                 email: email,
                 phoneNumber: phoneNumber,
+                image: null,
                 password: hashedPassword,
                 address: addressToUse,
                 role: Role.CLIENT,

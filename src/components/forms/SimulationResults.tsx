@@ -1,17 +1,16 @@
+// path: src/app/client/simulation/results/page.tsx
 'use client';
-import {useRouter, useSearchParams} from 'next/navigation';
-import React, {useEffect, useState} from 'react';
-import {Button, Card, Row} from 'react-bootstrap';
-import styles from './SimulationResults.module.css';
-import {FullSimulationDto} from "@/utils/dtos";
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+import { getSimulationByIdAndToken } from "@/services/frontend-services/simulation/SimulationService";
+import { FullSimulationDto } from "@/utils/dtos";
 import LoginPromptModal from '@/components/LoginPromptModal';
-import {CiCalculator2, CiCircleInfo} from "react-icons/ci";
-import {MdEmojiSymbols} from "react-icons/md";
-import {motion} from 'framer-motion';
-import {toast} from "react-toastify";
-import {getSimulationByIdAndToken} from "@/services/frontend-services/simulation/SimulationService";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Package, MapPin, Weight, DollarSign, Calendar } from "lucide-react";
 
-const SimulationResults = () => {
+export default function SimulationResults() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const [results, setResults] = useState<FullSimulationDto | null>(null);
@@ -21,32 +20,21 @@ const SimulationResults = () => {
     useEffect(() => {
         const getSimulationResults = async () => {
             try {
-
                 const simulationData = await getSimulationByIdAndToken();
-
                 if (!simulationData) {
                     router.push('/client/simulation');
                     return;
                 }
-
-                console.log("simulationData in getSimulationResults function: ", simulationData);
-
-
-                // Convert parcels if necessary to ensure it is an array
-                const formattedResults = {
+                setResults({
                     ...simulationData,
-                    parcels: Array.isArray(simulationData.parcels) ? simulationData.parcels : JSON.parse(simulationData.parcels)
-                };
-
-                console.log("formattedResults in getSimulationResults function: ", formattedResults);
-
-                setResults(formattedResults);
-
+                    parcels: Array.isArray(simulationData.parcels)
+                        ? simulationData.parcels
+                        : JSON.parse(simulationData.parcels)
+                });
             } catch (error) {
                 toast.error("Erreur de chargement des résultats.");
             }
         };
-
         getSimulationResults();
     }, [searchParams, router]);
 
@@ -64,32 +52,20 @@ const SimulationResults = () => {
     }, []);
 
     if (!results) {
-        return <p className={styles.loading}>Loading...</p>;
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+            </div>
+        );
     }
 
-    async function handleValidate() {
-        if (results) {
-
-            if (isAuthenticated) {
-                console.log("log ====> handleValidate function called in path: src/app/client/simulation/results/page.tsx the user is authenticated")
-
-                try {
-
-                    router.push('/client/ajouter-destinataire');
-
-                } catch (error) {
-                    console.error("Erreur lors de la soumission de la simulation", error);
-
-                }
-            } else {
-                setShowLoginPrompt(true);
-            }
+    const handleValidate = () => {
+        if (isAuthenticated) {
+            router.push('/client/ajouter-destinataire');
         } else {
-            setShowLoginPrompt(false);
-            toast.error("Vous devez être connecté pour accéder à cette page");
-            router.push('/client/simulation');
+            setShowLoginPrompt(true);
         }
-    }
+    };
 
     const handleLoginRedirect = () => {
         setShowLoginPrompt(false);
@@ -97,128 +73,116 @@ const SimulationResults = () => {
         router.push(`/client/login?redirect=${redirectUrl}`);
     };
 
-    function handleCancel() {
+    const handleCancel = () => {
         localStorage.removeItem('simulationResults');
         router.push('/client/simulation');
-    }
+    };
 
     return (
-        <motion.div
-            className={`mb-40 ${styles.container}`}
-            initial={{opacity: 0, y: 20}}
-            animate={{opacity: 1, y: 0}}
-            transition={{duration: 0.5}}
-        >
-            <h2 className={styles.heading}>Résultats de la Simulation</h2>
+        <div className="max-w-4xl mx-auto p-6 space-y-6 mb-52 bg-gray-50 rounded-lg shadow-lg">
+            <h1 className="text-3xl font-bold text-center mb-8 text-blue-700">Résultats de la Simulation</h1>
 
-            <Row>
-                <Card className={styles.card}>
-                    <Card.Header className="text-center bg-blue-600 text-white p-5 mb-3">
-                        <motion.h2 initial={{opacity: 0}} animate={{opacity: 1}} transition={{delay: 0.3}}>
-                            Récapitulatif de votre envoi
-                        </motion.h2>
-                    </Card.Header>
-
-                    <Card.Body>
-                        <motion.div
-                            className="bg-blue-600 d-flex align-items-center mb-3 p-3"
-                            initial={{opacity: 0, x: -50}}
-                            animate={{opacity: 1, x: 0}}
-                            transition={{delay: 0.5}}
-                        >
-                            <CiCircleInfo className="size-5 mt-3 me-2"/>
-                            <h4 className="text-white">Informations de l&#39;envoi</h4>
-                        </motion.div>
-
-                        <Row>
-                            <motion.div
-                                className="p-5 rounded-3 shadow mb-3"
-                                initial={{opacity: 0}}
-                                animate={{opacity: 1}}
-                                transition={{delay: 0.7}}
-                            >
-                                <p><strong>Pays de départ:</strong> {results.departureCountry}</p>
-                                <p><strong>Ville de départ:</strong> {results.departureCity}</p>
-                                <p><strong>Agence de départ:</strong> {results.departureAgency}</p>
-                            </motion.div>
-
-                            <motion.div
-                                className="p-5 rounded-3 shadow mb-3"
-                                initial={{opacity: 0}}
-                                animate={{opacity: 1}}
-                                transition={{delay: 0.9}}
-                            >
-                                <p><strong>Pays de destination:</strong> {results.destinationCountry}</p>
-                                <p><strong>Ville de destination:</strong> {results.destinationCity}</p>
-                                <p><strong>Agence de destination:</strong> {results.destinationAgency}</p>
-                            </motion.div>
-                        </Row>
-
-                        <motion.div
-                            className="d-flex align-items-center mb-3 bg-green-600 text-white p-3 rounded"
-                            initial={{opacity: 0, x: 50}}
-                            animate={{opacity: 1, x: 0}}
-                            transition={{delay: 1.1}}
-                        >
-                            <MdEmojiSymbols className="size-5 mt-3 me-2"/>
-                            <h4 className="text-white">Résultats des Colis</h4>
-                        </motion.div>
-
-                        <Row>
-                            {results.parcels?.map((pkg, index) => (
-                                <motion.div
-                                    key={index}
-                                    className="p-5 rounded-3 shadow mb-3"
-                                    initial={{opacity: 0, scale: 0.9}}
-                                    animate={{opacity: 1, scale: 1}}
-                                    transition={{delay: 1.3}}
-                                >
-                                    <p><strong>Colis {index + 1}:</strong></p>
-                                    <p>Hauteur: {pkg.height} cm</p>
-                                    <p>Largeur: {pkg.width} cm</p>
-                                    <p>Longueur: {pkg.length} cm</p>
-                                    <p>Poids: {pkg.weight} kg</p>
-                                </motion.div>
-                            ))}
-                        </Row>
-
-                        <motion.div
-                            className="d-flex align-items-center mb-3 bg-orange-600 text-white p-3 rounded"
-                            initial={{opacity: 0, x: -50}}
-                            animate={{opacity: 1, x: 0}}
-                            transition={{delay: 1.5}}
-                        >
-                            <CiCalculator2 className="size-5 mt-3 me-2"/>
-                            <h4 className="text-white">Calculs</h4>
-                        </motion.div>
-
-                        <Row>
-                            <motion.div className="p-5 rounded-3 shadow mb-3" initial={{opacity: 0}}
-                                        animate={{opacity: 1}} transition={{delay: 1.7}}>
-                                <p><strong>Poids total:</strong> {results.totalWeight} kg</p>
-                                <p><strong>Volume total:</strong> {results.totalVolume} cm²</p>
-                            </motion.div>
-
-                            <motion.div className="p-5 rounded-3 shadow mb-3" initial={{opacity: 0}}
-                                        animate={{opacity: 1}} transition={{delay: 1.9}}>
-                                <p><strong>Prix total:</strong> {results.totalPrice} €</p>
-                                <p><strong>Date de
-                                    départ:</strong> {new Date(results.departureDate).toLocaleDateString()}</p>
-                                <p><strong>Date
-                                    d&#39;arrivée:</strong> {new Date(results.arrivalDate).toLocaleDateString()}</p>
-                            </motion.div>
-                        </Row>
-                    </Card.Body>
+            <div className="grid md:grid-cols-2 gap-6">
+                <Card className="border-l-4 border-blue-500 shadow-sm">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-gray-700">
+                            <MapPin className="h-5 w-5 text-blue-500" />
+                            Départ
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p><span className="font-medium">Pays:</span> {results.departureCountry}</p>
+                        <p><span className="font-medium">Ville:</span> {results.departureCity}</p>
+                        <p><span className="font-medium">Agence:</span> {results.departureAgency}</p>
+                    </CardContent>
                 </Card>
-            </Row>
 
-            <div className="d-flex justify-content-center m-3 gap-3">
-                <Button className="m-5" title="Valider votre envoi et payer" onClick={handleValidate} variant="primary">
+                <Card className="border-l-4 border-green-500 shadow-sm">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-gray-700">
+                            <MapPin className="h-5 w-5 text-green-500" />
+                            Destination
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p><span className="font-medium">Pays:</span> {results.destinationCountry}</p>
+                        <p><span className="font-medium">Ville:</span> {results.destinationCity}</p>
+                        <p><span className="font-medium">Agence:</span> {results.destinationAgency}</p>
+                    </CardContent>
+                </Card>
+            </div>
+
+            <Card className="mt-6 bg-blue-50">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Package className="h-5 w-5 text-blue-500" />
+                        Détails des Colis
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="grid md:grid-cols-2 gap-4">
+                    {results.parcels?.map((pkg, index) => (
+                        <div key={index} className="p-4 bg-white rounded-lg shadow-sm border">
+                            <p><span className="font-medium">Colis {index + 1}:</span></p>
+                            <p>Hauteur: {pkg.height} cm</p>
+                            <p>Largeur: {pkg.width} cm</p>
+                            <p>Longueur: {pkg.length} cm</p>
+                            <p>Poids: {pkg.weight} kg</p>
+                        </div>
+                    ))}
+                </CardContent>
+            </Card>
+
+            <Card className="bg-blue-100">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-blue-700">
+                        <DollarSign className="h-5 w-5" />
+                        Résumé des Calculs
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="grid md:grid-cols-2 gap-4">
+                    <div className="flex items-center gap-3">
+                        <Weight className="h-5 w-5 text-gray-500" />
+                        <div>
+                            <p className="text-sm text-gray-500">Poids total</p>
+                            <p className="font-medium">{results.totalWeight} kg</p>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <Calendar className="h-5 w-5 text-gray-500" />
+                        <div>
+                            <p className="text-sm text-gray-500">Date de départ</p>
+                            <p className="font-medium">{new Date(results.departureDate).toLocaleDateString()}</p>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <Calendar className="h-5 w-5 text-gray-500" />
+                        <div>
+                            <p className="text-sm text-gray-500">Date d&#39;arrivée estimée</p>
+                            <p className="font-medium">{new Date(results.arrivalDate).toLocaleDateString()}</p>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+
+            <Card className="bg-blue-100">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-blue-700">
+                        <DollarSign className="h-5 w-5" />
+                        Prix Total
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-3xl font-bold text-center text-blue-800">
+                        {results.totalPrice ? `${results.totalPrice} €` : 'À calculer'}
+                    </p>
+                </CardContent>
+            </Card>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
+                <Button className="flex items-center gap-2 px-8 py-6 text-lg bg-green-500 hover:bg-green-600 text-white" onClick={handleValidate}>
                     Valider
                 </Button>
-
-                <Button className="m-5" title="Annuler l'envoi, et revenir à la page de simulation"
-                        onClick={handleCancel} type="button" variant="secondary">
+                <Button variant="destructive" className="flex items-center gap-2 px-8 py-6 text-lg text-white bg-red-500 hover:bg-red-600" onClick={handleCancel}>
                     Annuler
                 </Button>
             </div>
@@ -228,8 +192,6 @@ const SimulationResults = () => {
                 handleClose={() => setShowLoginPrompt(false)}
                 handleLoginRedirect={handleLoginRedirect}
             />
-        </motion.div>
+        </div>
     );
-};
-
-export default SimulationResults;
+}

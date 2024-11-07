@@ -8,25 +8,41 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package, Calendar, MapPin, User, Truck, Weight, DollarSign, CreditCard, XCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import {BaseDestinataireDto, DestinataireResponseDto, FullSimulationDto, UserResponseDto} from "@/utils/dtos";
 
+
+interface SimulationDataType extends FullSimulationDto {
+    sender: BaseDestinataireDto;
+    destinataire: BaseDestinataireDto;
+}
 export default function RecapitulatifPage() {
-    const [simulationData, setSimulationData] = useState(null);
+    const [simulationData, setSimulationData] = useState<SimulationDataType | null>(null);
     const [loading, setLoading] = useState(true);
+
 
     useEffect(() => {
         const getSimulation = async () => {
             try {
                 const data = await getSimulationByIdAndToken();
+
+                console.log("log ====> data in RecapitulatifPage.tsx: ", data);
+
                 if (!data) {
-                    toast.error("Impossible de trouver les données de simulation.");
+                    toast.error("Impossible de trouver les données de simulation. réessayer ou contacter le support.");
+                    setLoading(false);
+                    return;
+                }
+
+                if (!data.userId || !data.destinataireId) {
+                    toast.error("Données utilisateur manquantes.");
                     setLoading(false);
                     return;
                 }
 
                 const [senderData, destinataireData] = await Promise.all([
-                    getUserById(data?.userId),
-                    getUserById(data?.destinataireId)
-                ]);
+                    getUserById(data.userId),
+                    getUserById(data.destinataireId)
+                ]) as [BaseDestinataireDto, BaseDestinataireDto];
 
                 if (!senderData || !destinataireData) {
                     toast.error("Impossible de récupérer les données utilisateur.");

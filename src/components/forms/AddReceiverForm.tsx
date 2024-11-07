@@ -1,12 +1,15 @@
-// path: src/components/forms/AddReceiverForm.tsx
 'use client';
-import {Button, Form} from "react-bootstrap";
-import {DestinataireInput, destinataireSchema} from "@/utils/validationSchema";
-import {Slide, toast, ToastContainer} from "react-toastify";
-import React, {ChangeEvent, useState} from "react";
-import {useRouter} from "next/navigation";
-import {addDestinataire} from "@/services/frontend-services/UserService";
-import {BaseDestinataireDto, DestinataireResponseDto} from "@/utils/dtos";
+import React, { ChangeEvent, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Loader2, UserPlus, Mail, Phone, User } from "lucide-react";
+import { toast } from "react-toastify";
+import { DestinataireInput, destinataireSchema } from "@/utils/validationSchema";
+import { addDestinataire } from "@/services/frontend-services/UserService";
+import {BaseDestinataireDto, Role} from "@/utils/dtos";
 import {
     getSimulationByIdAndToken,
     updateSimulationWithSenderAndDestinataireIds
@@ -23,140 +26,196 @@ export default function AddReceiverForm() {
 
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
+    const [touched, setTouched] = useState<Record<string, boolean>>({});
 
-    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    const validateField = (name: string, value: string) => {
+        try {
+            // Access the schema for a specific field using index signature
+            const fieldSchema = destinataireSchema.shape[name as keyof DestinataireInput];
+            fieldSchema.parse(value); // Validate the value for the specific field
+            setErrors((prev) => ({ ...prev, [name]: '' })); // Clear the error if validation passes
+        } catch (error: any) {
+            // Set the error message if validation fails
+            setErrors((prev) => ({ ...prev, [name]: error.errors[0]?.message || 'Champ invalide' }));
+        }
+    };
+
+
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setDestinataireFormData(prev => ({ ...prev, [name]: value }));
+        if (touched[name]) {
+            validateField(name, value);
+        }
+    };
+
+    const handleBlur = (name: string) => {
+        setTouched(prev => ({ ...prev, [name]: true }));
+        validateField(name, destinataireFormData[name as keyof DestinataireInput]);
+    };
+
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-
-        // Validation avec Zod
         const validated = destinataireSchema.safeParse(destinataireFormData);
 
         if (!validated.success) {
-            toast.error(validated.error.errors[0].message);
+            const newErrors: Record<string, string> = {};
+            validated.error.errors.forEach(error => {
+                if (error.path[0]) {
+                    newErrors[error.path[0].toString()] = error.message;
+                }
+            });
+            setErrors(newErrors);
+            toast.error("Veuillez corriger les erreurs dans le formulaire");
             return;
         }
 
-        // Si la validation réussit, vider les erreurs
         setErrors({});
-
         try {
             setLoading(true);
-            const formattedDestinataireData = {
+            const formattedDestinataireData: BaseDestinataireDto = {
                 ...destinataireFormData,
-            } as BaseDestinataireDto
-            // Appel API pour envoyer les données vers le backend
-            const destinataireId : number = await addDestinataire(formattedDestinataireData);
+                name: `${destinataireFormData.firstName} ${destinataireFormData.lastName}`, // or another appropriate format for `name`
+                image: "", // assuming an empty string if no image is provided
+                role: Role.DESTINATAIRE
+            };
+            const destinataireId = await addDestinataire(formattedDestinataireData);
 
-            // Récupérer les données du destinataire créées via l'API
-
-            console.log("Received destinataireId from API in AddReceiverForm.tsx:", destinataireId.id);
-
-
-            // Récupérer les données de la simulation
-            let simulationResults = await getSimulationByIdAndToken();
-
-
-            // Si la simulation existe, ajouter le destinataire à la simulation
+            const simulationResults = await getSimulationByIdAndToken();
             if (simulationResults) {
-                console.log("log ====> simulationResults in AddReceiverForm.tsx before updateSimulationWithSenderAndDestinataireIds function at path: src/components/forms/AddReceiverForm.tsx: ", simulationResults);
-
-
-                simulationResults.destinataireId = destinataireId.id;
-
-                console.log("simulationResults for after adding destinataire id before updating", simulationResults);
-
+                simulationResults.destinataireId = destinataireId;
                 await updateSimulationWithSenderAndDestinataireIds(simulationResults);
-
-                // Rediriger vers la page recapitulatif
                 toast.success("Destinataire ajouté avec succès !");
                 router.push("/client/envois/recapitulatif");
             } else {
-                // Gérer le cas où il n'y a pas de données de simulation
                 toast.error("Aucune simulation trouvée.");
             }
         } catch (error) {
-            toast.error("Erreur lors de l'ajout du destinataire.");
+            console.error("Error updating simulation:", error);
+            toast.error("Une erreur est survenue lors de l'ajout du destinataire.");
         } finally {
             setLoading(false);
         }
-    }
-
-    function handleInputChange(e: ChangeEvent<any>) {
-        const {name, value} = e.target;
-
-        setDestinataireFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
-    }
+    };
 
     return (
-        <div className="container mb-40 mt-40">
-            <h1 className="text-center container-fluid p-5 text-6xl rounded-top-5 shadow max-w-6xl">
-                Ajouter un destinataire
-            </h1>
+        <div className="container mx-auto px-4 py-8 max-w-lg">
+            <Card className="w-full">
+                <CardHeader className="text-center space-y-2">
+                    <CardTitle className="text-2xl font-bold text-blue-700 flex items-center justify-center gap-2">
+                        <UserPlus className="h-6 w-6" />
+                        Ajouter un destinataire
+                    </CardTitle>
+                    <CardDescription>
+                        Veuillez remplir les informations du destinataire
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <div className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="firstName" className="flex items-center gap-2">
+                                    <User className="h-4 w-4" />
+                                    Nom
+                                </Label>
+                                <Input
+                                    id="firstName"
+                                    name="firstName"
+                                    value={destinataireFormData.firstName}
+                                    onChange={handleInputChange}
+                                    onBlur={() => handleBlur('firstName')}
+                                    placeholder="Entrez le nom"
+                                    className={errors.firstName ? 'border-red-500' : ''}
+                                    disabled={loading}
+                                />
+                                {errors.firstName && (
+                                    <p className="text-red-500 text-sm">{errors.firstName}</p>
+                                )}
+                            </div>
 
-            <Form onSubmit={handleSubmit} className="container rounded-bottom-5 mt-5 shadow p-5 border-black max-w-6xl">
-                <Form.Group className="mb-3">
-                    <Form.Control
-                        name="firstName"
-                        onChange={handleInputChange}
-                        value={destinataireFormData.firstName}
-                        type="text"
-                        placeholder="Nom"
-                        isInvalid={!!errors.lastName}
-                    />
-                    <Form.Control.Feedback type="invalid">
-                        {errors.lastName}
-                    </Form.Control.Feedback>
-                </Form.Group>
+                            <div className="space-y-2">
+                                <Label htmlFor="lastName" className="flex items-center gap-2">
+                                    <User className="h-4 w-4" />
+                                    Prénom
+                                </Label>
+                                <Input
+                                    id="lastName"
+                                    name="lastName"
+                                    value={destinataireFormData.lastName}
+                                    onChange={handleInputChange}
+                                    onBlur={() => handleBlur('lastName')}
+                                    placeholder="Entrez le prénom"
+                                    className={errors.lastName ? 'border-red-500' : ''}
+                                    disabled={loading}
+                                />
+                                {errors.lastName && (
+                                    <p className="text-red-500 text-sm">{errors.lastName}</p>
+                                )}
+                            </div>
 
-                <Form.Group className="mb-3">
-                    <Form.Control
-                        name="lastName"
-                        onChange={handleInputChange}
-                        value={destinataireFormData.lastName}
-                        type="text"
-                        placeholder="Prénom"
-                        isInvalid={!!errors.lastName}
-                    />
-                    <Form.Control.Feedback type="invalid">
-                        {errors.lastName}
-                    </Form.Control.Feedback>
-                </Form.Group>
+                            <div className="space-y-2">
+                                <Label htmlFor="email" className="flex items-center gap-2">
+                                    <Mail className="h-4 w-4" />
+                                    Email
+                                </Label>
+                                <Input
+                                    id="email"
+                                    name="email"
+                                    type="email"
+                                    value={destinataireFormData.email}
+                                    onChange={handleInputChange}
+                                    onBlur={() => handleBlur('email')}
+                                    placeholder="exemple@email.com"
+                                    className={errors.email ? 'border-red-500' : ''}
+                                    disabled={loading}
+                                />
+                                {errors.email && (
+                                    <p className="text-red-500 text-sm">{errors.email}</p>
+                                )}
+                            </div>
 
-                <Form.Group className="mb-3">
-                    <Form.Control
-                        name="email"
-                        onChange={handleInputChange}
-                        value={destinataireFormData.email}
-                        type="email"
-                        placeholder="Email"
-                        isInvalid={!!errors.email}
-                    />
-                    <Form.Control.Feedback type="invalid">
-                        {errors.email}
-                    </Form.Control.Feedback>
-                </Form.Group>
+                            <div className="space-y-2">
+                                <Label htmlFor="phoneNumber" className="flex items-center gap-2">
+                                    <Phone className="h-4 w-4" />
+                                    Numéro de téléphone
+                                </Label>
+                                <Input
+                                    id="phoneNumber"
+                                    name="phoneNumber"
+                                    type="tel"
+                                    value={destinataireFormData.phoneNumber}
+                                    onChange={handleInputChange}
+                                    onBlur={() => handleBlur('phoneNumber')}
+                                    placeholder="+33 6 XX XX XX XX"
+                                    className={errors.phoneNumber ? 'border-red-500' : ''}
+                                    disabled={loading}
+                                />
+                                {errors.phoneNumber && (
+                                    <p className="text-red-500 text-sm">{errors.phoneNumber}</p>
+                                )}
+                            </div>
+                        </div>
 
-                <Form.Group className="mb-3">
-                    <Form.Control
-                        name="phoneNumber"
-                        onChange={handleInputChange}
-                        value={destinataireFormData.phoneNumber}
-                        type="text"
-                        placeholder="Numéro de téléphone"
-                        isInvalid={!!errors.phoneNumber}
-                    />
-                    <Form.Control.Feedback type="invalid">
-                        {errors.phoneNumber}
-                    </Form.Control.Feedback>
-                </Form.Group>
-
-                <Button type="submit" disabled={loading}>
-                    {loading ? "l'Ajout est en cours" : "Ajouter"}
-                </Button>
-                <ToastContainer position="bottom-right" transition={Slide}/>
-            </Form>
+                        <Button
+                            type="submit"
+                            className="w-full h-11 text-base font-medium"
+                            disabled={loading}
+                        >
+                            {loading ? (
+                                <span className="flex items-center justify-center gap-2">
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                    Ajout en cours...
+                                </span>
+                            ) : (
+                                <span className="flex items-center justify-center gap-2">
+                                    <UserPlus className="h-4 w-4" />
+                                    Ajouter le destinataire
+                                </span>
+                            )}
+                        </Button>
+                    </form>
+                </CardContent>
+            </Card>
         </div>
     );
 }

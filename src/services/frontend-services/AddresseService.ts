@@ -1,9 +1,7 @@
 // path: src/services/frontend-services/AddresseService.ts
-'use server';
+'use client';
 
 import {DOMAIN} from "@/utils/constants";
-
-
 
 // Récupérer les pays disponibles pour la simulation
 export async function fetchCountries() {
@@ -38,7 +36,13 @@ export async function fetchCities(country: string) {
     console.log("fetchCities function called, country: ", country);
 
 
-    const response = await fetch(`${DOMAIN}/api/v1/cities?country=${encodeURIComponent(country)}`);
+    const response = await fetch(`${DOMAIN}/api/v1/cities?country=${encodeURIComponent(country)}`,
+        {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
     if (response.ok) {
         return response.json();
     } else {
@@ -53,7 +57,13 @@ export async function fetchAgencies(city: string) {
     }
     console.log("fetchAgencies function called, city: ", city);
 
-    const response = await fetch(`${DOMAIN}/api/v1/agencies?city=${encodeURIComponent(city)}`);
+    const response = await fetch(`${DOMAIN}/api/v1/agencies?city=${encodeURIComponent(city)}`,
+        {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
     if (response.ok) {
         return response.json();
     } else {

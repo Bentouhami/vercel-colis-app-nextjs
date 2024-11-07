@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     try {
         // Supprimer le cookie d'authentification
         cookies().delete("auth");
-        cookies().delete("destinataireData");
+        cookies().delete("simulationResponse");
 
         // Créer la réponse avec le message de succès
         const response = NextResponse.json(

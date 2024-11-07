@@ -1,4 +1,4 @@
-// path: src/services/users/UserService.ts
+// path: src/services/frontend-services/UserService.ts
 
 import {JWTPayload} from "@/utils/types";
 import {setCookie} from "@/utils/generateToken";
@@ -38,6 +38,32 @@ export async function generateJWTPayloadAndSetCookie(
 
     // return cookie
     return setCookie(jwtPayload);
+}
+
+export async function getConnectedUser() {
+    try {
+        const response = await fetch(`${DOMAIN}/api/v1/auth/status`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include', // Ensure cookies are included in the request
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch user authentication status');
+        }
+
+        const data = await response.json();
+        if (data.isAuthenticated) {
+            return data.user; // Return the user payload if authenticated
+        } else {
+            return null; // Return null if not authenticated
+        }
+    } catch (error) {
+        console.error('Error fetching connected user:', error);
+        return null;
+    }
 }
 
 export async function getUserById(id: number): Promise<BaseDestinataireDto> {
@@ -122,9 +148,9 @@ export async function addDestinataire(newUser: BaseDestinataireDto) : Promise<nu
 
         // Si la réponse est OK, log et parse le JSON
         const data = await response.json();
-        console.log("log ====> data in addDestinataire function: ", data);
+        console.log("log ====> data.data in addDestinataire function: ", data.data);
 
-        return data.data;
+        return data.data.id as number;
     } catch (error) {
         console.error('Error in addDestinataire function:', error);
         throw error;

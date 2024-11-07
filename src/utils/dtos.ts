@@ -14,6 +14,8 @@ export interface BaseDestinataireDto {
     name: string;
     email: string;
     phoneNumber: string;
+    image: string | null;
+    role: Role;
 }
 
 // DTO for User response without a password
@@ -42,10 +44,10 @@ export interface DestinataireResponseWithRoleDto {
     id: number;
     firstName: string;
     lastName: string;
-    name: string;
+    name: string | null;
     email: string;
     phoneNumber: string;
-    image: string | '',
+    image: string | null; // Allow null here
     role: Role;
 }
 
@@ -152,44 +154,22 @@ export interface TarifsDto {
 // Simulation DTOs
 // SimulationResultsDto: used when getting simulation details from the frontend
 export interface BaseSimulationDto {
-    departureCountry: string | null;
-    departureCity: string | null;
-    departureAgency: string | null;
-    destinationCountry: string | null;
-    destinationCity: string | null;
-    destinationAgency: string | null;
-    parcels: CreateParcelDto[] | null;
+    departureCountry: string;
+    departureCity: string;
+    departureAgency: string;
+    destinationCountry: string;
+    destinationCity: string;
+    destinationAgency: string;
+    parcels: CreateParcelDto[];
 }
 
-// Calculations DTO
+// DTO for calculation results related to simulation
 export interface SimulationCalculationTotalsDto {
     totalWeight: number;
     totalVolume: number;
-    totalPrice: number;
+    totalPrice: number | null;
     departureDate: Date;
     arrivalDate: Date;
-
-}
-
-export interface CreatedSimulationResponseDto {
-    id: number;
-    verificationToken: string;
-}
-
-export interface SimulationWithoutIds extends BaseSimulationDto, SimulationCalculationTotalsDto {
-    status: SimulationStatus;
-
-}
-
-
-// New DTOs for storing simulations
-export interface SimulationWithIds extends SimulationWithoutIds {
-    userId: number | null;
-    destinataireId: number | null;
-}
-
-export interface FullSimulationDto extends SimulationWithIds {
-    id: number;
 }
 
 
@@ -198,6 +178,36 @@ export enum SimulationStatus {
     CONFIRMED = "CONFIRMED",
     COMPLETED = "COMPLETED",
     CANCELLED = "CANCELLED",
+}
+
+// Response DTO for a created simulation, used when receiving a new simulation ID and token
+export interface CreatedSimulationResponseDto {
+    id: number;
+    verificationToken: string;
+}
+
+// DTO combining base simulation data and calculation totals without IDs, used for sending data without user or destination details
+export interface SimulationWithoutIds extends BaseSimulationDto, SimulationCalculationTotalsDto {
+    status: SimulationStatus;
+}
+
+// DTO for a simulation with user and destination IDs, typically used in backend processing and database storage
+export interface SimulationWithIds extends SimulationWithoutIds {
+    userId: number | null;
+    destinataireId: number | null;
+}
+
+// DTO for a fully prepared simulation with IDs, ready for storage or full data transmission
+export interface FullSimulationDto extends SimulationWithIds {
+    id: number;
+}
+
+// DTO for a prepared simulation with only user and destinataire IDs, used before calculation
+export interface PreparedSimulation extends BaseSimulationDto {
+    userId: number | null;
+    destinataireId: number | null;
+    status: SimulationStatus;
+
 }
 
 

@@ -1,14 +1,11 @@
-// path: src/app/dashboard/layout.tsx
+// path: src/app/admin/layout.tsx
 
 'use client';
 
 import React from "react";
 import DashboardNavbar from "@/components/navigations/dashboard/DashboardNavbar";
-import Footer from "@/components/navigations/footer/Footer";
 import "./dashboard.css"; // Fichier CSS pour les styles propres au dashboard
-// import 'bootstrap/dist/css/bootstrap.min.css';
 
-// import { SessionProvider } from "next-auth/react";
 
 export default function DashboardLayout({
                                             children,
@@ -17,11 +14,10 @@ export default function DashboardLayout({
 }) {
     return (
         <div className="dashboard-body" data-theme="light">
-            <DashboardNavbar/> {/* Barre de navigation spécifique pour le tableau de bord */}
+            <DashboardNavbar/>
             <main className="dashboard-main">
                 {children}
             </main>
-            <Footer/>
         </div>
     );
 }
