@@ -4,7 +4,6 @@
 import {useCallback, useEffect, useState} from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { CheckCircle, XCircle, Loader2, AlertCircle, ArrowRight, RotateCcw, MailCheck  } from 'lucide-react';
-import Image from 'next/image';
 
 const VerifyEmail = () => {
     const router = useRouter();

@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
+import {DOMAIN} from "@/utils/constants";
+
 
 const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_SERVER_HOST,
@@ -12,7 +14,7 @@ const transporter = nodemailer.createTransport({
 
 export async function POST(req: NextRequest) {
     const { name, email, token } = await req.json();
-    const verificationUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/client/verify-email?token=${token}`;
+    const verificationUrl = `${DOMAIN}/client/verify-email?token=${token}`;
 
     try {
         await transporter.sendMail({
