@@ -38,7 +38,7 @@ const Footer = () => {
 
                     {/* Social Media Links */}
                     <Col md={4} className="flex  text-center text-md-end">
-                        <a href={`mailto:${process.env.MY_CONTACT_EMAIL}`} className="text-gray-400 me-3">
+                        <a href={`mailto:${process.env.NEXT_PUBLIC_MY_CONTACT_EMAIL}`} className="text-gray-400 me-3">
                             <Mail className="h-5 w-5" />
                         </a>
                         <a href="https://facebook.com/colisapp" className="text-gray-400 me-3" target="_blank" rel="noopener noreferrer">

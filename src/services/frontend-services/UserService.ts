@@ -148,9 +148,9 @@ export async function addDestinataire(newUser: BaseDestinataireDto) : Promise<nu
 
         // Si la réponse est OK, log et parse le JSON
         const data = await response.json();
-        console.log("log ====> data.data in addDestinataire function: ", data.data);
+        console.log("log ====> data.data in addDestinataire function: ", data);
 
-        return data.data.id as number;
+        return data.id as number;
     } catch (error) {
         console.error('Error in addDestinataire function:', error);
         throw error;

@@ -5,8 +5,6 @@ import {calculateEnvoiDetails} from "@/services/frontend-services/simulation/Sim
 import {getTarifs} from "@/services/frontend-services/TarifsService";
 
 export async function submitSimulation(simulationData: PreparedSimulation) {
-
-
     if (!simulationData) {
         throw new Error("Simulation data not found");
     }
@@ -58,9 +56,7 @@ export async function submitSimulation(simulationData: PreparedSimulation) {
 
 }
 
-
-export async function getSimulationByIdAndToken(): Promise<FullSimulationDto | null> {
-
+export async function getSimulation(): Promise<FullSimulationDto | null> {
     try {
         const response = await fetch(`${DOMAIN}/api/v1/simulations`, {
             method: "GET",
@@ -69,24 +65,30 @@ export async function getSimulationByIdAndToken(): Promise<FullSimulationDto | n
             }
         });
 
+
         if (!response.ok) {
-            throw new Error('Failed to fetch simulation');
+            const errorData = await response.json();
+
+            console.log("log ====> errorData in getSimulationByIdAndToken function: ", errorData);
+            if (errorData.error === 'Simulation Token NOT found') {
+                return null;
+            }
+            throw new Error(errorData.error || 'Failed to submit simulation');
         }
 
         // Extraire les données JSON
         const simulationData = await response.json();
 
         if (!simulationData || !simulationData.data) {
-            throw new Error("Simulation not found");
+            throw new Error("Données de simulation non trouvées dans la réponse");
         }
 
         return simulationData.data as FullSimulationDto;
-
     } catch (error) {
-        throw error; // Relancer l'erreur pour qu'elle puisse être capturée par la fonction appelante
+        console.error("Erreur lors de la récupération de la simulation:", error);
+        throw error;
     }
 }
-
 
 export async function updateSimulationWithSenderAndDestinataireIds(simulation: FullSimulationDto) {
 

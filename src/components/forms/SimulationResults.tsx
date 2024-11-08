@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { getSimulationByIdAndToken } from "@/services/frontend-services/simulation/SimulationService";
+import { getSimulation } from "@/services/frontend-services/simulation/SimulationService";
 import { FullSimulationDto } from "@/utils/dtos";
 import LoginPromptModal from '@/components/LoginPromptModal';
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,7 @@ export default function SimulationResults() {
     useEffect(() => {
         const getSimulationResults = async () => {
             try {
-                const simulationData = await getSimulationByIdAndToken();
+                const simulationData = await getSimulation();
                 if (!simulationData) {
                     router.push('/client/simulation');
                     return;

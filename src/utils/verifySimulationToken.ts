@@ -14,7 +14,6 @@ export function verifySimulationToken(request: NextRequest): CreatedSimulationRe
         const token = jwtToken?.value as string;
 
         if (!token) {
-            console.log("No token found in cookies");
             return null;
         }
 
@@ -22,7 +21,6 @@ export function verifySimulationToken(request: NextRequest): CreatedSimulationRe
         const privateKey = process.env.JWT_SECRET as string;
 
         if (!privateKey) {
-            console.error("JWT_SECRET is not defined");
             return null;
         }
 
@@ -30,7 +28,6 @@ export function verifySimulationToken(request: NextRequest): CreatedSimulationRe
         const simulationPayload = jwt.verify(token, privateKey) as CreatedSimulationResponseDto;
 
         if (!simulationPayload) {
-            console.error("Invalid simulation token");
             return null;
         }
 
@@ -38,9 +35,7 @@ export function verifySimulationToken(request: NextRequest): CreatedSimulationRe
     } catch (error) {
         // Gérer les erreurs JWT spécifiques
         if (error instanceof jwt.TokenExpiredError) {
-            console.error("Token expired");
         } else if (error instanceof jwt.JsonWebTokenError) {
-            console.error("Invalid token");
         }
         return null;
     }

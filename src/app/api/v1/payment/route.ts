@@ -2,6 +2,8 @@
 
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import {DOMAIN} from "@/utils/constants";
+
 
 // Utilisez une version d'API valide
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -19,14 +21,14 @@ export async function POST(req: Request) {
                     price_data: {
                         currency: 'eur',
                         product_data: { name: 'Envoi de colis' },
-                        unit_amount: amount * 100, //
+                        unit_amount: Math.round(amount * 100), // Arrondir pour obtenir un entier
                     },
                     quantity: 1,
                 },
             ],
             mode: 'payment',
-            success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/client/payment/payment-success`,
-            cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/client/payment/payment-cancel`,
+            success_url: `${DOMAIN}/client/payment/payment-success`,
+            cancel_url: `${DOMAIN}/client/payment/payment-cancel`,
         });
 
         return NextResponse.json({ id: session.id });

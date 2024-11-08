@@ -11,7 +11,7 @@ import { DestinataireInput, destinataireSchema } from "@/utils/validationSchema"
 import { addDestinataire } from "@/services/frontend-services/UserService";
 import {BaseDestinataireDto, Role} from "@/utils/dtos";
 import {
-    getSimulationByIdAndToken,
+    getSimulation,
     updateSimulationWithSenderAndDestinataireIds
 } from "@/services/frontend-services/simulation/SimulationService";
 
@@ -81,7 +81,7 @@ export default function AddReceiverForm() {
             };
             const destinataireId = await addDestinataire(formattedDestinataireData);
 
-            const simulationResults = await getSimulationByIdAndToken();
+            const simulationResults = await getSimulation();
             if (simulationResults) {
                 simulationResults.destinataireId = destinataireId;
                 await updateSimulationWithSenderAndDestinataireIds(simulationResults);

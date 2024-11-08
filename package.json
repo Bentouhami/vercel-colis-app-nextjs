@@ -50,6 +50,7 @@
     "@stripe/react-stripe-js": "^2.8.1",
     "@stripe/stripe-js": "^4.9.0",
     "@vercel/postgres": "^0.9.0",
+    "@vercel/speed-insights": "^1.1.0",
     "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",

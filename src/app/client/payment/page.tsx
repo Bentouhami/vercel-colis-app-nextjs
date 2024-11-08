@@ -6,6 +6,8 @@ import {loadStripe} from '@stripe/stripe-js';
 import {Button} from '@/components/ui/button';
 import {toast} from 'react-toastify';
 import {useSearchParams} from "next/navigation";
+import {DOMAIN} from "@/utils/constants";
+
 
 // Charger la clé publique Stripe depuis les variables d'environnement
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!);
@@ -29,7 +31,7 @@ const PaymentPage = () => {
 
         try {
             // Créer une session de paiement en appelant votre route API
-            const response = await fetch('/api/v1/payment', {
+            const response = await fetch(`${DOMAIN}/api/v1/payment`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({amount: amount}), // Remplacez par le montant dynamique

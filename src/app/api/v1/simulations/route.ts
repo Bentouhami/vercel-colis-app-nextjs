@@ -102,40 +102,33 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
-
-    // log 
-    console.log("log ====> GET request received in simulations route in path: src/app/api/simulations/simulations.ts");
-
-    if (request.method !== 'GET') {
-        return NextResponse.json({error: 'Method not allowed'}, {status: 405});
-    }
+    console.log("GET request received in simulations route");
 
     try {
         const simulationIdAndToken = verifySimulationToken(request);
 
         if (!simulationIdAndToken) {
-            return NextResponse.json({error: 'Failed to get simulation'}, {status: 500});
+            console.log("Aucun token ou ID de simulation valide.");
+            return NextResponse.json({ error: 'Simulation Token NOT found' }, { status: 404 });
         }
 
-        console.log("log ====> simulationIdAndToken in GET request received in simulations route: ", simulationIdAndToken);
-
-        // Récupérer les détails de la simulation
-        const simulation: FullSimulationDto | null = await getSimulationByIdAndToken(Number(simulationIdAndToken.id), simulationIdAndToken.verificationToken);
+        const simulation = await getSimulationByIdAndToken(
+            Number(simulationIdAndToken.id),
+            simulationIdAndToken.verificationToken
+        );
 
         if (!simulation) {
-            return NextResponse.json({error: 'Simulation not found'}, {status: 404});
+            console.log("Simulation introuvable.");
+            return NextResponse.json({ error: 'Simulation not found' }, { status: 404 });
         }
 
-        console.log("log ====> simulation found in GET request received in simulations route in path: src/app/api/simulations/route.ts: ", simulation);
-
-        console.log("Returning simulation data...");
-        return NextResponse.json({data: simulation}, {status: 200});
-
+        return NextResponse.json({ data: simulation }, { status: 200 });
     } catch (error) {
-        console.error("Error getting simulation:", error);
-        return NextResponse.json({error: 'Failed to get simulation'}, {status: 500});
+        console.error("Erreur lors de la récupération de la simulation:", error);
+        return NextResponse.json({ error: 'Erreur serveur, impossible de récupérer la simulation' }, { status: 500 });
     }
 }
+
 
 export async function PUT(request: NextRequest) {
     console.log("PUT request received with body:", request.body);
