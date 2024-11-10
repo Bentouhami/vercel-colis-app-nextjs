@@ -1,3 +1,6 @@
+// Path: src/components/forms/SimulationForms/PackageForm.tsx
+
+
 import { Form, FormGroup } from 'react-bootstrap';
 import React from "react";
 import { CreateParcelDto } from '@/utils/dtos';
@@ -55,6 +58,7 @@ const PackageForm = ({ index, pkg, onChange }: PackageFormProps) => {
                     onChange={handleInputChange('weight')}
                     className="border-2 border-gray-300 rounded-lg p-2"
                     min="0"
+                    step="0.1" // pour autoriser les décimales
                 />
             </FormGroup>
         </div>

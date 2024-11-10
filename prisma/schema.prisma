@@ -22,7 +22,8 @@ model User {
   phoneNumber String    @unique @db.VarChar(50)
   password    String?   @default("") @db.VarChar(255)
   image       String?   @default("") @db.VarChar(255)
-  role        Role      @default(CLIENT)
+  roles       Role[]    @default([CLIENT]) // Default to CLIENT role for new users
+  agencyId    Int? // New field to link admins to specific agencies
 
   isVerified               Boolean   @default(false) // Indique si l'utilisateur a vérifié son email
   emailVerified            DateTime? // Date de vérification de l'email
@@ -51,6 +52,9 @@ model User {
   createdSimulations  Simulation[] @relation("ClientSimulations")
   receivedSimulations Simulation[] @relation("DestinataireSimulations")
 
+  // New relations for agency admins to manage their agencies
+  Agency Agency? @relation(fields: [agencyId], references: [id])
+
   @@map("users")
 }
 
@@ -58,6 +62,7 @@ enum Role {
   CLIENT
   ADMIN
   DESTINATAIRE
+  AGENCY_ADMIN
 
   @@map("roles")
 }
@@ -170,19 +175,20 @@ model Agency {
   name           String   @db.VarChar(50)
   location       String?  @db.VarChar(250)
   addressId      Int      @unique
-  capacity       Int      @db.Integer // Capacité maximale pour stocker les colis
-  availableSlots Int      @db.Integer // Nombre de places disponibles pour les rendez-vous ou dépôts
+  capacity       Int      @db.Integer // maximum capacity for storing parcels
+  availableSlots Int      @db.Integer // number of available slots for appointments or deliveries
   address        Address  @relation(fields: [addressId], references: [id])
   updatedAt      DateTime @updatedAt
   createdAt      DateTime @default(now())
 
   // Relations
 
-  ArrivalEnvoi   Envoi[]        @relation("ArrivalAgency")
-  DepartureEnvoi Envoi[]        @relation("DepartureAgency")
-  Notification   Notification[]
-  Appointment    Appointment[]
-  Tarifs         Tarifs[]
+  ArrivalEnvoi   Envoi[]        @relation("ArrivalAgency") // arrival agency envoi
+  DepartureEnvoi Envoi[]        @relation("DepartureAgency") // departure agency envoi
+  Notification   Notification[] // notifications for the agency
+  Appointment    Appointment[] // appointments for the agency
+  Tarifs         Tarifs[] // tarifs for the agency
+  User           User[] // New relation to link agency admins to their agencies
 
   @@map("agencies")
 }

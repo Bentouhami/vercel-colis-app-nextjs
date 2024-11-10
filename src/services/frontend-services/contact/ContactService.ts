@@ -5,6 +5,9 @@ import {DOMAIN} from "@/utils/constants";
 import {MessageBodyDto} from "@/utils/dtos";
 
 export async function sendContactEmail(messageBody: MessageBodyDto): Promise<number> {
+
+    console.log("log ====> sendContactEmail function called in path: src/services/frontend-services/contact/ContactService.ts with messageBody: ", messageBody);
+
     try {
         const response = await fetch(`${DOMAIN}/api/v1/contact`, {
             method: "POST",

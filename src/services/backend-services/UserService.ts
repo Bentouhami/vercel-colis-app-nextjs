@@ -39,7 +39,7 @@ export async function registerUser(newUser: CreateFullUserDto, address: FullAddr
             phoneNumber: newUser.phoneNumber,
             email: newUser.email,
             password: newUser.password,
-            role: newUser.role,
+            roles: newUser.roles,
             verificationToken: newUser.verificationToken,
             verificationTokenExpires: newUser.verificationTokenExpires,
             addressId: address.id,
@@ -71,7 +71,7 @@ export async function registerUser(newUser: CreateFullUserDto, address: FullAddr
             email: createdUser.email,
             phoneNumber: createdUser.phoneNumber,
             password: createdUser.password,
-            role: createdUser.role,
+            roles: createdUser.roles,
             image: createdUser.image,
             isVerified: createdUser.isVerified,
             emailVerified: createdUser.emailVerified,
@@ -121,7 +121,7 @@ export async function isUserAlreadyExist(email: string, phoneNumber: string): Pr
                 birthDate: true,
                 phoneNumber: true,
                 email: true,
-                role: true,
+                roles: true,
                 image: true,
                 isVerified: true,
                 emailVerified: true,
@@ -170,7 +170,7 @@ export async function isDestinataireAlreadyExist(email: string, phoneNumber: str
                 name: true,
                 phoneNumber: true,
                 email: true,
-                role: true,
+                roles: true,
                 image: true,
             }
         }) as DestinataireResponseWithRoleDto;
@@ -210,7 +210,7 @@ export async function createDestinataire(newDestinataire: BaseDestinataireDto): 
                 email: newDestinataire.email,
                 phoneNumber: newDestinataire.phoneNumber,
                 image: newDestinataire.image ?? "", // Default to empty string if null
-                role: Role.DESTINATAIRE,
+                roles: [Role.DESTINATAIRE],
             },
             select: {
                 id: true,
@@ -220,7 +220,7 @@ export async function createDestinataire(newDestinataire: BaseDestinataireDto): 
                 phoneNumber: true,
                 email: true,
                 image: true,
-                role: true,
+                roles: true,
             }
         });
 
@@ -237,7 +237,6 @@ export async function createDestinataire(newDestinataire: BaseDestinataireDto): 
         throw error;
     }
 }
-
 
 
 /**
@@ -264,7 +263,7 @@ export async function getUserByValidToken(token: string): Promise<UserResponseDt
                 birthDate: true,
                 phoneNumber: true,
                 email: true,
-                role: true,
+                roles: true,
                 image: true,
             }
         }) as UserResponseDto;
@@ -296,7 +295,7 @@ export async function updateUserAndResetTokenVerificationAfterVerification(userI
             where: {id: userId},
             data: {
                 isVerified: true,
-                role: Role.CLIENT,
+                roles: [Role.CLIENT],
                 emailVerified: new Date(),
                 verificationToken: null,
                 verificationTokenExpires: null,
@@ -309,7 +308,7 @@ export async function updateUserAndResetTokenVerificationAfterVerification(userI
                 phoneNumber: true,
                 email: true,
                 image: true,
-                role: true
+                roles: true
             }
         });
 
@@ -335,7 +334,7 @@ export async function updateVerificationTokenForOldUser(userId: number, verifica
     await prisma.user.update({
         where: {id: userId},
         data: {
-            role: Role.CLIENT,
+            roles: [Role.CLIENT],
             isVerified: false,
             emailVerified: null,
             verificationToken: verificationData.verificationToken,
@@ -367,7 +366,7 @@ export async function getUserByEmail(email: string): Promise<UserLoginResponseDt
                 lastName: true,
                 phoneNumber: true,
                 image: true,
-                role: true,
+                roles: true,
                 isVerified: true,
                 emailVerified: true,
                 verificationToken: true,
@@ -444,7 +443,7 @@ export async function updateDestinataireToClient(
             },
             data: {
                 birthDate: birthDate,
-                role: Role.CLIENT,
+                roles: [Role.CLIENT],
                 password: password,
                 addressId: addressId.id,
                 isVerified: false,
@@ -469,7 +468,7 @@ export async function updateDestinataireToClient(
             birthDate: user.birthDate ?? new Date(),
             email: user.email,
             phoneNumber: user.phoneNumber ?? '',
-            role: (user.role ?? Role.CLIENT) as Role,
+            roles: (user.roles ?? [Role.CLIENT]) as Role[],
             image: user.image ?? '',
             isVerified: user.isVerified,
             emailVerified: user.emailVerified ?? new Date(),
@@ -550,4 +549,3 @@ export async function associateDestinataireToCurrentClient(userId: number, desti
         throw error; // Relancer l'erreur pour remonter jusqu'à l'appelant
     }
 }
-

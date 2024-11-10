@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
             phoneNumber: user.phoneNumber,
             email: user.email,
             image: user.image,
-            role: Role.CLIENT
+            roles: [Role.CLIENT],
         };
 
         console.log("log => userResponse retourné après vérification du token: ", userResponse);

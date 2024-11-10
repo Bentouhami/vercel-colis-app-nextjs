@@ -1,7 +1,7 @@
 // path: src/utils/types.ts
 export type JWTPayload = {
     id: number;
-    role: string;
+    roles: string[]; // Changed from `role` to `roles` for multiple roles
     phoneNumber: string;
     userEmail: string;
     firstName: string;

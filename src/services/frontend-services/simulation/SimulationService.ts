@@ -57,6 +57,9 @@ export async function submitSimulation(simulationData: PreparedSimulation) {
 }
 
 export async function getSimulation(): Promise<FullSimulationDto | null> {
+
+    console.log("log ====> getSimulation function called in src/services/frontend-services/simulation/SimulationService.ts");
+
     try {
         const response = await fetch(`${DOMAIN}/api/v1/simulations`, {
             method: "GET",
@@ -67,20 +70,14 @@ export async function getSimulation(): Promise<FullSimulationDto | null> {
 
 
         if (!response.ok) {
-            const errorData = await response.json();
-
-            console.log("log ====> errorData in getSimulationByIdAndToken function: ", errorData);
-            if (errorData.error === 'Simulation Token NOT found') {
-                return null;
-            }
-            throw new Error(errorData.error || 'Failed to submit simulation');
+            return null;
         }
 
         // Extraire les données JSON
         const simulationData = await response.json();
 
         if (!simulationData || !simulationData.data) {
-            throw new Error("Données de simulation non trouvées dans la réponse");
+            return null;
         }
 
         return simulationData.data as FullSimulationDto;

@@ -23,7 +23,7 @@ const HeaderWrapper = async () => {
             // Vérification basée sur le rôle de l'utilisateur
             if (decodedToken) {
                 userEmail = decodedToken.userEmail;
-                isAdmin = decodedToken.role === 'ADMIN';
+                isAdmin = decodedToken.roles.includes('ADMIN');
                 firstName = decodedToken.firstName || '';
                 lastName = decodedToken.lastName || '';
                 image = decodedToken.image || "https://placehold.co/400";

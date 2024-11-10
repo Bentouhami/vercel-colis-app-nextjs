@@ -6,6 +6,7 @@ export enum Role {
     CLIENT = "CLIENT",
     DESTINATAIRE = "DESTINATAIRE",
     ADMIN = "ADMIN",
+    AGENCY_ADMIN = "AGENCY_ADMIN" // New role for agency-specific admins
 }
 
 export interface BaseDestinataireDto {
@@ -15,13 +16,13 @@ export interface BaseDestinataireDto {
     email: string;
     phoneNumber: string;
     image: string | null;
-    role: Role;
+    roles: Role[];
 }
 
 // DTO for User response without a password
 export interface FullUserResponseDto extends BaseUserDto {
     id: number;
-    role: Role;
+    roles: Role[];
     image: string | '';
     isVerified: boolean;
     emailVerified: Date;
@@ -37,7 +38,7 @@ export interface UserResponseDto {
     email: string;
     phoneNumber: string;
     image: string | '',
-    role: Role;
+    roles: Role[];
 }
 
 export interface DestinataireResponseWithRoleDto {
@@ -48,7 +49,7 @@ export interface DestinataireResponseWithRoleDto {
     email: string;
     phoneNumber: string;
     image: string | null; // Allow null here
-    role: Role;
+    roles: Role[];
 }
 
 export interface BaseUserDto extends BaseDestinataireDto {
@@ -68,7 +69,7 @@ export interface UserModelDto {
     birthDate: Date;
     phoneNumber: string;
     email: string;
-    role: Role;
+    roles: Role[];
     image: string | '',
     isVerified: boolean;
     emailVerified: Date;
@@ -80,7 +81,7 @@ export interface UserModelDto {
 // Register and Login DTOs
 export interface FullUserDto extends BaseClientDto {
     id: number;
-    role: Role;
+    roles: Role[];
     image: string | '',
     isVerified: boolean;
     emailVerified: Date;
@@ -90,7 +91,7 @@ export interface FullUserDto extends BaseClientDto {
 
 // Register and Login DTOs
 export interface CreateFullUserDto extends BaseClientDto {
-    role: Role;
+    roles: Role[];
     verificationToken: string;
     verificationTokenExpires: Date;
 }
@@ -112,7 +113,7 @@ export interface UserLoginResponseDto {
     lastName: string;
     phoneNumber: string;
     image: string | null;
-    role: Role;
+    roles: Role[];
     isVerified: boolean;
     emailVerified: Date | null;
     verificationToken: string | null;

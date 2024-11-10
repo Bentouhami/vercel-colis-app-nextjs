@@ -109,7 +109,7 @@ export async function GET(request: NextRequest) {
 
         if (!simulationIdAndToken) {
             console.log("Aucun token ou ID de simulation valide.");
-            return NextResponse.json({ error: 'Simulation Token NOT found' }, { status: 404 });
+            return NextResponse.json({data: null}, { status: 200 });
         }
 
         const simulation = await getSimulationByIdAndToken(

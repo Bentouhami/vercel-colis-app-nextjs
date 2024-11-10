@@ -1,8 +1,8 @@
 // path: src/app/api/v1/contact/route.ts
 
-import { NextRequest, NextResponse } from 'next/server';
+import {NextRequest, NextResponse} from 'next/server';
 import nodemailer from 'nodemailer';
-import { setCorsHeaders } from '@/utils/cors';
+import {setCorsHeaders} from '@/utils/cors';
 
 const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_SERVER_HOST,
@@ -14,15 +14,20 @@ const transporter = nodemailer.createTransport({
 });
 
 export async function POST(req: NextRequest) {
+
+    console.log("log ====> POST function called in path: src/app/api/v1/contact/route.ts with req.body: ", req.body);
     const origin = req.headers.get('origin') || '';
     const headers = setCorsHeaders(origin);
 
     // Si l'origine n'est pas autorisée, renvoie une réponse 403
     if (!headers) {
-        return new Response('CORS non autorisé', { status: 403 });
+        return new Response('CORS non autorisé', {status: 403});
     }
 
-    const { name, email, phone, subject, message } = await req.json();
+    const {name, email, phone, subject, message} = await req.json();
+
+    console.log("log ====> name, email, phone, subject, message in path: src/app/api/v1/contact/route.ts: ", name, email, phone, subject, message);
+
     const currentDate = new Date().toLocaleDateString('fr-FR', {
         year: 'numeric',
         month: 'long',
@@ -52,7 +57,7 @@ export async function POST(req: NextRequest) {
                                 <p style="color: #666; margin: 10px 0 0; font-size: 14px;">Reçu le ${currentDate}</p>
                             </div>
                             <div style="margin-bottom: 25px;">
-                                <p><strong>Expéditeur:</strong> ${name}</p>
+                                <p><strong>Expéditeur :</strong> ${name}</p>
                                 <p><strong>Email:</strong> ${email}</p>
                                 <p><strong>Téléphone:</strong> ${phone || 'Non fourni'}</p>
                                 <p><strong>Sujet:</strong> ${subject}</p>
@@ -71,14 +76,14 @@ export async function POST(req: NextRequest) {
             `,
         });
 
-        return new NextResponse(JSON.stringify({ message: 'Message envoyé avec succès' }), {
+        return new NextResponse(JSON.stringify({message: 'Message envoyé avec succès'}), {
             status: 200,
             headers,
         });
     } catch (error) {
         console.error("Erreur lors de l'envoi du message de contact:", error);
 
-        return new NextResponse(JSON.stringify({ error: "Échec de l'envoi du message" }), {
+        return new NextResponse(JSON.stringify({error: "Échec de l'envoi du message"}), {
             status: 500,
             headers,
         });

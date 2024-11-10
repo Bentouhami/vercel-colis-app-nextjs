@@ -9,7 +9,7 @@ import {BaseDestinataireDto} from "@/utils/dtos";
 /**
  * Generate JWTPayload object and setCookies with JWT token and cookie
  * @param userId
- * @param role
+ * @param roles
  * @param userEmail
  * @param firstName
  * @param lastName
@@ -19,7 +19,7 @@ import {BaseDestinataireDto} from "@/utils/dtos";
  */
 export async function generateJWTPayloadAndSetCookie(
     userId: number,
-    role: string,
+    roles: string[],
     userEmail: string,
     firstName: string,
     lastName: string,
@@ -28,7 +28,7 @@ export async function generateJWTPayloadAndSetCookie(
 
     const jwtPayload: JWTPayload = {
         id: userId,
-        role: role,
+        roles: roles,
         userEmail: userEmail,
         firstName: firstName,
         lastName: lastName,

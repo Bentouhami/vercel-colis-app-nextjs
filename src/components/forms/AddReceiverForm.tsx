@@ -9,7 +9,7 @@ import { Loader2, UserPlus, Mail, Phone, User } from "lucide-react";
 import { toast } from "react-toastify";
 import { DestinataireInput, destinataireSchema } from "@/utils/validationSchema";
 import { addDestinataire } from "@/services/frontend-services/UserService";
-import {BaseDestinataireDto, Role} from "@/utils/dtos";
+import { BaseDestinataireDto, Role } from "@/utils/dtos";
 import {
     getSimulation,
     updateSimulationWithSenderAndDestinataireIds
@@ -30,16 +30,13 @@ export default function AddReceiverForm() {
 
     const validateField = (name: string, value: string) => {
         try {
-            // Access the schema for a specific field using index signature
             const fieldSchema = destinataireSchema.shape[name as keyof DestinataireInput];
-            fieldSchema.parse(value); // Validate the value for the specific field
-            setErrors((prev) => ({ ...prev, [name]: '' })); // Clear the error if validation passes
+            fieldSchema.parse(value);
+            setErrors((prev) => ({ ...prev, [name]: '' }));
         } catch (error: any) {
-            // Set the error message if validation fails
             setErrors((prev) => ({ ...prev, [name]: error.errors[0]?.message || 'Champ invalide' }));
         }
     };
-
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -75,17 +72,27 @@ export default function AddReceiverForm() {
             setLoading(true);
             const formattedDestinataireData: BaseDestinataireDto = {
                 ...destinataireFormData,
-                name: `${destinataireFormData.firstName} ${destinataireFormData.lastName}`, // or another appropriate format for `name`
-                image: "", // assuming an empty string if no image is provided
-                role: Role.DESTINATAIRE
+                name: `${destinataireFormData.firstName} ${destinataireFormData.lastName}`,
+                image: "",
+                roles: [Role.DESTINATAIRE] as Role[],
             };
             const destinataireId = await addDestinataire(formattedDestinataireData);
 
+            console.log("log ====> destinataireId in addDestinataire function after adding destinataire in src/app/client/destinataires/add/page.tsx: ", destinataireId);
+
+
             const simulationResults = await getSimulation();
+
             if (simulationResults) {
+
+                console.log("log ====> simulationResults in addDestinataire function before adding destinataire in src/app/client/destinataires/add/page.tsx: ", simulationResults);
+
                 simulationResults.destinataireId = destinataireId;
+
+                console.log("log ====> simulationResults in addDestinataire function after adding destinataire in src/app/client/destinataires/add/page.tsx: ", simulationResults);
+
                 await updateSimulationWithSenderAndDestinataireIds(simulationResults);
-                toast.success("Destinataire ajouté avec succès !");
+                toast.success("Destinataire ajouté avec succès !", { duration: 3000 });
                 router.push("/client/envois/recapitulatif");
             } else {
                 toast.error("Aucune simulation trouvée.");
