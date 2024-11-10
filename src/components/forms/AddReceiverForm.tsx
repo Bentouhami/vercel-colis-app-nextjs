@@ -88,12 +88,16 @@ export default function AddReceiverForm() {
                 console.log("log ====> simulationResults in addDestinataire function before adding destinataire in src/app/client/destinataires/add/page.tsx: ", simulationResults);
 
                 simulationResults.destinataireId = destinataireId;
+                simulationResults.destinataireId = destinataireId;
 
                 console.log("log ====> simulationResults in addDestinataire function after adding destinataire in src/app/client/destinataires/add/page.tsx: ", simulationResults);
 
                 await updateSimulationWithSenderAndDestinataireIds(simulationResults);
-                toast.success("Destinataire ajouté avec succès !", { duration: 3000 });
-                router.push("/client/envois/recapitulatif");
+                toast.success("Destinataire ajouté avec succès !", { autoClose: 3000 });
+                // Attendre 3 secondes avant la redirection
+                setTimeout(() => {
+                    router.push("/client/envois/recapitulatif");
+                }, 3000);
             } else {
                 toast.error("Aucune simulation trouvée.");
             }

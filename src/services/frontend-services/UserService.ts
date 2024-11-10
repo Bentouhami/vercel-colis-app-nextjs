@@ -70,7 +70,7 @@ export async function getUserById(id: number): Promise<BaseDestinataireDto> {
     console.log("log ====> getUserById called in src/services/frontend-services/UserService.ts")
 
     try {
-        const response = await fetch(`${DOMAIN}/api/v1/users/${id}`, { // L'ID est maintenant dans l'URL
+        const response = await fetch(`${DOMAIN}/api/v1/users/${id}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

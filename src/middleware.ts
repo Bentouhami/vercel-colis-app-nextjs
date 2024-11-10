@@ -48,8 +48,8 @@ export async function middleware(req: NextRequest) {
             return NextResponse.redirect(new URL("/client/login", req.nextUrl.origin));
         }
 
-        const userRoles = userPayload.roles || []; // Use the roles array
-        const isAdmin = userRoles.includes('ADMIN'); // Check if the user has 'ADMIN' role
+        const userRoles = Array.isArray(userPayload.roles) ? userPayload.roles : [];
+        const isAdmin = userRoles.includes('ADMIN');
 
         if (req.nextUrl.pathname.startsWith('/client/login') || req.nextUrl.pathname.startsWith('/client/register')) {
             if (userRoles.includes('CLIENT') || isAdmin) {
@@ -82,6 +82,12 @@ async function verifyTokenWithJose(token: string) {
     try {
         const secret = new TextEncoder().encode(process.env.JWT_SECRET);
         const { payload } = await jwtVerify(token, secret);
+
+        // Ensure that payload.roles is an array
+        if (!Array.isArray(payload.roles)) {
+            payload.roles = [];
+        }
+
         return payload;
     } catch (error) {
         console.error("Error verifying token with jose:", error);
