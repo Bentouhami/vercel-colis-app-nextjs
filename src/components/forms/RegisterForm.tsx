@@ -1,33 +1,43 @@
 'use client';
 
-import React, { ChangeEvent, useState } from 'react';
-import { Button, Col, Form, InputGroup, Row, Spinner } from "react-bootstrap";
-import { toast, ToastContainer } from "react-toastify";
-import { useRouter } from "next/navigation";
-import { FaUser, FaEnvelope, FaLock, FaPhone, FaCalendar, FaMapMarkerAlt, FaCity, FaBuilding, FaGlobe } from 'react-icons/fa';
-import { validateForm, registerUserFrontendSchema, RegisterUserBackendType } from "@/utils/validationSchema";
-import { registerUser } from "@/services/frontend-services/UserService";
-import { motion } from "framer-motion";
+import React, {ChangeEvent, useState, useTransition} from 'react';
+import {Button, Col, Form, InputGroup, Row, Spinner} from "react-bootstrap";
+import {toast, ToastContainer} from "react-toastify";
+import {useRouter} from "next/navigation";
+import {
+    FaBuilding,
+    FaCalendar,
+    FaCity,
+    FaEnvelope,
+    FaGlobe,
+    FaLock,
+    FaMapMarkerAlt,
+    FaPhone,
+    FaUser
+} from 'react-icons/fa';
+import {RegisterUserBackendType, registerUserFrontendSchema, validateForm} from "@/utils/validationSchema";
+import {registerUser} from "@/services/frontend-services/UserService";
+import {motion} from "framer-motion";
 import Image from "next/image";
 
 const RegisterForm = () => {
+    const [isPending, startTransition] = useTransition();
     const router = useRouter();
     const [formData, setFormData] = useState({
         firstName: "", lastName: "", birthDate: "", phoneNumber: "", email: "", password: "", checkPassword: "",
-        address: { street: "", number: "", city: "", zipCode: "", country: "" }
+        address: {street: "", number: "", city: "", zipCode: "", country: ""}
     });
-    const [loading, setLoading] = useState(false);
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
         if (name.startsWith("address.")) {
             const addressField = name.split(".")[1];
             setFormData(prev => ({
                 ...prev,
-                address: { ...prev.address, [addressField]: value }
+                address: {...prev.address, [addressField]: value}
             }));
         } else {
-            setFormData(prev => ({ ...prev, [name]: value }));
+            setFormData(prev => ({...prev, [name]: value}));
         }
     };
 
@@ -40,43 +50,50 @@ const RegisterForm = () => {
             return;
         }
 
-        const { firstName, lastName, birthDate, phoneNumber, email, password, address } = validationResult.data as RegisterUserBackendType;
+        const {
+            firstName,
+            lastName,
+            birthDate,
+            phoneNumber,
+            email,
+            password,
+            address
+        } = validationResult.data as RegisterUserBackendType;
 
-        try {
-            setLoading(true);
+        startTransition(async () => {
+            try {
+                const newUser: RegisterUserBackendType = {
+                    firstName,
+                    lastName,
+                    birthDate,
+                    phoneNumber,
+                    email,
+                    password,
+                    address
+                };
 
-            const newUser: RegisterUserBackendType = {
-                firstName,
-                lastName,
-                birthDate,
-                phoneNumber,
-                email,
-                password,
-                address
-            };
-
-            await registerUser(newUser);
-            toast.success("Compte créé avec succès !");
-            router.push('/');
-        } catch (error) {
-            toast.error("Erreur lors de la création du compte");
-        } finally {
-            setLoading(false);
-        }
+                await registerUser(newUser);
+                toast.success("Compte créé avec succès !");
+                router.push('/');
+            } catch (error) {
+                toast.error("Erreur lors de la création du compte");
+            }
+        });
     };
+
 
     return (
         <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}
+            initial={{opacity: 0, scale: 0.95}}
+            animate={{opacity: 1, scale: 1}}
+            transition={{duration: 0.6}}
             className="container mx-auto p-6 mt-10 bg-white rounded-lg shadow-lg flex flex-col md:flex-row items-center space-y-6 md:space-y-0 md:space-x-8"
         >
             {/* Image Section */}
             <motion.div
-                initial={{ opacity: 0, x: -50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.7, ease: "easeOut" }}
+                initial={{opacity: 0, x: -50}}
+                animate={{opacity: 1, x: 0}}
+                transition={{duration: 0.7, ease: "easeOut"}}
                 className="flex-shrink-0"
             >
                 <Image
@@ -98,15 +115,16 @@ const RegisterForm = () => {
                     <Row>
                         <Col md={6}>
                             <motion.div
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.5, delay: 0.2 }}
+                                initial={{opacity: 0, x: -20}}
+                                animate={{opacity: 1, x: 0}}
+                                transition={{duration: 0.5, delay: 0.2}}
                             >
                                 <InputGroup className="mb-3">
                                     <InputGroup.Text className="bg-blue-50 text-blue-600">
-                                        <FaUser />
+                                        <FaUser/>
                                     </InputGroup.Text>
                                     <Form.Control
+                                        disabled={isPending}
                                         type="text"
                                         name="firstName"
                                         placeholder="Prénom"
@@ -119,15 +137,17 @@ const RegisterForm = () => {
                         </Col>
                         <Col md={6}>
                             <motion.div
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.5, delay: 0.2 }}
+                                initial={{opacity: 0, x: 20}}
+                                animate={{opacity: 1, x: 0}}
+                                transition={{duration: 0.5, delay: 0.2}}
                             >
                                 <InputGroup className="mb-3">
                                     <InputGroup.Text className="bg-blue-50 text-blue-600">
-                                        <FaUser />
+                                        <FaUser/>
                                     </InputGroup.Text>
                                     <Form.Control
+                                        disabled={isPending}
+
                                         type="text"
                                         name="lastName"
                                         placeholder="Nom"
@@ -142,15 +162,17 @@ const RegisterForm = () => {
 
                     {/* Birthdate Field */}
                     <motion.div
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.5, delay: 0.3 }}
+                        initial={{opacity: 0, x: -20}}
+                        animate={{opacity: 1, x: 0}}
+                        transition={{duration: 0.5, delay: 0.3}}
                     >
                         <InputGroup className="mb-3">
                             <InputGroup.Text className="bg-blue-50 text-blue-600">
-                                <FaCalendar />
+                                <FaCalendar/>
                             </InputGroup.Text>
                             <Form.Control
+                                disabled={isPending}
+
                                 type="date"
                                 name="birthDate"
                                 placeholder="Date de naissance"
@@ -165,15 +187,17 @@ const RegisterForm = () => {
                     <Row>
                         <Col md={6}>
                             <motion.div
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.5, delay: 0.4 }}
+                                initial={{opacity: 0, x: -20}}
+                                animate={{opacity: 1, x: 0}}
+                                transition={{duration: 0.5, delay: 0.4}}
                             >
                                 <InputGroup className="mb-3">
                                     <InputGroup.Text className="bg-blue-50 text-blue-600">
-                                        <FaPhone />
+                                        <FaPhone/>
                                     </InputGroup.Text>
                                     <Form.Control
+                                        disabled={isPending}
+
                                         type="text"
                                         name="phoneNumber"
                                         placeholder="Numéro de téléphone"
@@ -186,15 +210,17 @@ const RegisterForm = () => {
                         </Col>
                         <Col md={6}>
                             <motion.div
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.5, delay: 0.4 }}
+                                initial={{opacity: 0, x: 20}}
+                                animate={{opacity: 1, x: 0}}
+                                transition={{duration: 0.5, delay: 0.4}}
                             >
                                 <InputGroup className="mb-3">
                                     <InputGroup.Text className="bg-blue-50 text-blue-600">
-                                        <FaEnvelope />
+                                        <FaEnvelope/>
                                     </InputGroup.Text>
                                     <Form.Control
+                                        disabled={isPending}
+
                                         type="email"
                                         name="email"
                                         placeholder="Adresse e-mail"
@@ -211,15 +237,17 @@ const RegisterForm = () => {
                     <Row>
                         <Col md={6}>
                             <motion.div
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.5, delay: 0.4 }}
+                                initial={{opacity: 0, x: -20}}
+                                animate={{opacity: 1, x: 0}}
+                                transition={{duration: 0.5, delay: 0.4}}
                             >
                                 <InputGroup className="mb-3">
                                     <InputGroup.Text className="bg-blue-50 text-blue-600">
-                                        <FaMapMarkerAlt />
+                                        <FaMapMarkerAlt/>
                                     </InputGroup.Text>
                                     <Form.Control
+                                        disabled={isPending}
+
                                         type="text"
                                         name="address.street"
                                         placeholder="Rue"
@@ -232,15 +260,17 @@ const RegisterForm = () => {
                         </Col>
                         <Col md={6}>
                             <motion.div
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.5, delay: 0.4 }}
+                                initial={{opacity: 0, x: 20}}
+                                animate={{opacity: 1, x: 0}}
+                                transition={{duration: 0.5, delay: 0.4}}
                             >
                                 <InputGroup className="mb-3">
                                     <InputGroup.Text className="bg-blue-50 text-blue-600">
-                                        <FaBuilding />
+                                        <FaBuilding/>
                                     </InputGroup.Text>
                                     <Form.Control
+                                        disabled={isPending}
+
                                         type="text"
                                         name="address.number"
                                         placeholder="Numéro de rue"
@@ -255,15 +285,17 @@ const RegisterForm = () => {
                     <Row>
                         <Col md={6}>
                             <motion.div
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.5, delay: 0.5 }}
+                                initial={{opacity: 0, x: -20}}
+                                animate={{opacity: 1, x: 0}}
+                                transition={{duration: 0.5, delay: 0.5}}
                             >
                                 <InputGroup className="mb-3">
                                     <InputGroup.Text className="bg-blue-50 text-blue-600">
-                                        <FaCity />
+                                        <FaCity/>
                                     </InputGroup.Text>
                                     <Form.Control
+                                        disabled={isPending}
+
                                         type="text"
                                         name="address.city"
                                         placeholder="Ville"
@@ -277,15 +309,17 @@ const RegisterForm = () => {
 
                         <Col md={6}>
                             <motion.div
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.5, delay: 0.5 }}
+                                initial={{opacity: 0, x: 20}}
+                                animate={{opacity: 1, x: 0}}
+                                transition={{duration: 0.5, delay: 0.5}}
                             >
                                 <InputGroup className="mb-3">
                                     <InputGroup.Text className="bg-blue-50 text-blue-600">
-                                        <FaGlobe />
+                                        <FaGlobe/>
                                     </InputGroup.Text>
                                     <Form.Control
+                                        disabled={isPending}
+
                                         type="text"
                                         name="address.zipCode"
                                         placeholder="Code postal"
@@ -299,15 +333,17 @@ const RegisterForm = () => {
 
                         <Col md={6}>
                             <motion.div
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.5, delay: 0.5 }}
+                                initial={{opacity: 0, x: 20}}
+                                animate={{opacity: 1, x: 0}}
+                                transition={{duration: 0.5, delay: 0.5}}
                             >
                                 <InputGroup className="mb-3">
                                     <InputGroup.Text className="bg-blue-50 text-blue-600">
-                                        <FaGlobe />
+                                        <FaGlobe/>
                                     </InputGroup.Text>
                                     <Form.Control
+                                        disabled={isPending}
+
                                         type="text"
                                         name="address.country"
                                         placeholder="Pays"
@@ -322,15 +358,17 @@ const RegisterForm = () => {
 
                     {/* Password Fields */}
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.6 }}
+                        initial={{opacity: 0, y: 20}}
+                        animate={{opacity: 1, y: 0}}
+                        transition={{duration: 0.6, delay: 0.6}}
                     >
                         <InputGroup className="mb-3">
                             <InputGroup.Text className="bg-blue-50 text-blue-600">
-                                <FaLock />
+                                <FaLock/>
                             </InputGroup.Text>
                             <Form.Control
+                                disabled={isPending}
+
                                 type="password"
                                 name="password"
                                 placeholder="Mot de passe"
@@ -342,15 +380,17 @@ const RegisterForm = () => {
                     </motion.div>
 
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.7 }}
+                        initial={{opacity: 0, y: 20}}
+                        animate={{opacity: 1, y: 0}}
+                        transition={{duration: 0.6, delay: 0.7}}
                     >
                         <InputGroup className="mb-3">
                             <InputGroup.Text className="bg-blue-50 text-blue-600">
-                                <FaLock />
+                                <FaLock/>
                             </InputGroup.Text>
                             <Form.Control
+                                disabled={isPending}
+
                                 type="password"
                                 name="checkPassword"
                                 placeholder="Confirmez le mot de passe"
@@ -363,21 +403,22 @@ const RegisterForm = () => {
 
                     {/* Submit Button */}
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.8 }}
+                        initial={{opacity: 0, y: 20}}
+                        animate={{opacity: 1, y: 0}}
+                        transition={{duration: 0.6, delay: 0.8}}
                         className="text-center"
                     >
                         <Button
+                            disabled={isPending}
+
                             type="submit"
-                            disabled={loading}
                             className="w-full py-2 mt-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold"
                         >
-                            {loading ? <Spinner animation="border" size="sm" className="mr-2" /> : "Créer mon compte"}
+                            {isPending ? <Spinner animation="border" size="sm" className="mr-2"/> : "Créer mon compte"}
                         </Button>
                     </motion.div>
                 </Form>
-                <ToastContainer position="bottom-right" autoClose={5000} hideProgressBar theme="colored" />
+                <ToastContainer position="bottom-right" autoClose={5000} hideProgressBar theme="colored"/>
             </div>
         </motion.div>
     );

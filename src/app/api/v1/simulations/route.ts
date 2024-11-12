@@ -150,7 +150,11 @@ export async function PUT(request: NextRequest) {
 
         }
 
+        console.log("log ====> body.destinataireId in POST request received in simulations route before calling updateSimulationWithSenderAndDestinataireIds function: ", body.destinataireId);
+
         const updatedSimulation  = await updateSimulationWithSenderAndDestinataireIds(body);
+
+        console.log("log ====> updatedSimulation in POST request received in simulations route after calling updateSimulationWithSenderAndDestinataireIds function: ", updatedSimulation);
 
         if (!updatedSimulation) {
             console.error("Error: Failed to update simulation - updateSimulationWithSenderAndDestinataireIds returned null.");

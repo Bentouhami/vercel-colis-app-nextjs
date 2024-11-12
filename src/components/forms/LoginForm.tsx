@@ -2,7 +2,7 @@
 'use client';
 
 import { Button, Form, InputGroup, Spinner } from "react-bootstrap";
-import React, { useState } from "react";
+import React, { useState, useTransition } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { login } from "@/services/frontend-services/AuthService";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -22,7 +22,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const [isPending , startTransition] = useTransition();
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -35,23 +35,22 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
             return;
         }
 
-        try {
-            setLoading(true);
-            await login(email, password);
-            toast.success("Connexion réussie");
+        startTransition(async () => {
+            try {
+                await login(email, password);
+                toast.success("Connexion réussie");
 
-            if (onSuccess) {
-                onSuccess();
-            } else {
-                const redirectUrl = searchParams.get('redirect') || '/client/simulation';
-                router.replace(redirectUrl);
-                router.refresh();
+                if (onSuccess) {
+                    onSuccess();
+                } else {
+                    const redirectUrl = searchParams.get('redirect') || '/client/simulation';
+                    router.replace(redirectUrl);
+                    router.refresh();
+                }
+            } catch (error) {
+                toast.error("Erreur lors de la connexion");
             }
-        } catch (error) {
-            toast.error("Erreur lors de la connexion");
-        } finally {
-            setLoading(false);
-        }
+        });
     }
 
     return (
@@ -76,7 +75,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
             {/* Form Section */}
             <div className="flex-grow">
 
-
                 <Form onSubmit={handleSubmit}>
                     {/* Email Input */}
                     <motion.div
@@ -93,6 +91,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
                                     <FaEnvelope />
                                 </InputGroup.Text>
                                 <Form.Control
+                                    disabled={isPending}
                                     type="email"
                                     placeholder="Entrez votre email"
                                     value={email}
@@ -119,6 +118,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
                                     <FaLock />
                                 </InputGroup.Text>
                                 <Form.Control
+                                    disabled={isPending}
                                     type={showPassword ? "text" : "password"}
                                     placeholder="Entrez votre mot de passe"
                                     value={password}
@@ -127,6 +127,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
                                     className="border border-gray-300 rounded-r-lg focus:ring-blue-500 focus:border-blue-500"
                                 />
                                 <Button
+                                    disabled={isPending}
                                     variant="outline-secondary"
                                     onClick={() => setShowPassword(!showPassword)}
                                     aria-label="Toggle password visibility"
@@ -148,10 +149,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
                         <Button
                             type="submit"
                             variant="primary"
-                            disabled={loading}
+                            disabled={isPending}
                             className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition duration-150 ease-in-out shadow-sm hover:shadow-md"
                         >
-                            {loading ? (
+                            { isPending ? (
                                 <Spinner
                                     as="span"
                                     animation="border"

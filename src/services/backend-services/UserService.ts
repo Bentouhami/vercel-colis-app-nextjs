@@ -175,9 +175,9 @@ export async function isDestinataireAlreadyExist(email: string, phoneNumber: str
             }
         }) as DestinataireResponseWithRoleDto;
 
-        console.log("log ====> destinataire found in isDestinataireAlreadyExist function in path: src/services/backend-services/UserService.ts: ", user);
 
         if (!user) {
+            console.log("log ====> destinataire NOT FOUND in isDestinataireAlreadyExist function in path: src/services/backend-services/UserService.ts return NULL");
             return null;
         }
         console.log("log ====> user found in isDestinataireAlreadyExist function in path: src/services/backend-services/UserService.ts: ", user);
@@ -506,7 +506,7 @@ export async function checkExistingAssociation(clientId: number, destinataireId:
         });
 
         if (association) {
-            console.log("Association exists between client and destinataire with IDs:", clientId, destinataireId);
+            console.log("Association exists between client and destinataire with IDs returning association:", association);
             return association;
         }
 

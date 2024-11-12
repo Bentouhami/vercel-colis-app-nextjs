@@ -1,7 +1,7 @@
 // path: src/app/client/simulation/results/page.tsx
 'use client';
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useTransition} from 'react';
 import { toast } from 'react-toastify';
 import { getSimulation } from "@/services/frontend-services/simulation/SimulationService";
 import { FullSimulationDto } from "@/utils/dtos";
@@ -13,6 +13,7 @@ import { Package, MapPin, Weight, DollarSign, Calendar } from "lucide-react";
 export default function SimulationResults() {
     const searchParams = useSearchParams();
     const router = useRouter();
+
     const [results, setResults] = useState<FullSimulationDto | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
     const [showLoginPrompt, setShowLoginPrompt] = useState(false);

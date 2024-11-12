@@ -138,4 +138,21 @@ export async function updateSimulationWithSenderAndDestinataireIds(simulation: F
     }
 }
 
+export async function deleteSimulationCookie() {
+    try {
+        const response = await fetch(`${DOMAIN}/api/v1/simulations/delete-cookies`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
 
+        if (!response.ok) {
+            throw new Error("Failed to delete simulation");
+        }
+
+        return response.json();
+    } catch (error) {
+        throw error;
+    }
+}

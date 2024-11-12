@@ -1,12 +1,12 @@
 // path : /api/v1/users/logout/route.ts
 // logout route.ts : route pour la déconnexion d'un utilisateur
 
-import {NextRequest, NextResponse} from 'next/server';
+import { NextResponse} from 'next/server';
 import {cookies} from 'next/headers';
 import {errorHandler} from '@/utils/handelErrors';
 
 // Fonction pour gérer la déconnexion (GET request)
-export async function GET(request: NextRequest) {
+export async function GET() {
     try {
         // Supprimer le cookie d'authentification
         cookies().delete("auth");
@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
             {status: 200}
         );
 
-        // Ajouter les en-têtes CORS pour autoriser les requêtes cross-origin
+        // Ajouter les en-têtes CORS pour autoriser les requêtes cross origin
         response.headers.set('Access-Control-Allow-Origin', '*'); // Remplace '*' par ton domaine en production
         response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
         response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');

@@ -141,16 +141,15 @@ export async function addDestinataire(newUser: BaseDestinataireDto) : Promise<nu
 
         if (!response.ok) {
             // Gestion des erreurs en cas de réponse non OK
-            console.log("log ====> response in addDestinataire function failed, status:", response.status);
             const errorData = await response.json();
             throw new Error(errorData.error || 'Une erreur est survenue lors de l\'enregistrement.');
         }
 
         // Si la réponse est OK, log et parse le JSON
         const data = await response.json();
-        console.log("log ====> data.data in addDestinataire function: ", data);
+        console.log("log ====> data.data in addDestinataire function after parsing JSON: ", data);
 
-        return data.id as number;
+        return data.data.id as number;
     } catch (error) {
         console.error('Error in addDestinataire function:', error);
         throw error;

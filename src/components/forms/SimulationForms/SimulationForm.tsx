@@ -1,9 +1,9 @@
 // path: src/components/forms/SimulationForm.tsx
 'use client';
 
-import React, {ChangeEvent, useEffect, useState} from 'react';
+import React, {ChangeEvent, useEffect, useState, useTransition} from 'react';
 import {motion} from 'framer-motion';
-import {Button, Pagination} from 'react-bootstrap';
+import {Button, Pagination, Spinner} from 'react-bootstrap';
 import PackageForm from './PackageForm';
 import CountrySelect from "@/components/forms/SimulationForms/CountrySelectForm";
 import CitySelect from "@/components/forms/SimulationForms/CitySelectForm";
@@ -19,10 +19,11 @@ import {
     fetchDestinationCountries
 } from "@/services/frontend-services/AddresseService";
 import {BaseSimulationDto, PreparedSimulation, SimulationStatus} from "@/utils/dtos";
-import {ArrowRight, Box, MapPin, Truck} from "lucide-react";
+import {ArrowRight, Box, Calculator, MapPin, Truck} from "lucide-react";
 
 const SimulationForm = () => {
     const router = useRouter();
+    const [isPending, startTransition] = useTransition();
     const [departure, setDeparture] = useState({country: '', city: '', agency: ''});
     const [destination, setDestination] = useState({country: '', city: '', agency: ''});
     const [options, setOptions] = useState({
@@ -136,42 +137,44 @@ const SimulationForm = () => {
     const handleSubmit = async (e: ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        const simulationData: BaseSimulationDto = {
-            departureCountry: departure.country,
-            departureCity: departure.city,
-            departureAgency: departure.agency,
-            destinationCountry: destination.country,
-            destinationCity: destination.city,
-            destinationAgency: destination.agency,
-            parcels
-        };
-
-        const validated = simulationEnvoisSchema.safeParse(simulationData);
-        if (!validated.success) {
-            toast.error(validated.error.errors[0].message);
-            return;
-        }
-
-        try {
-            const simulationDataWithUserAndDestinataireId: PreparedSimulation = {
-                ...simulationData,
-                userId: userId,
-                destinataireId: null,
-                status: SimulationStatus.DRAFT
+        startTransition(async () => {
+            const simulationData: BaseSimulationDto = {
+                departureCountry: departure.country,
+                departureCity: departure.city,
+                departureAgency: departure.agency,
+                destinationCountry: destination.country,
+                destinationCity: destination.city,
+                destinationAgency: destination.agency,
+                parcels
             };
 
-            const response = await submitSimulation(simulationDataWithUserAndDestinataireId);
-            if (!response) {
-                toast.error("Une erreur est survenue lors de la soumission de la simulation.");
+            const validated = simulationEnvoisSchema.safeParse(simulationData);
+            if (!validated.success) {
+                toast.error(validated.error.errors[0].message);
                 return;
             }
 
-            toast.success("Simulation envoyée avec succès !");
-            router.push(`/client/simulation/results`);
-        } catch (error) {
-            console.error('Erreur lors de la soumission de la simulation:', error);
-            toast.error('Une erreur est survenue lors de la soumission de la simulation.');
-        }
+            try {
+                const simulationDataWithUserAndDestinataireId: PreparedSimulation = {
+                    ...simulationData,
+                    userId: userId,
+                    destinataireId: null,
+                    status: SimulationStatus.DRAFT
+                };
+
+                const response = await submitSimulation(simulationDataWithUserAndDestinataireId);
+                if (!response) {
+                    toast.error("Une erreur est survenue lors de la soumission de la simulation.");
+                    return;
+                }
+
+                toast.success("Simulation envoyée avec succès !");
+                router.push(`/client/simulation/results`);
+            } catch (error) {
+                console.error('Erreur lors de la soumission de la simulation:', error);
+                toast.error('Une erreur est survenue lors de la soumission de la simulation.');
+            }
+        });
     };
 
     return (
@@ -206,6 +209,7 @@ const SimulationForm = () => {
                             value={departure.country}
                             onChange={(e) => handleDepartureChange('country', e.target.value)}
                             countries={options.countries}
+                            disabled={isPending}
                         />
                         <CitySelect
                             label="Ville de départ"
@@ -219,7 +223,7 @@ const SimulationForm = () => {
                             value={departure.agency}
                             onChange={(e) => handleDepartureChange('agency', e.target.value)}
                             agencies={options.departureAgencies}
-                            disabled={!departure.city}
+                            disabled={!departure.city || isPending}
                         />
                     </div>
                 </motion.div>
@@ -240,6 +244,7 @@ const SimulationForm = () => {
                             value={destination.country}
                             onChange={(e) => handleDestinationChange('country', e.target.value)}
                             countries={options.destinationCountries}
+                            disabled={isPending}
                         />
                         <CitySelect
                             label="Ville de destination"
@@ -249,11 +254,12 @@ const SimulationForm = () => {
                             disabled={!destination.country}
                         />
                         <AgencySelect
+
                             label="Agence d'arrivée"
                             value={destination.agency}
                             onChange={(e) => handleDestinationChange('agency', e.target.value)}
                             agencies={options.destinationAgencies}
-                            disabled={!destination.city}
+                            disabled={!destination.city || isPending}
                         />
                     </div>
                 </motion.div>
@@ -271,6 +277,7 @@ const SimulationForm = () => {
                     <div className="mb-4">
                         <label className="block text-gray-600 font-medium mb-2">Nombre de colis</label>
                         <input
+                            disabled={isPending}
                             type="number"
                             max="5"
                             min="1"
@@ -282,6 +289,7 @@ const SimulationForm = () => {
                     {parcels.map((pkg, index) => (
                         index === currentPackage && (
                             <PackageForm
+                                disabled={isPending}
                                 key={index}
                                 index={index}
                                 pkg={pkg}
@@ -293,6 +301,7 @@ const SimulationForm = () => {
                         <Pagination className="flex justify-center mt-4">
                             {parcels.map((_, index) => (
                                 <Pagination.Item
+                                    disabled={isPending}
                                     key={index}
                                     active={index === currentPackage}
                                     onClick={() => handlePageChange(index)}
@@ -305,9 +314,31 @@ const SimulationForm = () => {
                 </motion.div>
 
                 <div className="text-center">
-                    <Button type="submit" variant="primary" className="px-8 py-3 flex items-center gap-2">
-                        <ArrowRight className="h-4 w-4"/>
-                        Soumettre la simulation
+                    <Button
+                        type="submit"
+                        variant="primary"
+                        className="px-8 py-3 flex items-center gap-2"
+                        disabled={isPending}>
+                        {isPending ? (
+                            <>
+                                <Spinner
+                                    as="span"
+                                    animation="border"
+                                    size="sm"
+                                    role="status"
+                                    aria-hidden="true"
+                                    className="mr-2"
+                                />
+                                <Calculator className="h-4 w-4"/>
+                                Calculation... 🤗
+                            </>
+
+                        ) : (
+                            <>
+                                <ArrowRight className="h-4 w-4"/>
+                                Soumettre la simulation
+                            </>
+                        )}
                     </Button>
                 </div>
             </form>

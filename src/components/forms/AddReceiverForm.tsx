@@ -1,15 +1,15 @@
 'use client';
-import React, { ChangeEvent, useState } from "react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Loader2, UserPlus, Mail, Phone, User } from "lucide-react";
-import { toast } from "react-toastify";
-import { DestinataireInput, destinataireSchema } from "@/utils/validationSchema";
-import { addDestinataire } from "@/services/frontend-services/UserService";
-import { BaseDestinataireDto, Role } from "@/utils/dtos";
+import React, {ChangeEvent, useState, useTransition} from "react";
+import {useRouter} from "next/navigation";
+import {Button} from "@/components/ui/button";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
+import {Input} from "@/components/ui/input";
+import {Label} from "@/components/ui/label";
+import {Loader2, Mail, Phone, User, UserPlus} from "lucide-react";
+import {toast} from "react-toastify";
+import {DestinataireInput, destinataireSchema} from "@/utils/validationSchema";
+import {addDestinataire} from "@/services/frontend-services/UserService";
+import {BaseDestinataireDto, Role} from "@/utils/dtos";
 import {
     getSimulation,
     updateSimulationWithSenderAndDestinataireIds
@@ -17,6 +17,7 @@ import {
 
 export default function AddReceiverForm() {
     const router = useRouter();
+    const [isPending, startTransition] = useTransition()
     const [destinataireFormData, setDestinataireFormData] = useState<DestinataireInput>({
         firstName: "",
         lastName: "",
@@ -25,29 +26,28 @@ export default function AddReceiverForm() {
     });
 
     const [errors, setErrors] = useState<Record<string, string>>({});
-    const [loading, setLoading] = useState(false);
     const [touched, setTouched] = useState<Record<string, boolean>>({});
 
     const validateField = (name: string, value: string) => {
         try {
             const fieldSchema = destinataireSchema.shape[name as keyof DestinataireInput];
             fieldSchema.parse(value);
-            setErrors((prev) => ({ ...prev, [name]: '' }));
+            setErrors((prev) => ({...prev, [name]: ''}));
         } catch (error: any) {
-            setErrors((prev) => ({ ...prev, [name]: error.errors[0]?.message || 'Champ invalide' }));
+            setErrors((prev) => ({...prev, [name]: error.errors[0]?.message || 'Champ invalide'}));
         }
     };
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setDestinataireFormData(prev => ({ ...prev, [name]: value }));
+        const {name, value} = e.target;
+        setDestinataireFormData(prev => ({...prev, [name]: value}));
         if (touched[name]) {
             validateField(name, value);
         }
     };
 
     const handleBlur = (name: string) => {
-        setTouched(prev => ({ ...prev, [name]: true }));
+        setTouched(prev => ({...prev, [name]: true}));
         validateField(name, destinataireFormData[name as keyof DestinataireInput]);
     };
 
@@ -68,53 +68,57 @@ export default function AddReceiverForm() {
         }
 
         setErrors({});
-        try {
-            setLoading(true);
-            const formattedDestinataireData: BaseDestinataireDto = {
-                ...destinataireFormData,
-                name: `${destinataireFormData.firstName} ${destinataireFormData.lastName}`,
-                image: "",
-                roles: [Role.DESTINATAIRE] as Role[],
-            };
-            const destinataireId = await addDestinataire(formattedDestinataireData);
+        startTransition(async () => {
+            try {
+                const formattedDestinataireData: BaseDestinataireDto = {
+                    ...destinataireFormData,
+                    name: `${destinataireFormData.firstName} ${destinataireFormData.lastName}`,
+                    image: "",
+                    roles: [Role.DESTINATAIRE] as Role[],
+                };
 
-            console.log("log ====> destinataireId in addDestinataire function after adding destinataire in src/app/client/destinataires/add/page.tsx: ", destinataireId);
+                console.log("log ====> formattedDestinataireData in AddReceiverForm.tsx before adding destinataire to addDestinataire function in src/app/client/destinataires/add/page.tsx: ", formattedDestinataireData);
 
+                const destinataireId = await addDestinataire(formattedDestinataireData);
 
-            const simulationResults = await getSimulation();
+                if (!destinataireId) {
+                    toast.error("Une erreur est survenue lors de l'enregistrement du destinataire.");
+                    return;
+                }
 
-            if (simulationResults) {
+                const simulationResults = await getSimulation();
 
-                console.log("log ====> simulationResults in addDestinataire function before adding destinataire in src/app/client/destinataires/add/page.tsx: ", simulationResults);
+                if (simulationResults) {
 
-                simulationResults.destinataireId = destinataireId;
-                simulationResults.destinataireId = destinataireId;
+                    console.log("log ====> simulationResults in addDestinataire function before adding destinataire in src/app/client/destinataires/add/page.tsx: ", simulationResults);
 
-                console.log("log ====> simulationResults in addDestinataire function after adding destinataire in src/app/client/destinataires/add/page.tsx: ", simulationResults);
+                    simulationResults.destinataireId = destinataireId;
 
-                await updateSimulationWithSenderAndDestinataireIds(simulationResults);
-                toast.success("Destinataire ajouté avec succès !", { autoClose: 3000 });
-                // Attendre 3 secondes avant la redirection
-                setTimeout(() => {
-                    router.push("/client/envois/recapitulatif");
-                }, 3000);
-            } else {
-                toast.error("Aucune simulation trouvée.");
+                    console.log("log ====> simulationResults in addDestinataire function after adding destinataire in src/app/client/destinataires/add/page.tsx: ", simulationResults);
+
+                    await updateSimulationWithSenderAndDestinataireIds(simulationResults);
+                    toast.success("Destinataire ajouté avec succès !", {autoClose: 3000});
+                    // Attendre 3 secondes avant la redirection
+                    setTimeout(() => {
+                        router.push("/client/envois/recapitulatif");
+                    }, 1000);
+                } else {
+                    toast.error("Aucune simulation trouvée.");
+                }
+            } catch (error) {
+                console.error("Error updating simulation:", error);
+                toast.error("Une erreur est survenue lors de l'ajout du destinataire.");
             }
-        } catch (error) {
-            console.error("Error updating simulation:", error);
-            toast.error("Une erreur est survenue lors de l'ajout du destinataire.");
-        } finally {
-            setLoading(false);
-        }
-    };
+
+        });
+    }
 
     return (
         <div className="container mx-auto px-4 py-8 max-w-lg">
             <Card className="w-full">
                 <CardHeader className="text-center space-y-2">
                     <CardTitle className="text-2xl font-bold text-blue-700 flex items-center justify-center gap-2">
-                        <UserPlus className="h-6 w-6" />
+                        <UserPlus className="h-6 w-6"/>
                         Ajouter un destinataire
                     </CardTitle>
                     <CardDescription>
@@ -126,7 +130,7 @@ export default function AddReceiverForm() {
                         <div className="space-y-4">
                             <div className="space-y-2">
                                 <Label htmlFor="firstName" className="flex items-center gap-2">
-                                    <User className="h-4 w-4" />
+                                    <User className="h-4 w-4"/>
                                     Nom
                                 </Label>
                                 <Input
@@ -137,7 +141,7 @@ export default function AddReceiverForm() {
                                     onBlur={() => handleBlur('firstName')}
                                     placeholder="Entrez le nom"
                                     className={errors.firstName ? 'border-red-500' : ''}
-                                    disabled={loading}
+                                    disabled={isPending}
                                 />
                                 {errors.firstName && (
                                     <p className="text-red-500 text-sm">{errors.firstName}</p>
@@ -146,7 +150,7 @@ export default function AddReceiverForm() {
 
                             <div className="space-y-2">
                                 <Label htmlFor="lastName" className="flex items-center gap-2">
-                                    <User className="h-4 w-4" />
+                                    <User className="h-4 w-4"/>
                                     Prénom
                                 </Label>
                                 <Input
@@ -157,7 +161,7 @@ export default function AddReceiverForm() {
                                     onBlur={() => handleBlur('lastName')}
                                     placeholder="Entrez le prénom"
                                     className={errors.lastName ? 'border-red-500' : ''}
-                                    disabled={loading}
+                                    disabled={isPending}
                                 />
                                 {errors.lastName && (
                                     <p className="text-red-500 text-sm">{errors.lastName}</p>
@@ -166,7 +170,7 @@ export default function AddReceiverForm() {
 
                             <div className="space-y-2">
                                 <Label htmlFor="email" className="flex items-center gap-2">
-                                    <Mail className="h-4 w-4" />
+                                    <Mail className="h-4 w-4"/>
                                     Email
                                 </Label>
                                 <Input
@@ -178,7 +182,7 @@ export default function AddReceiverForm() {
                                     onBlur={() => handleBlur('email')}
                                     placeholder="exemple@email.com"
                                     className={errors.email ? 'border-red-500' : ''}
-                                    disabled={loading}
+                                    disabled={isPending}
                                 />
                                 {errors.email && (
                                     <p className="text-red-500 text-sm">{errors.email}</p>
@@ -187,7 +191,7 @@ export default function AddReceiverForm() {
 
                             <div className="space-y-2">
                                 <Label htmlFor="phoneNumber" className="flex items-center gap-2">
-                                    <Phone className="h-4 w-4" />
+                                    <Phone className="h-4 w-4"/>
                                     Numéro de téléphone
                                 </Label>
                                 <Input
@@ -199,7 +203,7 @@ export default function AddReceiverForm() {
                                     onBlur={() => handleBlur('phoneNumber')}
                                     placeholder="+33 6 XX XX XX XX"
                                     className={errors.phoneNumber ? 'border-red-500' : ''}
-                                    disabled={loading}
+                                    disabled={isPending}
                                 />
                                 {errors.phoneNumber && (
                                     <p className="text-red-500 text-sm">{errors.phoneNumber}</p>
@@ -210,16 +214,16 @@ export default function AddReceiverForm() {
                         <Button
                             type="submit"
                             className="w-full h-11 text-base font-medium"
-                            disabled={loading}
+                            disabled={isPending}
                         >
-                            {loading ? (
+                            {isPending ? (
                                 <span className="flex items-center justify-center gap-2">
-                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                    <Loader2 className="h-4 w-4 animate-spin"/>
                                     Ajout en cours...
                                 </span>
                             ) : (
                                 <span className="flex items-center justify-center gap-2">
-                                    <UserPlus className="h-4 w-4" />
+                                    <UserPlus className="h-4 w-4"/>
                                     Ajouter le destinataire
                                 </span>
                             )}

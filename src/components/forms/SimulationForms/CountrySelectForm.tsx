@@ -1,14 +1,16 @@
 import { Form } from 'react-bootstrap';
-import React, { useMemo } from "react";
+import React from "react";
 
 interface CountrySelectProps {
     label: string;
     value: string;
     onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
     countries: { id: number, country: string }[];
+    disabled?: boolean;
+
 }
 
-const CountrySelect = ({ label, value, onChange, countries }: CountrySelectProps) => {
+const CountrySelect = ({ label, value, onChange, countries, disabled = false }: CountrySelectProps) => {
     const placeholder = "Sélectionner un pays";
 
     return (
@@ -18,6 +20,7 @@ const CountrySelect = ({ label, value, onChange, countries }: CountrySelectProps
                 value={value}
                 onChange={onChange}
                 aria-label={label}
+                disabled={disabled}
                 className="border-2 border-gray-300 rounded-lg focus:border-blue-600 transition duration-200 ease-in-out"
             >
                 <option value="">{placeholder}</option>

@@ -34,7 +34,7 @@ const PaymentPage = () => {
             const response = await fetch(`${DOMAIN}/api/v1/payment`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({amount: amount}), // Remplacez par le montant dynamique
+                body: JSON.stringify({amount: amount}),
             });
 
             if (!response.ok) {

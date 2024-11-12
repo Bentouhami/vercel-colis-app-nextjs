@@ -2,7 +2,8 @@
 
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import {DOMAIN} from "@/utils/constants";
+import {successUrl} from "@/utils/constants";
+import {cancelUrl} from "@/utils/constants";
 
 
 // Utilisez une version d'API valide
@@ -27,10 +28,12 @@ export async function POST(req: Request) {
                 },
             ],
             mode: 'payment',
-            success_url: `${DOMAIN}/client/payment/payment-success`,
-            cancel_url: `${DOMAIN}/client/payment/payment-cancel`,
+            success_url: successUrl,
+            cancel_url: cancelUrl,
         });
-
+        console.log("session is: ", session);
+        console.log("successUrl is : ", successUrl);
+        console.log("cancelUrl is : ", cancelUrl);
         return NextResponse.json({ id: session.id });
     } catch (error) {
         console.error('Erreur lors de la création de la session Stripe:', error);

@@ -10,4 +10,9 @@ export const DOMAIN = process.env.NODE_ENV === 'production'
     ? PRODUCTION_DOMAIN
     : DEVELOPMENT_DOMAIN;
 
+
+export const successUrl =
+    `${DOMAIN}/client/payment/payment-success`;
+export const cancelUrl =
+    `${DOMAIN}/client/payment/payment-cancel`;
 // export const CLOUD_NAME = "dksb7fler";

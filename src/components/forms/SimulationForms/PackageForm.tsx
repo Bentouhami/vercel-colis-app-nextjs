@@ -9,9 +9,11 @@ interface PackageFormProps {
     index: number;
     pkg: CreateParcelDto;
     onChange: (index: number, key: string, value: number) => void;
+    disabled?: boolean;
+
 }
 
-const PackageForm = ({ index, pkg, onChange }: PackageFormProps) => {
+const PackageForm = ({ index, pkg, onChange, disabled = false }: PackageFormProps) => {
     const handleInputChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = parseFloat(e.target.value);
         onChange(index, field, value);
@@ -23,6 +25,7 @@ const PackageForm = ({ index, pkg, onChange }: PackageFormProps) => {
             <FormGroup className="mb-3">
                 <Form.Label className="text-sm font-medium">Hauteur (cm)</Form.Label>
                 <Form.Control
+                    disabled={disabled}
                     type="number"
                     value={pkg.height}
                     onChange={handleInputChange('height')}
@@ -33,6 +36,7 @@ const PackageForm = ({ index, pkg, onChange }: PackageFormProps) => {
             <FormGroup className="mb-3">
                 <Form.Label className="text-sm font-medium">Largeur (cm)</Form.Label>
                 <Form.Control
+                    disabled={disabled}
                     type="number"
                     value={pkg.width}
                     onChange={handleInputChange('width')}
@@ -43,6 +47,7 @@ const PackageForm = ({ index, pkg, onChange }: PackageFormProps) => {
             <FormGroup className="mb-3">
                 <Form.Label className="text-sm font-medium">Longueur (cm)</Form.Label>
                 <Form.Control
+                    disabled={disabled}
                     type="number"
                     value={pkg.length}
                     onChange={handleInputChange('length')}
@@ -53,6 +58,7 @@ const PackageForm = ({ index, pkg, onChange }: PackageFormProps) => {
             <FormGroup className="mb-3">
                 <Form.Label className="text-sm font-medium">Poids (kg)</Form.Label>
                 <Form.Control
+                    disabled={disabled}
                     type="number"
                     value={pkg.weight}
                     onChange={handleInputChange('weight')}
