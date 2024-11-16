@@ -18,8 +18,9 @@ import {
     fetchCountries,
     fetchDestinationCountries
 } from "@/services/frontend-services/AddresseService";
-import {BaseSimulationDto, PreparedSimulation, SimulationStatus} from "@/utils/dtos";
+import {BaseSimulationDto} from "@/utils/dtos";
 import {ArrowRight, Box, Calculator, MapPin, Truck} from "lucide-react";
+import {COLIS_MAX_PER_ENVOI} from "@/utils/constants";
 
 const SimulationForm = () => {
     const router = useRouter();
@@ -43,14 +44,26 @@ const SimulationForm = () => {
     useEffect(() => {
         const findExistingSimulation = async () => {
 
-            const simulation = await getSimulation();
-            if (simulation) {
-                router.push(`/client/simulation/results`);
+            try {
+                const simulation = await getSimulation();
+                if (simulation) {
+                    toast.success("Simulation trouvée !");
+                    setTimeout(() => {
+                        router.push(`/client/simulation/results`);
+                    }, 3000);
+                } else {
+                    toast.error("Aucune simulation trouvée. Veuillez créer une simulation.");
+                    setTimeout(() => {
+                        router.push(`/client/simulation`);
+                    }, 3000);
+                }
+            } catch (error) {
+                console.error('Erreur lors de la recherche de la simulation:', error);
             }
-        };
+        }
 
         findExistingSimulation();
-    }, [router]);
+    }, [router])
 
     useEffect(() => {
         fetchCountries().then(data => setOptions(prev => ({...prev, countries: data}))).catch(console.error);
@@ -155,11 +168,10 @@ const SimulationForm = () => {
             }
 
             try {
-                const simulationDataWithUserAndDestinataireId: PreparedSimulation = {
+                const simulationDataWithUserAndDestinataireId = {
                     ...simulationData,
                     userId: userId,
                     destinataireId: null,
-                    status: SimulationStatus.DRAFT
                 };
 
                 const response = await submitSimulation(simulationDataWithUserAndDestinataireId);
@@ -279,7 +291,7 @@ const SimulationForm = () => {
                         <input
                             disabled={isPending}
                             type="number"
-                            max="5"
+                            max={COLIS_MAX_PER_ENVOI}
                             min="1"
                             value={packageCount}
                             onChange={handlePackageCountChange}
@@ -289,11 +301,13 @@ const SimulationForm = () => {
                     {parcels.map((pkg, index) => (
                         index === currentPackage && (
                             <PackageForm
+
                                 disabled={isPending}
                                 key={index}
                                 index={index}
                                 pkg={pkg}
                                 onChange={handlePackageChange}
+
                             />
                         )
                     ))}

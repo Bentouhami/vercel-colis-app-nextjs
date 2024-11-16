@@ -9,6 +9,7 @@ import LoginPromptModal from '@/components/LoginPromptModal';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package, MapPin, Weight, DollarSign, Calendar } from "lucide-react";
+import {updateSimulationWithSenderAndDestinataireIds} from "@/services/frontend-services/simulation/SimulationService";
 
 export default function SimulationResults() {
     const searchParams = useSearchParams();
@@ -17,6 +18,7 @@ export default function SimulationResults() {
     const [results, setResults] = useState<FullSimulationDto | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
     const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+    const [userId, setUserId] = useState<number | null>(null);
 
     useEffect(() => {
         const getSimulationResults = async () => {
@@ -45,6 +47,7 @@ export default function SimulationResults() {
                 const response = await fetch('/api/auth/status');
                 const authStatus = await response.json();
                 setIsAuthenticated(authStatus.isAuthenticated);
+                setUserId(authStatus.userId);
             } catch (error) {
                 setIsAuthenticated(false);
             }
@@ -60,9 +63,17 @@ export default function SimulationResults() {
         );
     }
 
-    const handleValidate = () => {
+    const handleValidate = async () => {
         if (isAuthenticated) {
-            router.push('/client/ajouter-destinataire');
+            const simulationResults = await getSimulation();
+            if (simulationResults) {
+                if (userId && !simulationResults.userId) {
+                    simulationResults.userId = userId;
+                }
+                await updateSimulationWithSenderAndDestinataireIds(simulationResults);
+
+                router.push('/client/ajouter-destinataire');
+            }
         } else {
             setShowLoginPrompt(true);
         }

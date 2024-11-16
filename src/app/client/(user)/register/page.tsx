@@ -16,7 +16,7 @@ const RegisterPage = () => {
                 >
                     Créez votre compte <span className="text-blue-600">ColisApp</span>
                 </motion.h2>
-                <RegisterForm/>
+                <RegisterForm />
             </div>
         </div>
     );

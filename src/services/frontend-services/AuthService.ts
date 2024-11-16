@@ -23,14 +23,14 @@ export async function login(email: string, password: string) {
         });
 
         // Lire la réponse et la retourner directement
-        const data = await response.json();
+        const message = await response.json();
 
         if (!response.ok) {
             // Si la réponse n'est pas ok (2xx), lever une erreur avec le message retourné par l'API
-            throw new Error(data.error || 'Une erreur est survenue lors de l\'enregistrement.');
+            throw new Error(message.error || 'Une erreur est survenue lors de l\'enregistrement.');
         }
 
-        return data;
+        return message;
     } catch (error) {
         console.error('Error logging in:', error);
         throw error; // Re-throw the error so it can be caught by the calling function

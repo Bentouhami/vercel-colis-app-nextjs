@@ -72,9 +72,15 @@ const RegisterForm = () => {
                     address
                 };
 
-                await registerUser(newUser);
-                toast.success("Compte créé avec succès !");
-                router.push('/');
+                const result = await registerUser(newUser);
+                if (result) {
+                    toast.success("Compte créé avec succès ! Email de confirmation envoyé à " + email);
+                   setTimeout(() => {
+                       router.push('/');
+                   }, 3000);
+                } else {
+                    toast.error("Erreur lors de la création du compte");
+                }
             } catch (error) {
                 toast.error("Erreur lors de la création du compte");
             }

@@ -27,10 +27,11 @@ const PackageForm = ({ index, pkg, onChange, disabled = false }: PackageFormProp
                 <Form.Control
                     disabled={disabled}
                     type="number"
-                    value={pkg.height}
+                    value={pkg.height || ''}
                     onChange={handleInputChange('height')}
                     className="border-2 border-gray-300 rounded-lg p-2"
                     min="0"
+                    placeholder="Hauteur maximum 120 cm"
                 />
             </FormGroup>
             <FormGroup className="mb-3">
@@ -38,10 +39,11 @@ const PackageForm = ({ index, pkg, onChange, disabled = false }: PackageFormProp
                 <Form.Control
                     disabled={disabled}
                     type="number"
-                    value={pkg.width}
+                    value={pkg.width || ''}
                     onChange={handleInputChange('width')}
                     className="border-2 border-gray-300 rounded-lg p-2"
                     min="0"
+                    placeholder="Largeur maximum 120 cm"
                 />
             </FormGroup>
             <FormGroup className="mb-3">
@@ -49,10 +51,11 @@ const PackageForm = ({ index, pkg, onChange, disabled = false }: PackageFormProp
                 <Form.Control
                     disabled={disabled}
                     type="number"
-                    value={pkg.length}
+                    value={pkg.length || ''}
                     onChange={handleInputChange('length')}
                     className="border-2 border-gray-300 rounded-lg p-2"
                     min="0"
+                    placeholder="Largeur maximum 120 cm"
                 />
             </FormGroup>
             <FormGroup className="mb-3">
@@ -60,11 +63,12 @@ const PackageForm = ({ index, pkg, onChange, disabled = false }: PackageFormProp
                 <Form.Control
                     disabled={disabled}
                     type="number"
-                    value={pkg.weight}
+                    value={pkg.weight || ''}
                     onChange={handleInputChange('weight')}
                     className="border-2 border-gray-300 rounded-lg p-2"
                     min="0"
                     step="0.1" // pour autoriser les décimales
+                    placeholder="Poids maximum 70 kg"
                 />
             </FormGroup>
         </div>

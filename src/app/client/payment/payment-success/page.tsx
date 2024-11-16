@@ -2,14 +2,17 @@
 'use client';
 
 import React, {useEffect} from 'react';
-import {deleteSimulationCookie} from "@/services/frontend-services/simulation/SimulationService";
+import {deleteSimulationCookie, getSimulation} from "@/services/frontend-services/simulation/SimulationService";
+import {completePaymentService} from "@/services/frontend-services/payment/paymentService";
 
 const PaymentSuccessPage = () => {
 
 
     useEffect(() => {
         const deleteSimulation = async () => {
-            await deleteSimulationCookie();
+            await completePaymentService();
+
+            // await deleteSimulationCookie();
         };
         deleteSimulation();
     }, []);

@@ -1,6 +1,6 @@
 // src/utils/constants.ts
 
-// export const PRODUCT_PER_PAGE = 6;
+export const COLIS_MAX_PER_ENVOI = 5;
 
 const PRODUCTION_DOMAIN = "https://vercel-colis-app-nextjs.vercel.app";
 // const PRODUCTION_DOMAIN = "http://localhost:3000";
@@ -16,3 +16,10 @@ export const successUrl =
 export const cancelUrl =
     `${DOMAIN}/client/payment/payment-cancel`;
 // export const CLOUD_NAME = "dksb7fler";
+
+
+// Liste des origines autorisées
+export const ALLOWED_ORIGINS =
+    process.env.NODE_ENV === "production"
+        ? [PRODUCTION_DOMAIN]
+        : [DEVELOPMENT_DOMAIN];

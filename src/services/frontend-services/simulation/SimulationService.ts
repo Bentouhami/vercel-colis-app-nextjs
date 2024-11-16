@@ -1,4 +1,5 @@
 // Path: src/services/frontend-services/simulation/SimulationService.ts
+
 import {CreateParcelDto, FullSimulationDto, PreparedSimulation, SimulationWithIds, TarifsDto} from "@/utils/dtos";
 import {DOMAIN} from "@/utils/constants";
 import {calculateEnvoiDetails} from "@/services/frontend-services/simulation/SimulationCalculationService";
@@ -88,6 +89,8 @@ export async function getSimulation(): Promise<FullSimulationDto | null> {
 }
 
 export async function updateSimulationWithSenderAndDestinataireIds(simulation: FullSimulationDto) {
+
+    console.log("log ====> updateSimulationWithSenderAndDestinataireIds function called in src/services/frontend-services/simulation/SimulationService.ts");
 
     try {
         const response = await fetch(`${DOMAIN}/api/v1/simulations`, {

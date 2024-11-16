@@ -1,7 +1,7 @@
 // path: src/app/api/v1/simulations/route.ts
 
 import {NextRequest, NextResponse} from 'next/server';
-import {BaseSimulationDto, FullSimulationDto, SimulationWithIds} from "@/utils/dtos";
+import {BaseSimulationDto, FullSimulationDto, SimulationStatus, SimulationWithIds} from "@/utils/dtos";
 import {simulationEnvoisSchema} from "@/utils/validationSchema";
 import {verifyToken} from "@/utils/verifyToken";
 import {
@@ -151,6 +151,14 @@ export async function PUT(request: NextRequest) {
         }
 
         console.log("log ====> body.destinataireId in POST request received in simulations route before calling updateSimulationWithSenderAndDestinataireIds function: ", body.destinataireId);
+
+        let simulationStatus : SimulationStatus = body.status || SimulationStatus.DRAFT;
+
+        if (simulationStatus === SimulationStatus.DRAFT) {
+            simulationStatus = SimulationStatus.CONFIRMED;
+        }
+
+        body.status = simulationStatus;
 
         const updatedSimulation  = await updateSimulationWithSenderAndDestinataireIds(body);
 

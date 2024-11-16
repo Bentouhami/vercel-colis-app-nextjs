@@ -16,7 +16,7 @@ const LoginPage = () => {
                 >
                     Bienvenue sur <span className="text-blue-600">ColisApp</span>
                 </motion.h2>
-                <LoginForm/>
+                <LoginForm />
             </div>
         </div>
     );

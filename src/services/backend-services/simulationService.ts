@@ -103,15 +103,15 @@ export async function saveSimulation(simulationData: SimulationWithIds): Promise
 
 
 export async function updateSimulationWithSenderAndDestinataireIds(simulation: FullSimulationDto) {
-    console.log("Attempting to update simulation with:", simulation);
 
+    console.log("log ====> updateSimulationWithSenderAndDestinataireIds function called in src/services/backend-services/simulationService.ts", simulation);
     try {
         const updatedSimulation = await prisma.simulation.update({
             where: { id: simulation.id },
             data: {
                 userId: simulation.userId,
                 destinataireId: simulation.destinataireId,
-                status: SimulationStatus.CONFIRMED
+                status: simulation.status
             },
             select: {
                 id: true,

@@ -6,7 +6,7 @@ import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/compo
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
 import {Loader2, Mail, Phone, User, UserPlus} from "lucide-react";
-import {toast} from "react-toastify";
+import {toast, ToastContainer} from "react-toastify";
 import {DestinataireInput, destinataireSchema} from "@/utils/validationSchema";
 import {addDestinataire} from "@/services/frontend-services/UserService";
 import {BaseDestinataireDto, Role} from "@/utils/dtos";
@@ -90,18 +90,20 @@ export default function AddReceiverForm() {
 
                 if (simulationResults) {
 
-                    console.log("log ====> simulationResults in addDestinataire function before adding destinataire in src/app/client/destinataires/add/page.tsx: ", simulationResults);
-
+                    // update destinataireId in simulation
                     simulationResults.destinataireId = destinataireId;
+                    // update simulation status to CONFIRMED
+                    const result = await updateSimulationWithSenderAndDestinataireIds(simulationResults);
 
-                    console.log("log ====> simulationResults in addDestinataire function after adding destinataire in src/app/client/destinataires/add/page.tsx: ", simulationResults);
-
-                    await updateSimulationWithSenderAndDestinataireIds(simulationResults);
-                    toast.success("Destinataire ajouté avec succès !", {autoClose: 3000});
+                    if (result) {
+                        toast.success("Destinataire ajouté avec succès à votre simulation.");
+                    } else {
+                        toast.error("Une erreur est survenue lors de l'ajout du destinataire, vérifier les informations saisies.");
+                    }
                     // Attendre 3 secondes avant la redirection
                     setTimeout(() => {
                         router.push("/client/envois/recapitulatif");
-                    }, 1000);
+                    }, 3000);
                 } else {
                     toast.error("Aucune simulation trouvée.");
                 }
@@ -229,6 +231,8 @@ export default function AddReceiverForm() {
                             )}
                         </Button>
                     </form>
+                    <ToastContainer position="bottom-right" autoClose={2000} hideProgressBar theme="colored"/>
+
                 </CardContent>
             </Card>
         </div>
