@@ -1,18 +1,19 @@
 // path: src/utils/types.ts
-import { DefaultSession } from "next-auth";
-declare module "next-auth" {
-    interface Session {
-        user: {
-            id: string;
-            roles: string[];
-        } & DefaultSession["user"];
-    }
+// import { DefaultSession } from "next-auth";
+// declare module "next-auth" {
+//     interface Session {
+//         user: {
+//             id: string; // S'assurer que ce type est cohérent
+//             roles: string[];
+//         } & DefaultSession["user"];
+//     }
+//
+//     interface User {
+//         id: string; // Synchroniser ici également
+//         roles: string[];
+//     }
+// }
 
-    interface User {
-        id: string;
-        roles: string[];
-    }
-}
 export type JWTPayload = {
     id: number;
     roles: string[]; // Changed from `role` to `roles` for multiple roles

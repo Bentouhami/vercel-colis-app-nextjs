@@ -24,7 +24,7 @@ export interface FullUserResponseDto extends BaseUserDto {
     id: number;
     roles: Role[];
     image: string | '';
-    isVerified: boolean;
+    isVerified: boolean | null;
     emailVerified: Date;
     verificationToken: string;
     verificationTokenExpires: Date;

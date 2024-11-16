@@ -18,7 +18,7 @@ import {
     fetchCountries,
     fetchDestinationCountries
 } from "@/services/frontend-services/AddresseService";
-import {BaseSimulationDto} from "@/utils/dtos";
+import {BaseSimulationDto, PreparedSimulation, SimulationStatus} from "@/utils/dtos";
 import {ArrowRight, Box, Calculator, MapPin, Truck} from "lucide-react";
 import {COLIS_MAX_PER_ENVOI} from "@/utils/constants";
 
@@ -50,11 +50,6 @@ const SimulationForm = () => {
                     toast.success("Simulation trouvée !");
                     setTimeout(() => {
                         router.push(`/client/simulation/results`);
-                    }, 3000);
-                } else {
-                    toast.error("Aucune simulation trouvée. Veuillez créer une simulation.");
-                    setTimeout(() => {
-                        router.push(`/client/simulation`);
                     }, 3000);
                 }
             } catch (error) {
@@ -172,7 +167,8 @@ const SimulationForm = () => {
                     ...simulationData,
                     userId: userId,
                     destinataireId: null,
-                };
+                    status: SimulationStatus.DRAFT,
+                } as PreparedSimulation;
 
                 const response = await submitSimulation(simulationDataWithUserAndDestinataireId);
                 if (!response) {

@@ -312,31 +312,33 @@ model Envoi {
   id                Int         @id @default(autoincrement())
   trackingNumber    String      @unique @db.VarChar(50)
   qrCodeUrl         String?     @db.VarChar(255) // URL du QR code pour le dépôt en agence
-  clientId          Int
-  dateSent          DateTime    @db.Timestamp(3)
-  departureAgencyId Int
-  dateDelivered     DateTime    @db.Timestamp(3)
-  arrivalAgencyId   Int
+  departureDate     DateTime?
+  clientId          Int?
+  transportId       Int?
+  destinataireId    Int?
+  departureAgencyId Int?
+  arrivalAgencyId   Int?
+  arrivalDate       DateTime?
   status            EnvoiStatus @default(PENDING)
-  totalWeight       Decimal     @db.Decimal(5, 2)
-  totalVolume       Decimal     @db.Decimal(5, 2)
-  totalPrice        Decimal     @db.Decimal(5, 2)
   comment           String?     @db.Text()
-  transportId       Int
-  destinataireId    Int
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
 
+  totalWeight Float
+  totalVolume Float
+  totalPrice  Float?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  verificationToken String @unique @default(uuid()) @db.Uuid
   // Relations
 
-  ArrivalAgency   Agency    @relation("ArrivalAgency", fields: [arrivalAgencyId], references: [id])
-  DepartureAgency Agency    @relation("DepartureAgency", fields: [departureAgencyId], references: [id])
-  Transport       Transport @relation(fields: [transportId], references: [id])
+  ArrivalAgency   Agency?    @relation("ArrivalAgency", fields: [arrivalAgencyId], references: [id])
+  DepartureAgency Agency?    @relation("DepartureAgency", fields: [departureAgencyId], references: [id])
+  Transport       Transport? @relation(fields: [transportId], references: [id])
 
-  Destinataire User           @relation("DestinataireEnvoi", fields: [destinataireId], references: [id])
-  Client       User           @relation("ClientEnvoi", fields: [clientId], references: [id])
+  Destinataire User?          @relation("DestinataireEnvoi", fields: [destinataireId], references: [id])
+  Client       User?          @relation("ClientEnvoi", fields: [clientId], references: [id])
   EnvoiCoupon  EnvoiCoupon[]
-  Parcel       Parcel[]
+  parcels      Parcel[]
   Appointment  Appointment?
   Notification Notification[]
 
@@ -398,7 +400,7 @@ model Parcel {
 
   // Relations
 
-  Envoi Envoi @relation(fields: [envoiId], references: [id])
+  envoi Envoi @relation(fields: [envoiId], references: [id])
 
   @@map("parcels")
 }

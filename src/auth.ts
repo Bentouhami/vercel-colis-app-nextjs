@@ -10,28 +10,7 @@ import GitHub from "@auth/core/providers/github";
 export const authConfig: NextAuthConfig = {
     adapter: PrismaAdapter(prisma),
     providers: [
-        // Github
-        GitHub({
-            clientId: process.env.GITHUB_ID,
-            clientSecret: process.env.GITHUB_SECRET,
-            authorization: {
-                params: {
-                    scope: "user:email",
-                },
-            },
-
-
-           profile(profile) {
-                return {
-                    id: profile.id,
-                    name: profile.name,
-                    email: profile.email,
-                    image: profile.image,
-                    roles: ["CLIENT"],
-                };
-            },
-        }),
-        // Google
+        // Google Provider
         Google({
             clientId: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -43,12 +22,40 @@ export const authConfig: NextAuthConfig = {
                 },
             },
             profile(profile) {
+                const [firstName, lastName] = profile.name?.split(" ") || ["", ""]; // Split full name into first and last names
                 return {
-                    id: profile.sub,
-                    name: profile.name,
+                    id: profile.sub, // Unique Google ID
                     email: profile.email,
+                    name: profile.name,
+                    firstName: profile.given_name || firstName,
+                    lastName: profile.family_name || lastName,
                     image: profile.picture,
-                    roles: ["CLIENT"],
+                    birthDate: null, // Google doesn't provide this
+                    roles: ["CLIENT"], // Default to CLIENT role
+                };
+            },
+        }),
+
+// GitHub Provider
+        GitHub({
+            clientId: process.env.GITHUB_ID,
+            clientSecret: process.env.GITHUB_SECRET,
+            authorization: {
+                params: {
+                    scope: "user:email",
+                },
+            },
+            profile(profile) {
+                const [firstName, lastName] = profile.name?.split(" ") || ["", ""];
+                return {
+                    id: profile.id.toString(),
+                    email: profile.email?.toLowerCase(),
+                    name: profile.name,
+                    firstName: firstName,
+                    lastName: lastName,
+                    image: profile.avatar_url,
+                    birthDate: null, // GitHub doesn't provide this
+                    roles: ["CLIENT"], // Default to CLIENT role
                 };
             },
         }),
@@ -56,7 +63,7 @@ export const authConfig: NextAuthConfig = {
         Credentials({
             name: "credentials",
             credentials: {
-                email: { label: "Email", type: "email" },
+                email: { label: "Email", type: "email" } ,
                 password: { label: "Password", type: "password" }
             },
             async authorize(credentials) {
@@ -67,7 +74,7 @@ export const authConfig: NextAuthConfig = {
                 try {
                     const user = await prisma.user.findUnique({
                         where: {
-                            email: credentials.email,
+                            email: credentials.email as string,
                         },
                     });
 
@@ -77,8 +84,8 @@ export const authConfig: NextAuthConfig = {
                     }
 
                     const passwordValid = await bcrypt.compare(
-                        credentials.password,
-                        user.password
+                        credentials.password as string,
+                        user.password as string
                     );
 
                     if (!passwordValid) {
