@@ -1,48 +1,48 @@
-import { prisma } from "@/lib/prisma";
-//
-// export async function handleEnvoiCreation(simulation) {
-//     // 1. Create Envoi record
-//     const envoi = await prisma.envoi.create({
-//         data: {
-//             trackingNumber: generateTrackingNumber(),
-//             clientId: simulation.userId,
-//             departureAgencyId: simulation.departureAgencyId,
-//             arrivalAgencyId: simulation.destinationAgencyId,
-//             totalWeight: simulation.totalWeight,
-//             totalVolume: simulation.totalVolume,
-//             totalPrice: simulation.totalPrice,
-//             dateSent: new Date(),
-//             status: 'PENDING',
-//             destinataireId: simulation.destinataireId,
-//         },
-//     });
-//
-//     // 2. Add Parcels
-//     const parcelsData = simulation.parcels.map(parcel => ({
-//         ...parcel,
-//         envoiId: envoi.id,
-//     }));
-//     await prisma.parcel.createMany({ data: parcelsData });
-//
-//     // 3. Update Transport
-//     await prisma.transport.update({
-//         where: { id: simulation.transportId },
-//         data: {
-//             currentWeight: { increment: simulation.totalWeight },
-//             currentVolume: { increment: simulation.totalVolume },
-//         },
-//     });
-//
-//     // 4. Create Notification
-//     await prisma.notification.create({
-//         data: {
-//             message: 'Votre envoi a été créé avec succès !',
-//             userId: simulation.userId,
-//             envoiId: envoi.id,
-//             isRead: false,
-//             createdAt: new Date(),
-//         },
-//     });
-//
-//     // Additional steps (e.g., user profile update) can also be added here
-// }
+// Path: src/services/backend-services/envoiService.ts
+
+import prisma from "@/utils/db";
+
+export async function cancelSimulation(envoiId: number): Promise<void> {
+    try {
+        // Vérifiez si l'envoi existe
+        const envoi = await prisma.envoi.findUnique({
+            where: { id: envoiId },
+        });
+
+        if (!envoi) {
+            throw new Error(`Envoi avec ID ${envoiId} introuvable.`);
+        }
+
+        // une transaction Prisma pour effectuer les opérations
+        await prisma.$transaction([
+            // Supprimer les colis liés à l'envoi
+            prisma.parcel.deleteMany({
+                where: { envoiId },
+            }),
+            // Mettre à jour le statut de l'envoi
+            prisma.envoi.update({
+                where: { id: envoiId },
+                data: {
+                    simulationStatus: "CANCELLED",
+                    status: null, // Vous pouvez ajuster selon les besoins
+                },
+            }),
+        ]);
+
+        console.log(`Simulation ${envoiId} annulée et parcels supprimés.`);
+    } catch (error) {
+        console.error("Erreur lors de l'annulation de la simulation :", error);
+        throw error;
+    }
+}
+
+export async function deleteParcelsByEnvoiId(envoiId: number) {
+    try {
+        await prisma.parcel.deleteMany({
+            where: {envoiId},
+        });
+    } catch (error) {
+        console.error("Erreur lors de la suppression des parcels:", error);
+        throw error;
+    }
+}

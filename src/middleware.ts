@@ -28,50 +28,49 @@ export async function middleware(req: NextRequest) {
             );
         }
 
-        // Vérifie si la route est publique
+        // Vérification du token JWT
+        const cookieName = process.env.COOKIE_NAME || "auth";
+        const jwtToken = req.cookies.get(cookieName);
+        const token = jwtToken?.value;
+
+        // Vérifier si l'utilisateur est authentifié
+        const userPayload = token ? await verifyTokenWithJose(token) : null;
+        const isAuthenticated = !!userPayload;
+
+        // Gestion des routes d'authentification (login/register)
+        if (req.nextUrl.pathname.startsWith('/client/login') ||
+            req.nextUrl.pathname.startsWith('/client/register')) {
+            if (isAuthenticated) {
+                console.log('User already authenticated, redirecting to client home');
+                return NextResponse.redirect(new URL('/client', req.nextUrl.origin));
+            }
+            return response;
+        }
+
+        // Gestion des routes publiques (après la vérification d'authentification)
         if (isPublicRoute(req.nextUrl.pathname)) {
             console.log("Public route accessed:", req.nextUrl.pathname);
             return response;
         }
 
-        // Gestion des routes protégées avec JWT
-        const cookieName = process.env.COOKIE_NAME || "auth";
-        const jwtToken = req.cookies.get(cookieName);
-        const token = jwtToken?.value;
-
-        if (!token) {
-            console.log('No token found, redirecting to client home page');
-            return NextResponse.redirect(new URL("/client", req.nextUrl.origin));
-        }
-
-        const userPayload = await verifyTokenWithJose(token);
-        if (!userPayload) {
-            console.log('Invalid or expired token, redirecting to login');
+        // À ce stade, la route n'est ni login/register ni publique
+        // Vérification de l'authentification pour les routes protégées
+        if (!isAuthenticated) {
+            console.log('No valid token found, redirecting to login');
             return NextResponse.redirect(new URL("/client/login", req.nextUrl.origin));
         }
 
-        console.log('User Payload:', userPayload);
-
+        if (!userPayload) {
+            console.log('Invalid token found, redirecting to login');
+            return NextResponse.redirect(new URL("/client/login", req.nextUrl.origin));
+        }
+        // Vérification des rôles pour les routes admin
         const userRoles = Array.isArray(userPayload.roles) ? userPayload.roles : [];
         const isAdmin = userRoles.includes('ADMIN');
 
-        // Rediriger les utilisateurs authentifiés depuis login/register
-        if (
-            req.nextUrl.pathname.startsWith('/client/login') ||
-            req.nextUrl.pathname.startsWith('/client/register')
-        ) {
-            if (userRoles.includes('CLIENT') || isAdmin) {
-                return NextResponse.redirect(new URL('/client', req.nextUrl.origin));
-            }
-        }
-
-        // Protection des routes admin
-        if (req.nextUrl.pathname.startsWith('/admin')) {
-            if (!isAdmin) {
-                console.log('Unauthorized access to admin route');
-                return NextResponse.redirect(new URL('/client/unauthorized', req.nextUrl.origin));
-            }
-            console.log('Admin access granted');
+        if (req.nextUrl.pathname.startsWith('/admin') && !isAdmin) {
+            console.log('Unauthorized access to admin route');
+            return NextResponse.redirect(new URL('/client/unauthorized', req.nextUrl.origin));
         }
 
         console.log('Access granted to protected route');
@@ -84,7 +83,6 @@ export async function middleware(req: NextRequest) {
         console.log('--------------------------------');
     }
 }
-
 // Fonction pour vérifier le token JWT avec jose
 async function verifyTokenWithJose(token: string) {
     try {

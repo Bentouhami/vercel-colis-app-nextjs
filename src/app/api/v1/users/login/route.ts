@@ -7,7 +7,7 @@ import bcrypt from "bcryptjs";
 import {LoginUserDto} from "@/utils/dtos";
 import {toLowerCase} from "@/utils/stringUtils";
 import {generateJWTPayloadAndSetCookie} from "@/services/frontend-services/UserService";
-import {getVerificationData} from "@/utils/generateToken";
+import {generateVerificationTokenForUser} from "@/utils/generateToken";
 import {VerificationDataType} from "@/utils/types";
 import {getUserByEmail, updateVerificationTokenForOldUser} from "@/services/backend-services/UserService";
 
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
         }
 
 
-        const verificationData = getVerificationData() as VerificationDataType;
+        const verificationData = generateVerificationTokenForUser() as VerificationDataType;
 
         // si le n'a pas vérifié son email
         if (user && !user.isVerified && user.emailVerified && user.emailVerified < new Date()) {

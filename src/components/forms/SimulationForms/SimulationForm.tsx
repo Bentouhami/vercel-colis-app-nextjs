@@ -18,15 +18,15 @@ import {
     fetchCountries,
     fetchDestinationCountries
 } from "@/services/frontend-services/AddresseService";
-import {BaseSimulationDto, PreparedSimulation, SimulationStatus} from "@/utils/dtos";
+import {SimulationDtoRequest} from "@/utils/dtos";
 import {ArrowRight, Box, Calculator, MapPin, Truck} from "lucide-react";
 import {COLIS_MAX_PER_ENVOI} from "@/utils/constants";
 
 const SimulationForm = () => {
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
-    const [departure, setDeparture] = useState({country: '', city: '', agency: ''});
-    const [destination, setDestination] = useState({country: '', city: '', agency: ''});
+    const [departure, setDeparture] = useState({country: '', city: '', agencyName: ''});
+    const [destination, setDestination] = useState({country: '', city: '', agencyName: ''});
     const [options, setOptions] = useState({
         countries: [],
         destinationCountries: [],
@@ -38,7 +38,6 @@ const SimulationForm = () => {
     const [packageCount, setPackageCount] = useState(1);
     const [parcels, setParcels] = useState([{height: 0, width: 0, length: 0, weight: 0}]);
     const [currentPackage, setCurrentPackage] = useState(0);
-    const [userId, setUserId] = useState<number | null>(null);
 
 
     useEffect(() => {
@@ -79,7 +78,7 @@ const SimulationForm = () => {
                 ...prev,
                 departureCities: data
             }))).catch(console.error);
-            setDeparture(prev => ({...prev, city: '', agency: ''}));
+            setDeparture(prev => ({...prev, city: '', agencyName: ''}));
         }
     }, [departure.country]);
 
@@ -89,7 +88,7 @@ const SimulationForm = () => {
                 ...prev,
                 departureAgencies: data
             }))).catch(console.error);
-            setDeparture(prev => ({...prev, agency: ''}));
+            setDeparture(prev => ({...prev, agencyName: ''}));
         }
     }, [departure.city, departure.country]);
 
@@ -99,7 +98,7 @@ const SimulationForm = () => {
                 ...prev,
                 destinationCities: data
             }))).catch(console.error);
-            setDestination(prev => ({...prev, city: '', agency: ''}));
+            setDestination(prev => ({...prev, city: '', agencyName: ''}));
         }
     }, [destination.country]);
 
@@ -109,7 +108,7 @@ const SimulationForm = () => {
                 ...prev,
                 destinationAgencies: data
             }))).catch(console.error);
-            setDestination(prev => ({...prev, agency: ''}));
+            setDestination(prev => ({...prev, agencyName: ''}));
         }
     }, [destination.city]);
 
@@ -146,16 +145,21 @@ const SimulationForm = () => {
         e.preventDefault();
 
         startTransition(async () => {
-            const simulationData: BaseSimulationDto = {
+            // get departure agency id by Country and city and agency name
+
+
+            // data to be validated by zod schema
+            const simulationData: SimulationDtoRequest = {
                 departureCountry: departure.country,
                 departureCity: departure.city,
-                departureAgency: departure.agency,
+                departureAgency: departure.agencyName,
                 destinationCountry: destination.country,
                 destinationCity: destination.city,
-                destinationAgency: destination.agency,
+                destinationAgency: destination.agencyName,
                 parcels
             };
 
+            // validate data with zod schema
             const validated = simulationEnvoisSchema.safeParse(simulationData);
             if (!validated.success) {
                 toast.error(validated.error.errors[0].message);
@@ -163,14 +167,9 @@ const SimulationForm = () => {
             }
 
             try {
-                const simulationDataWithUserAndDestinataireId = {
-                    ...simulationData,
-                    userId: userId,
-                    destinataireId: null,
-                    status: SimulationStatus.DRAFT,
-                } as PreparedSimulation;
+                console.log("log ====> simulationData in SimulationForm.tsx before calling submitSimulation function: ", simulationData);
 
-                const response = await submitSimulation(simulationDataWithUserAndDestinataireId);
+                const response = await submitSimulation(simulationData);
                 if (!response) {
                     toast.error("Une erreur est survenue lors de la soumission de la simulation.");
                     return;
@@ -228,8 +227,8 @@ const SimulationForm = () => {
                         />
                         <AgencySelect
                             label="Agence de départ"
-                            value={departure.agency}
-                            onChange={(e) => handleDepartureChange('agency', e.target.value)}
+                            value={departure.agencyName}
+                            onChange={(e) => handleDepartureChange('agencyName', e.target.value)}
                             agencies={options.departureAgencies}
                             disabled={!departure.city || isPending}
                         />
@@ -264,8 +263,8 @@ const SimulationForm = () => {
                         <AgencySelect
 
                             label="Agence d'arrivée"
-                            value={destination.agency}
-                            onChange={(e) => handleDestinationChange('agency', e.target.value)}
+                            value={destination.agencyName}
+                            onChange={(e) => handleDestinationChange('agencyName', e.target.value)}
                             agencies={options.destinationAgencies}
                             disabled={!destination.city || isPending}
                         />

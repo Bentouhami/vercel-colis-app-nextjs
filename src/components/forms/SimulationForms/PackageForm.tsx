@@ -1,19 +1,18 @@
 // Path: src/components/forms/SimulationForms/PackageForm.tsx
 
 
-import { Form, FormGroup } from 'react-bootstrap';
+import {Form, FormGroup} from 'react-bootstrap';
 import React from "react";
-import { CreateParcelDto } from '@/utils/dtos';
+import {CreateParcelDto} from '@/utils/dtos';
 
 interface PackageFormProps {
-    index: number;
-    pkg: CreateParcelDto;
-    onChange: (index: number, key: string, value: number) => void;
-    disabled?: boolean;
-
+    index: number,
+    pkg: CreateParcelDto,
+    onChange: (index: number, key: string, value: number) => void,
+    disabled?: boolean,
 }
 
-const PackageForm = ({ index, pkg, onChange, disabled = false }: PackageFormProps) => {
+const PackageForm = ({index, pkg, onChange, disabled = false}: PackageFormProps) => {
     const handleInputChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = parseFloat(e.target.value);
         onChange(index, field, value);

@@ -1,7 +1,7 @@
 // path: src/app/api/v1/users/verify/route.ts
 
 import {NextRequest, NextResponse} from "next/server";
-import { Role, UserResponseDto} from "@/utils/dtos";
+import { Roles, UserResponseDto} from "@/utils/dtos";
 import {
     getUserByValidToken,
     updateUserAndResetTokenVerificationAfterVerification
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
             phoneNumber: user.phoneNumber,
             email: user.email,
             image: user.image,
-            roles: [Role.CLIENT],
+            roles: [Roles.CLIENT],
         };
 
         console.log("log => userResponse retourné après vérification du token: ", userResponse);

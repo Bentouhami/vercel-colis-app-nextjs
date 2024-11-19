@@ -18,7 +18,7 @@ function calculateTotalVolume(parcels: CreateParcelDto[]): number {
         const volume = new Decimal(pkg.height)
             .times(pkg.width)
             .times(pkg.length)
-            .div(1000000); // Convert cm³ to m³
+            .div(1000000); // Convert cm³ to m²
         return acc.plus(volume);
     }, new Decimal(0));
 

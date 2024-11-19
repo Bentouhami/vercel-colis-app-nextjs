@@ -1,23 +1,33 @@
 // path: src/services/backend-services/simulationService.ts
 'use server';
 import {
+    BaseSimulationDto,
     CreatedSimulationResponseDto,
     CreateParcelDto,
     FullSimulationDto,
-    SimulationStatus,
-    SimulationWithIds
+    SimulationDto
 } from "@/utils/dtos";
 import prisma from "@/utils/db";
-import Decimal from "decimal.js";
+import {getAgencyById} from "@/services/backend-services/AgencyService";
+import {generateTrackingNumber} from "@/utils/generateTrackingNumber";
 
-export async function getSimulationByIdAndToken(id: number, verificationToken: string): Promise<FullSimulationDto | null> {
+export async function getSimulationByIdAndToken(id: number, verificationToken: string): Promise<SimulationDto | null> {
+
     console.log("log ====> getSimulationById function called in path: src/services/backend-services/simulation/SimulationService.ts", "simulationId: ", id, "verificationToken: ", verificationToken);
 
     try {
-        const simulation = await prisma.simulation.findUnique({
+
+        // 1. Get simulation by ID and verification token
+        const simulation = await prisma.envoi.findUnique({
             where: {
                 id,
                 verificationToken,
+            },
+            include: { // Include all related data
+                // user: true,
+                arrivalAgency: true, // Include arrival agency data
+                departureAgency: true, // Include departure agency data
+                parcels: true, // Include parcels data
             }
         });
 
@@ -27,25 +37,40 @@ export async function getSimulationByIdAndToken(id: number, verificationToken: s
 
         console.log("log ====> simulation found in getSimulationByIdAndToken function: ", simulation);
 
-        const parcelsData = typeof simulation.parcels === 'string'
-            ? JSON.parse(simulation.parcels)
-            : simulation.parcels;
+        // 2. get departed date city, country and agency name from simulation by agencyId
+        const departureAgency = await getAgencyById(simulation.departureAgencyId);
 
-        // Explicitly convert the status to your DTO enum
-        const status = simulation.status as keyof typeof SimulationStatus;
+        // 3. get arrived date city, country and agency name from simulation by agencyId
+        const arrivalAgency = await getAgencyById(simulation.arrivalAgencyId);
 
-        const simulationDto: FullSimulationDto = {
-            id: simulation.id,
+        // 4. prepare needed data for simulation calculation and status
+        if (!departureAgency || !arrivalAgency) {
+            return null;
+        }
+
+        // prepare parcels as CreateParcelDto[] for simulationDto
+        // Map the parcels array to CreateParcelDto format
+        const parcels: CreateParcelDto[] = simulation.parcels.map((parcel: any) => ({
+            height: parcel.height,
+            width: parcel.width,
+            length: parcel.length,
+            weight: parcel.weight,
+        }));
+
+
+        // 5. Create simulation data to be returned
+        const simulationDto: SimulationDto = {
             userId: simulation.userId,
             destinataireId: simulation.destinataireId,
-            departureCountry: simulation.departureCountry,
-            departureCity: simulation.departureCity,
-            departureAgency: simulation.departureAgency,
-            destinationCountry: simulation.destinationCountry,
-            destinationCity: simulation.destinationCity,
-            destinationAgency: simulation.destinationAgency,
-            parcels: parcelsData,
-            status: status ? SimulationStatus[status] : SimulationStatus.DRAFT,
+            departureCountry: departureAgency.address.country,
+            departureCity: departureAgency.address.city,
+            departureAgency: departureAgency.name,
+            destinationCountry: arrivalAgency.address.country,
+            destinationCity: arrivalAgency.address.city,
+            destinationAgency: arrivalAgency.name,
+            parcels,
+            simulationStatus: simulation.simulationStatus,
+            status: simulation.status,
             totalWeight: simulation.totalWeight,
             totalVolume: simulation.totalVolume,
             totalPrice: simulation.totalPrice,
@@ -63,38 +88,69 @@ export async function getSimulationByIdAndToken(id: number, verificationToken: s
     }
 }
 
-export async function saveSimulation(simulationData: SimulationWithIds): Promise<CreatedSimulationResponseDto> {
+export async function saveSimulation(simulationData: BaseSimulationDto): Promise<CreatedSimulationResponseDto> {
     try {
+        console.log("log ====> simulationData in saveSimulation function called in src/services/backend-services/simulationService.ts: ", simulationData);
         // Ensure all required string fields have default values if null
-        const simulation = await prisma.simulation.create({
+
+        //  get departed date city, country and agency name from simulation by agencyId
+        const departureAgency = await getAgencyById(simulationData.departureAgencyId);
+
+        // 3. get arrived date city, country and agency name from simulation by agencyId
+        const arrivalAgency = await getAgencyById(simulationData.arrivalAgencyId);
+
+        // 4. prepare needed data for simulation calculation and status
+        if (!departureAgency || !arrivalAgency) {
+            return null;
+        }
+
+        console.log("log ====> departureAgency in saveSimulation function called in src/services/backend-services/simulationService.ts: ", departureAgency);
+        console.log("log ====> arrivalAgency in saveSimulation function called in src/services/backend-services/simulationService.ts: ", arrivalAgency);
+
+
+        // generate tracking number
+        const trackingNumber = generateTrackingNumber(
+            departureAgency.address.country,
+            departureAgency.address.city,
+            arrivalAgency.address.country,
+            arrivalAgency.address.city
+        );
+
+        if (!trackingNumber) {
+            return null;
+        }
+
+        console.log("log ====> trackingNumber in saveSimulation function called in src/services/backend-services/simulationService.ts: ", trackingNumber);
+
+        const simulation = await prisma.envoi.create({
             data: {
-                userId: simulationData.userId,
-                destinataireId: simulationData.destinataireId,
-                departureCountry: simulationData.departureCountry ?? '',
-                departureCity: simulationData.departureCity ?? '',
-                departureAgency: simulationData.departureAgency ?? '',
-                destinationCountry: simulationData.destinationCountry ?? '',
-                destinationCity: simulationData.destinationCity ?? '',
-                destinationAgency: simulationData.destinationAgency ?? '',
-                parcels: JSON.stringify(simulationData.parcels ?? []),
-                status: simulationData.status ?? SimulationStatus.DRAFT,
-                totalWeight: new Decimal(simulationData.totalWeight).toNumber(), // Convert to number
-                totalVolume: new Decimal(simulationData.totalVolume).toNumber(), // Convert to number
-                totalPrice: simulationData.totalPrice ? new Decimal(simulationData.totalPrice).toNumber() : null, // Convert to number or use null
-                departureDate: new Date(simulationData.departureDate),
-                arrivalDate: new Date(simulationData.arrivalDate),
+                trackingNumber: trackingNumber,
+                departureAgencyId: simulationData.departureAgencyId,
+                arrivalAgencyId: simulationData.arrivalAgencyId,
+                simulationStatus: simulationData.simulationStatus,
+                status: simulationData.status,
+                totalWeight: simulationData.totalWeight,
+                totalVolume: simulationData.totalVolume,
+                totalPrice: simulationData.totalPrice,
+                departureDate: simulationData.departureDate,
+                arrivalDate: simulationData.arrivalDate,
+                parcels: {
+                    create: simulationData.parcels.map(parcel => ({
+                        height: parcel.height,
+                        width: parcel.width,
+                        length: parcel.length,
+                        weight: parcel.weight,
+                    })),
+                },
             },
             select: {
                 id: true,
                 verificationToken: true,
-            }
+            },
         });
 
-        if (!simulation) {
-            throw new Error("Erreur lors de la sauvegarde de la simulation");
-        }
-
         return simulation as CreatedSimulationResponseDto;
+
     } catch (error) {
         console.error("Erreur lors de la sauvegarde de la simulation:", error);
         throw error;
@@ -106,54 +162,43 @@ export async function updateSimulationWithSenderAndDestinataireIds(simulation: F
 
     console.log("log ====> updateSimulationWithSenderAndDestinataireIds function called in src/services/backend-services/simulationService.ts", simulation);
     try {
-        const updatedSimulation = await prisma.simulation.update({
-            where: { id: simulation.id },
+        const updatedSimulation = await prisma.envoi.update({
+            where: {id: simulation.id},
             data: {
                 userId: simulation.userId,
                 destinataireId: simulation.destinataireId,
-                status: simulation.status
-            },
-            select: {
-                id: true,
-                userId: true,
-                destinataireId: true,
-                departureCountry: true,
-                departureCity: true,
-                departureAgency: true,
-                destinationCountry: true,
-                destinationCity: true,
-                destinationAgency: true,
-                parcels: true,
-                status: true,
-                totalWeight: true,
-                totalVolume: true,
-                totalPrice: true,
-                departureDate: true,
-                arrivalDate: true,
-            },
+                simulationStatus: simulation.simulationStatus,
+                status: simulation.status,
+            }
         });
 
-        console.log("Updated simulation data from Prisma:", updatedSimulation);
+        if (!updatedSimulation) {
+            return null;
 
-        // Parse parcels only if it is a JSON string
-        const parsedParcels = typeof updatedSimulation.parcels === "string"
-            ? JSON.parse(updatedSimulation.parcels)
-            : updatedSimulation.parcels;
-
-        // Construct the FullSimulationDto with parsed parcels
-        const simulationDto = {
-            ...updatedSimulation,
-            parcels: parsedParcels as CreateParcelDto[] // Explicitly cast to match the expected type
-        };
-
-        console.log("Formatted simulation data:", simulationDto);
-        console.log("Formatted parcels:", simulationDto.parcels);
-
-
-        return simulationDto;
-
+        }
     } catch (error) {
         console.error('Error during Prisma simulation update:', error);
+        throw new Error("Error updating simulation");
+    }
+}
+
+
+export async function updateSimulation(simulation: SimulationDto, simulationIdAndToken: CreatedSimulationResponseDto) {
+    console.log("log ====> updateSimulation function called in src/services/backend-services/simulationService.ts", simulation);
+    try {
+        await prisma.envoi.update({
+            where: {
+                id: Number(simulationIdAndToken.id),
+                verificationToken: simulationIdAndToken.verificationToken
+            },
+            data: {
+                status: simulation.status,
+                simulationStatus: simulation.simulationStatus,
+            }
+
+        });
+    } catch (error) {
+        console.error("Error updating simulation", error);
         throw new Error("Error updating simulation");
     }
 }

@@ -3,19 +3,18 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import {
-    BaseAddressDTO,
+    CreateAddressDto,
     BaseClientDto,
-    CreateFullUserDto,
-    FullAddressDTO,
+    UpdateAddressDto,
     FullUserResponseDto,
-    Role,
-    UserModelDto,
+    Roles,
+    UserModelDto, CreateUserDto, RegisterClientDto,
 } from '@/utils/dtos';
 import { errorHandler } from "@/utils/handelErrors";
 import { capitalizeFirstLetter, toLowerCase } from "@/utils/stringUtils";
 import { registerUserBackendSchema, RegisterUserBackendType } from "@/utils/validationSchema";
 import { hashPassword } from "@/lib/auth";
-import { getVerificationData } from "@/utils/generateToken";
+import { generateVerificationTokenForUser } from "@/utils/generateToken";
 import { VerificationDataType } from "@/utils/types";
 import { createAddress, isAddressAlreadyExist } from "@/services/backend-services/AddresseService";
 import {
@@ -34,7 +33,7 @@ export async function POST(request: NextRequest) {
     try {
         console.log("POST request received");
 
-        const body = (await request.json()) as RegisterUserBackendType;
+        const body = (await request.json()) as RegisterClientDto;
 
         if (!body) {
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -50,7 +49,7 @@ export async function POST(request: NextRequest) {
 
         const { firstName, lastName, birthDate, phoneNumber, email, password, address } = validatedData;
 
-        const extractedBaseAddress: BaseAddressDTO = {
+        const extractedBaseAddress: CreateAddressDto = {
             street: toLowerCase(address.street),
             number: address.number,
             city: capitalizeFirstLetter(address.city),
@@ -67,14 +66,14 @@ export async function POST(request: NextRequest) {
             phoneNumber,
             email: toLowerCase(email),
             image: null,
-            roles: [Role.CLIENT], // Updated to roles array with default CLIENT role
+            roles: [Roles.CLIENT], // Updated to roles array with default CLIENT Roles
             password,
-            address: extractedBaseAddress as BaseAddressDTO
+            address: extractedBaseAddress as CreateAddressDto
         };
 
         console.log("Formatted address registeredUser:", formattedUser.address);
 
-        let addressToUse: FullAddressDTO | null = await isAddressAlreadyExist(extractedBaseAddress);
+        let addressToUse: UpdateAddressDto | null = await isAddressAlreadyExist(extractedBaseAddress);
 
         if (!addressToUse) {
             addressToUse = await createAddress(extractedBaseAddress);
@@ -85,7 +84,7 @@ export async function POST(request: NextRequest) {
 
         console.log("addressToUse is: ", addressToUse);
 
-        const verificationData = getVerificationData() as VerificationDataType;
+        const verificationData = generateVerificationTokenForUser() as VerificationDataType;
 
         if (!verificationData) {
             return NextResponse.json({ error: "Failed to generate verification data" }, { status: 500 });
@@ -97,23 +96,21 @@ export async function POST(request: NextRequest) {
 
         console.log("isUserAlreadyExist returned:", existedUser);
 
-        let registeredUser: FullUserResponseDto | null = null;
+        let registeredUser: FullUserResponseDto | null;
 
         // Create a new user if not existing
         if (!existedUser) {
             const { firstName, lastName, name, birthDate, phoneNumber, email } = formattedUser;
 
-            const userData: CreateFullUserDto = {
+            const userData: CreateUserDto = {
                 firstName,
                 lastName,
                 name,
                 birthDate,
                 email,
                 phoneNumber,
-                image: null,
                 password: hashedPassword,
                 address: addressToUse,
-                roles: [Role.CLIENT], // Set roles with CLIENT by default
                 verificationToken: verificationData.verificationToken,
                 verificationTokenExpires: verificationData.verificationTokenExpires,
             };
@@ -130,7 +127,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Handle other cases if user already exists
-        if (existedUser.roles.includes(Role.CLIENT) && !existedUser.isVerified) {
+        if (existedUser.roles.includes(Roles.CLIENT) && !existedUser.isVerified) {
             await updateVerificationTokenForOldUser(existedUser.id, verificationData);
             await sendVerificationEmail(existedUser.name, existedUser.email, verificationData.verificationToken);
             return NextResponse.json({
@@ -139,7 +136,7 @@ export async function POST(request: NextRequest) {
             });
         }
 
-        if (existedUser.roles.includes(Role.DESTINATAIRE)) {
+        if (existedUser.roles.includes(Roles.DESTINATAIRE)) {
             registeredUser = await updateDestinataireToClient(
                 existedUser,
                 formattedUser.birthDate,
@@ -157,7 +154,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ message: "User created successfully, please check your email to verify your account" }, { status: 201 });
         }
 
-        if ((existedUser.roles.includes(Role.CLIENT) || existedUser.roles.includes(Role.ADMIN)) && existedUser.isVerified) {
+        if ((existedUser.roles.includes(Roles.CLIENT) || existedUser.roles.includes(Roles.ADMIN)) && existedUser.isVerified) {
             console.log("User is a client or admin and verified, returning error");
             return NextResponse.json({ error: "User already exists and is verified. Please log in." }, { status: 400 });
         }

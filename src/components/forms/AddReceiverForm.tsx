@@ -9,7 +9,7 @@ import {Loader2, Mail, Phone, User, UserPlus} from "lucide-react";
 import {toast, ToastContainer} from "react-toastify";
 import {DestinataireInput, destinataireSchema} from "@/utils/validationSchema";
 import {addDestinataire} from "@/services/frontend-services/UserService";
-import {BaseDestinataireDto, Role} from "@/utils/dtos";
+import {CreateDestinataireDto, Roles} from "@/utils/dtos";
 import {
     getSimulation,
     updateSimulationWithSenderAndDestinataireIds
@@ -70,11 +70,12 @@ export default function AddReceiverForm() {
         setErrors({});
         startTransition(async () => {
             try {
-                const formattedDestinataireData: BaseDestinataireDto = {
+
+                const formattedDestinataireData: CreateDestinataireDto = {
                     ...destinataireFormData,
                     name: `${destinataireFormData.firstName} ${destinataireFormData.lastName}`,
                     image: "",
-                    roles: [Role.DESTINATAIRE] as Role[],
+                    roles: [Roles.DESTINATAIRE] as Roles[],
                 };
 
                 console.log("log ====> formattedDestinataireData in AddReceiverForm.tsx before adding destinataire to addDestinataire function in src/app/client/destinataires/add/page.tsx: ", formattedDestinataireData);
@@ -89,13 +90,12 @@ export default function AddReceiverForm() {
                 const simulationResults = await getSimulation();
 
                 if (simulationResults) {
-
                     // update destinataireId in simulation
-                    simulationResults.destinataireId = destinataireId;
-                    // update simulation status to CONFIRMED
-                    const result = await updateSimulationWithSenderAndDestinataireIds(simulationResults);
+                    simulationResults.destinataireId = Number(destinataireId);
 
-                    if (result) {
+                    // update simulation status to CONFIRMED
+                    await updateSimulationWithSenderAndDestinataireIds(simulationResults);
+
                         toast.success("Destinataire ajouté avec succès à votre simulation.");
                     } else {
                         toast.error("Une erreur est survenue lors de l'ajout du destinataire, vérifier les informations saisies.");
@@ -104,9 +104,7 @@ export default function AddReceiverForm() {
                     setTimeout(() => {
                         router.push("/client/envois/recapitulatif");
                     }, 3000);
-                } else {
-                    toast.error("Aucune simulation trouvée.");
-                }
+
             } catch (error) {
                 console.error("Error updating simulation:", error);
                 toast.error("Une erreur est survenue lors de l'ajout du destinataire.");

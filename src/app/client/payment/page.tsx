@@ -7,6 +7,7 @@ import {Button} from '@/components/ui/button';
 import {toast} from 'react-toastify';
 import {useSearchParams} from "next/navigation";
 import {DOMAIN} from "@/utils/constants";
+import {router} from "next/client";
 
 
 // Charger la clé publique Stripe depuis les variables d'environnement
@@ -18,9 +19,9 @@ const PaymentPage = () => {
     const searchParams = useSearchParams();
 
     useEffect(() => {
-        const price = searchParams.get("page");
-        if (price) {
-            setAmount(parseFloat(price)); // Convert price to number and set amount
+        const amount = searchParams.get("amount");
+        if (amount) {
+            setAmount(parseFloat(amount)); // Convert price to number and set amount
         } else {
             toast.error("Erreur : le prix total est introuvable.");
         }
@@ -50,6 +51,7 @@ const PaymentPage = () => {
             if (result?.error) {
                 toast.error("Erreur lors de la redirection vers Stripe : " + result.error.message);
             }
+
         } catch (error) {
             console.error(error);
             toast.error("Une erreur est survenue. Veuillez réessayer.");

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { capitalizeFirstLetter, toLowerCase } from "@/utils/stringUtils";
-import { BaseDestinataireDto, DestinataireResponseWithRoleDto, Role } from "@/utils/dtos";
+import { CreateDestinataireDto, DestinataireResponseWithRoleDto, Roles } from "@/utils/dtos";
 import { destinataireSchema } from "@/utils/validationSchema";
 import { verifyToken } from "@/utils/verifyToken";
 import {
@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
     }
     try {
-        const body = (await req.json()) as BaseDestinataireDto;
+        const body = (await req.json()) as CreateDestinataireDto;
         console.log("body extracted from POST request: ", body);
 
         if (!body) {
@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
             email: toLowerCase(email),
             phoneNumber: phoneNumber,
             image: null,
-            roles: [Role.DESTINATAIRE], // Updated to roles array
+            roles: [Roles.DESTINATAIRE], // Updated to roles array
         };
 
         console.log("About to create new destinataire of type BaseDestinataireDto:", newDestinataireData);

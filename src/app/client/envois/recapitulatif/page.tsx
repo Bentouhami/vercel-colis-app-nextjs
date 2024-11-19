@@ -10,11 +10,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package, Calendar, MapPin, User, Truck, Weight, DollarSign, CreditCard, XCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { BaseDestinataireDto, FullSimulationDto } from "@/utils/dtos";
+import { CreateDestinataireDto, FullSimulationDto } from "@/utils/dtos";
 
 interface SimulationDataType extends FullSimulationDto {
-    sender: BaseDestinataireDto;
-    destinataire: BaseDestinataireDto;
+    sender: CreateDestinataireDto;
+    destinataire: CreateDestinataireDto;
 }
 export default function RecapitulatifPage() {
     const [simulationData, setSimulationData] = useState<SimulationDataType | null>(null);
@@ -42,7 +42,7 @@ export default function RecapitulatifPage() {
                 const [senderData, destinataireData] = await Promise.all([
                     getUserById(data.userId),
                     getUserById(data.destinataireId),
-                ]) as [BaseDestinataireDto, BaseDestinataireDto];
+                ]) as [CreateDestinataireDto, CreateDestinataireDto];
 
                 if (!senderData || !destinataireData) {
                     toast.error("Impossible de récupérer les données utilisateur.");
@@ -85,7 +85,7 @@ export default function RecapitulatifPage() {
     const handlePaymentRedirect = () => {
         if (simulationData?.totalPrice) {
             // Navigate to payment page with totalPrice as a query parameter
-            router.push(`/client/payment?page=${simulationData.totalPrice}`);
+            router.push(`/client/payment?amount=${simulationData.totalPrice}`);
         } else {
             toast.error("Le prix total est manquant.");
         }

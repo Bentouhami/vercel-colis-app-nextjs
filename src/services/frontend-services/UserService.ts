@@ -4,7 +4,7 @@ import {JWTPayload} from "@/utils/types";
 import {setCookie} from "@/utils/generateToken";
 import { RegisterUserBackendType} from "@/utils/validationSchema";
 import {DOMAIN} from "@/utils/constants";
-import {BaseDestinataireDto} from "@/utils/dtos";
+import {CreateDestinataireDto, RegisterClientDto} from "@/utils/dtos";
 
 /**
  * Generate JWTPayload object and setCookies with JWT token and cookie
@@ -66,7 +66,7 @@ export async function getConnectedUser() {
     }
 }
 
-export async function getUserById(id: number): Promise<BaseDestinataireDto> {
+export async function getUserById(id: number): Promise<CreateDestinataireDto> {
     console.log("log ====> getUserById called in src/services/frontend-services/UserService.ts")
 
     try {
@@ -88,7 +88,7 @@ export async function getUserById(id: number): Promise<BaseDestinataireDto> {
         }
 
         console.log("userData in getUserById function:", userData.data);
-        return userData.data as BaseDestinataireDto;
+        return userData.data as CreateDestinataireDto;
     } catch (error) {
         console.error('Error getting user:', error);
         throw error;
@@ -96,7 +96,7 @@ export async function getUserById(id: number): Promise<BaseDestinataireDto> {
 }
 
 // register new user via API
-export async function registerUser(newUser: RegisterUserBackendType) {
+export async function registerUser(newUser: RegisterClientDto) {
     try {
         const response = await fetch(`${DOMAIN}/api/v1/users/register`, {
             method: 'POST',
@@ -123,7 +123,7 @@ export async function registerUser(newUser: RegisterUserBackendType) {
 }
 
 
-export async function addDestinataire(newUser: BaseDestinataireDto) : Promise<number>{
+export async function addDestinataire(newUser: CreateDestinataireDto) : Promise<number>{
     console.log("log ====> addDestinataire function called");
 
     try {

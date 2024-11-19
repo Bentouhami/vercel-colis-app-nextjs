@@ -1,25 +1,28 @@
 // path: src/app/client/simulation/results/page.tsx
 'use client';
-import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useEffect, useState, useTransition} from 'react';
-import { toast } from 'react-toastify';
-import { getSimulation } from "@/services/frontend-services/simulation/SimulationService";
-import { FullSimulationDto } from "@/utils/dtos";
+import {useRouter, useSearchParams} from 'next/navigation';
+import React, {useEffect, useState} from 'react';
+import {toast} from 'react-toastify';
+import {
+    getSimulation,
+    updateSimulationWithSenderAndDestinataireIds
+} from "@/services/frontend-services/simulation/SimulationService";
+import {SimulationDto} from "@/utils/dtos";
 import LoginPromptModal from '@/components/LoginPromptModal';
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Package, MapPin, Weight, DollarSign, Calendar } from "lucide-react";
-import {updateSimulationWithSenderAndDestinataireIds} from "@/services/frontend-services/simulation/SimulationService";
+import {Button} from "@/components/ui/button";
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
+import {Calendar, DollarSign, MapPin, Package, Weight} from "lucide-react";
 
 export default function SimulationResults() {
     const searchParams = useSearchParams();
     const router = useRouter();
 
-    const [results, setResults] = useState<FullSimulationDto | null>(null);
+    const [results, setResults] = useState<SimulationDto | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
     const [showLoginPrompt, setShowLoginPrompt] = useState(false);
     const [userId, setUserId] = useState<number | null>(null);
 
+    // get simulation results from the backend and set them in the state variable results when available or redirect to the simulation page if not
     useEffect(() => {
         const getSimulationResults = async () => {
             try {
@@ -28,12 +31,10 @@ export default function SimulationResults() {
                     router.push('/client/simulation');
                     return;
                 }
-                setResults({
-                    ...simulationData,
-                    parcels: Array.isArray(simulationData.parcels)
-                        ? simulationData.parcels
-                        : JSON.parse(simulationData.parcels)
-                });
+
+                console.log("log ====> simulationData returned from saveSimulation function in SimulationResults.tsx: ", simulationData);
+
+                setResults(simulationData);
             } catch (error) {
                 toast.error("Erreur de chargement des résultats.");
             }
@@ -41,6 +42,8 @@ export default function SimulationResults() {
         getSimulationResults();
     }, [searchParams, router]);
 
+
+    // check if the user is authenticated and set the userId in the state variable userId when available or redirect to the login page if not
     useEffect(() => {
         const checkAuthStatus = async () => {
             try {
@@ -55,6 +58,7 @@ export default function SimulationResults() {
         checkAuthStatus();
     }, []);
 
+    // render the loading spinner if the results are not available
     if (!results) {
         return (
             <div className="flex items-center justify-center min-h-screen">
@@ -62,14 +66,17 @@ export default function SimulationResults() {
             </div>
         );
     }
-
     const handleValidate = async () => {
         if (isAuthenticated) {
             const simulationResults = await getSimulation();
             if (simulationResults) {
                 if (userId && !simulationResults.userId) {
+                    console.log("log ====> userId found and in handleValidate function in SimulationResults.tsx: ", userId);
+
                     simulationResults.userId = userId;
                 }
+
+                console.log("log ====> simulationResults in handleValidate function in SimulationResults.tsx before calling updateSimulationWithSenderAndDestinataireIds function: ", simulationResults);
                 await updateSimulationWithSenderAndDestinataireIds(simulationResults);
 
                 router.push('/client/ajouter-destinataire');
@@ -98,7 +105,7 @@ export default function SimulationResults() {
                 <Card className="border-l-4 border-blue-500 shadow-sm">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-gray-700">
-                            <MapPin className="h-5 w-5 text-blue-500" />
+                            <MapPin className="h-5 w-5 text-blue-500"/>
                             Départ
                         </CardTitle>
                     </CardHeader>
@@ -112,7 +119,7 @@ export default function SimulationResults() {
                 <Card className="border-l-4 border-green-500 shadow-sm">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-gray-700">
-                            <MapPin className="h-5 w-5 text-green-500" />
+                            <MapPin className="h-5 w-5 text-green-500"/>
                             Destination
                         </CardTitle>
                     </CardHeader>
@@ -127,7 +134,7 @@ export default function SimulationResults() {
             <Card className="mt-6 bg-blue-50">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                        <Package className="h-5 w-5 text-blue-500" />
+                        <Package className="h-5 w-5 text-blue-500"/>
                         Détails des Colis
                     </CardTitle>
                 </CardHeader>
@@ -147,27 +154,27 @@ export default function SimulationResults() {
             <Card className="bg-blue-100">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-blue-700">
-                        <DollarSign className="h-5 w-5" />
+                        <DollarSign className="h-5 w-5"/>
                         Résumé des Calculs
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="grid md:grid-cols-2 gap-4">
                     <div className="flex items-center gap-3">
-                        <Weight className="h-5 w-5 text-gray-500" />
+                        <Weight className="h-5 w-5 text-gray-500"/>
                         <div>
                             <p className="text-sm text-gray-500">Poids total</p>
                             <p className="font-medium">{results.totalWeight} kg</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                        <Calendar className="h-5 w-5 text-gray-500" />
+                        <Calendar className="h-5 w-5 text-gray-500"/>
                         <div>
                             <p className="text-sm text-gray-500">Date de départ</p>
                             <p className="font-medium">{new Date(results.departureDate).toLocaleDateString()}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                        <Calendar className="h-5 w-5 text-gray-500" />
+                        <Calendar className="h-5 w-5 text-gray-500"/>
                         <div>
                             <p className="text-sm text-gray-500">Date d&#39;arrivée estimée</p>
                             <p className="font-medium">{new Date(results.arrivalDate).toLocaleDateString()}</p>
@@ -179,7 +186,7 @@ export default function SimulationResults() {
             <Card className="bg-blue-100">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-blue-700">
-                        <DollarSign className="h-5 w-5" />
+                        <DollarSign className="h-5 w-5"/>
                         Prix Total
                     </CardTitle>
                 </CardHeader>
@@ -191,10 +198,14 @@ export default function SimulationResults() {
             </Card>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
-                <Button className="flex items-center gap-2 px-8 py-6 text-lg bg-green-500 hover:bg-green-600 text-white" onClick={handleValidate}>
+                <Button
+                    className="flex items-center gap-2 px-8 py-6 text-lg bg-green-500 hover:bg-green-600 text-white"
+                    onClick={handleValidate}>
                     Valider
                 </Button>
-                <Button variant="destructive" className="flex items-center gap-2 px-8 py-6 text-lg text-white bg-red-500 hover:bg-red-600" onClick={handleCancel}>
+                <Button variant="destructive"
+                        className="flex items-center gap-2 px-8 py-6 text-lg text-white bg-red-500 hover:bg-red-600"
+                        onClick={handleCancel}>
                     Annuler
                 </Button>
             </div>

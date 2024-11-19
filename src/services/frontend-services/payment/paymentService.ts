@@ -6,8 +6,6 @@ export async function completePaymentService() {
     console.log("log ====> paymentService function called in src/services/frontend-services/payment/paymentService.ts");
 
 
-
-
     try {
         const response = await fetch(`${DOMAIN}/api/v1/payment/complete-payment`, {
             method: "GET",

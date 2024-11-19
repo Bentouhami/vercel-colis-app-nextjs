@@ -38,19 +38,15 @@ model User {
   sessions  Session[]
 
   // Relations
-  sentEnvois                  Envoi[]         @relation("ClientEnvoi")
-  receivedEnvois              Envoi[]         @relation("DestinataireEnvoi")
-  notificationsAsUser         Notification[]  @relation("NotificationUser")
-  notificationsAsDestinataire Notification[]  @relation("NotificationDestinataire")
+  sentEnvois                  Envoi[]         @relation("ClientEnvoi") // Envois envoyés par le client
+  receivedEnvois              Envoi[]         @relation("DestinataireEnvoi") // Envois reçus par la destinataire
+  notificationsAsUser         Notification[]  @relation("NotificationUser") // Notifications envoyées par le client
+  notificationsAsDestinataire Notification[]  @relation("NotificationDestinataire") // Notifications reçues par la destinataire
   UserCoupon                  UserCoupon[]
   Authenticator               Authenticator[]
 
   clientLinks       ClientDestinataire[] @relation("Client")
   destinataireLinks ClientDestinataire[] @relation("Destinataire")
-
-  // Nouvelles relations pour la gestion des simulations
-  createdSimulations  Simulation[] @relation("ClientSimulations")
-  receivedSimulations Simulation[] @relation("DestinataireSimulations")
 
   // New relations for agency admins to manage their agencies
   managedAgencies Agency[] @relation("AgencyAdmins")
@@ -205,33 +201,6 @@ enum SimulationStatus {
   @@map("simulation_status")
 }
 
-model Simulation {
-  id                 Int               @id @default(autoincrement())
-  userId             Int? // Référence à l'ID de l'utilisateur qui effectue la simulation
-  destinataireId     Int? // Référence à l'ID du destinataire
-  departureCountry   String
-  departureCity      String
-  departureAgency    String
-  destinationCountry String
-  destinationCity    String
-  destinationAgency  String
-  parcels            Json              @db.Json
-  status             SimulationStatus? @default(DRAFT)
-  totalWeight        Float
-  totalVolume        Float
-  totalPrice         Float?
-  departureDate      DateTime
-  arrivalDate        DateTime
-  verificationToken  String            @unique @default(uuid()) @db.Uuid
-  createdAt          DateTime          @default(now())
-  updatedAt          DateTime          @updatedAt
-
-  client       User? @relation("ClientSimulations", fields: [userId], references: [id])
-  destinataire User? @relation("DestinataireSimulations", fields: [destinataireId], references: [id])
-
-  @@map("simulations")
-}
-
 model ClientDestinataire {
   id             Int      @id @default(autoincrement())
   clientId       Int // Référence au (client) l'utilisateur qui effectue la simulation
@@ -309,38 +278,46 @@ model Transport {
 }
 
 model Envoi {
-  id                Int         @id @default(autoincrement())
-  trackingNumber    String      @unique @db.VarChar(50)
-  qrCodeUrl         String?     @db.VarChar(255) // URL du QR code pour le dépôt en agence
-  departureDate     DateTime?
-  clientId          Int?
-  transportId       Int?
-  destinataireId    Int?
-  departureAgencyId Int?
-  arrivalAgencyId   Int?
-  arrivalDate       DateTime?
-  status            EnvoiStatus @default(PENDING)
-  comment           String?     @db.Text()
+  id             Int     @id @default(autoincrement())
+  trackingNumber String? @unique @default("") @db.VarChar(50)
+  qrCodeUrl      String? @default("") @db.VarChar(255) // URL du QR code pour le dépôt en agence
 
-  totalWeight Float
-  totalVolume Float
-  totalPrice  Float?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  userId         Int?
+  destinataireId Int?
+  transportId    Int?
 
-  verificationToken String @unique @default(uuid()) @db.Uuid
-  // Relations
+  departureAgencyId Int
+  arrivalAgencyId   Int
 
-  ArrivalAgency   Agency?    @relation("ArrivalAgency", fields: [arrivalAgencyId], references: [id])
-  DepartureAgency Agency?    @relation("DepartureAgency", fields: [departureAgencyId], references: [id])
-  Transport       Transport? @relation(fields: [transportId], references: [id])
+  simulationStatus SimulationStatus @default(DRAFT) // Statut de la simulation
+  status           EnvoiStatus?     @default(PENDING) // Statut de l'envoi
 
-  Destinataire User?          @relation("DestinataireEnvoi", fields: [destinataireId], references: [id])
-  Client       User?          @relation("ClientEnvoi", fields: [clientId], references: [id])
-  EnvoiCoupon  EnvoiCoupon[]
-  parcels      Parcel[]
-  Appointment  Appointment?
-  Notification Notification[]
+  totalWeight   Float
+  totalVolume   Float
+  totalPrice    Float
+  departureDate DateTime
+  arrivalDate   DateTime
+
+  verificationToken String  @unique @default(uuid()) @db.Uuid
+  comment           String? @db.Text()
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  arrivalAgency   Agency?    @relation("ArrivalAgency", fields: [arrivalAgencyId], references: [id])
+  departureAgency Agency?    @relation("DepartureAgency", fields: [departureAgencyId], references: [id])
+  transport       Transport? @relation(fields: [transportId], references: [id])
+
+  destinataire User? @relation("DestinataireEnvoi", fields: [destinataireId], references: [id])
+  client       User? @relation("ClientEnvoi", fields: [userId], references: [id])
+
+  envoiCoupon EnvoiCoupon[] // Coupons associés à l'envoi
+
+  parcels Parcel[] // Parcels associés à l'envoi
+
+  appointment Appointment? // Appointment associé à l'envoi
+
+  notification Notification[] // Notifications associées à l'envoi
 
   @@map("envois")
 }
@@ -390,7 +367,6 @@ model EnvoiCoupon {
 model Parcel {
   id        Int      @id @default(autoincrement())
   height    Decimal  @db.Decimal(5, 2)
-  volume    Decimal  @db.Decimal(5, 2)
   weight    Decimal  @db.Decimal(5, 2)
   width     Decimal  @db.Decimal(5, 2)
   length    Decimal  @db.Decimal(5, 2)

@@ -1,44 +1,185 @@
-// DTOs for ColisApp
+// path : src/utils/dtos.ts
+
+// ------------------ DTOs généraux ------------------
+export interface PaginationDto {
+    page: number; // Page actuelle
+    pageSize: number; // Nombre d'éléments par page
+}
 
 // Base DTOs
 
-export enum Role {
-    CLIENT = "CLIENT",
-    DESTINATAIRE = "DESTINATAIRE",
-    ADMIN = "ADMIN",
-    AGENCY_ADMIN = "AGENCY_ADMIN" // New role for agency-specific admins
+// Enums matching the database schema
+export enum Roles {
+    CLIENT = 'CLIENT',
+    ADMIN = 'ADMIN',
+    DESTINATAIRE = 'DESTINATAIRE',
+    AGENCY_ADMIN = 'AGENCY_ADMIN'
 }
 
-export interface BaseDestinataireDto {
-    firstName: string;
-    lastName: string;
-    name: string;
-    email: string;
-    phoneNumber: string;
-    image: string | null;
-    roles: Role[];
+export enum SimulationStatus {
+    DRAFT = 'DRAFT',
+    CONFIRMED = 'CONFIRMED',
+    COMPLETED = 'COMPLETED',
+    CANCELLED = 'CANCELLED'
 }
+
+export enum EnvoiStatus {
+    PENDING = 'PENDING',
+    SENT = 'SENT',
+    DELIVERED = 'DELIVERED',
+    CANCELLED = 'CANCELLED',
+    RETURNED = 'RETURNED'
+}
+
+export enum AppointmentStatus {
+    PENDING = 'PENDING',
+    CONFIRMED = 'CONFIRMED',
+    CANCELLED = 'CANCELLED',
+    RESCHEDULED = 'RESCHEDULED',
+    COMPLETED = 'COMPLETED',
+    MISSED = 'MISSED',
+    IN_PROGRESS = 'IN_PROGRESS'
+}
+
+// -------------------- Address DTOs --------------------
+export interface AddressDto {
+    id?: number;
+    street: string;
+    number: string;
+    city: string;
+    zipCode: string;
+    country: string;
+    latitude?: number;
+    longitude?: number;
+}
+
+// DTO for creating a new address
+export type CreateAddressDto = Omit<AddressDto, "id">;
+
+// DTO for updating an existing address
+export interface UpdateAddressDto extends Partial<CreateAddressDto> {
+    id: number;
+}
+
+// -------------------- User DTOs --------------------
+export interface UserDto {
+    id?: number;
+    firstName?: string;
+    lastName?: string;
+    name?: string;
+    birthDate?: Date;
+    email: string;
+    phoneNumber?: string;
+    password?: string;
+    image?: string;
+    roles?: Roles[];
+    agencyId?: number;
+    isVerified?: boolean;
+    emailVerified?: Date;
+    verificationToken?: string;
+    verificationTokenExpires?: Date;
+    addressId?: number;
+    address?: AddressDto;
+}
+
+// DTO for creating a new user
+export interface CreateUserDto extends Omit<UserDto, "id" | "isVerified" | "emailVerified" | "addressId" | "address"> {
+    password: string; // Obligatoire
+    address: CreateAddressDto; // Adresse complète requise
+    verificationTokenExpires: Date; // Date d'expiration du token de vérification de l'email
+    verificationToken: string; // Token de vérification de l'email
+}
+
+export type RegisterClientDto =
+    Required<Pick<UserDto, "firstName" | "lastName" | "birthDate" | "phoneNumber" | "email" | "password">>
+    & {
+    address: CreateAddressDto; // Champ supplémentaire obligatoire
+};
+
+// DTO for updating an existing user
+export interface UpdateUserDto extends Partial<CreateUserDto> {
+    id: number; // Required to identify the user to update
+}
+
+export type CreateDestinataireDto = Required<Pick<UserDto, "firstName" | "lastName" | "email" | "phoneNumber" | "image" | "roles">>;
+
+export type UserResponseDto = Required<Pick<UserDto, "id" | "firstName" | "lastName" | "birthDate" | "phoneNumber" | "email" | "image" | "roles">>;
+
 
 // DTO for User response without a password
-export interface FullUserResponseDto extends BaseUserDto {
-    id: number;
-    roles: Role[];
-    image: string | '';
-    isVerified: boolean | null;
-    emailVerified: Date;
-    verificationToken: string;
-    verificationTokenExpires: Date;
+export type FullUserResponseDto = Omit<UserDto, "password"> & {
+    address: CreateAddressDto;
+};
+
+
+// -------------------- Parcel DTOs --------------------
+export interface ParcelDto {
+    id?: number;
+    height: number;
+    weight: number;
+    width: number;
+    length: number;
+    envoiId: number;
 }
 
-export interface UserResponseDto {
+// DTO for creating a new parcel
+export type CreateParcelDto = Omit<ParcelDto, "id" | "envoiId">;
+
+
+// -------------------- Agency DTOs --------------------
+export interface AgencyDto {
+    id?: number;
+    name: string;
+    location?: string;
+    addressId: number;
+    address?: AddressDto;
+    capacity: number;
+    availableSlots: number;
+}
+
+// DTO for creating a new agency
+export interface CreateAgencyDto extends Omit<AgencyDto, "id" | "address"> {
+}
+
+// DTO for updating an existing agency
+export interface UpdateAgencyDto extends Partial<CreateAgencyDto> {
     id: number;
-    firstName: string;
-    lastName: string;
-    birthDate: Date;
-    email: string;
-    phoneNumber: string;
-    image: string | '',
-    roles: Role[];
+}
+
+// -------------------- Envoi (Shipment) DTOs --------------------
+export interface EnvoiDto {
+    id?: number;
+    trackingNumber?: string;
+    qrCodeUrl?: string;
+    userId?: number;
+    user?: UserDto;
+    destinataireId?: number;
+    destinataire?: UserDto;
+    transportId?: number;
+    departureAgencyId: number;
+    departureAgency?: AgencyDto;
+    arrivalAgencyId: number;
+    arrivalAgency?: AgencyDto;
+    simulationStatus: SimulationStatus;
+    status: EnvoiStatus;
+    totalWeight: number;
+    totalVolume: number;
+    totalPrice: number;
+    departureDate: Date;
+    arrivalDate: Date;
+    verificationToken: string;
+    comment?: string;
+    parcels?: ParcelDto[];
+}
+
+// DTO for creating a new envoi
+export interface CreateEnvoiDto extends Omit<EnvoiDto, "id" | "trackingNumber" | "qrCodeUrl" | "user" | "destinataire" | "departureAgency" | "arrivalAgency" | "parcels"> {
+    parcels: Omit<ParcelDto, "id" | "envoiId">[];
+}
+
+// DTO for updating an existing envoi
+export interface UpdateEnvoiDto extends Partial<CreateEnvoiDto> {
+    id: number;
 }
 
 export interface DestinataireResponseWithRoleDto {
@@ -49,12 +190,12 @@ export interface DestinataireResponseWithRoleDto {
     email: string;
     phoneNumber: string;
     image: string | null; // Allow null here
-    roles: Role[];
+    roles: Roles[];
 }
 
-export interface BaseUserDto extends BaseDestinataireDto {
+export interface BaseUserDto extends CreateDestinataireDto {
     birthDate: Date;
-    address: BaseAddressDTO | FullAddressDTO;
+    address: CreateAddressDto | UpdateAddressDto;
 }
 
 export interface BaseClientDto extends BaseUserDto {
@@ -69,7 +210,7 @@ export interface UserModelDto {
     birthDate: Date;
     phoneNumber: string;
     email: string;
-    roles: Role[];
+    roles: Roles[];
     image: string | '',
     isVerified: boolean;
     emailVerified: Date;
@@ -81,7 +222,7 @@ export interface UserModelDto {
 // Register and Login DTOs
 export interface FullUserDto extends BaseClientDto {
     id: number;
-    roles: Role[];
+    roles: Roles[];
     image: string | '',
     isVerified: boolean;
     emailVerified: Date;
@@ -91,12 +232,12 @@ export interface FullUserDto extends BaseClientDto {
 
 // Register and Login DTOs
 export interface CreateFullUserDto extends BaseClientDto {
-    roles: Role[];
+    roles: Roles[];
     verificationToken: string;
     verificationTokenExpires: Date;
 }
 
-export interface DestinataireResponseDto extends BaseDestinataireDto {
+export interface DestinataireResponseDto extends CreateDestinataireDto {
     id: number;
 }
 
@@ -113,35 +254,12 @@ export interface UserLoginResponseDto {
     lastName: string;
     phoneNumber: string;
     image: string | null;
-    roles: Role[];
+    roles: Roles[];
     isVerified: boolean;
     emailVerified: Date | null;
     verificationToken: string | null;
     verificationTokenExpires: Date | null;
 }
-
-// Address DTOs
-export interface BaseAddressDTO {
-    street: string;
-    number: string;
-    city: string;
-    zipCode: string;
-    country: string;
-}
-
-// Full Address DTO
-export interface FullAddressDTO extends BaseAddressDTO {
-    id: number;
-}
-
-// Parcel DTOs
-export interface CreateParcelDto {
-    height: number; // en cm
-    width: number; // en cm
-    length: number; // en cm
-    weight: number; // en kg
-}
-
 
 // Tarifs and results
 export interface TarifsDto {
@@ -152,9 +270,8 @@ export interface TarifsDto {
 }
 
 
-// Simulation DTOs
 // SimulationResultsDto: used when getting simulation details from the frontend
-export interface BaseSimulationDto {
+export interface SimulationDtoRequest extends StatusSimulationAndEnvoiStatus {
     departureCountry: string;
     departureCity: string;
     departureAgency: string;
@@ -162,6 +279,7 @@ export interface BaseSimulationDto {
     destinationCity: string;
     destinationAgency: string;
     parcels: CreateParcelDto[];
+    SimulationCalculationTotalsDto: SimulationCalculationTotalsDto;
 }
 
 // DTO for calculation results related to simulation
@@ -173,6 +291,19 @@ export interface SimulationCalculationTotalsDto {
     arrivalDate: Date;
 }
 
+// SimulationResultsDto: used when getting simulation details from the frontend
+export interface BaseSimulationDto extends SimulationCalculationTotalsDto {
+    departureAgencyId: number | null;
+    arrivalAgencyId: number | null;
+    simulationStatus: SimulationStatus;
+    status: EnvoiStatus;
+    parcels: CreateParcelDto[];
+}
+
+export interface StatusSimulationAndEnvoiStatus {
+    simulationStatus: SimulationStatus | null;
+    status: EnvoiStatus | null;
+}
 
 export enum SimulationStatus {
     DRAFT = "DRAFT",
@@ -187,13 +318,20 @@ export interface CreatedSimulationResponseDto {
     verificationToken: string;
 }
 
-// DTO combining base simulation data and calculation totals without IDs, used for sending data without user or destination details
-export interface SimulationWithoutIds extends BaseSimulationDto, SimulationCalculationTotalsDto {
-    status: SimulationStatus;
+export interface SimulationDto extends StatusSimulationAndEnvoiStatus, SimulationCalculationTotalsDto {
+    userId: number;
+    destinataireId: number;
+    departureCountry: string;
+    departureCity: string;
+    departureAgency: string;
+    destinationCountry: string;
+    destinationCity: string;
+    destinationAgency: string;
+    parcels: CreateParcelDto[];
 }
 
 // DTO for a simulation with user and destination IDs, typically used in backend processing and database storage
-export interface SimulationWithIds extends SimulationWithoutIds {
+export interface SimulationWithIds extends BaseSimulationDto {
     userId: number | null;
     destinataireId: number | null;
 }
@@ -204,10 +342,9 @@ export interface FullSimulationDto extends SimulationWithIds {
 }
 
 // DTO for a prepared simulation with only user and destinataire IDs, used before calculation
-export interface PreparedSimulation extends BaseSimulationDto {
+export interface UpdatingSimulationWithIdsDto {
     userId: number | null;
     destinataireId: number | null;
-    status: SimulationStatus;
 
 }
 
@@ -216,7 +353,7 @@ export interface PreparedSimulation extends BaseSimulationDto {
 export interface BaseAgencyDto {
     name: string;
     location: string;
-    addressId: number;
+    address: UpdateAddressDto;
     capacity: number;
     availableSlots: number;
 }
@@ -225,15 +362,76 @@ export interface AgencyResponseDto extends BaseAgencyDto {
     id: number;
 }
 
-export interface AgencyFullResponseDto extends BaseAgencyDto, AgencyResponseDto {
-
-    Address: FullAddressDTO;
-    updatedAt: Date;
-    createdAt: Date;
+// DTO for a transport
+export interface TransportDto extends BaseTransportDto {
+    id: number;
 }
 
-export interface MessageBodyDto
-{
+export interface BaseTransportDto {
+    number: string;
+    baseVolume: number;
+    baseWeight: number;
+    currentVolume: number;
+    currentWeight: number;
+    isAvailable: boolean;
+}
+
+
+// -------------------- Appointment DTOs --------------------
+export interface AppointmentDto {
+    id?: number;
+    envoiId: number;
+    envoi?: EnvoiDto;
+    agencyId: number;
+    agency?: AgencyDto;
+    date: Date;
+    status: AppointmentStatus;
+}
+
+// DTO for creating a new appointment
+export interface CreateAppointmentDto extends Omit<AppointmentDto, "id" | "envoi" | "agency" | "status"> {
+}
+
+// DTO for updating an existing appointment
+export interface UpdateAppointmentDto extends Partial<CreateAppointmentDto> {
+    id: number;
+}
+
+// -------------------- Notification DTOs --------------------
+export interface NotificationDto {
+    id?: number;
+    message: string;
+    envoisId: number;
+    agencyId: number;
+    userId: number;
+    destinataireId: number;
+    envoiId: number;
+    isRead: boolean;
+    createdAt?: Date;
+    updatedAt?: Date;
+}
+
+// -------------------- Coupon DTOs --------------------
+export interface CouponDto {
+    id?: number;
+    couponCode: string;
+    discountAmount: number;
+    discountPercentage: number;
+    numberOfUses: number;
+    startDate: Date;
+    expirationDate?: Date;
+    termsAndConditions?: string;
+}
+
+// DTO for creating a new coupon
+export type CreateCouponDto = Omit<CouponDto, "id">;
+
+// DTO for updating an existing coupon
+export interface UpdateCouponDto extends Partial<CreateCouponDto> {
+    id: number;
+}
+
+export interface MessageBodyDto {
     phone: string
     subject: string
     name: string

@@ -2,16 +2,16 @@
 'use server';
 
 import {
-    BaseDestinataireDto,
+    CreateDestinataireDto,
     CreateFullUserDto,
     DestinataireResponseDto,
     DestinataireResponseWithRoleDto,
-    FullAddressDTO,
+    UpdateAddressDto,
     FullUserResponseDto,
-    Role,
+    Roles,
     UserLoginResponseDto,
     UserModelDto,
-    UserResponseDto
+    UserResponseDto, CreateUserDto
 } from "@/utils/dtos";
 import prisma from "@/utils/db";
 import {VerificationDataType} from "@/utils/types";
@@ -24,7 +24,7 @@ import {sendVerificationEmail} from "@/lib/mailer";
  * @param address
  * @returns new created user data
  */
-export async function registerUser(newUser: CreateFullUserDto, address: FullAddressDTO): Promise<FullUserResponseDto | null> {
+export async function registerUser(newUser: CreateUserDto, address: UpdateAddressDto): Promise<FullUserResponseDto | null> {
 
     console.log("log ====> registerUser called in path: src/services/backend-services/UserService.ts")
 
@@ -38,13 +38,10 @@ export async function registerUser(newUser: CreateFullUserDto, address: FullAddr
             birthDate: newUser.birthDate,
             phoneNumber: newUser.phoneNumber,
             email: newUser.email,
-            password: newUser.password,
-            roles: newUser.roles,
             verificationToken: newUser.verificationToken,
             verificationTokenExpires: newUser.verificationTokenExpires,
             addressId: address.id,
             isVerified: false,
-            image: ''
         };
 
         console.log("formattedUser after is: ", formattedUser);
@@ -61,31 +58,19 @@ export async function registerUser(newUser: CreateFullUserDto, address: FullAddr
             return null;
         }
 
-        // Construction de l'objet `FullUserResponseDto` avec les données de l'utilisateur et l'adresse
+        // Retourner uniquement les données sécurisées
         return {
             id: createdUser.id,
-            name: createdUser.name,
             firstName: createdUser.firstName,
             lastName: createdUser.lastName,
+            name: createdUser.name,
             birthDate: createdUser.birthDate,
             email: createdUser.email,
             phoneNumber: createdUser.phoneNumber,
-            password: createdUser.password,
-            roles: createdUser.roles,
             image: createdUser.image,
-            isVerified: createdUser.isVerified,
-            emailVerified: createdUser.emailVerified,
-            verificationToken: createdUser.verificationToken,
-            verificationTokenExpires: createdUser.verificationTokenExpires,
-            address: {
-                id: address.id,
-                street: address.street,
-                number: address.number,
-                city: address.city,
-                zipCode: address.zipCode,
-                country: address.country,
-            }
-        } as FullUserResponseDto;
+            roles: createdUser.roles,
+            address: address, // Inclut l'adresse
+        } as UserResponseDto;
 
     } catch (error) {
         console.error("Error registering user:", error);
@@ -196,7 +181,7 @@ export async function isDestinataireAlreadyExist(email: string, phoneNumber: str
  * @returns {Promise<DestinataireResponseDto>}
  */
 
-export async function createDestinataire(newDestinataire: BaseDestinataireDto): Promise<DestinataireResponseWithRoleDto | null> {
+export async function createDestinataire(newDestinataire: CreateDestinataireDto): Promise<DestinataireResponseWithRoleDto | null> {
     console.log("log ====> createDestinataire function called in path: src/services/backend-services/UserService.ts");
 
     try {
@@ -210,7 +195,7 @@ export async function createDestinataire(newDestinataire: BaseDestinataireDto): 
                 email: newDestinataire.email,
                 phoneNumber: newDestinataire.phoneNumber,
                 image: newDestinataire.image ?? "", // Default to empty string if null
-                roles: [Role.DESTINATAIRE],
+                roles: [Roles.DESTINATAIRE],
             },
             select: {
                 id: true,
@@ -295,7 +280,7 @@ export async function updateUserAndResetTokenVerificationAfterVerification(userI
             where: {id: userId},
             data: {
                 isVerified: true,
-                roles: [Role.CLIENT],
+                roles: [Roles.CLIENT],
                 emailVerified: new Date(),
                 verificationToken: null,
                 verificationTokenExpires: null,
@@ -334,7 +319,7 @@ export async function updateVerificationTokenForOldUser(userId: number, verifica
     await prisma.user.update({
         where: {id: userId},
         data: {
-            roles: [Role.CLIENT],
+            roles: [Roles.CLIENT],
             isVerified: false,
             emailVerified: null,
             verificationToken: verificationData.verificationToken,
@@ -384,7 +369,7 @@ export async function getUserByEmail(email: string): Promise<UserLoginResponseDt
     }
 }
 
-export async function getUserById(id: number): Promise<BaseDestinataireDto | null> {
+export async function getUserById(id: number): Promise<CreateDestinataireDto | null> {
 
     console.log("log ====> getUserByEmail function called in path: src/services/backend-services/UserService.ts")
 
@@ -405,7 +390,7 @@ export async function getUserById(id: number): Promise<BaseDestinataireDto | nul
         if (!userByEmailFound) {
             return null;
         }
-        return userByEmailFound as BaseDestinataireDto;
+        return userByEmailFound as CreateDestinataireDto;
     } catch (error) {
         console.error("Error getting user by email:", error);
         throw error;
@@ -426,7 +411,7 @@ export async function updateDestinataireToClient(
     destinataire: UserModelDto,
     birthDate: Date,
     password: string,
-    addressId: FullAddressDTO,
+    addressId: UpdateAddressDto,
     verificationData: VerificationDataType
 ): Promise<FullUserResponseDto | null> {
 
@@ -443,7 +428,7 @@ export async function updateDestinataireToClient(
             },
             data: {
                 birthDate: birthDate,
-                roles: [Role.CLIENT],
+                roles: [Roles.CLIENT],
                 password: password,
                 addressId: addressId.id,
                 isVerified: false,
@@ -468,13 +453,13 @@ export async function updateDestinataireToClient(
             birthDate: user.birthDate ?? new Date(),
             email: user.email,
             phoneNumber: user.phoneNumber ?? '',
-            roles: (user.roles ?? [Role.CLIENT]) as Role[],
+            roles: (user.roles ?? [Roles.CLIENT]) as Roles[],
             image: user.image ?? '',
             isVerified: user.isVerified,
             emailVerified: user.emailVerified ?? new Date(),
             verificationToken: user.verificationToken ?? '',
             verificationTokenExpires: user.verificationTokenExpires ?? new Date(),
-            address: addressId as FullAddressDTO,
+            address: addressId as UpdateAddressDto,
         };
 
         await sendVerificationEmail(user.name ?? '', user.email, verificationData.verificationToken);

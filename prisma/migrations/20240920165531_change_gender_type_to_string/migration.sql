@@ -1,3 +1,0 @@
--- AlterTable
-ALTER TABLE "users" ALTER COLUMN "gender" DROP DEFAULT,
-ALTER COLUMN "gender" SET DATA TYPE TEXT;

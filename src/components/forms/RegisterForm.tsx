@@ -19,6 +19,7 @@ import {RegisterUserBackendType, registerUserFrontendSchema, validateForm} from 
 import {registerUser} from "@/services/frontend-services/UserService";
 import {motion} from "framer-motion";
 import Image from "next/image";
+import {RegisterClientDto} from "@/utils/dtos";
 
 const RegisterForm = () => {
     const [isPending, startTransition] = useTransition();
@@ -62,7 +63,7 @@ const RegisterForm = () => {
 
         startTransition(async () => {
             try {
-                const newUser: RegisterUserBackendType = {
+                const newUser: RegisterClientDto = {
                     firstName,
                     lastName,
                     birthDate,
