@@ -30,8 +30,8 @@ model User {
   verificationToken        String?   @unique @db.VarChar(255) // Token de vérification de l'email
   verificationTokenExpires DateTime? // Date d'expiration du token de vérification de l'email
 
-  addressId Int?
   createdAt DateTime  @default(now())
+  addressId Int?
   updatedAt DateTime  @updatedAt
   Address   Address?  @relation(fields: [addressId], references: [id])
   accounts  Account[]
@@ -49,8 +49,9 @@ model User {
   destinataireLinks ClientDestinataire[] @relation("Destinataire")
 
   // New relations for agency admins to manage their agencies
-  managedAgencies Agency[] @relation("AgencyAdmins")
-  clientAgencies  Agency[] @relation("AgencyClients") // For CLIENT or DESTINATAIRE roles
+
+  clientAgencies  agencyClients[]
+  managedAgencies agencyAdmins[]
 
   @@map("users")
 }
@@ -87,15 +88,6 @@ model Account {
   @@map("accounts")
 }
 
-model VerificationToken {
-  identifier String
-  token      String
-  expires    DateTime
-
-  @@id([identifier, token])
-  @@map("verification_tokens")
-}
-
 model Session {
   sessionToken String   @unique
   userId       Int
@@ -106,6 +98,26 @@ model Session {
   updatedAt DateTime @updatedAt
 
   @@map("sessions")
+}
+
+model agencyClients {
+  client   User   @relation(fields: [clientId], references: [id])
+  clientId Int
+  agency   Agency @relation(fields: [agencyId], references: [id])
+  agencyId Int
+
+  @@id([clientId, agencyId])
+  @@map("agency_clients")
+}
+
+model agencyAdmins {
+  admin    User   @relation(fields: [adminId], references: [id])
+  adminId  Int
+  agency   Agency @relation(fields: [agencyId], references: [id])
+  agencyId Int
+
+  @@id([adminId, agencyId])
+  @@map("agency_admins")
 }
 
 model Authenticator {
@@ -174,7 +186,6 @@ model Agency {
   addressId      Int      @unique
   capacity       Int      @db.Integer // maximum capacity for storing parcels
   availableSlots Int      @db.Integer // number of available slots for appointments or deliveries
-  address        Address  @relation(fields: [addressId], references: [id])
   updatedAt      DateTime @updatedAt
   createdAt      DateTime @default(now())
 
@@ -184,10 +195,11 @@ model Agency {
   DepartureEnvoi Envoi[]        @relation("DepartureAgency") // departure agency envoi
   Notification   Notification[] // notifications for the agency
   Appointment    Appointment[] // appointments for the agency
-  Tarifs         Tarifs[] // tarifs for the agency
-  // Optional admins relation allowing zero admins
-  admins         User[]         @relation("AgencyAdmins")
-  Clients        User[]         @relation("AgencyClients") // For CLIENT or DESTINATAIRE roles
+  Tarifs         Tarifs[]
+  address        Address        @relation(fields: [addressId], references: [id])
+
+  agencyClients agencyClients[]
+  agencyAdmins  agencyAdmins[]
 
   @@map("agencies")
 }
@@ -356,7 +368,6 @@ model EnvoiCoupon {
   couponId Int
 
   // Relations
-
   Envoi  Envoi  @relation(fields: [envoiId], references: [id])
   Coupon Coupon @relation(fields: [couponId], references: [id])
 

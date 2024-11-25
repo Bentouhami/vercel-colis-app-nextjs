@@ -38,6 +38,7 @@ export async function registerUser(newUser: CreateUserDto, address: UpdateAddres
             birthDate: newUser.birthDate,
             phoneNumber: newUser.phoneNumber,
             email: newUser.email,
+            password: newUser.password,
             verificationToken: newUser.verificationToken,
             verificationTokenExpires: newUser.verificationTokenExpires,
             addressId: address.id,
@@ -117,8 +118,10 @@ export async function isUserAlreadyExist(email: string, phoneNumber: string): Pr
         }) as UserModelDto;
 
         if (!existedUser) {
+            console.log("user NOT found by email and or phone number in isUserAlreadyExist function in path: src/services/backend-services/UserService.ts return NULL");
             return null;
         }
+        console.log("user found by email and or phone number in isUserAlreadyExist function in path: src/services/backend-services/UserService.ts: ", existedUser);
         return existedUser;
 
     } catch (error) {
@@ -360,6 +363,8 @@ export async function getUserByEmail(email: string): Promise<UserLoginResponseDt
         });
 
         if (!userByEmailFound) {
+            console.log("userByEmailFound NOT found by email and or phone number in getUserByEmail function in path: src/services/backend-services/UserService.ts return NULL");
+
             return null;
         }
         return userByEmailFound as UserLoginResponseDto;

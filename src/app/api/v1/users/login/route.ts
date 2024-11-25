@@ -44,9 +44,9 @@ export async function POST(request: NextRequest) {
         // Nettoyage des données (conversion de l'email en minuscule)
         const formatedEmail = toLowerCase(data.email);
 
-
-
         const user = await getUserByEmail(formatedEmail);
+
+        console.log("log ====> user in login route: ", user);
 
         if (!user) {
             return NextResponse.json(
