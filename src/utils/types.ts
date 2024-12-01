@@ -16,12 +16,13 @@
 
 export type JWTPayload = {
     id: number;
-    roles: string[]; // Changed from `role` to `roles` for multiple roles
-    phoneNumber: string;
-    userEmail: string;
     firstName: string;
     lastName: string;
+    name: string;
+    userEmail: string;
+    phoneNumber: string;
     image?: string | null;
+    roles: string[]; // Changed from `role` to `roles` for multiple roles
 };
 
 export type Country = {
@@ -51,7 +52,6 @@ export type VerificationDataType = {
     verificationToken: string;
     verificationTokenExpires: Date;
 }
-
 
 
 // export interface SimulationResults {

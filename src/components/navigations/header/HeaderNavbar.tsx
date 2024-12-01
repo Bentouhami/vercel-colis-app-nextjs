@@ -12,15 +12,16 @@ import Image from "next/image";
 
 interface NavbarProps {
     isLoggedIn: boolean;
-    userEmail: string | null;
     isAdmin: boolean;
     firstName: string;
     lastName: string;
+    name: string;
+    email: string | null;
     image: string;
 
 }
 
-const HeaderNavbar: React.FC<NavbarProps> = ({ isAdmin, isLoggedIn, userEmail, firstName, lastName, image }) => {
+const HeaderNavbar: React.FC<NavbarProps> = ({ isAdmin, isLoggedIn, name, firstName, lastName, email, image }) => {
     const [expanded, setExpanded] = useState(false);
     const pathname = usePathname();
 
@@ -49,10 +50,10 @@ const HeaderNavbar: React.FC<NavbarProps> = ({ isAdmin, isLoggedIn, userEmail, f
                             <div className="d-flex flex-column justify-content-center align-items-center mt-3">
                                 <Image src={"https://placehold.co/600x400.png"} priority={true} alt={"avatar"} width={50} height={50} />
                                 <strong>
-                                    {`Bienvenue: ${firstName} ${lastName}`}
+                                    {`Bienvenue: ${name}`}
                                     {isAdmin ? ' (ADMIN)' : ' (utilisateur)'}
                                 </strong>
-                                <strong>{userEmail}</strong>
+                                <strong>{email}</strong>
 
                                 {isAdmin && pathname !== '/admin' && (
                                     <Link href="/admin" passHref legacyBehavior>

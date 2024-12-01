@@ -124,7 +124,6 @@ export async function deleteTransport(id: number): Promise<void> {
             throw new Error("Failed to delete transport");
         }
 
-        return data.data as TransportDto;
     } catch (error) {
         throw error;
     }

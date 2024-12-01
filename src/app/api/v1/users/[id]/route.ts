@@ -19,8 +19,6 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
         if (!user) {
             return NextResponse.json({ error: 'User not found' }, { status: 404 });
         }
-        const tt= new User();
-
         return NextResponse.json({ data: user });
     } catch (error) {
         console.error('Error getting user:', error);

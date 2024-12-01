@@ -76,12 +76,13 @@ export async function POST(request: NextRequest) {
         // Generate JWTPayload object and setCookies
         const cookie = await generateJWTPayloadAndSetCookie(
             user.id,
-            user.roles,
             user.email,
             user.firstName,
             user.lastName,
+            user.name,
             user.phoneNumber,
-            user.image || ""
+            user.roles,
+            user.image,
         );
 
         // Retourner la réponse avec le cookie

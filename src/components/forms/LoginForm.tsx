@@ -4,13 +4,13 @@
 import {Button, Form, InputGroup, Spinner} from "react-bootstrap";
 import React, {useState, useTransition} from "react";
 import {toast, ToastContainer} from "react-toastify";
-import {login} from "@/services/frontend-services/AuthService";
 import {useRouter, useSearchParams} from "next/navigation";
 import {FaEnvelope, FaEye, FaEyeSlash, FaLock} from 'react-icons/fa';
 import {LoginUserDto} from "@/utils/dtos";
 import {loginUserSchema} from "@/utils/validationSchema";
 import {motion} from "framer-motion";
 import Image from "next/image";
+import {signIn} from "next-auth/react";
 
 interface LoginFormProps {
     onSuccess?: () => void;
@@ -37,17 +37,21 @@ const LoginForm: React.FC<LoginFormProps> = () => {
 
         startTransition(async () => {
             try {
-                const result = await login(email, password);
+                const result = await signIn("credentials", {
+                    redirect: false,
+                    email: loginData.email,
+                    password: loginData.password,
+                });
 
-                if (result.message === "Authenticated") {
+                if (result?.error) {
+                    toast.error("Invalid email or password");
+                } else {
                     toast.success("Connexion réussie");
-                    const redirectUrl = searchParams.get('redirect') || '/client/simulation';
+                    const redirectUrl = searchParams.get("redirect") || "/client/simulation";
                     setTimeout(() => {
                         router.replace(redirectUrl);
                         router.refresh();
                     }, 3000);
-                } else {
-                    toast.error("Erreur lors de la connexion");
                 }
             } catch (error) {
                 toast.error("Erreur lors de la connexion");
@@ -186,7 +190,8 @@ const LoginForm: React.FC<LoginFormProps> = () => {
                     className="mt-6 text-center text-sm text-gray-500"
                 >
                     <p>
-                        Vous avez oublié votre mot de passe ? <a href="/reset-password" className="text-blue-600 hover:underline">Cliquez
+                        Vous avez oublié votre mot de passe ? <a href="/reset-password"
+                                                                 className="text-blue-600 hover:underline">Cliquez
                         ici</a>
                     </p>
                     <p>

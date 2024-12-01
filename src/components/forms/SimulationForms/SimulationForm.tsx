@@ -156,7 +156,9 @@ const SimulationForm = () => {
                 destinationCountry: destination.country,
                 destinationCity: destination.city,
                 destinationAgency: destination.agencyName,
-                parcels
+                parcels,
+
+
             };
 
             // validate data with zod schema

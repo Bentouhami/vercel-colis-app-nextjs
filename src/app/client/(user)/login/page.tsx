@@ -1,10 +1,9 @@
-// path: src/app/client/(user)/login/page.tsx
 'use client';
-import React from "react";
+import React, { Suspense } from "react";
 import LoginForm from "@/components/forms/LoginForm";
 import {motion} from "framer-motion";
 
-const LoginPage = () => {
+const LoginContent = () => {
     return (
         <div className="container mx-auto px-4 mt-10 md:mt-20 flex justify-center">
             <div className="w-full max-w-4xl p-4">
@@ -19,6 +18,14 @@ const LoginPage = () => {
                 <LoginForm />
             </div>
         </div>
+    );
+};
+
+const LoginPage = () => {
+    return (
+        <Suspense fallback={<div>Chargement...</div>}>
+            <LoginContent />
+        </Suspense>
     );
 };
 

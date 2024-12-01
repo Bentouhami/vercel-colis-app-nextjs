@@ -1,16 +1,17 @@
 // path: src/app/api/v1/agencies/findAgency/route.ts
 
-import {NextResponse} from 'next/server';
+import {NextRequest, NextResponse} from 'next/server';
 import {getAgencyIdByCountryAndCityAndAgencyName} from "@/services/backend-services/AgencyService";
+export const dynamic = 'force-dynamic'
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
     console.log("GET request received in agencies/find route");
     if (request.method === "POST") {
         return NextResponse.json({error: 'Method not allowed'}, {status: 405});
     }
     try {
         // get city, country and agency name from url params
-        const {searchParams} = new URL(request.url);
+        const searchParams = request.nextUrl.searchParams;
         const country = searchParams.get('country');
         const city = searchParams.get('city');
         const agencyName = searchParams.get('agency_name');

@@ -2,8 +2,8 @@
 
 import {NextRequest, NextResponse} from 'next/server';
 import {
-    BaseSimulationDto, EnvoiStatus,
-    FullSimulationDto, SimulationDto,
+    BaseSimulationDto, EnvoiStatus, FullSimulationDto,
+    SimulationDto,
     SimulationStatus,
 } from "@/utils/dtos";
 import {verifyToken} from "@/utils/verifyToken";
@@ -14,6 +14,7 @@ import {
 } from "@/services/backend-services/simulationService";
 import {setSimulationResponseCookie} from "@/utils/generateSimulationToken";
 import {verifySimulationToken} from "@/utils/verifySimulationToken";
+import {getToken} from "next-auth/jwt";
 
 /**
  * POST request handler for the /simulations route
@@ -70,7 +71,11 @@ export async function POST(request: NextRequest) {
     }
 }
 
-
+/**
+ * Methode GET
+ * @param request
+ * @constructor
+ */
 export async function GET(request: NextRequest) {
     console.log("GET request received in simulations route");
 
@@ -114,7 +119,7 @@ export async function PUT(request: NextRequest) {
     console.log("PUT request received with body:", request.body);
 
     try {
-        const body = (await request.json()) as SimulationDto;
+        const body = (await request.json()) as FullSimulationDto;
         console.log("Parsed body in PUT request:", body);
 
         if (!body) {
@@ -123,11 +128,17 @@ export async function PUT(request: NextRequest) {
         }
 
 
+        // Retrieve the connected user's token
+        const token = await getToken({ req: request, secret: process.env.AUTH_SECRET as string });
+
         if (!body.userId) {
-            const userPayload = verifyToken(request);
-            console.log("Payload from verifyToken:", userPayload);
-            body.userId = !userPayload ? null : userPayload.id;
+            if (!token) {
+                console.error("Unauthorized: User token not found.");
+                return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+            }
+            body.userId = Number(token.id);
         }
+
         // get simulationIdAndToken from the body
         const simulationIdAndToken = verifySimulationToken(request);
 
@@ -150,6 +161,8 @@ export async function PUT(request: NextRequest) {
             console.error("Error: Simulation ID not found in request body.");
             return NextResponse.json({error: 'Simulation ID not found'}, {status: 400});
         }
+
+
        await updateSimulationWithSenderAndDestinataireIds(body);
 
         return NextResponse.json({message: "Simulation updated successfully"}, {status: 200});

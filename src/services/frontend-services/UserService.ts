@@ -4,13 +4,14 @@ import {JWTPayload} from "@/utils/types";
 import {setCookie} from "@/utils/generateToken";
 import { RegisterUserBackendType} from "@/utils/validationSchema";
 import {DOMAIN} from "@/utils/constants";
-import {CreateDestinataireDto, RegisterClientDto} from "@/utils/dtos";
+import {CreateDestinataireDto, RegisterClientDto, Roles} from "@/utils/dtos";
 
 /**
  * Generate JWTPayload object and setCookies with JWT token and cookie
  * @param userId
  * @param roles
  * @param userEmail
+ * @param name
  * @param firstName
  * @param lastName
  * @param phoneNumber
@@ -19,21 +20,24 @@ import {CreateDestinataireDto, RegisterClientDto} from "@/utils/dtos";
  */
 export async function generateJWTPayloadAndSetCookie(
     userId: number,
-    roles: string[],
     userEmail: string,
     firstName: string,
     lastName: string,
+    name: string,
     phoneNumber: string,
-    image: string) {
+    roles: Roles[],
+    image: string | null
+) {
 
     const jwtPayload: JWTPayload = {
         id: userId,
-        roles: roles,
         userEmail: userEmail,
         firstName: firstName,
         lastName: lastName,
+        name: name,
         phoneNumber: phoneNumber,
-        image: image
+        image: image,
+        roles: roles,
     };
 
     // return cookie
@@ -155,5 +159,4 @@ export async function addDestinataire(newUser: CreateDestinataireDto) : Promise<
         throw error;
     }
 }
-
 

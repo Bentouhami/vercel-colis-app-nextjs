@@ -1,40 +1,63 @@
-// path : /api/v1/users/logout/route.ts
-// logout route.ts : route pour la déconnexion d'un utilisateur
+import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { ALLOWED_ORIGINS } from "@/utils/constants";
 
-import { NextResponse} from 'next/server';
-import {cookies} from 'next/headers';
-import {errorHandler} from '@/utils/handelErrors';
-
-// Fonction pour gérer la déconnexion (GET request)
-export async function GET() {
+export async function GET(req: Request) {
     try {
-        // Supprimer le cookie d'authentification
-        cookies().delete("auth");
+        const origin = req.headers.get("origin");
+
+        // Validate the origin
+        if (!origin || !ALLOWED_ORIGINS.includes(origin)) {
+            console.warn(`Blocked origin: ${origin}`);
+            return NextResponse.json(
+                { error: "Origin not allowed" },
+                { status: 403 }
+            );
+        }
+
+        // Delete the simulationResponse cookie
         cookies().delete("simulationResponse");
 
-        // Créer la réponse avec le message de succès
+        // Create response
         const response = NextResponse.json(
-            {message: "Logged out"},
-            {status: 200}
+            { message: "Logged out" },
+            { status: 200 }
         );
 
-        // Ajouter les en-têtes CORS pour autoriser les requêtes cross origin
-        response.headers.set('Access-Control-Allow-Origin', '*'); // Remplace '*' par ton domaine en production
-        response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-        response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        // Set CORS headers for the allowed origin
+        response.headers.set("Access-Control-Allow-Origin", origin);
+        response.headers.set("Access-Control-Allow-Methods", "GET, OPTIONS");
+        response.headers.set(
+            "Access-Control-Allow-Headers",
+            "Content-Type, Authorization"
+        );
 
         return response;
     } catch (error) {
-        return errorHandler("Internal server error", 500);
+        console.error("Error during logout:", error);
+        return NextResponse.json(
+            { error: "Internal server error" },
+            { status: 500 }
+        );
     }
 }
 
-// Fonction pour gérer la requête OPTIONS (pré-vol)
-export async function OPTIONS() {
-    const headers = new Headers();
-    headers.set('Access-Control-Allow-Origin', '*'); // Remplace '*' par ton domaine en production
-    headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+// Preflight request handler for CORS
+export async function OPTIONS(req: Request) {
+    const origin = req.headers.get("origin");
 
-    return new NextResponse(null, {headers, status: 204}); // 204 = No Content
+    // Validate the origin
+    if (!origin || !ALLOWED_ORIGINS.includes(origin)) {
+        return new NextResponse(null, { status: 204 });
+    }
+
+    const headers = new Headers();
+    headers.set("Access-Control-Allow-Origin", origin);
+    headers.set("Access-Control-Allow-Methods", "GET, OPTIONS");
+    headers.set(
+        "Access-Control-Allow-Headers",
+        "Content-Type, Authorization"
+    );
+
+    return new NextResponse(null, { headers, status: 204 });
 }

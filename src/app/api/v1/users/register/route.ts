@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
 
             registeredUser = await registerUser(userData, addressToUse) as FullUserResponseDto;
 
-            if (!registeredUser) {
+            if (!registeredUser || registeredUser.name === undefined) {
                 return NextResponse.json({ error: "Failed to create registeredUser" }, { status: 500 });
             }
 
@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
                 verificationData
             );
 
-            if (!registeredUser) {
+            if (!registeredUser || registeredUser.name === undefined) {
                 return NextResponse.json({ error: "Failed to update destinataire" }, { status: 500 });
             }
 

@@ -23,15 +23,14 @@ model User {
   password    String?   @default("") @db.VarChar(255)
   image       String?   @default("") @db.VarChar(255)
   roles       Role[]    @default([CLIENT]) // Default to CLIENT role for new users
-  agencyId    Int? // New field to link admins to specific agencies
 
   isVerified               Boolean?  @default(false) // Indique si l'utilisateur a vérifié son email
   emailVerified            DateTime? // Date de vérification de l'email
   verificationToken        String?   @unique @db.VarChar(255) // Token de vérification de l'email
   verificationTokenExpires DateTime? // Date d'expiration du token de vérification de l'email
+  addressId                Int?
 
   createdAt DateTime  @default(now())
-  addressId Int?
   updatedAt DateTime  @updatedAt
   Address   Address?  @relation(fields: [addressId], references: [id])
   accounts  Account[]

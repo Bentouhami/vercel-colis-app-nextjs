@@ -2,16 +2,17 @@
 'use server';
 
 import {
+    AddressDto,
+    CreateAddressDto,
     CreateDestinataireDto,
-    CreateFullUserDto,
+    CreateUserDto,
     DestinataireResponseDto,
     DestinataireResponseWithRoleDto,
+    FullUserResponseDto, Roles,
     UpdateAddressDto,
-    FullUserResponseDto,
-    Roles,
     UserLoginResponseDto,
     UserModelDto,
-    UserResponseDto, CreateUserDto
+    UserResponseDto
 } from "@/utils/dtos";
 import prisma from "@/utils/db";
 import {VerificationDataType} from "@/utils/types";
@@ -24,12 +25,10 @@ import {sendVerificationEmail} from "@/lib/mailer";
  * @param address
  * @returns new created user data
  */
+
 export async function registerUser(newUser: CreateUserDto, address: UpdateAddressDto): Promise<FullUserResponseDto | null> {
+    console.log("log ====> registerUser called in path: src/services/backend-services/UserService.ts");
 
-    console.log("log ====> registerUser called in path: src/services/backend-services/UserService.ts")
-
-
-    console.log("newUser.address from createUser : ", newUser.address);
     try {
         const formattedUser = {
             firstName: newUser.firstName,
@@ -45,39 +44,38 @@ export async function registerUser(newUser: CreateUserDto, address: UpdateAddres
             isVerified: false,
         };
 
-        console.log("formattedUser after is: ", formattedUser);
-
         const createdUser = await prisma.user.create({
             data: formattedUser,
             include: {
-                Address: true // Inclusion de l'adresse
-            }
+                Address: true,
+            },
         });
 
         if (!createdUser) {
-            console.log("Error can't create user");
+            console.error("Error: Cannot create user.");
             return null;
         }
 
-        // Retourner uniquement les données sécurisées
+
+        // Ensure fields are not null by using `?? undefined`
         return {
             id: createdUser.id,
-            firstName: createdUser.firstName,
-            lastName: createdUser.lastName,
-            name: createdUser.name,
-            birthDate: createdUser.birthDate,
-            email: createdUser.email,
-            phoneNumber: createdUser.phoneNumber,
-            image: createdUser.image,
-            roles: createdUser.roles,
-            address: address, // Inclut l'adresse
-        } as UserResponseDto;
-
+            firstName: createdUser.firstName ?? undefined,
+            lastName: createdUser.lastName ?? undefined,
+            name: createdUser.name ?? undefined,
+            birthDate: createdUser.birthDate ?? undefined,
+            email: createdUser.email ?? undefined,
+            phoneNumber: createdUser.phoneNumber ?? undefined,
+            image: createdUser.image ?? undefined,
+            roles: createdUser.roles as Roles[],
+            address: address as CreateAddressDto,
+        };
     } catch (error) {
         console.error("Error registering user:", error);
-        throw error; // Relancer l'erreur pour la capturer dans RegisterForm
+        throw error;
     }
 }
+
 
 
 /**
@@ -352,6 +350,7 @@ export async function getUserByEmail(email: string): Promise<UserLoginResponseDt
                 password: true,
                 firstName: true,
                 lastName: true,
+                name: true,
                 phoneNumber: true,
                 image: true,
                 roles: true,
@@ -460,11 +459,11 @@ export async function updateDestinataireToClient(
             phoneNumber: user.phoneNumber ?? '',
             roles: (user.roles ?? [Roles.CLIENT]) as Roles[],
             image: user.image ?? '',
-            isVerified: user.isVerified,
+            isVerified: user.isVerified ?? false,
             emailVerified: user.emailVerified ?? new Date(),
             verificationToken: user.verificationToken ?? '',
             verificationTokenExpires: user.verificationTokenExpires ?? new Date(),
-            address: addressId as UpdateAddressDto,
+            address: user.Address as AddressDto,
         };
 
         await sendVerificationEmail(user.name ?? '', user.email, verificationData.verificationToken);

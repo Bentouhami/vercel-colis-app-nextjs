@@ -1,19 +1,17 @@
 // path: src/app/client/payment/page.tsx
 
-'use client';
-import React, {useEffect, useState} from 'react';
+"use client";
+import React, {Suspense, useEffect, useState} from 'react';
 import {loadStripe} from '@stripe/stripe-js';
 import {Button} from '@/components/ui/button';
 import {toast} from 'react-toastify';
 import {useSearchParams} from "next/navigation";
 import {DOMAIN} from "@/utils/constants";
-import {router} from "next/client";
 
 
 // Charger la clé publique Stripe depuis les variables d'environnement
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!);
-
-const PaymentPage = () => {
+const PaymentContent = () => {
     const [loading, setLoading] = useState(false);
     const [amount, setAmount] = useState<number | null>(null);
     const searchParams = useSearchParams();
@@ -21,7 +19,7 @@ const PaymentPage = () => {
     useEffect(() => {
         const amount = searchParams.get("amount");
         if (amount) {
-            setAmount(parseFloat(amount)); // Convert price to number and set amount
+            setAmount(parseFloat(amount));
         } else {
             toast.error("Erreur : le prix total est introuvable.");
         }
@@ -70,6 +68,12 @@ const PaymentPage = () => {
         </div>
     );
 };
-
+const PaymentPage = () => {
+    return (
+        <Suspense fallback={<div>Chargement...</div>}>
+            <PaymentContent />
+        </Suspense>
+    );
+};
 // Correction : Assurez-vous que l'export par défaut est bien le nom du composant
 export default PaymentPage;

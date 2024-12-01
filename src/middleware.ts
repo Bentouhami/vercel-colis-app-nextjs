@@ -1,113 +1,109 @@
 import { NextRequest, NextResponse } from "next/server";
-import { jwtVerify } from "jose";
+import { getToken } from "next-auth/jwt";
 import { isPublicRoute } from "@/utils/publicRoutesHelper";
 import { setCorsHeaders } from "@/utils/cors";
+import {Roles} from "@/utils/dtos";
 
 export async function middleware(req: NextRequest) {
     const origin = req.headers.get("origin") || "";
     const corsHeaders = setCorsHeaders(origin);
 
+    console.log("--------------------------------");
+    console.log("Middleware started. Current Path:", req.nextUrl.pathname);
+    console.log("NEXTAUTH_URL:", process.env.NEXTAUTH_URL);
+
+    // Fetch CSRF Token
     try {
-        console.log('--------------------------------');
-        console.log('Middleware started Current Path:', req.nextUrl.pathname);
-
-        // Gestion des requêtes OPTIONS (CORS)
-        if (req.method === "OPTIONS") {
-            console.log("OPTIONS request allowed");
-            if (corsHeaders) {
-                return new NextResponse(null, { headers: corsHeaders });
-            }
-            return NextResponse.json({ error: "Origine non autorisée" }, { status: 403 });
+        const csrfTokenCookie = req.cookies?.get("authjs.csrf-token")?.value;
+        if (csrfTokenCookie) {
+            const csrfToken = csrfTokenCookie.split("|")[0]; // Extract the actual token
+            console.log("Extracted CSRF Token:", csrfToken);
+        } else {
+            console.warn("CSRF Token Cookie is missing or undefined.");
         }
+    } catch (error) {
+        console.error("Error extracting CSRF Token:", error);
+    }
 
-        // Ajout des en-têtes CORS pour toutes les requêtes
-        const response = NextResponse.next();
+    // Handle OPTIONS requests (CORS preflight)
+    if (req.method === "OPTIONS") {
+        console.log("OPTIONS request allowed");
         if (corsHeaders) {
-            Object.entries(corsHeaders).forEach(([key, value]) =>
-                response.headers.set(key, value)
-            );
+            return new NextResponse(null, { headers: corsHeaders });
         }
+        return NextResponse.json({ error: "Origin not allowed" }, { status: 403 });
+    }
 
-        // Vérification du token JWT
-        const cookieName = process.env.COOKIE_NAME || "auth";
-        const jwtToken = req.cookies.get(cookieName);
-        const token = jwtToken?.value;
+    // Add CORS headers to all responses
+    const response = NextResponse.next();
+    if (corsHeaders) {
+        Object.entries(corsHeaders).forEach(([key, value]) =>
+            response.headers.set(key, value)
+        );
+    }
 
-        // Vérifier si l'utilisateur est authentifié
-        const userPayload = token ? await verifyTokenWithJose(token) : null;
-        const isAuthenticated = !!userPayload;
+    try {
+        // Retrieve JWT token
+        const token = await getToken({ req, secret: process.env.AUTH_SECRET });
 
-        // Gestion des routes d'authentification (login/register)
-        if (req.nextUrl.pathname.startsWith('/client/login') ||
-            req.nextUrl.pathname.startsWith('/client/register')) {
+        console.log("JWT Token Retrieved:", token);
+
+        // Check if the user is authenticated
+        const isAuthenticated = !!token;
+
+        // Handle login and register routes
+        if (
+            req.nextUrl.pathname.startsWith("/client/login") ||
+            req.nextUrl.pathname.startsWith("/client/register")
+        ) {
             if (isAuthenticated) {
-                console.log('User already authenticated, redirecting to client home');
-                return NextResponse.redirect(new URL('/client', req.nextUrl.origin));
+                console.log("User already authenticated. Redirecting to /client/simulation.");
+                return NextResponse.redirect(new URL("/client/simulation", req.nextUrl.origin));
             }
             return response;
         }
 
-        // Gestion des routes publiques (après la vérification d'authentification)
+        // Allow access to public routes
         if (isPublicRoute(req.nextUrl.pathname)) {
             console.log("Public route accessed:", req.nextUrl.pathname);
             return response;
         }
 
-        // À ce stade, la route n'est ni login/register ni publique
-        // Vérification de l'authentification pour les routes protégées
+        // Redirect unauthenticated users on protected routes
         if (!isAuthenticated) {
-            console.log('No valid token found, redirecting to login');
-            return NextResponse.redirect(new URL("/client/login", req.nextUrl.origin));
+            console.log("No valid token found. Redirecting to login.");
+            const redirectUrl = req.nextUrl.clone();
+            redirectUrl.pathname = "/client/login";
+            redirectUrl.searchParams.set("redirect", req.nextUrl.pathname);
+            return NextResponse.redirect(redirectUrl);
         }
 
-        if (!userPayload) {
-            console.log('Invalid token found, redirecting to login');
-            return NextResponse.redirect(new URL("/client/login", req.nextUrl.origin));
-        }
-        // Vérification des rôles pour les routes admin
-        const userRoles = Array.isArray(userPayload.roles) ? userPayload.roles : [];
-        const isAdmin = userRoles.includes('ADMIN');
+        // Role-based access control
+        const userRoles = Array.isArray(token?.roles) ? token.roles : [];
+        const isAdmin = userRoles.includes(Roles.ADMIN);
 
-        if (req.nextUrl.pathname.startsWith('/admin') && !isAdmin) {
-            console.log('Unauthorized access to admin route');
-            return NextResponse.redirect(new URL('/client/unauthorized', req.nextUrl.origin));
+        if (req.nextUrl.pathname.startsWith("/admin") && !isAdmin) {
+            console.log("Unauthorized access to admin route.");
+            return NextResponse.redirect(new URL("/client/unauthorized", req.nextUrl.origin));
         }
 
-        console.log('Access granted to protected route');
+        console.log("Access granted to protected route.");
         return response;
-
     } catch (error) {
         console.error("Error in middleware:", error);
         return NextResponse.redirect(new URL("/client/login", req.nextUrl.origin));
     } finally {
-        console.log('--------------------------------');
-    }
-}
-// Fonction pour vérifier le token JWT avec jose
-async function verifyTokenWithJose(token: string) {
-    try {
-        const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-        const { payload } = await jwtVerify(token, secret);
-
-        if (!payload.exp || Date.now() >= payload.exp * 1000) {
-            console.log("Token has expired");
-            return null;
-        }
-
-        return payload;
-    } catch (error) {
-        console.error("Error verifying token with jose:", error);
-        return null;
+        console.log("--------------------------------");
     }
 }
 
-// Configuration pour appliquer le middleware uniquement aux routes correspondantes
+// Configuration to apply middleware only to specific routes
 export const config = {
     matcher: [
         "/admin/:path*",
         "/api/users/profile/:path*",
         "/client/ajouter-destinataire",
-        "/client/payment/:path*", // Protège /client/payment et ses sous-routes
+        "/client/payment/:path*",
         "/client/login",
         "/client/register",
     ],

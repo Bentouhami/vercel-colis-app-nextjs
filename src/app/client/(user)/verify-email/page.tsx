@@ -1,11 +1,10 @@
 // path: src/app/client/(user)/verify-email/page.tsx
 
-'use client';
-import {useCallback, useEffect, useState} from 'react';
+"use client";
+import {Suspense, useCallback, useEffect, useState} from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { CheckCircle, XCircle, Loader2, AlertCircle, ArrowRight, RotateCcw, MailCheck  } from 'lucide-react';
-
-const VerifyEmail = () => {
+const VerifyEmailContent = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const token = searchParams.get('token');
@@ -175,6 +174,15 @@ const VerifyEmail = () => {
             </div>
         </div>
     );
+};
+
+const VerifyEmail = () => {
+    return (
+        <Suspense fallback={<div>Chargement...</div>}>
+            <VerifyEmailContent />
+        </Suspense>
+    );
+
 };
 
 export default VerifyEmail;

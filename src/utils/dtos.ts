@@ -54,7 +54,7 @@ export interface AddressDto {
 }
 
 // DTO for creating a new address
-export type CreateAddressDto = Omit<AddressDto, "id">;
+export type CreateAddressDto = Omit<AddressDto, "id" | "latitude" | "longitude">;
 
 // DTO for updating an existing address
 export interface UpdateAddressDto extends Partial<CreateAddressDto> {
@@ -71,7 +71,7 @@ export interface UserDto {
     email: string;
     phoneNumber?: string;
     password?: string;
-    image?: string;
+    image?: string | null;
     roles?: Roles[];
     agencyId?: number;
     isVerified?: boolean;
@@ -85,7 +85,7 @@ export interface UserDto {
 // DTO for creating a new user
 export interface CreateUserDto extends Omit<UserDto, "id" | "isVerified" | "emailVerified" | "addressId" | "address"> {
     password: string; // Obligatoire
-    address: CreateAddressDto; // Adresse complète requise
+    address: UpdateAddressDto; // Adresse complète requise
     verificationTokenExpires: Date; // Date d'expiration du token de vérification de l'email
     verificationToken: string; // Token de vérification de l'email
 }
@@ -101,7 +101,7 @@ export interface UpdateUserDto extends Partial<CreateUserDto> {
     id: number; // Required to identify the user to update
 }
 
-export type CreateDestinataireDto = Required<Pick<UserDto, "firstName" | "lastName" | "email" | "phoneNumber" | "image" | "roles">>;
+export type CreateDestinataireDto = Required<Pick<UserDto, "firstName" | "lastName" | "name" | "email" | "phoneNumber" | "image" | "roles">>;
 
 export type UserResponseDto = Required<Pick<UserDto, "id" | "firstName" | "lastName" | "birthDate" | "phoneNumber" | "email" | "image" | "roles">>;
 
@@ -146,7 +146,7 @@ export interface UpdateAgencyDto extends Partial<CreateAgencyDto> {
     id: number;
 }
 
-// -------------------- Envoi (Shipment) DTOs --------------------
+// -------------------- Envoi DTOs --------------------
 export interface EnvoiDto {
     id?: number;
     trackingNumber?: string;
@@ -252,6 +252,7 @@ export interface UserLoginResponseDto {
     password: string;
     firstName: string;
     lastName: string;
+    name: string;
     phoneNumber: string;
     image: string | null;
     roles: Roles[];
@@ -271,7 +272,7 @@ export interface TarifsDto {
 
 
 // SimulationResultsDto: used when getting simulation details from the frontend
-export interface SimulationDtoRequest extends StatusSimulationAndEnvoiStatus {
+export interface SimulationDtoRequest {
     departureCountry: string;
     departureCity: string;
     departureAgency: string;
@@ -279,14 +280,14 @@ export interface SimulationDtoRequest extends StatusSimulationAndEnvoiStatus {
     destinationCity: string;
     destinationAgency: string;
     parcels: CreateParcelDto[];
-    SimulationCalculationTotalsDto: SimulationCalculationTotalsDto;
+    // SimulationCalculationTotalsDto: SimulationCalculationTotalsDto;
 }
 
 // DTO for calculation results related to simulation
 export interface SimulationCalculationTotalsDto {
     totalWeight: number;
     totalVolume: number;
-    totalPrice: number | null;
+    totalPrice: number;
     departureDate: Date;
     arrivalDate: Date;
 }
@@ -305,13 +306,6 @@ export interface StatusSimulationAndEnvoiStatus {
     status: EnvoiStatus | null;
 }
 
-export enum SimulationStatus {
-    DRAFT = "DRAFT",
-    CONFIRMED = "CONFIRMED",
-    COMPLETED = "COMPLETED",
-    CANCELLED = "CANCELLED",
-}
-
 // Response DTO for a created simulation, used when receiving a new simulation ID and token
 export interface CreatedSimulationResponseDto {
     id: number;
@@ -319,14 +313,14 @@ export interface CreatedSimulationResponseDto {
 }
 
 export interface SimulationDto extends StatusSimulationAndEnvoiStatus, SimulationCalculationTotalsDto {
-    userId: number;
-    destinataireId: number;
-    departureCountry: string;
-    departureCity: string;
-    departureAgency: string;
-    destinationCountry: string;
-    destinationCity: string;
-    destinationAgency: string;
+    userId: number | null;
+    destinataireId: number | null;
+    departureCountry: string | null;
+    departureCity: string | null;
+    departureAgency: string | null;
+    destinationCountry: string | null;
+    destinationCity: string | null;
+    destinationAgency: string | null;
     parcels: CreateParcelDto[];
 }
 
@@ -352,7 +346,7 @@ export interface UpdatingSimulationWithIdsDto {
 // Agency DTOs
 export interface BaseAgencyDto {
     name: string;
-    location: string;
+    location: string | null;
     address: UpdateAddressDto;
     capacity: number;
     availableSlots: number;
@@ -438,3 +432,5 @@ export interface MessageBodyDto {
     message: string
     email: string
 }
+
+

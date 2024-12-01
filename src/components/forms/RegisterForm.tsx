@@ -66,7 +66,7 @@ const RegisterForm = () => {
                 const newUser: RegisterClientDto = {
                     firstName,
                     lastName,
-                    birthDate,
+                    birthDate: new Date(birthDate),
                     phoneNumber,
                     email,
                     password,
@@ -76,9 +76,9 @@ const RegisterForm = () => {
                 const result = await registerUser(newUser);
                 if (result) {
                     toast.success("Compte créé avec succès ! Email de confirmation envoyé à " + email);
-                   setTimeout(() => {
-                       router.push('/');
-                   }, 3000);
+                    setTimeout(() => {
+                        router.push('/');
+                    }, 3000);
                 } else {
                     toast.error("Erreur lors de la création du compte");
                 }

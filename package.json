@@ -13,7 +13,8 @@
     "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
-    "@auth/prisma-adapter": "^2.7.0",
+    "@auth/core": "^0.37.4",
+    "@auth/prisma-adapter": "^2.7.4",
     "@clerk/nextjs": "^6.3.1",
     "@hookform/resolvers": "^3.9.0",
     "@neondatabase/serverless": "^0.9.0",
@@ -63,6 +64,7 @@
     "cookie": "^1.0.0",
     "date-fns": "^3.6.0",
     "decimal.js": "^10.4.3",
+    "edge-csrf": "^1.0.11",
     "embla-carousel-react": "^8.3.0",
     "framer-motion": "^11.7.0",
     "input-otp": "^1.2.4",
@@ -71,7 +73,7 @@
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.453.0",
     "next": "^14.2.17",
-    "next-auth": "^5.0.0-beta.16",
+    "next-auth": "^5.0.0-beta.25",
     "next-themes": "^0.3.0",
     "nodemailer": "^6.9.15",
     "react": "^18.3.1",

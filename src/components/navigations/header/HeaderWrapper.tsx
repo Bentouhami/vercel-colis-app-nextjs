@@ -1,47 +1,38 @@
-// path: src/components/navigations/header/HeaderWrapper.ts
+"use client";
 
-import { cookies } from 'next/headers';
-import { verifyTokenFromCookies } from "@/utils/verifyToken";
+import {useSession} from "next-auth/react";
 import HeaderNavbar from "@/components/navigations/header/HeaderNavbar";
+import {Roles} from "@/utils/dtos";
 
-const HeaderWrapper = async () => {
-    const cookieName = process.env.COOKIE_NAME || "";
-    const cookieStore = cookies();
-    const token = cookieStore.get(cookieName)?.value || '';
+const HeaderWrapper = () => {
+    const {data: session, status} = useSession();
 
-    let isLoggedIn = false;
-    let userEmail = null;
-    let isAdmin = false;
-    let firstName = '';
-    let lastName = '';
-    let image = ''
-
-    if (token) {
-        try {
-            const decodedToken = await verifyTokenFromCookies(token);
-            isLoggedIn = true;
-            // Vérification basée sur le rôle de l'utilisateur
-            if (decodedToken) {
-                userEmail = decodedToken.userEmail;
-                isAdmin = decodedToken.roles.includes('ADMIN');
-                firstName = decodedToken.firstName || '';
-                lastName = decodedToken.lastName || '';
-                image = decodedToken.image || "https://placehold.co/400";
-            }
-        } catch (error) {
-            console.error('Token verification failed:', error);
-        }
+    if (status === "loading") {
+        // Optionally show a loading state
+        return <div>Loading...</div>;
     }
+
+    // Extract user details from the session
+    const isLoggedIn = status === "authenticated";
+    const isAdmin = session?.user?.roles?.includes(Roles.ADMIN) || false;
+    const id = session?.user?.id || null;
+    const email = session?.user?.email || null;
+    // console.log("session in HeaderWrapper.tsx: ", session);
+
+    const firstName = session?.user?.firstName || "";
+    const lastName = session?.user?.lastName || "";
+    const name = session?.user?.name || "";
+    const image = session?.user?.image || "https://placehold.co/400";
 
     return (
         <HeaderNavbar
             isLoggedIn={isLoggedIn}
-            userEmail={userEmail}
             isAdmin={isAdmin}
             firstName={firstName}
             lastName={lastName}
+            name={name}
+            email={email}
             image={image}
-
         />
     );
 };

@@ -3,7 +3,7 @@
 import {
     BaseSimulationDto,
     EnvoiStatus,
-    FullSimulationDto, SimulationDto,
+    SimulationDto,
     SimulationDtoRequest,
     SimulationStatus,
     TarifsDto

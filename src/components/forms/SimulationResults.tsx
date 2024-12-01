@@ -1,5 +1,5 @@
 // path: src/app/client/simulation/results/page.tsx
-'use client';
+"use client";
 import {useRouter, useSearchParams} from 'next/navigation';
 import React, {useEffect, useState} from 'react';
 import {toast} from 'react-toastify';
@@ -12,15 +12,17 @@ import LoginPromptModal from '@/components/LoginPromptModal';
 import {Button} from "@/components/ui/button";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Calendar, DollarSign, MapPin, Package, Weight} from "lucide-react";
+import {useSession} from "next-auth/react";
 
 export default function SimulationResults() {
+    const {data: session, status} = useSession();
     const searchParams = useSearchParams();
     const router = useRouter();
 
     const [results, setResults] = useState<SimulationDto | null>(null);
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
     const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-    const [userId, setUserId] = useState<number | null>(null);
+    const isAuthenticated = status === "authenticated";
+    const userId = session?.user?.id || null;
 
     // get simulation results from the backend and set them in the state variable results when available or redirect to the simulation page if not
     useEffect(() => {
@@ -43,37 +45,16 @@ export default function SimulationResults() {
     }, [searchParams, router]);
 
 
-    // check if the user is authenticated and set the userId in the state variable userId when available or redirect to the login page if not
-    useEffect(() => {
-        const checkAuthStatus = async () => {
-            try {
-                const response = await fetch('/api/auth/status');
-                const authStatus = await response.json();
-                setIsAuthenticated(authStatus.isAuthenticated);
-                setUserId(authStatus.userId);
-            } catch (error) {
-                setIsAuthenticated(false);
-            }
-        };
-        checkAuthStatus();
-    }, []);
-
-    // render the loading spinner if the results are not available
-    if (!results) {
-        return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-            </div>
-        );
-    }
     const handleValidate = async () => {
         if (isAuthenticated) {
             const simulationResults = await getSimulation();
             if (simulationResults) {
+                console.log("log ====> userId : ", userId)
+
                 if (userId && !simulationResults.userId) {
                     console.log("log ====> userId found and in handleValidate function in SimulationResults.tsx: ", userId);
 
-                    simulationResults.userId = userId;
+                    simulationResults.userId = Number(userId);
                 }
 
                 console.log("log ====> simulationResults in handleValidate function in SimulationResults.tsx before calling updateSimulationWithSenderAndDestinataireIds function: ", simulationResults);
@@ -96,6 +77,15 @@ export default function SimulationResults() {
         localStorage.removeItem('simulationResults');
         router.push('/client/simulation');
     };
+
+    // render the loading spinner if the results are not available
+    if (!results) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-4xl mx-auto p-6 space-y-6 mb-52 bg-gray-50 rounded-lg shadow-lg">

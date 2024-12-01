@@ -61,11 +61,12 @@ export async function getAgencyById(id: number): Promise<BaseAgencyDto | null> {
             select: {
                 id: true,
                 name: true,
+                location: true,
                 address: {
                     select: {
                         id: true,
                         city: true,
-                        country: true,
+                        country: true
                     },
                 },
                 capacity: true,

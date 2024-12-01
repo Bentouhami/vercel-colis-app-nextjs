@@ -12,6 +12,10 @@ const PaymentSuccessPage = () => {
         const deleteSimulation = async () => {
             await completePaymentService();
             // await deleteSimulationCookie();
+
+            // update client sent envois
+
+            // const updaeUserSentEnvoi = await updateUserSentEnvoi();
         };
         deleteSimulation();
     }, []);
