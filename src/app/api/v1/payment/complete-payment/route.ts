@@ -31,12 +31,12 @@ export async function GET(req: NextRequest) {
             console.log("Simulation introuvable.");
             return NextResponse.json({data: null}, {status: 200});
         }
-        // 2. Update Simulation Status to COMPLETED
+        // 2. Update Simulation Status to COMPLETED and STATUS to PENDING and PAID to TRUE
         simulation = simulation.simulationStatus === SimulationStatus.CONFIRMED ? {
             ...simulation,
             simulationStatus: SimulationStatus.COMPLETED,
             status: EnvoiStatus.PENDING
-        } : simulation;
+    } : simulation;
 
         if (!simulation) {
             console.log("Simulation introuvable.");

@@ -3,9 +3,11 @@
 import {
     BaseSimulationDto,
     CreatedSimulationResponseDto,
-    CreateParcelDto, EnvoiStatus,
+    CreateParcelDto,
+    EnvoiStatus,
     FullSimulationDto,
-    SimulationDto, SimulationStatus
+    SimulationDto,
+    SimulationStatus
 } from "@/utils/dtos";
 import prisma from "@/utils/db";
 import {getAgencyById} from "@/services/backend-services/AgencyService";
@@ -200,17 +202,18 @@ export async function updateSimulation(simulation: SimulationDto, simulationIdAn
     console.log("log ====> updateSimulation function called in src/services/backend-services/simulationService.ts", simulation);
     try {
 
-        if(!simulationIdAndToken) {
+        if (!simulationIdAndToken) {
             throw new Error("Simulation ID and token not found");
         }
 
-        if(!simulation) {
+        if (!simulation) {
             throw new Error("Simulation not found");
         }
 
-        if(!simulation.simulationStatus || !simulation.status) {
+        if (!simulation.simulationStatus || !simulation.status) {
             throw new Error("Simulation status or status not found");
         }
+
         await prisma.envoi.update({
             where: {
                 id: Number(simulationIdAndToken.id),
@@ -219,6 +222,7 @@ export async function updateSimulation(simulation: SimulationDto, simulationIdAn
             data: {
                 status: simulation.status,
                 simulationStatus: simulation.simulationStatus,
+                paid: true
             }
 
         });

@@ -14,20 +14,21 @@ const HeaderWrapper = () => {
 
     // Extract user details from the session
     const isLoggedIn = status === "authenticated";
-    const isAdmin = session?.user?.roles?.includes(Roles.ADMIN) || false;
-    const id = session?.user?.id || null;
+    const isSuperAdmin = session?.user?.roles?.includes(Roles.SUPER_ADMIN) || false;
+    const isAgencyAdmin = session?.user?.roles?.includes(Roles.AGENCY_ADMIN) || false;
     const email = session?.user?.email || null;
-    // console.log("session in HeaderWrapper.tsx: ", session);
+    console.log("session in HeaderWrapper.tsx: ", session);
 
     const firstName = session?.user?.firstName || "";
     const lastName = session?.user?.lastName || "";
     const name = session?.user?.name || "";
-    const image = session?.user?.image || "https://placehold.co/400";
+    const image = session?.user?.image || "https://placehold.co/400.png";
 
     return (
         <HeaderNavbar
             isLoggedIn={isLoggedIn}
-            isAdmin={isAdmin}
+            isSuperAdmin={isSuperAdmin}
+            isAgencyAdmin={isAgencyAdmin}
             firstName={firstName}
             lastName={lastName}
             name={name}

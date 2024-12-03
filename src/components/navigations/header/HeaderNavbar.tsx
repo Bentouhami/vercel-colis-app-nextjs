@@ -6,13 +6,14 @@ import {Button, Container, Nav, Navbar} from 'react-bootstrap';
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
 import styles from './Header.module.css';
-import LogoutButton from './LogoutButton';
+import LogoutButton from '../../buttons/LogoutButton';
 import ColisBrand from "@/components/navigations/brand/ColisBrand";
 import Image from "next/image";
 
 interface NavbarProps {
     isLoggedIn: boolean;
-    isAdmin: boolean;
+    isAgencyAdmin: boolean;
+    isSuperAdmin: boolean;
     firstName: string;
     lastName: string;
     name: string;
@@ -21,7 +22,16 @@ interface NavbarProps {
 
 }
 
-const HeaderNavbar: React.FC<NavbarProps> = ({ isAdmin, isLoggedIn, name, firstName, lastName, email, image }) => {
+const HeaderNavbar: React.FC<NavbarProps> = ({
+                                                 isAgencyAdmin,
+                                                 isSuperAdmin,
+                                                 isLoggedIn,
+                                                 name,
+                                                 firstName,
+                                                 lastName,
+                                                 email,
+                                                 image
+                                             }) => {
     const [expanded, setExpanded] = useState(false);
     const pathname = usePathname();
 
@@ -33,45 +43,57 @@ const HeaderNavbar: React.FC<NavbarProps> = ({ isAdmin, isLoggedIn, name, firstN
     return (
         <Navbar className="sticky-top" expand="lg" bg="light" data-bs-theme="light" expanded={expanded}>
             <Container>
-                <Link href={"/client"} passHref >
+                <Link href={"/client"} passHref>
                     <Navbar.Brand onClick={handleSelect}><ColisBrand/></Navbar.Brand>
                 </Link>
-                <Navbar.Toggle aria-controls="basic-navbar-nav" onClick={() => setExpanded(!expanded)} />
+                <Navbar.Toggle aria-controls="basic-navbar-nav" onClick={() => setExpanded(!expanded)}/>
                 <Navbar.Collapse id="basic-navbar-nav">
-                    <Nav className={`mx-auto justify-content-center flex-lg-row flex-column ${styles.navLinks}`} onClick={handleSelect}>
-                        <Link href="/client/home" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`} onClick={handleSelect}>Accueil</Link>
-                        <Link href="/client/simulation" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`} onClick={handleSelect}>Simulation</Link>
-                        <Link href="/client/services" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`} onClick={handleSelect}>Services</Link>
-                        <Link href="/client/tarifs" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`} onClick={handleSelect}>Tarifs</Link>
-                        <Link href="/client/contact-us" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`} onClick={handleSelect}>Contact-nous</Link>
+                    <Nav className={`mx-auto justify-content-center flex-lg-row flex-column ${styles.navLinks}`}
+                         onClick={handleSelect}>
+                        <Link href="/client/home" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`}
+                              onClick={handleSelect}>Accueil</Link>
+                        <Link href="/client/simulation" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`}
+                              onClick={handleSelect}>Simulation</Link>
+                        <Link href="/client/services" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`}
+                              onClick={handleSelect}>Services</Link>
+                        <Link href="/client/tarifs" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`}
+                              onClick={handleSelect}>Tarifs</Link>
+                        <Link href="/client/contact-us" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`}
+                              onClick={handleSelect}>Contact-nous</Link>
                     </Nav>
                     <div className="d-flex flex-column flex-lg-row justify-content-end align-items-center">
                         {isLoggedIn ? (
                             <div className="d-flex flex-column justify-content-center align-items-center mt-3">
-                                <Image src={"https://placehold.co/600x400.png"} priority={true} alt={"avatar"} width={50} height={50} />
+                                <Image src={image} priority={true} alt={"avatar"}
+                                       width={50} height={50}/>
                                 <strong>
                                     {`Bienvenue: ${name}`}
-                                    {isAdmin ? ' (ADMIN)' : ' (utilisateur)'}
+                                    {isSuperAdmin && ' (SUPER_ADMIN)'}
+                                    {!isSuperAdmin && isAgencyAdmin && ' (AGENCY_ADMIN)'}
+                                    {!isSuperAdmin && !isAgencyAdmin && ' (utilisateur)'}
                                 </strong>
+
                                 <strong>{email}</strong>
 
-                                {isAdmin && pathname !== '/admin' && (
+                                {(isSuperAdmin || isAgencyAdmin) && pathname !== '/admin' && (
                                     <Link href="/admin" passHref legacyBehavior>
-                                        <Button variant="primary" onClick={handleSelect} className="mt-3 mb-3 bg-pink-500 border-0">Dashboard</Button>
+                                        <Button variant="primary" onClick={handleSelect}
+                                                className="mt-3 mb-3 bg-pink-500 border-0">Dashboard</Button>
                                     </Link>
                                 )}
 
-                                <LogoutButton />
+                                <LogoutButton/>
                             </div>
                         ) : (
                             <>
-                                <Link href="/client/login" passHref legacyBehavior>
-                                    <Button variant="outline-primary"  onClick={handleSelect} className="btn-custom me-lg-2 mb-2 mb-lg-0">
+                                <Link href="/client/auth/login" passHref legacyBehavior>
+                                    <Button variant="outline-primary" onClick={handleSelect}
+                                            className="btn-custom me-lg-2 mb-2 mb-lg-0">
                                         SE CONNECTER
                                     </Button>
                                 </Link>
-                                <Link href="/client/register" passHref legacyBehavior>
-                                    <Button variant="outline-primary"  onClick={handleSelect} className="btn-custom">
+                                <Link href="/client/auth/register" passHref legacyBehavior>
+                                    <Button variant="outline-primary" onClick={handleSelect} className="btn-custom">
                                         S&apos;INSCRIRE
                                     </Button>
                                 </Link>

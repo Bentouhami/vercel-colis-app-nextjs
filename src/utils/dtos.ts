@@ -11,7 +11,7 @@ export interface PaginationDto {
 // Enums matching the database schema
 export enum Roles {
     CLIENT = 'CLIENT',
-    ADMIN = 'ADMIN',
+    SUPER_ADMIN = 'SUPER_ADMIN',
     DESTINATAIRE = 'DESTINATAIRE',
     AGENCY_ADMIN = 'AGENCY_ADMIN'
 }

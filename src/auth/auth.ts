@@ -83,7 +83,6 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
                         phoneNumber: user.phoneNumber ?? undefined,
                         image: user.image ?? undefined,
                         roles: user.roles as Roles[],
-                        address: user.Address,
                         emailVerified: user.emailVerified ?? null, // Include emailVerified with a fallback
                     } as User;
                 } catch (error) {
@@ -156,7 +155,6 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
                 token.phoneNumber = user.phoneNumber ?? undefined;
                 token.image = user.image ?? undefined;
                 token.roles = user.roles || [];
-                token.address = user.address || null;
                 token.emailVerified = user.emailVerified ?? null;
             }
             return token;
@@ -172,7 +170,6 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
                     phoneNumber: token.phoneNumber ?? undefined,
                     image: token.image ?? undefined,
                     roles: token.roles ?? [],
-                    address: token.address ?? null,
                     emailVerified: token.emailVerified ?? null
                 };
             }

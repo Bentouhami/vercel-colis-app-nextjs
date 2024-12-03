@@ -53,8 +53,8 @@ export async function middleware(req: NextRequest) {
 
         // Handle login and register routes
         if (
-            req.nextUrl.pathname.startsWith("/client/login") ||
-            req.nextUrl.pathname.startsWith("/client/register")
+            req.nextUrl.pathname.startsWith("/client/auth/login") ||
+            req.nextUrl.pathname.startsWith("/client/auth/register")
         ) {
             if (isAuthenticated) {
                 console.log("User already authenticated. Redirecting to /client/simulation.");
@@ -73,16 +73,17 @@ export async function middleware(req: NextRequest) {
         if (!isAuthenticated) {
             console.log("No valid token found. Redirecting to login.");
             const redirectUrl = req.nextUrl.clone();
-            redirectUrl.pathname = "/client/login";
+            redirectUrl.pathname = "/client/auth/login";
             redirectUrl.searchParams.set("redirect", req.nextUrl.pathname);
             return NextResponse.redirect(redirectUrl);
         }
 
         // Role-based access control
         const userRoles = Array.isArray(token?.roles) ? token.roles : [];
-        const isAdmin = userRoles.includes(Roles.ADMIN);
+        const isSuperAdmin = userRoles.includes(Roles.SUPER_ADMIN);
+        const isAgencyAdmin = userRoles.includes(Roles.AGENCY_ADMIN);
 
-        if (req.nextUrl.pathname.startsWith("/admin") && !isAdmin) {
+        if (req.nextUrl.pathname.startsWith("/admin") && !isSuperAdmin && !isAgencyAdmin) {
             console.log("Unauthorized access to admin route.");
             return NextResponse.redirect(new URL("/client/unauthorized", req.nextUrl.origin));
         }
@@ -91,7 +92,7 @@ export async function middleware(req: NextRequest) {
         return response;
     } catch (error) {
         console.error("Error in middleware:", error);
-        return NextResponse.redirect(new URL("/client/login", req.nextUrl.origin));
+        return NextResponse.redirect(new URL("/client/auth/login", req.nextUrl.origin));
     } finally {
         console.log("--------------------------------");
     }
@@ -104,7 +105,10 @@ export const config = {
         "/api/users/profile/:path*",
         "/client/ajouter-destinataire",
         "/client/payment/:path*",
-        "/client/login",
-        "/client/register",
+        "/client/auth/:path*",
+        "/client/simulation/:path*",
+        "/client/services/:path*",
+        "/client/tarifs/:path*",
+        "/client/contact-us/:path*",
     ],
 };

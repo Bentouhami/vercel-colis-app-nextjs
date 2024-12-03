@@ -1,9 +1,9 @@
-import TarifsComp from "@/components/tarifs/TarifsComp";
+import TarifsComponent from "@/components/tarifs/TarifsComponent";
 
 const TarifsPage = () => {
     return (
         <div>
-            <TarifsComp />
+            <TarifsComponent />
         </div>
     )
 }

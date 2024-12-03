@@ -1,3 +1,4 @@
+// Path: src/components/users/ProfileComponent.tsx
 'use client';
 
 // import {useEffect, useState} from "react";

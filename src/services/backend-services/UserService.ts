@@ -51,6 +51,7 @@ export async function registerUser(newUser: CreateUserDto, address: UpdateAddres
             },
         });
 
+        console.log(" log ====> createdUser of type UserModelDto in path src/services/backend-services/UserService.ts: ", createdUser);
         if (!createdUser) {
             console.error("Error: Cannot create user.");
             return null;

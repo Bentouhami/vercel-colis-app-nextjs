@@ -75,7 +75,18 @@ export const registerUserFrontendSchema = z.object({
 export const registerUserBackendSchema = z.object({
     firstName: z.string().min(1, {message: "Le prénom est requis"}),
     lastName: z.string().min(1, {message: "Le nom est requis"}),
-    birthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {message: "La date de naissance est invalide"}),
+    birthDate: z.string()
+        .min(1, {message: "La date de naissance est requise"})
+        .refine((val) => !isNaN(Date.parse(val)), {
+            message: "La date de naissance doit être une date valide"
+        })
+        .refine((val) => {
+            const date = new Date(val);
+            const now = new Date();
+            const minAge = 18;
+            const userAge = now.getFullYear() - date.getFullYear();
+            return userAge >= minAge;
+        }, {message: "Vous devez avoir au moins 18 ans pour vous inscrire"}),
     phoneNumber: phoneValidation,
     email: emailValidation,
     password: passwordValidation,

@@ -1,7 +1,7 @@
 // path: src/app/client/ajouter-destinataire/page.tsx
 'use server';
 
-import AddReceiverForm from "@/components/forms/AddReceiverForm";
+import AddReceiverForm from "@/components/forms/EnvoiForms/AddReceiverForm";
 
 function AddReceiverPage() {
     return (

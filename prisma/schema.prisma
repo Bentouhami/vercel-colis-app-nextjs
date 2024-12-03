@@ -57,7 +57,7 @@ model User {
 
 enum Role {
   CLIENT
-  ADMIN
+  SUPER_ADMIN
   DESTINATAIRE
   AGENCY_ADMIN
 
@@ -306,6 +306,7 @@ model Envoi {
   totalWeight   Float
   totalVolume   Float
   totalPrice    Float
+  paid          Boolean  @default(false) // Payment status
   departureDate DateTime
   arrivalDate   DateTime
 

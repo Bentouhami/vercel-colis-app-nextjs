@@ -8,11 +8,12 @@ import {
     updateSimulationWithSenderAndDestinataireIds
 } from "@/services/frontend-services/simulation/SimulationService";
 import {SimulationDto} from "@/utils/dtos";
-import LoginPromptModal from '@/components/LoginPromptModal';
+import LoginPromptModal from '@/components/modals/LoginPromptModal';
 import {Button} from "@/components/ui/button";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import {Calendar, DollarSign, MapPin, Package, Weight} from "lucide-react";
+import {ArrowRight, Calendar, DollarSign, MapPin, Package, Weight} from "lucide-react";
 import {useSession} from "next-auth/react";
+import Link from "next/link";
 
 export default function SimulationResults() {
     const {data: session, status} = useSession();
@@ -186,6 +187,20 @@ export default function SimulationResults() {
                     </p>
                 </CardContent>
             </Card>
+
+            <Link href="/client/simulation">
+                <Button className="flex items-center gap-2 px-8 py-6 text-lg bg-green-500 hover:bg-green-600 text-white">
+                    Modifier la simulation
+                    <ArrowRight className="h-4 w-4"/>
+                </Button>
+            </Link>
+
+            <Link href="/client/simulation">
+                <Button className="flex items-center gap-2 px-8 py-6 text-lg bg-green-500 hover:bg-green-600 text-white">
+                    Ajouter un Colis
+                    <ArrowRight className="h-4 w-4"/>
+                </Button>
+            </Link>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
                 <Button

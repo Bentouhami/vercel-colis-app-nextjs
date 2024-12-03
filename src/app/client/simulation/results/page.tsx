@@ -1,8 +1,7 @@
 // path: src/app/client/simulation/[id]/page.tsx
 
 import {Suspense} from "react";
-import SimulationResults from "@/components/forms/SimulationResults";
-import PricingComponent from "@/components/pricing";
+import SimulationResults from "@/components/client-specific/simulation/SimulationResults";
 
 export default function WrappedSimulationResults()
 {
@@ -10,8 +9,6 @@ export default function WrappedSimulationResults()
         <Suspense fallback={<div>Loading...</div>}>
             <div className="d-flex justify-content-around">
                 <SimulationResults />
-                {/*<PricingComponent  />*/}
-
             </div>
 
         </Suspense>

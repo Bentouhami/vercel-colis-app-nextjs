@@ -112,6 +112,7 @@ export async function registerUser(newUser: RegisterClientDto) {
 
         // Lire la réponse et la retourner directement
         const data = await response.json();
+        console.log("log ====> data in registerUser function after parsing JSON in path src/services/frontend-services/UserService.ts: ", data);
 
         if (!response.ok) {
             // Si la réponse n'est pas ok (2xx), lever une erreur avec le message retourné par l'API

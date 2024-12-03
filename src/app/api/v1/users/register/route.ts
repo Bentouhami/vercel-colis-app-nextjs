@@ -44,6 +44,8 @@ export async function POST(request: NextRequest) {
         const { success, error, data: validatedData } = registerUserBackendSchema.safeParse(body);
 
         if (!success) {
+            console.log(" log ====> error of type z.ZodError in path src/app/api/v1/users/register/route.ts: ", error);
+
             return NextResponse.json({ error: error?.errors[0].message }, { status: 400 });
         }
 
@@ -115,7 +117,13 @@ export async function POST(request: NextRequest) {
                 verificationTokenExpires: verificationData.verificationTokenExpires,
             };
 
+            console.log(" log ====> userData of type CreateUserDto in path src/app/api/v1/users/register/route.ts: ", userData);
+
+            console.log(" log ====> addressToUse of type CreateAddressDto in path src/app/api/v1/users/register/route.ts: ", addressToUse);
+
             registeredUser = await registerUser(userData, addressToUse) as FullUserResponseDto;
+
+            console.log(" log ====> registeredUser of type FullUserResponseDto in path src/app/api/v1/users/register/route.ts: ", registeredUser);
 
             if (!registeredUser || registeredUser.name === undefined) {
                 return NextResponse.json({ error: "Failed to create registeredUser" }, { status: 500 });
@@ -154,7 +162,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ message: "User created successfully, please check your email to verify your account" }, { status: 201 });
         }
 
-        if ((existedUser.roles.includes(Roles.CLIENT) || existedUser.roles.includes(Roles.ADMIN)) && existedUser.isVerified) {
+        if ((existedUser.roles.includes(Roles.CLIENT) || existedUser.roles.includes(Roles.SUPER_ADMIN)) && existedUser.isVerified) {
             console.log("User is a client or admin and verified, returning error");
             return NextResponse.json({ error: "User already exists and is verified. Please log in." }, { status: 400 });
         }
