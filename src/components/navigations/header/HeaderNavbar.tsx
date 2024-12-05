@@ -75,8 +75,14 @@ const HeaderNavbar: React.FC<NavbarProps> = ({
 
                                 <strong>{email}</strong>
 
-                                {(isSuperAdmin || isAgencyAdmin) && pathname !== '/admin' && (
-                                    <Link href="/admin" passHref legacyBehavior>
+                                {(isSuperAdmin) && pathname !== '/admin/super-admin' && (
+                                    <Link href="/admin/super-admin" passHref legacyBehavior>
+                                        <Button variant="primary" onClick={handleSelect}
+                                                className="mt-3 mb-3 bg-pink-500 border-0">Dashboard</Button>
+                                    </Link>
+                                )}
+                                {(isAgencyAdmin) && pathname !== '/admin/agency-admin' && (
+                                    <Link href="/admin/agency-admin" passHref legacyBehavior>
                                         <Button variant="primary" onClick={handleSelect}
                                                 className="mt-3 mb-3 bg-pink-500 border-0">Dashboard</Button>
                                     </Link>

@@ -88,6 +88,16 @@ export async function middleware(req: NextRequest) {
             return NextResponse.redirect(new URL("/client/unauthorized", req.nextUrl.origin));
         }
 
+        if (req.nextUrl.pathname.startsWith("/admin/super-admin") && !isSuperAdmin) {
+            console.log("Unauthorized access to admin route.");
+            return NextResponse.redirect(new URL("/client/unauthorized", req.nextUrl.origin));
+        }
+
+        // if (req.nextUrl.pathname.startsWith("/admin/agency-admin") && !isAgencyAdmin) {
+        //     console.log("Unauthorized access to admin route.");
+        //     return NextResponse.redirect(new URL("/client/unauthorized", req.nextUrl.origin));
+        // }
+
         console.log("Access granted to protected route.");
         return response;
     } catch (error) {
