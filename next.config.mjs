@@ -1,3 +1,5 @@
+// path: next.config.mjs
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
@@ -5,10 +7,11 @@ const nextConfig = {
             {
                 protocol: 'https',
                 hostname: 'placehold.co',
-                pathname: '/**', // Autorise toutes les images de ce domaine
+                pathname: '/**', // Allow all images from this domain
             },
         ],
     },
 };
 
 export default nextConfig;
+

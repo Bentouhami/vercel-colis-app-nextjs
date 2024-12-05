@@ -3,7 +3,7 @@
 'use client';
 
 import React from "react";
-import DashboardNavbar from "@/components/navigations/dashboard/DashboardNavbar";
+import DashboardNavbar from "@/components/admin/super-admin/dashboard/DashboardNavbar";
 import "./dashboard.css"; // Fichier CSS pour les styles propres au dashboard
 
 
