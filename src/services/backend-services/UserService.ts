@@ -269,7 +269,6 @@ export async function getUserByValidToken(token: string): Promise<UserResponseDt
 /**
  * Update user and reset token verification
  * @param userId
- * @returns {Promise<void>}
  */
 export async function updateUserAndResetTokenVerificationAfterVerification(userId: number) {
 
@@ -312,7 +311,6 @@ export async function updateUserAndResetTokenVerificationAfterVerification(userI
  * Update user and reset token verification for old user
  * @param userId - user id
  * @param verificationData - verification data object
- * @returns {Promise<void>} void
  */
 export async function updateVerificationTokenForOldUser(userId: number, verificationData: VerificationDataType) {
 
@@ -481,7 +479,6 @@ export async function updateDestinataireToClient(
  * Check if association exists between client and destinataire
  * @param clientId - client id
  * @param destinataireId - destinataire id
- * @returns {Promise<ClientDestinataire | null>} client destinataire or null
  */
 export async function checkExistingAssociation(clientId: number, destinataireId: number) {
     console.log("log ====> checkExistingAssociation function called in path: src/services/backend-services/UserService.ts")

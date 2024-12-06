@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
 
 export async function POST(req: NextRequest) {
     const { name, email, token } = await req.json();
-    const verificationUrl = `${DOMAIN}/client/verify-email?token=${token}`;
+    const verificationUrl = `${DOMAIN}/client/auth/verify-email?token=${token}`;
 
     try {
         await transporter.sendMail({

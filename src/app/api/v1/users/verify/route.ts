@@ -12,14 +12,22 @@ import {
  * @method POST
  * @route /api/v1/users/verify
  * @desc Verify email
- * @return {UserResponseDto} user object
  */
 
 export async function POST(req: NextRequest) {
+    console.log("log ====> Verification email api route called")
+
+
+    if (req.method !== "POST") {
+        return NextResponse.json({ status: 400 });
+    }
+
     // Récupérer le token depuis le corps de la requête
     const {token} = await req.json(); // Utiliser req.json() pour extraire le body correctement
 
     if (!token) {
+        console.log(" log ====> token not found !")
+
         return NextResponse.json({message: "Token is missing"}, {status: 400});
     }
 
@@ -29,6 +37,7 @@ export async function POST(req: NextRequest) {
         // Rechercher l'utilisateur avec le token et vérifier si le token n'a pas expiré
 
         const user = await getUserByValidToken(token);
+
         console.log("log => path: src/app/api/v1/users/verify/route.ts : user", user);
 
         if (!user) {

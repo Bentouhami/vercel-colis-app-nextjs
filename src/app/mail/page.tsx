@@ -2,7 +2,7 @@
 export default function Page() {
     return (
         <div>
-            <h1>Click he button to send an email</h1>
+            <h1>Click the button to send an email</h1>
             <button onClick={() => fetch('/api/mails', {
                 method: 'POST',
                 headers: {

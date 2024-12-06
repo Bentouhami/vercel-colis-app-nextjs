@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { isPublicRoute } from "@/utils/publicRoutesHelper";
 import { setCorsHeaders } from "@/utils/cors";
-import {Roles} from "@/utils/dtos";
+import { Roles } from "@/utils/dtos";
 
 export async function middleware(req: NextRequest) {
     const origin = req.headers.get("origin") || "";
@@ -11,19 +11,6 @@ export async function middleware(req: NextRequest) {
     console.log("--------------------------------");
     console.log("Middleware started. Current Path:", req.nextUrl.pathname);
     console.log("NEXTAUTH_URL:", process.env.NEXTAUTH_URL);
-
-    // Fetch CSRF Token
-    try {
-        const csrfTokenCookie = req.cookies?.get("authjs.csrf-token")?.value;
-        if (csrfTokenCookie) {
-            const csrfToken = csrfTokenCookie.split("|")[0]; // Extract the actual token
-            console.log("Extracted CSRF Token:", csrfToken);
-        } else {
-            console.warn("CSRF Token Cookie is missing or undefined.");
-        }
-    } catch (error) {
-        console.error("Error extracting CSRF Token:", error);
-    }
 
     // Handle OPTIONS requests (CORS preflight)
     if (req.method === "OPTIONS") {
@@ -51,37 +38,32 @@ export async function middleware(req: NextRequest) {
         // Check if the user is authenticated
         const isAuthenticated = !!token;
 
-        // Handle login and register routes
-        if (
-            req.nextUrl.pathname.startsWith("/client/auth/login") ||
-            req.nextUrl.pathname.startsWith("/client/auth/register")
-        ) {
-            if (isAuthenticated) {
-                console.log("User already authenticated. Redirecting to /client/simulation.");
-                return NextResponse.redirect(new URL("/client/simulation", req.nextUrl.origin));
-            }
-            return response;
-        }
-
-        // Allow access to public routes
+        // Handle public routes
         if (isPublicRoute(req.nextUrl.pathname)) {
             console.log("Public route accessed:", req.nextUrl.pathname);
             return response;
-        }
-
-        // Redirect unauthenticated users on protected routes
-        if (!isAuthenticated) {
-            console.log("No valid token found. Redirecting to login.");
-            const redirectUrl = req.nextUrl.clone();
-            redirectUrl.pathname = "/client/auth/login";
-            redirectUrl.searchParams.set("redirect", req.nextUrl.pathname);
-            return NextResponse.redirect(redirectUrl);
         }
 
         // Role-based access control
         const userRoles = Array.isArray(token?.roles) ? token.roles : [];
         const isSuperAdmin = userRoles.includes(Roles.SUPER_ADMIN);
         const isAgencyAdmin = userRoles.includes(Roles.AGENCY_ADMIN);
+
+        // Handle redirects for authenticated users
+        if (isAuthenticated) {
+            if (req.nextUrl.pathname === "/") {
+                if (isSuperAdmin) {
+                    console.log("Redirecting Super Admin to /admin/super-admin.");
+                    return NextResponse.redirect(new URL("/admin/super-admin", req.nextUrl.origin));
+                } else if (isAgencyAdmin) {
+                    console.log("Redirecting Agency Admin to /admin/agency-admin.");
+                    return NextResponse.redirect(new URL("/admin/agency-admin", req.nextUrl.origin));
+                } else {
+                    console.log("Redirecting Client to /client.");
+                    return NextResponse.redirect(new URL("/client", req.nextUrl.origin));
+                }
+            }
+        }
 
         if (req.nextUrl.pathname.startsWith("/admin") && !isSuperAdmin && !isAgencyAdmin) {
             console.log("Unauthorized access to admin route.");
@@ -92,11 +74,6 @@ export async function middleware(req: NextRequest) {
             console.log("Unauthorized access to admin route.");
             return NextResponse.redirect(new URL("/client/unauthorized", req.nextUrl.origin));
         }
-
-        // if (req.nextUrl.pathname.startsWith("/admin/agency-admin") && !isAgencyAdmin) {
-        //     console.log("Unauthorized access to admin route.");
-        //     return NextResponse.redirect(new URL("/client/unauthorized", req.nextUrl.origin));
-        // }
 
         console.log("Access granted to protected route.");
         return response;
@@ -111,14 +88,9 @@ export async function middleware(req: NextRequest) {
 // Configuration to apply middleware only to specific routes
 export const config = {
     matcher: [
+        "/",
         "/admin/:path*",
         "/api/users/profile/:path*",
-        "/client/ajouter-destinataire",
-        "/client/payment/:path*",
-        "/client/auth/:path*",
-        "/client/simulation/:path*",
-        "/client/services/:path*",
-        "/client/tarifs/:path*",
-        "/client/contact-us/:path*",
+        "/client/:path*",
     ],
 };

@@ -18,7 +18,7 @@ const VerifyEmailContent = () => {
             setCountdown((prev) => {
                 if (prev <= 1) {
                     clearInterval(timer);
-                    router.push('/client/login');
+                    router.push('/client/auth//login');
                     return 0;
                 }
                 return prev - 1;
@@ -35,6 +35,8 @@ const VerifyEmailContent = () => {
 
         const verifyEmail = async () => {
             try {
+                console.log('verify email function called and will send api requst with token : ', token);
+
                 const response = await fetch('/api/v1/users/verify', {
                     method: 'POST',
                     headers: {
@@ -44,6 +46,7 @@ const VerifyEmailContent = () => {
                 });
 
                 const data = await response.json();
+                console.log("data returned after the request")
 
                 if (response.ok) {
                     setStatus('success');
@@ -72,7 +75,7 @@ const VerifyEmailContent = () => {
     };
 
     const handleRedirect = () => {
-        router.push('/client/login');
+        router.push('/client//auth/login');
     };
 
     const renderContent = () => {

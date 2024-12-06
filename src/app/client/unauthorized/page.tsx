@@ -1,5 +1,3 @@
-// path : src/app/client/unauthorized/page.tsx
-
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -35,6 +33,13 @@ export default function UnauthorizedPage() {
                 <p className="text-gray-600 mb-6">
                     Vous serez redirigé vers la page d&#39;accueil dans <span className="font-semibold text-blue-600">{countdown}</span> secondes.
                 </p>
+                {/* Progress Bar */}
+                <div className="w-full bg-gray-300 h-2 rounded-full overflow-hidden mb-4">
+                    <div
+                        className="bg-blue-600 h-full transition-all duration-1000 ease-linear"
+                        style={{ width: `${(countdown / 5) * 100}%` }}
+                    ></div>
+                </div>
                 <div className="flex justify-center mt-4">
                     <Link href="/" className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 transition ease-in-out duration-150">
                         <FaHome className="mr-2" />
