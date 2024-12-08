@@ -1,16 +1,16 @@
 "use client";
 
-import { signOut } from "next-auth/react";
-import { toast } from "react-toastify";
+import {signOut} from "next-auth/react";
+import {toast} from "react-toastify";
 
 const LogoutButton = () => {
     const logoutHandler = async () => {
         try {
             // Sign out using NextAuth.js
-            await signOut({ redirectTo: "/" }); // Redirect to home after logout
+            await signOut({redirectTo: "/"}); // Redirect to home after logout
 
             // Call API to clear simulationResponse cookie
-            const response = await fetch("/api/v1/users/logout", { method: "GET" });
+            const response = await fetch("/api/v1/users/logout", {method: "GET"});
             if (!response.ok) throw new Error("Failed to clear simulationResponse cookie");
 
         } catch (error) {

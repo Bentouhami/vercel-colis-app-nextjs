@@ -2,9 +2,8 @@
 
 import {JWTPayload} from "@/utils/types";
 import {setCookie} from "@/utils/generateToken";
-import { RegisterUserBackendType} from "@/utils/validationSchema";
 import {DOMAIN} from "@/utils/constants";
-import {CreateDestinataireDto, RegisterClientDto, Roles} from "@/utils/dtos";
+import {CreateDestinataireDto, RegisterClientDto, Roles} from "@/services/dtos";
 
 /**
  * Generate JWTPayload object and setCookies with JWT token and cookie
@@ -128,7 +127,7 @@ export async function registerUser(newUser: RegisterClientDto) {
 }
 
 
-export async function addDestinataire(newUser: CreateDestinataireDto) : Promise<number>{
+export async function addDestinataire(newUser: CreateDestinataireDto): Promise<number> {
     console.log("log ====> addDestinataire function called");
 
     try {

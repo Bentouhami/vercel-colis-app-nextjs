@@ -1,6 +1,6 @@
 // path: src/backend-services/AgencyService.ts
 
-import {AgencyResponseDto, BaseAgencyDto} from "@/utils/dtos";
+import {AgencyResponseDto, BaseAgencyDto} from "@/services/dtos";
 import prisma from "@/utils/db";
 
 

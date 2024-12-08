@@ -14,7 +14,7 @@ import {DOMAIN} from "@/utils/constants";
 
 export async function sendVerificationEmail(name: string, email: string, token: string) {
     try {
-        await axios.post(`${DOMAIN}/api/send-email`, { name, email, token });
+        await axios.post(`${DOMAIN}/api/send-email`, {name, email, token});
     } catch (error) {
         console.error('Error sending verification email:', error);
         throw error;

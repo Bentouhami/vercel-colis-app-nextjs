@@ -1,5 +1,5 @@
-import { Form } from 'react-bootstrap';
-import { ChangeEvent, useMemo } from "react";
+import {Form} from 'react-bootstrap';
+import {ChangeEvent, useMemo} from "react";
 
 interface CitySelectProps {
     label: string;
@@ -9,7 +9,7 @@ interface CitySelectProps {
     disabled?: boolean;
 }
 
-const CitySelect = ({ label, value, onChange, cities, disabled = false }: CitySelectProps) => {
+const CitySelect = ({label, value, onChange, cities, disabled = false}: CitySelectProps) => {
     const placeholder = useMemo(() => disabled ? "Sélection non disponible" : "Sélectionner une ville", [disabled]);
 
     return (

@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
-import { isPublicRoute } from "@/utils/publicRoutesHelper";
-import { setCorsHeaders } from "@/utils/cors";
-import { Roles } from "@/utils/dtos";
+import {NextRequest, NextResponse} from "next/server";
+import {getToken} from "next-auth/jwt";
+import {isPublicRoute} from "@/utils/publicRoutesHelper";
+import {setCorsHeaders} from "@/utils/cors";
+import {Roles} from "@/services/dtos";
 
 export async function middleware(req: NextRequest) {
     const origin = req.headers.get("origin") || "";
@@ -16,9 +16,9 @@ export async function middleware(req: NextRequest) {
     if (req.method === "OPTIONS") {
         console.log("OPTIONS request allowed");
         if (corsHeaders) {
-            return new NextResponse(null, { headers: corsHeaders });
+            return new NextResponse(null, {headers: corsHeaders});
         }
-        return NextResponse.json({ error: "Origin not allowed" }, { status: 403 });
+        return NextResponse.json({error: "Origin not allowed"}, {status: 403});
     }
 
     // Add CORS headers to all responses
@@ -31,7 +31,7 @@ export async function middleware(req: NextRequest) {
 
     try {
         // Retrieve JWT token
-        const token = await getToken({ req, secret: process.env.AUTH_SECRET });
+        const token = await getToken({req, secret: process.env.AUTH_SECRET});
 
         console.log("JWT Token Retrieved:", token);
 

@@ -2,7 +2,7 @@
 
 import jwt from "jsonwebtoken";
 import {serialize} from "cookie";
-import {CreatedSimulationResponseDto} from "@/utils/dtos";
+import {CreatedSimulationResponseDto} from "@/services/dtos";
 
 /**
  * Generate a JWT token
@@ -10,7 +10,7 @@ import {CreatedSimulationResponseDto} from "@/utils/dtos";
  *
  * @param simulationResponseData
  */
-export function generateJwt(simulationResponseData: CreatedSimulationResponseDto) {
+export function generateJwt(simulationResponseData: CreatedSimulationResponseDto): string {
     const privateKey = process.env.JWT_SECRET as string;
 
     // return token

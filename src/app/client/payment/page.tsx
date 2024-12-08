@@ -71,7 +71,7 @@ const PaymentContent = () => {
 const PaymentPage = () => {
     return (
         <Suspense fallback={<div>Chargement...</div>}>
-            <PaymentContent />
+            <PaymentContent/>
         </Suspense>
     );
 };

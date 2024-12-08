@@ -8,7 +8,7 @@ import {
     FullSimulationDto,
     SimulationDto,
     SimulationStatus
-} from "@/utils/dtos";
+} from "@/services/dtos";
 import prisma from "@/utils/db";
 import {getAgencyById} from "@/services/backend-services/AgencyService";
 import {generateTrackingNumber} from "@/utils/generateTrackingNumber";

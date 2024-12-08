@@ -5,7 +5,7 @@
 
 import {NextRequest} from 'next/server';
 import jwt from "jsonwebtoken";
-import {CreatedSimulationResponseDto} from "@/utils/dtos";
+import {CreatedSimulationResponseDto} from "@/services/dtos";
 
 export function verifySimulationToken(request: NextRequest): CreatedSimulationResponseDto | null {
     try {

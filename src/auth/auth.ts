@@ -6,7 +6,7 @@ import prisma from "@/utils/db";
 import bcrypt from "bcryptjs";
 import GoogleProvider from "@auth/core/providers/google";
 import GitHubProvider from "@auth/core/providers/github";
-import {Roles} from "@/utils/dtos"; // Import Roles enum
+import {Roles} from "@/services/dtos/enums/EnumsDto";
 
 export const {handlers, signIn, signOut, auth} = NextAuth({
     adapter: PrismaAdapter(prisma),
@@ -22,9 +22,9 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
                 console.log("---------- authorize start ----------");
 
                 if (!credentials?.email || !credentials?.password) {
-                    console.error("Email and password are required.");
-                    return null;
+                    throw new Error("Please enter a valid email and password");
                 }
+
 
                 try {
                     const user = await prisma.user.findFirst({
@@ -44,17 +44,7 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
 
                     // Check if the user exists and has a password
                     if (!user) {
-                        console.error("User not found.");
-                        return null;
-                    }
-
-                    if (!user.password) {
-                        console.error("Password is missing for this user.");
-                        return null;
-                    }
-                    if (!user) {
-                        console.error("User not found.");
-                        return null;
+                        throw new Error("Incorrect credentials");
                     }
 
                     // console.log("Credentials password:", credentials.password);
@@ -67,8 +57,8 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
                     );
 
                     if (!passwordValid) {
-                        console.error("Invalid password.");
-                        return null;
+                        throw new Error("Incorrect credentials");
+
                     }
 
                     console.log("---------- authorize end ----------");
@@ -159,7 +149,7 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
             }
             return token;
         },
-        async session({ session, token }): Promise<Session> {
+        async session({session, token}): Promise<Session> {
             if (session.user) {
                 session.user = {
                     id: token.id ? token.id.toString() : '',

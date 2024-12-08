@@ -1,5 +1,5 @@
-import { Form } from 'react-bootstrap';
-import { ChangeEvent, useMemo } from 'react';
+import {Form} from 'react-bootstrap';
+import {ChangeEvent, useMemo} from 'react';
 
 interface AgencySelectProps {
     label: string;
@@ -9,7 +9,7 @@ interface AgencySelectProps {
     disabled?: boolean; // Optional prop to disable the select input
 }
 
-const AgencySelect = ({ label, value, onChange, agencies, disabled = false }: AgencySelectProps) => {
+const AgencySelect = ({label, value, onChange, agencies, disabled = false}: AgencySelectProps) => {
     // Dynamically setting placeholder text
     const placeholder = useMemo(() => disabled ? "Sélection non disponible" : "Sélectionner une agence", [disabled]);
 

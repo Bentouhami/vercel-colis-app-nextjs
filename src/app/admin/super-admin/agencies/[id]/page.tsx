@@ -7,8 +7,7 @@ import {useParams} from "next/navigation";
  * This page is used to manage the settings of an agency by an admin of the agency
  */
 const AgencyAdminPage = () => {
-    const { id } = useParams();
-
+    const {id} = useParams();
 
 
     return (

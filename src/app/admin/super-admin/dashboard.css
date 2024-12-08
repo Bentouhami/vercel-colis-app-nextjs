@@ -1,42 +1,42 @@
-*{
+* {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
-.dashboard-body{
+.dashboard-body {
     background-color: #f2f2f2;
 }
 
-.dashboard-navbar{
+.dashboard-navbar {
     background-color: #333;
     color: #fff;
 }
 
-.dashboard-main{
+.dashboard-main {
     padding: 20px;
 }
 
-.dashboard-navbar ul{
+.dashboard-navbar ul {
     list-style: none;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.dashboard-navbar ul li{
+.dashboard-navbar ul li {
     margin-right: 20px;
 }
 
-.dashboard-navbar ul li a{
+.dashboard-navbar ul li a {
     color: #fff;
     text-decoration: none;
 }
 
-.dashboard-navbar ul li a:hover{
+.dashboard-navbar ul li a:hover {
     color: #007bff;
 }
 
-.dashboard-navbar ul li a.active{
+.dashboard-navbar ul li a.active {
     color: #007bff;
 }

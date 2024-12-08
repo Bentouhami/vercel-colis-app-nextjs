@@ -8,7 +8,7 @@ interface LoginPromptModalProps {
     handleLoginRedirect: () => void;
 }
 
-const LoginPromptModal: React.FC<LoginPromptModalProps> = ({ show, handleClose, handleLoginRedirect }) => {
+const LoginPromptModal: React.FC<LoginPromptModalProps> = ({show, handleClose, handleLoginRedirect}) => {
     return (
         <Modal show={show} onHide={handleClose} centered>
             <Modal.Header closeButton>

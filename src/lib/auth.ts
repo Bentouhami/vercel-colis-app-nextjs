@@ -9,7 +9,7 @@ import bcrypt from "bcryptjs";
  * @param password
  * @returns {Promise<string>} hashed password
  */
-export function hashPassword(password: string) : Promise<string> {
+export function saltAndHashPassword(password: string): Promise<string> {
     return new Promise((resolve, reject) => {
         // Utiliser bcrypt pour générer un salt avec 10 rounds (nombre de tours recommandé)
         bcrypt.genSalt(10, (err, salt) => {
@@ -23,6 +23,7 @@ export function hashPassword(password: string) : Promise<string> {
         });
     });
 }
+
 
 
 

@@ -2,22 +2,22 @@
 
 import {useSession} from "next-auth/react";
 import HeaderNavbar from "@/components/navigations/header/HeaderNavbar";
-import {Roles} from "@/utils/dtos";
+import {Roles} from "@/services/dtos/enums/EnumsDto";
 
 const HeaderWrapper = () => {
     const {data: session, status} = useSession();
 
-    if (status === "loading") {
-        // Optionally show a loading state
-        return <div>Loading...</div>;
-    }
+    // if (status === "loading") {
+    //     // Optionally show a loading state
+    //     return <div>Loading...</div>;
+    // }
 
     // Extract user details from the session
     const isLoggedIn = status === "authenticated";
     const isSuperAdmin = session?.user?.roles?.includes(Roles.SUPER_ADMIN) || false;
     const isAgencyAdmin = session?.user?.roles?.includes(Roles.AGENCY_ADMIN) || false;
     const email = session?.user?.email || null;
-    console.log("session in HeaderWrapper.tsx: ", session);
+    // console.log("session in HeaderWrapper.tsx: ", session);
 
     const firstName = session?.user?.firstName || "";
     const lastName = session?.user?.lastName || "";

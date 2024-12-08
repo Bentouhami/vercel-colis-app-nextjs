@@ -1,14 +1,13 @@
 "use sever";
 
-import {LoginUserDto} from "@/utils/dtos";
+import {LoginUserDto} from "@/services/dtos/users/UserDto"
 import {loginUserSchema} from "@/utils/validationSchema";
 import {signIn} from "next-auth/react";
 import {toast} from "react-toastify";
-import {router} from "next/client";
 
-const login = async (formData: FormData) => {
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
+const login = async (email: string, password: string) => {
+    // const email = formData.get("email") as string;
+    // const password = formData.get("password") as string;
 
     if (!email || !password) {
         return;
@@ -19,7 +18,6 @@ const login = async (formData: FormData) => {
     const validated = loginUserSchema.safeParse(loginData);
 
     if (!validated.success) {
-        toast.error(validated.error.errors[0].message);
         return;
     }
     try {
@@ -30,11 +28,7 @@ const login = async (formData: FormData) => {
         });
 
         if (result?.error) {
-            return toast.error("Invalid email or password");
-        } else {
-
-             toast.success("Connexion réussie");
-             await router.push("/client/simulation");
+            return {error: "Incorrect email or password"};
         }
     } catch (error) {
         toast.error("Erreur lors de la connexion");

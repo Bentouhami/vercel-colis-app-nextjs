@@ -1,12 +1,9 @@
 // Path: src/app/api/v1/payment/complete-payment/route.ts
 import {NextRequest, NextResponse} from "next/server";
 import {completePaymentService} from "@/services/frontend-services/payment/paymentService";
-import {
-    getSimulationByIdAndToken, updateSimulation,
-    updateSimulationWithSenderAndDestinataireIds
-} from "@/services/backend-services/simulationService";
-import {EnvoiStatus, SimulationStatus} from "@/utils/dtos";
+import {getSimulationByIdAndToken, updateSimulation} from "@/services/backend-services/simulationService";
 import {verifySimulationToken} from "@/utils/verifySimulationToken";
+import {SimulationStatus, EnvoiStatus} from "@/services/dtos";
 
 export async function GET(req: NextRequest) {
 
@@ -36,7 +33,7 @@ export async function GET(req: NextRequest) {
             ...simulation,
             simulationStatus: SimulationStatus.COMPLETED,
             status: EnvoiStatus.PENDING
-    } : simulation;
+        } : simulation;
 
         if (!simulation) {
             console.log("Simulation introuvable.");
@@ -49,12 +46,6 @@ export async function GET(req: NextRequest) {
         // Update Simulation envoi status and simulationStatus
         await updateSimulation(simulation, simulationFromCookie);
 
-
-        // 5. Add Parcels to parcels Table Using Envoi ID
-        // 6. Update Transport’s Weight and Volume Based on New Envoi
-        // 7. Create Notification for User and Agency
-        // 8. Update User Profile with Agency ID or Additional Details
-        // 9. Delete Simulation Cookie
 
 
         await completePaymentService();

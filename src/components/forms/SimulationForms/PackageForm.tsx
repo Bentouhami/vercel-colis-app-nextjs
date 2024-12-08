@@ -3,7 +3,7 @@
 
 import {Form, FormGroup} from 'react-bootstrap';
 import React from "react";
-import {CreateParcelDto} from '@/utils/dtos';
+import {CreateParcelDto} from '@/services/dtos';
 
 interface PackageFormProps {
     index: number,

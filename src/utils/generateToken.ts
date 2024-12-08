@@ -46,7 +46,7 @@ export function setCookie(jwtPayload: JWTPayload): string {
 }
 
 
-export  function generateVerificationTokenForUser() {
+export function generateVerificationTokenForUser() {
 
     // Générer un token de vérification de l'email
     // Générer un token de vérification

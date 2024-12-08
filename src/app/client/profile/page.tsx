@@ -4,7 +4,7 @@ import ProfileComponent from "@/components/client-specific/profile/ProfileCompon
 function Profile() {
     return (
         <div>
-            <ProfileComponent />
+            <ProfileComponent/>
         </div>
     )
 }

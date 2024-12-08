@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { ALLOWED_ORIGINS } from "@/utils/constants";
+import {NextResponse} from "next/server";
+import {cookies} from "next/headers";
+import {ALLOWED_ORIGINS} from "@/utils/constants";
 
 export async function GET(req: Request) {
     try {
@@ -10,8 +10,8 @@ export async function GET(req: Request) {
         if (!origin || !ALLOWED_ORIGINS.includes(origin)) {
             console.warn(`Blocked origin: ${origin}`);
             return NextResponse.json(
-                { error: "Origin not allowed" },
-                { status: 403 }
+                {error: "Origin not allowed"},
+                {status: 403}
             );
         }
 
@@ -20,8 +20,8 @@ export async function GET(req: Request) {
 
         // Create response
         const response = NextResponse.json(
-            { message: "Logged out" },
-            { status: 200 }
+            {message: "Logged out"},
+            {status: 200}
         );
 
         // Set CORS headers for the allowed origin
@@ -36,8 +36,8 @@ export async function GET(req: Request) {
     } catch (error) {
         console.error("Error during logout:", error);
         return NextResponse.json(
-            { error: "Internal server error" },
-            { status: 500 }
+            {error: "Internal server error"},
+            {status: 500}
         );
     }
 }
@@ -48,7 +48,7 @@ export async function OPTIONS(req: Request) {
 
     // Validate the origin
     if (!origin || !ALLOWED_ORIGINS.includes(origin)) {
-        return new NextResponse(null, { status: 204 });
+        return new NextResponse(null, {status: 204});
     }
 
     const headers = new Headers();
@@ -59,5 +59,5 @@ export async function OPTIONS(req: Request) {
         "Content-Type, Authorization"
     );
 
-    return new NextResponse(null, { headers, status: 204 });
+    return new NextResponse(null, {headers, status: 204});
 }

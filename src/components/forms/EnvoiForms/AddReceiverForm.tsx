@@ -1,3 +1,5 @@
+// path: src/components/forms/EnvoiForms/AddReceiverForm.tsx
+
 'use client';
 import React, {ChangeEvent, useState, useTransition} from "react";
 import {useRouter} from "next/navigation";
@@ -9,7 +11,9 @@ import {Loader2, Mail, Phone, User, UserPlus} from "lucide-react";
 import {toast, ToastContainer} from "react-toastify";
 import {DestinataireInput, destinataireSchema} from "@/utils/validationSchema";
 import {addDestinataire} from "@/services/frontend-services/UserService";
-import {CreateDestinataireDto, Roles} from "@/utils/dtos";
+import {Roles} from "@/services/dtos/enums/EnumsDto";
+import {CreateDestinataireDto} from "@/services/dtos/users/UserDto";
+
 import {
     getSimulation,
     updateSimulationWithSenderAndDestinataireIds
@@ -68,49 +72,50 @@ export default function AddReceiverForm() {
         }
 
         setErrors({});
-        startTransition(async () => {
-            try {
+        startTransition(() => {
+            (async () => {
+                try {
+                    const formattedDestinataireData: CreateDestinataireDto = {
+                        ...destinataireFormData,
+                        name: `${destinataireFormData.firstName} ${destinataireFormData.lastName}`,
+                        image: "",
+                        roles: [Roles.DESTINATAIRE] as Roles[],
+                    };
 
-                const formattedDestinataireData: CreateDestinataireDto = {
-                    ...destinataireFormData,
-                    name: `${destinataireFormData.firstName} ${destinataireFormData.lastName}`,
-                    image: "",
-                    roles: [Roles.DESTINATAIRE] as Roles[],
-                };
+                    console.log("log ====> formattedDestinataireData in AddReceiverForm.tsx before adding destinataire to addDestinataire function in src/app/client/destinataires/add/page.tsx: ", formattedDestinataireData);
 
-                console.log("log ====> formattedDestinataireData in AddReceiverForm.tsx before adding destinataire to addDestinataire function in src/app/client/destinataires/add/page.tsx: ", formattedDestinataireData);
+                    const destinataireId = await addDestinataire(formattedDestinataireData);
 
-                const destinataireId = await addDestinataire(formattedDestinataireData);
+                    if (!destinataireId) {
+                        toast.error("Une erreur est survenue lors de l'enregistrement du destinataire.");
+                        return;
+                    }
 
-                if (!destinataireId) {
-                    toast.error("Une erreur est survenue lors de l'enregistrement du destinataire.");
-                    return;
-                }
+                    const simulationResults = await getSimulation();
 
-                const simulationResults = await getSimulation();
+                    if (simulationResults) {
+                        // Update destinataireId in simulation
+                        simulationResults.destinataireId = Number(destinataireId);
 
-                if (simulationResults) {
-                    // update destinataireId in simulation
-                    simulationResults.destinataireId = Number(destinataireId);
-
-                    // update simulation status to CONFIRMED
-                    await updateSimulationWithSenderAndDestinataireIds(simulationResults);
+                        // Update simulation status to CONFIRMED
+                        await updateSimulationWithSenderAndDestinataireIds(simulationResults);
 
                         toast.success("Destinataire ajouté avec succès à votre simulation.");
                     } else {
                         toast.error("Une erreur est survenue lors de l'ajout du destinataire, vérifier les informations saisies.");
                     }
+
                     // Attendre 3 secondes avant la redirection
                     setTimeout(() => {
                         router.push("/client/envois/recapitulatif");
                     }, 3000);
-
-            } catch (error) {
-                console.error("Error updating simulation:", error);
-                toast.error("Une erreur est survenue lors de l'ajout du destinataire.");
-            }
-
+                } catch (error) {
+                    console.error("Error updating simulation:", error);
+                    toast.error("Une erreur est survenue lors de l'ajout du destinataire.");
+                }
+            })(); // Appelez l'IIFE (Immediately Invoked Function Expression)
         });
+
     }
 
     return (

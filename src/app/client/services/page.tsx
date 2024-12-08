@@ -3,7 +3,7 @@ import Pricing from "@/components/pricing/Pricing";
 const ServicesPage = () => {
     return (
         <div>
-            <Pricing />
+            <Pricing/>
         </div>
     )
 }

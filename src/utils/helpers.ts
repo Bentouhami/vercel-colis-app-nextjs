@@ -1,7 +1,8 @@
 // src/utils/helpers.ts
-import { Roles } from "@/utils/dtos";
 
 // Helper function to check if a user has a specific role
+import {Roles} from "@/services/dtos";
+
 export function hasRole(user: { roles: Roles[] }, role: Roles): boolean {
     return user.roles.includes(role);
 }

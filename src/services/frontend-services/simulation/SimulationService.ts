@@ -1,16 +1,17 @@
 // Path: src/services/frontend-services/simulation/SimulationService.ts
 
-import {
-    BaseSimulationDto,
-    EnvoiStatus,
-    SimulationDto,
-    SimulationDtoRequest,
-    SimulationStatus,
-    TarifsDto
-} from "@/utils/dtos";
 import {DOMAIN} from "@/utils/constants";
 import {calculateEnvoiDetails} from "@/services/frontend-services/simulation/SimulationCalculationService";
 import {getTarifs} from "@/services/frontend-services/TarifsService";
+import {
+    SimulationDtoRequest,
+    SimulationDto,
+    TarifsDto,
+    BaseSimulationDto,
+    EnvoiStatus,
+    SimulationStatus
+}
+    from "@/services/dtos";
 
 export async function submitSimulation(simulationData: SimulationDtoRequest) {
     if (!simulationData) {
@@ -65,7 +66,6 @@ export async function submitSimulation(simulationData: SimulationDtoRequest) {
         departureDate: calculationResults.departureDate,
         arrivalDate: calculationResults.arrivalDate,
     }
-
 
 
     if (!simulationBaseData) {

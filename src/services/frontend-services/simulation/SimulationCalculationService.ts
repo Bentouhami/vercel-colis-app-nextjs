@@ -1,6 +1,6 @@
 // path: src/services/envois/SimulationCalculationService.ts
 
-import {CreateParcelDto, SimulationCalculationTotalsDto, TarifsDto} from "@/utils/dtos";
+import {CreateParcelDto, SimulationCalculationTotalsDto, TarifsDto} from "@/services/dtos";
 import Decimal from "decimal.js";
 
 // import Decimal from 'decimal.js';

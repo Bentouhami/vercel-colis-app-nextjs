@@ -7,7 +7,7 @@ import {
     getSimulation,
     updateSimulationWithSenderAndDestinataireIds
 } from "@/services/frontend-services/simulation/SimulationService";
-import {SimulationDto} from "@/utils/dtos";
+import {SimulationDto} from "@/services/dtos";
 import LoginPromptModal from '@/components/modals/LoginPromptModal';
 import {Button} from "@/components/ui/button";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
@@ -71,7 +71,7 @@ export default function SimulationResults() {
     const handleLoginRedirect = () => {
         setShowLoginPrompt(false);
         const redirectUrl = encodeURIComponent('/client/simulation/results');
-        router.push(`/client/login?redirect=${redirectUrl}`);
+        router.push(`/client/auth/login?redirect=${redirectUrl}`);
     };
 
     const handleCancel = () => {
@@ -189,14 +189,16 @@ export default function SimulationResults() {
             </Card>
 
             <Link href="/client/simulation">
-                <Button className="flex items-center gap-2 px-8 py-6 text-lg bg-green-500 hover:bg-green-600 text-white">
+                <Button
+                    className="flex items-center gap-2 px-8 py-6 text-lg bg-green-500 hover:bg-green-600 text-white">
                     Modifier la simulation
                     <ArrowRight className="h-4 w-4"/>
                 </Button>
             </Link>
 
             <Link href="/client/simulation">
-                <Button className="flex items-center gap-2 px-8 py-6 text-lg bg-green-500 hover:bg-green-600 text-white">
+                <Button
+                    className="flex items-center gap-2 px-8 py-6 text-lg bg-green-500 hover:bg-green-600 text-white">
                     Ajouter un Colis
                     <ArrowRight className="h-4 w-4"/>
                 </Button>

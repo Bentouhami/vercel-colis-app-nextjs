@@ -6,7 +6,7 @@ export async function cancelSimulation(envoiId: number): Promise<void> {
     try {
         // Vérifiez si l'envoi existe
         const envoi = await prisma.envoi.findUnique({
-            where: { id: envoiId },
+            where: {id: envoiId},
         });
 
         if (!envoi) {
@@ -17,11 +17,11 @@ export async function cancelSimulation(envoiId: number): Promise<void> {
         await prisma.$transaction([
             // Supprimer les colis liés à l'envoi
             prisma.parcel.deleteMany({
-                where: { envoiId },
+                where: {envoiId},
             }),
             // Mettre à jour le statut de l'envoi
             prisma.envoi.update({
-                where: { id: envoiId },
+                where: {id: envoiId},
                 data: {
                     simulationStatus: "CANCELLED",
                     status: null, // Vous pouvez ajuster selon les besoins

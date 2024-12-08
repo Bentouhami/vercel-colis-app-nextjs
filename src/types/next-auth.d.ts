@@ -1,11 +1,12 @@
-import { DefaultSession } from "next-auth";
-import { CreateAddressDto, Roles} from "@/utils/dtos";
+import {DefaultSession} from "next-auth";
+import {CreateAddressDto, Roles} from "@/services/dtos";
 
 
 declare module "next-auth" {
     interface Session {
         user: User & DefaultSession["user"];
     }
+
     interface User {
         id: number | string | null;
         firstName?: string | null;

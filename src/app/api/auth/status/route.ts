@@ -15,11 +15,11 @@ export async function GET(request: NextRequest) {
     const userPayload = verifyTokenFromCookies(token);
 
     if (!userPayload) {
-        return NextResponse.json({ isAuthenticated: false }, { status: 200 });
+        return NextResponse.json({isAuthenticated: false}, {status: 200});
     }
 
     return NextResponse.json({
         isAuthenticated: true,
         user: userPayload,
-    }, { status: 200 });
+    }, {status: 200});
 }

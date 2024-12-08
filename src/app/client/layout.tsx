@@ -2,10 +2,11 @@
 
 import React from 'react'
 import HeaderWrapper from "@/components/navigations/header/HeaderWrapper";
+
 // import 'bootstrap/dist/css/bootstrap.min.css';
 
 
-function Layout({children}: {children: React.ReactNode}) {
+function Layout({children}: { children: React.ReactNode }) {
     return (
         <div>
             <HeaderWrapper/>

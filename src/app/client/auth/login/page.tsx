@@ -1,5 +1,5 @@
 'use client';
-import React, { Suspense } from "react";
+import React, {Suspense} from "react";
 import LoginForm from "@/components/forms/AuthForms/LoginForm";
 import {motion} from "framer-motion";
 
@@ -15,7 +15,7 @@ const LoginContent = () => {
                 >
                     Bienvenue sur <span className="text-blue-600">ColisApp</span>
                 </motion.h2>
-                <LoginForm />
+                <LoginForm/>
             </div>
         </div>
     );
@@ -24,7 +24,7 @@ const LoginContent = () => {
 const LoginPage = () => {
     return (
         <Suspense fallback={<div>Chargement...</div>}>
-            <LoginContent />
+            <LoginContent/>
         </Suspense>
     );
 };

@@ -1,3 +1,5 @@
+// path: /src/app/forms/AuthForms/RegisterForm.tsx
+
 'use client';
 
 import React, {ChangeEvent, useState, useTransition} from 'react';
@@ -19,7 +21,7 @@ import {RegisterUserBackendType, registerUserFrontendSchema, validateForm} from 
 import {registerUser} from "@/services/frontend-services/UserService";
 import {motion} from "framer-motion";
 import Image from "next/image";
-import {RegisterClientDto} from "@/utils/dtos";
+import {RegisterClientDto} from "@/services/dtos";
 
 const RegisterForm = () => {
     const [isPending, startTransition] = useTransition();
@@ -61,31 +63,35 @@ const RegisterForm = () => {
             address
         } = validationResult.data as RegisterUserBackendType;
 
-        startTransition(async () => {
-            try {
-                const newUser: RegisterClientDto = {
-                    firstName,
-                    lastName,
-                    birthDate: new Date(birthDate),
-                    phoneNumber,
-                    email,
-                    password,
-                    address
-                };
 
-                const result = await registerUser(newUser);
-                if (result) {
-                    toast.success("Compte créé avec succès ! Email de confirmation envoyé à " + email);
-                    setTimeout(() => {
-                        router.push('/');
-                    }, 3000);
-                } else {
+        startTransition(() => {
+            (async () => {
+                try {
+                    const newUser: RegisterClientDto = {
+                        firstName,
+                        lastName,
+                        birthDate: new Date(birthDate),
+                        phoneNumber,
+                        email,
+                        password,
+                        address,
+                    };
+
+                    const result = await registerUser(newUser);
+                    if (result) {
+                        toast.success("Compte créé avec succès ! Email de confirmation envoyé à " + email);
+                        setTimeout(() => {
+                            router.push('/');
+                        }, 3000);
+                    } else {
+                        toast.error("Erreur lors de la création du compte");
+                    }
+                } catch (error) {
                     toast.error("Erreur lors de la création du compte");
                 }
-            } catch (error) {
-                toast.error("Erreur lors de la création du compte");
-            }
+            })(); // IIFE (Immediately Invoked Function Expression) pour exécuter le code async
         });
+
     };
 
 

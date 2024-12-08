@@ -6,7 +6,7 @@ const ColisBrand = () => {
     return (
         <div className={styles.logoBrand}>
             <span>Colis</span>
-            <RiSendToBack className={styles.logo} />
+            <RiSendToBack className={styles.logo}/>
             <span>App</span>
         </div>
     );

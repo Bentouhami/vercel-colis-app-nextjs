@@ -1,7 +1,7 @@
 // path: src/services/frontend-services/TarifsService.ts
 
 // Récupérer les tarifs de la base de données
-import {TarifsDto} from "@/utils/dtos";
+import {TarifsDto} from "@/services/dtos";
 import {DOMAIN} from "@/utils/constants";
 
 export async function getTarifs(): Promise<TarifsDto> {

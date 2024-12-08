@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic';
 
-import { NextRequest, NextResponse } from 'next/server';
+import {NextRequest, NextResponse} from 'next/server';
 import prisma from "@/utils/db";
 
 /**
@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
     try {
         const city = req.nextUrl.searchParams.get('city');
         if (!city) {
-            return NextResponse.json({ error: "City is required" }, { status: 400 });
+            return NextResponse.json({error: "City is required"}, {status: 400});
         }
 
         // Récupérer les agences pour la ville spécifiée en paramètre
@@ -38,13 +38,13 @@ export async function GET(req: NextRequest) {
         });
 
         if (!agencies) {
-            return NextResponse.json({ error: 'No agencies found' }, { status: 404 });
+            return NextResponse.json({error: 'No agencies found'}, {status: 404});
         }
 
-        return NextResponse.json(agencies, { status: 200 });
+        return NextResponse.json(agencies, {status: 200});
 
     } catch (error) {
         console.error('Error fetching agencies:', error);
-        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+        return NextResponse.json({error: "Internal server error"}, {status: 500});
     }
 }

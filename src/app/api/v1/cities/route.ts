@@ -1,6 +1,6 @@
 // path: src/app/api/v1/cities/route.ts
 
-import { NextRequest, NextResponse } from 'next/server';
+import {NextRequest, NextResponse} from 'next/server';
 import prisma from "@/utils/db";
 
 /**
@@ -13,13 +13,13 @@ export async function GET(req: NextRequest) {
     try {
         const country = req.nextUrl.searchParams.get('country');
         if (!country) {
-            return NextResponse.json({ error: "Country is required" }, { status: 400 });
+            return NextResponse.json({error: "Country is required"}, {status: 400});
         }
 
         const cities = await prisma.address.findMany({
             where: {
                 country: country,
-                Agency: { isNot: null },
+                Agency: {isNot: null},
             },
             select: {
                 id: true,
@@ -28,8 +28,8 @@ export async function GET(req: NextRequest) {
             distinct: ["city"],
         });
 
-        return NextResponse.json(cities, { status: 200 });
+        return NextResponse.json(cities, {status: 200});
     } catch (error) {
-        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+        return NextResponse.json({error: "Internal server error"}, {status: 500});
     }
 }

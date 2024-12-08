@@ -1,6 +1,6 @@
 // path: src/services/frontend-services/transport/TransportService.ts
 
-import {BaseTransportDto, TransportDto} from "@/utils/dtos";
+import {BaseTransportDto, TransportDto} from "@/services/dtos";
 import {DOMAIN} from "@/utils/constants";
 
 export async function getTransports(): Promise<TransportDto[]> {

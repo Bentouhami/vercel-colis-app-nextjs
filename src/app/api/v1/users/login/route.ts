@@ -4,7 +4,7 @@ import {NextRequest, NextResponse} from 'next/server';
 import {errorHandler} from "@/utils/handelErrors";
 import {loginUserSchema} from "@/utils/validationSchema";
 import bcrypt from "bcryptjs";
-import {LoginUserDto} from "@/utils/dtos";
+import {LoginUserDto} from "@/services/dtos/users/UserDto";
 import {toLowerCase} from "@/utils/stringUtils";
 import {generateJWTPayloadAndSetCookie} from "@/services/frontend-services/UserService";
 import {generateVerificationTokenForUser} from "@/utils/generateToken";

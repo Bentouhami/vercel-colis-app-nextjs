@@ -2,8 +2,9 @@
 
 "use client";
 import {Suspense, useCallback, useEffect, useState} from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
-import { CheckCircle, XCircle, Loader2, AlertCircle, ArrowRight, RotateCcw, MailCheck  } from 'lucide-react';
+import {useRouter, useSearchParams} from 'next/navigation';
+import {AlertCircle, ArrowRight, CheckCircle, Loader2, MailCheck, RotateCcw, XCircle} from 'lucide-react';
+
 const VerifyEmailContent = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -35,14 +36,14 @@ const VerifyEmailContent = () => {
 
         const verifyEmail = async () => {
             try {
-                console.log('verify email function called and will send api requst with token : ', token);
+                console.log('verify email function called and will send api request with token : ', token);
 
                 const response = await fetch('/api/v1/users/verify', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ token }),
+                    body: JSON.stringify({token}),
                 });
 
                 const data = await response.json();
@@ -83,7 +84,7 @@ const VerifyEmailContent = () => {
             case 'loading':
                 return (
                     <div className="flex flex-col items-center">
-                        <Loader2 className="w-16 h-16 text-blue-500 animate-spin mb-4" />
+                        <Loader2 className="w-16 h-16 text-blue-500 animate-spin mb-4"/>
                         <h2 className="text-xl font-semibold text-gray-700 mb-2">
                             Vérification en cours...
                         </h2>
@@ -96,7 +97,7 @@ const VerifyEmailContent = () => {
             case 'success':
                 return (
                     <div className="flex flex-col items-center">
-                        <CheckCircle className="w-16 h-16 text-green-500 mb-4" />
+                        <CheckCircle className="w-16 h-16 text-green-500 mb-4"/>
                         <h2 className="text-xl font-semibold text-gray-700 mb-2">
                             Email vérifié avec succès !
                         </h2>
@@ -109,7 +110,7 @@ const VerifyEmailContent = () => {
                             className="mt-4 flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                         >
                             Aller à la connexion
-                            <ArrowRight className="ml-2 w-4 h-4" />
+                            <ArrowRight className="ml-2 w-4 h-4"/>
                         </button>
                     </div>
                 );
@@ -117,7 +118,7 @@ const VerifyEmailContent = () => {
             case 'error':
                 return (
                     <div className="flex flex-col items-center">
-                        <XCircle className="w-16 h-16 text-red-500 mb-4" />
+                        <XCircle className="w-16 h-16 text-red-500 mb-4"/>
                         <h2 className="text-xl font-semibold text-gray-700 mb-2">
                             Échec de la vérification
                         </h2>
@@ -127,7 +128,7 @@ const VerifyEmailContent = () => {
                                 onClick={handleRetry}
                                 className="flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
                             >
-                                <RotateCcw className="mr-2 w-4 h-4" />
+                                <RotateCcw className="mr-2 w-4 h-4"/>
                                 Réessayer
                             </button>
                             <button
@@ -135,7 +136,7 @@ const VerifyEmailContent = () => {
                                 className="flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                             >
                                 Retour à la connexion
-                                <ArrowRight className="ml-2 w-4 h-4" />
+                                <ArrowRight className="ml-2 w-4 h-4"/>
                             </button>
                         </div>
                     </div>
@@ -144,7 +145,7 @@ const VerifyEmailContent = () => {
             case 'invalid':
                 return (
                     <div className="flex flex-col items-center">
-                        <AlertCircle className="w-16 h-16 text-yellow-500 mb-4" />
+                        <AlertCircle className="w-16 h-16 text-yellow-500 mb-4"/>
                         <h2 className="text-xl font-semibold text-gray-700 mb-2">
                             Lien invalide
                         </h2>
@@ -154,7 +155,7 @@ const VerifyEmailContent = () => {
                             className="flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                         >
                             Retour à la connexion
-                            <ArrowRight className="ml-2 w-4 h-4" />
+                            <ArrowRight className="ml-2 w-4 h-4"/>
                         </button>
                     </div>
                 );
@@ -165,7 +166,7 @@ const VerifyEmailContent = () => {
         <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center px-4">
             <div className="w-full max-w-md">
                 <div className="mb-8 text-center">
-                    <MailCheck className="w-16 h-16 text-blue-500 mx-auto mb-4" />
+                    <MailCheck className="w-16 h-16 text-blue-500 mx-auto mb-4"/>
                     <h1 className="text-2xl font-bold text-gray-900">
                         Vérification de l&#39;email
                     </h1>
@@ -182,7 +183,7 @@ const VerifyEmailContent = () => {
 const VerifyEmail = () => {
     return (
         <Suspense fallback={<div>Chargement...</div>}>
-            <VerifyEmailContent />
+            <VerifyEmailContent/>
         </Suspense>
     );
 

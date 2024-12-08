@@ -3,7 +3,7 @@
 'use server';
 
 import prisma from "@/utils/db";
-import {TarifsDto} from "@/utils/dtos";
+import {TarifsDto} from "@/services/dtos";
 import Decimal from "decimal.js";
 
 export async function findTarifs(): Promise<TarifsDto | null> {

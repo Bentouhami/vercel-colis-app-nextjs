@@ -5,7 +5,7 @@
 // import bcrypt from "bcryptjs";
 // import GoogleProvider from "@auth/core/providers/google";
 // import GitHubProvider from "@auth/core/providers/github";
-// import {UserDto, Roles} from "@/utils/dtos"; // Import Roles enum
+// import {UserDto, Roles} from "@/services/dtos"; // Import Roles enum
 //
 // export const { handlers, signIn, signOut, auth } = NextAuth({
 //     adapter: PrismaAdapter(prisma),

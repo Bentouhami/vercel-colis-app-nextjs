@@ -8,12 +8,13 @@ import {
     CreateUserDto,
     DestinataireResponseDto,
     DestinataireResponseWithRoleDto,
-    FullUserResponseDto, Roles,
+    FullUserResponseDto,
+    Roles,
     UpdateAddressDto,
     UserLoginResponseDto,
     UserModelDto,
     UserResponseDto
-} from "@/utils/dtos";
+} from "@/services/dtos";
 import prisma from "@/utils/db";
 import {VerificationDataType} from "@/utils/types";
 import {sendVerificationEmail} from "@/lib/mailer";
@@ -76,7 +77,6 @@ export async function registerUser(newUser: CreateUserDto, address: UpdateAddres
         throw error;
     }
 }
-
 
 
 /**

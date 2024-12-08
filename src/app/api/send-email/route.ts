@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import {NextRequest, NextResponse} from 'next/server';
 import nodemailer from 'nodemailer';
 import {DOMAIN} from "@/utils/constants";
 
@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
 });
 
 export async function POST(req: NextRequest) {
-    const { name, email, token } = await req.json();
+    const {name, email, token} = await req.json();
     const verificationUrl = `${DOMAIN}/client/auth/verify-email?token=${token}`;
 
     try {
@@ -144,9 +144,9 @@ export async function POST(req: NextRequest) {
             `,
         });
 
-        return NextResponse.json({ message: 'Email sent successfully' });
+        return NextResponse.json({message: 'Email sent successfully'});
     } catch (error) {
         console.error('Error sending verification email:', error);
-        return NextResponse.json({ error: 'Failed to send email' }, { status: 500 });
+        return NextResponse.json({error: 'Failed to send email'}, {status: 500});
     }
 }

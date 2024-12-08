@@ -11,6 +11,7 @@ export default async function Home() {
             <a
                 className="group relative inline-flex items-center overflow-hidden rounded border border-current px-8 py-3 text-indigo-600 focus:outline-none focus:ring active:text-indigo-500"
                 href="/client"
+
             >
 
 

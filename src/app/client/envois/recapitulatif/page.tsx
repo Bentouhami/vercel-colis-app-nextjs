@@ -1,21 +1,22 @@
 // path: src/app/client/envois/recapitulatif/page.tsx
 
 'use client';
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation'; // Importer useRouter pour la navigation
-import { getSimulation } from "@/services/frontend-services/simulation/SimulationService";
-import { getUserById } from "@/services/frontend-services/UserService";
-import { toast } from "react-toastify";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Package, Calendar, MapPin, User, Truck, Weight, DollarSign, CreditCard, XCircle } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import {CreateDestinataireDto, EnvoiDto, FullSimulationDto, SimulationDto} from "@/utils/dtos";
+import React, {useEffect, useState} from 'react';
+import {useRouter} from 'next/navigation'; // Importer useRouter pour la navigation
+import {getSimulation} from "@/services/frontend-services/simulation/SimulationService";
+import {getUserById} from "@/services/frontend-services/UserService";
+import {toast} from "react-toastify";
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
+import {Calendar, CreditCard, DollarSign, MapPin, Package, Truck, User, Weight, XCircle} from "lucide-react";
+import {Alert, AlertDescription} from "@/components/ui/alert";
+import {Button} from "@/components/ui/button";
+import {CreateDestinataireDto, SimulationDto} from "@/services/dtos";
 
 interface SimulationDataType extends SimulationDto {
     sender: CreateDestinataireDto;
     destinataire: CreateDestinataireDto;
 }
+
 export default function RecapitulatifPage() {
     const [simulationData, setSimulationData] = useState<SimulationDataType | null>(null);
     const [loading, setLoading] = useState(true);
@@ -99,7 +100,7 @@ export default function RecapitulatifPage() {
                 <Card className="border-l-4 border-blue-500 shadow-sm">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-gray-700">
-                            <User className="h-5 w-5 text-blue-500" />
+                            <User className="h-5 w-5 text-blue-500"/>
                             Expéditeur
                         </CardTitle>
                     </CardHeader>
@@ -113,7 +114,7 @@ export default function RecapitulatifPage() {
                 <Card className="border-l-4 border-green-500 shadow-sm">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-gray-700">
-                            <User className="h-5 w-5 text-green-500" />
+                            <User className="h-5 w-5 text-green-500"/>
                             Destinataire
                         </CardTitle>
                     </CardHeader>
@@ -127,7 +128,7 @@ export default function RecapitulatifPage() {
                 <Card className="border-l-4 border-yellow-500 shadow-sm">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-gray-700">
-                            <MapPin className="h-5 w-5 text-yellow-500" />
+                            <MapPin className="h-5 w-5 text-yellow-500"/>
                             Point de départ
                         </CardTitle>
                     </CardHeader>
@@ -141,7 +142,7 @@ export default function RecapitulatifPage() {
                 <Card className="border-l-4 border-red-500 shadow-sm">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-gray-700">
-                            <MapPin className="h-5 w-5 text-red-500" />
+                            <MapPin className="h-5 w-5 text-red-500"/>
                             Point d&#39;arrivée
                         </CardTitle>
                     </CardHeader>
@@ -156,34 +157,34 @@ export default function RecapitulatifPage() {
             <Card className="mt-6 bg-blue-50">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                        <Package className="h-5 w-5 text-blue-500" />
+                        <Package className="h-5 w-5 text-blue-500"/>
                         Détails de l&#39;envoi
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="grid md:grid-cols-2 gap-4">
                     <div className="flex items-center gap-3">
-                        <Package className="h-5 w-5 text-gray-500" />
+                        <Package className="h-5 w-5 text-gray-500"/>
                         <div>
                             <p className="text-sm text-gray-500">Nombre de colis</p>
                             <p className="font-medium">{simulationData.parcels?.length || 0}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                        <Weight className="h-5 w-5 text-gray-500" />
+                        <Weight className="h-5 w-5 text-gray-500"/>
                         <div>
                             <p className="text-sm text-gray-500">Poids total</p>
                             <p className="font-medium">{simulationData.totalWeight} kg</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                        <Calendar className="h-5 w-5 text-gray-500" />
+                        <Calendar className="h-5 w-5 text-gray-500"/>
                         <div>
                             <p className="text-sm text-gray-500">Date de départ</p>
                             <p className="font-medium">{new Date(simulationData.departureDate).toLocaleDateString()}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                        <Truck className="h-5 w-5 text-gray-500" />
+                        <Truck className="h-5 w-5 text-gray-500"/>
                         <div>
                             <p className="text-sm text-gray-500">Date d&#39;arrivée estimée</p>
                             <p className="font-medium">{new Date(simulationData.arrivalDate).toLocaleDateString()}</p>
@@ -195,7 +196,7 @@ export default function RecapitulatifPage() {
             <Card className="bg-blue-100">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-blue-700">
-                        <DollarSign className="h-5 w-5" />
+                        <DollarSign className="h-5 w-5"/>
                         Prix Total
                     </CardTitle>
                 </CardHeader>
@@ -212,12 +213,13 @@ export default function RecapitulatifPage() {
                     className="flex items-center gap-2 px-8 py-6 text-lg bg-green-500 hover:bg-green-600 text-white"
                     onClick={handlePaymentRedirect}
                 >
-                    <CreditCard className="h-5 w-5" />
+                    <CreditCard className="h-5 w-5"/>
                     Payer maintenant
                 </Button>
                 {/* Bouton Annuler */}
-                <Button variant="destructive" className="flex items-center gap-2 px-8 py-6 text-lg text-white bg-red-500 hover:bg-red-600">
-                    <XCircle className="h-5 w-5" />
+                <Button variant="destructive"
+                        className="flex items-center gap-2 px-8 py-6 text-lg text-white bg-red-500 hover:bg-red-600">
+                    <XCircle className="h-5 w-5"/>
                     Annuler
                 </Button>
             </div>

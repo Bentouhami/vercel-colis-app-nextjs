@@ -18,7 +18,7 @@ import {
     fetchCountries,
     fetchDestinationCountries
 } from "@/services/frontend-services/AddresseService";
-import {SimulationDtoRequest} from "@/utils/dtos";
+import {SimulationDtoRequest} from "@/services/dtos";
 import {ArrowRight, Box, Calculator, MapPin, Truck} from "lucide-react";
 import {COLIS_MAX_PER_ENVOI} from "@/utils/constants";
 
@@ -144,46 +144,49 @@ const SimulationForm = () => {
     const handleSubmit = async (e: ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        startTransition(async () => {
-            // get departure agency id by Country and city and agency name
+        startTransition(() => {
+            (async () => {
+                // get departure agency id by Country and city and agency name
 
+                // data to be validated by zod schema
+                const simulationData: SimulationDtoRequest = {
+                    departureCountry: departure.country,
+                    departureCity: departure.city,
+                    departureAgency: departure.agencyName,
+                    destinationCountry: destination.country,
+                    destinationCity: destination.city,
+                    destinationAgency: destination.agencyName,
+                    parcels,
+                };
 
-            // data to be validated by zod schema
-            const simulationData: SimulationDtoRequest = {
-                departureCountry: departure.country,
-                departureCity: departure.city,
-                departureAgency: departure.agencyName,
-                destinationCountry: destination.country,
-                destinationCity: destination.city,
-                destinationAgency: destination.agencyName,
-                parcels,
-
-
-            };
-
-            // validate data with zod schema
-            const validated = simulationEnvoisSchema.safeParse(simulationData);
-            if (!validated.success) {
-                toast.error(validated.error.errors[0].message);
-                return;
-            }
-
-            try {
-                console.log("log ====> simulationData in SimulationForm.tsx before calling submitSimulation function: ", simulationData);
-
-                const response = await submitSimulation(simulationData);
-                if (!response) {
-                    toast.error("Une erreur est survenue lors de la soumission de la simulation.");
+                // validate data with zod schema
+                const validated = simulationEnvoisSchema.safeParse(simulationData);
+                if (!validated.success) {
+                    toast.error(validated.error.errors[0].message);
                     return;
                 }
 
-                toast.success("Simulation envoyée avec succès !");
-                router.push(`/client/simulation/results`);
-            } catch (error) {
-                console.error('Erreur lors de la soumission de la simulation:', error);
-                toast.error('Une erreur est survenue lors de la soumission de la simulation.');
-            }
+                try {
+                    console.log(
+                        "log ====> simulationData in SimulationForm.tsx before calling submitSimulation function: ",
+                        simulationData
+                    );
+
+                    const response = await submitSimulation(simulationData);
+                    if (!response) {
+                        toast.error("Une erreur est survenue lors de la soumission de la simulation.");
+                        return;
+                    }
+
+                    toast.success("Simulation envoyée avec succès !");
+                    router.push(`/client/simulation/results`);
+                } catch (error) {
+                    console.error("Erreur lors de la soumission de la simulation:", error);
+                    toast.error("Une erreur est survenue lors de la soumission de la simulation.");
+                }
+            })(); // L'IIFE s'exécute immédiatement
         });
+
     };
 
     return (

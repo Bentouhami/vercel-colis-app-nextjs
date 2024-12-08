@@ -2,7 +2,7 @@
 
 import {DOMAIN} from "@/utils/constants";
 
-import {MessageBodyDto} from "@/utils/dtos";
+import {MessageBodyDto} from "@/services/dtos/emails/EmailDto";
 
 export async function sendContactEmail(messageBody: MessageBodyDto): Promise<number> {
 

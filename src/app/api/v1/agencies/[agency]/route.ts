@@ -1,4 +1,4 @@
-import  {NextRequest, NextResponse} from 'next/server';
+import {NextRequest, NextResponse} from 'next/server';
 import {findAgencyByName} from "@/services/backend-services/AgencyService";
 
 
@@ -7,7 +7,8 @@ interface Props {
         agency: string;
     }
 }
-export async function GET (req: NextRequest, {params}: Props) {
+
+export async function GET(req: NextRequest, {params}: Props) {
     console.log("GET request received in agencies/departure route");
 
     try {

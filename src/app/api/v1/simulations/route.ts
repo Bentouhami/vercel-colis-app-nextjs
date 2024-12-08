@@ -1,12 +1,8 @@
 // path: src/app/api/v1/simulations/route.ts
 
 import {NextRequest, NextResponse} from 'next/server';
-import {
-    BaseSimulationDto, EnvoiStatus, FullSimulationDto,
-    SimulationDto,
-    SimulationStatus,
-} from "@/utils/dtos";
-import {verifyToken} from "@/utils/verifyToken";
+import {BaseSimulationDto, EnvoiStatus, FullSimulationDto, SimulationStatus
+} from "@/services/dtos";
 import {
     getSimulationByIdAndToken,
     saveSimulation,
@@ -23,7 +19,6 @@ import {getToken} from "next-auth/jwt";
  * @returns NextResponse object with JSON response
  */
 export async function POST(request: NextRequest) {
-    console.log("log ====> POST request received in simulations route path src/app/api/v1/simulations/route.ts");
 
     if (request.method !== 'POST') {
         return NextResponse.json({error: 'Method not allowed'}, {status: 405});
@@ -35,9 +30,6 @@ export async function POST(request: NextRequest) {
         if (!BaseSimulationDto) {
             return NextResponse.json({error: 'Invalid request'}, {status: 400});
         }
-
-
-        console.log("log ====> BaseSimulationDto in POST request received in simulations route before saving path: src/app/api/v1/simulations/route.ts: ", BaseSimulationDto);
 
         const simulationIdAndVerificationToken = await saveSimulation(BaseSimulationDto);
 
@@ -129,12 +121,12 @@ export async function PUT(request: NextRequest) {
 
 
         // Retrieve the connected user's token
-        const token = await getToken({ req: request, secret: process.env.AUTH_SECRET as string });
+        const token = await getToken({req: request, secret: process.env.AUTH_SECRET as string});
 
         if (!body.userId) {
             if (!token) {
                 console.error("Unauthorized: User token not found.");
-                return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+                return NextResponse.json({error: "Unauthorized"}, {status: 401});
             }
             body.userId = Number(token.id);
         }
@@ -163,7 +155,7 @@ export async function PUT(request: NextRequest) {
         }
 
 
-       await updateSimulationWithSenderAndDestinataireIds(body);
+        await updateSimulationWithSenderAndDestinataireIds(body);
 
         return NextResponse.json({message: "Simulation updated successfully"}, {status: 200});
 

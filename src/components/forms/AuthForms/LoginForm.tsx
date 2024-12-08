@@ -6,11 +6,13 @@ import React, {useState, useTransition} from "react";
 import {toast, ToastContainer} from "react-toastify";
 import {useRouter, useSearchParams} from "next/navigation";
 import {FaEnvelope, FaEye, FaEyeSlash, FaLock} from 'react-icons/fa';
-import {LoginUserDto} from "@/utils/dtos";
+import {LoginUserDto} from "@/services/dtos/users/UserDto";
 import {loginUserSchema} from "@/utils/validationSchema";
 import {motion} from "framer-motion";
 import Image from "next/image";
-import {signIn} from "next-auth/react";
+import {Card} from "@/components/ui/card";
+import {bgBlack, bgGreen} from "next/dist/lib/picocolors";
+import {login} from "@/actions/UserActions";
 
 interface LoginFormProps {
     onSuccess?: () => void;
@@ -35,23 +37,20 @@ const LoginForm: React.FC<LoginFormProps> = () => {
             return;
         }
 
+        // @ts-ignore
         startTransition(async () => {
             try {
-                const result = await signIn("credentials", {
-                    redirect: false,
-                    email: loginData.email,
-                    password: loginData.password,
-                });
+                const result = await login(email, password);
 
                 if (result?.error) {
-                    toast.error("Invalid email or password");
+                    toast.error(result.error);
                 } else {
                     toast.success("Connexion réussie");
                     const redirectUrl = searchParams.get("redirect") || "/client/simulation";
                     setTimeout(() => {
                         router.replace(redirectUrl);
                         router.refresh();
-                    }, 3000);
+                    }, 600);
                 }
             } catch (error) {
                 toast.error("Erreur lors de la connexion");
@@ -176,6 +175,11 @@ const LoginForm: React.FC<LoginFormProps> = () => {
 
                             )}
                         </Button>
+
+                        <Card className={bgGreen('gradient-blue-100')} style={{backgroundImage: `url(${bgBlack})`}}>
+
+                        </Card>
+
                     </motion.div>
                 </Form>
 

@@ -1,4 +1,4 @@
-import { Form } from 'react-bootstrap';
+import {Form} from 'react-bootstrap';
 import React from "react";
 
 interface CountrySelectProps {
@@ -10,7 +10,7 @@ interface CountrySelectProps {
 
 }
 
-const CountrySelect = ({ label, value, onChange, countries, disabled = false }: CountrySelectProps) => {
+const CountrySelect = ({label, value, onChange, countries, disabled = false}: CountrySelectProps) => {
     const placeholder = "Sélectionner un pays";
 
     return (

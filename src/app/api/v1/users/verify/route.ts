@@ -1,7 +1,7 @@
 // path: src/app/api/v1/users/verify/route.ts
 
 import {NextRequest, NextResponse} from "next/server";
-import { Roles, UserResponseDto} from "@/utils/dtos";
+import {Roles, UserResponseDto} from "@/services/dtos";
 import {
     getUserByValidToken,
     updateUserAndResetTokenVerificationAfterVerification
@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
 
 
     if (req.method !== "POST") {
-        return NextResponse.json({ status: 400 });
+        return NextResponse.json({status: 400});
     }
 
     // Récupérer le token depuis le corps de la requête

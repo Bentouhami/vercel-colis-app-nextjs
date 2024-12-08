@@ -7,7 +7,7 @@ function AddReceiverPage() {
     return (
 
         <div className={'container'}>
-            <AddReceiverForm />
+            <AddReceiverForm/>
         </div>
     )
 }

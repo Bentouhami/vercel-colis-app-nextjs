@@ -6,7 +6,7 @@ import HomePage from "@/app/client/home/page";
 function Page() {
     return (
         <main>
-            <HomePage />
+            <HomePage/>
 
         </main>
     )
