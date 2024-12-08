@@ -88,7 +88,7 @@ const HeaderNavbar: React.FC<NavbarProps> = ({
                                     </Link>
                                 )}
 
-                                <LogoutButton/>
+                                <LogoutButton />
                             </div>
                         ) : (
                             <>

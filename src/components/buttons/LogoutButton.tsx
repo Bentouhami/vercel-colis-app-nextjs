@@ -2,12 +2,13 @@
 
 import {signOut} from "next-auth/react";
 import {toast} from "react-toastify";
+import {DOMAIN} from "@/utils/constants";
 
 const LogoutButton = () => {
     const logoutHandler = async () => {
         try {
             // Sign out using NextAuth.js
-            await signOut({redirectTo: "/"}); // Redirect to home after logout
+            await signOut({redirectTo: `${DOMAIN}/`}); // Redirect to home after logout
 
             // Call API to clear simulationResponse cookie
             const response = await fetch("/api/v1/users/logout", {method: "GET"});
