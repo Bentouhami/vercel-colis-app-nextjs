@@ -12,4 +12,9 @@ export interface ParcelDto {
 }
 
 // DTO for creating a new parcel
-export type CreateParcelDto = Omit<ParcelDto, "id" | "envoiId">;
+export interface CreateParcelDto {
+    height: number;
+    weight: number;
+    width: number;
+    length: number;
+}

@@ -3,7 +3,7 @@
 
 // -------------------- User DTOs --------------------
 import {Roles} from "@/services/dtos/enums/EnumsDto";
-import {AddressDto, CreateAddressDto, UpdateAddressDto} from "@/services/dtos/addresses/AddressDto";
+import {AddressDto, CreateAddressDto, CreatedAddressDto, UpdateAddressDto} from "@/services/dtos/addresses/AddressDto";
 
 export interface UserDto {
     id: number;
@@ -22,16 +22,42 @@ export interface UserDto {
     verificationToken?: string;
     verificationTokenExpires?: Date;
     addressId?: number;
-    address?: AddressDto;
+    Address: AddressDto;
 }
 
-// DTO for creating a new user
-export interface CreateUserDto extends Omit<UserDto, "id" | "isVerified" | "emailVerified" | "addressId" | "address"> {
-    password: string; // Obligatoire
-    address: UpdateAddressDto; // Adresse complète requise
-    verificationTokenExpires: Date; // Date d'expiration du token de vérification de l'email
-    verificationToken: string; // Token de vérification de l'email
+
+export interface CreateUserDto {
+    firstName: string;
+    lastName: string;
+    name: string;
+    birthDate: Date;
+    email: string;
+    phoneNumber: string;
+    password: string;
+    verificationToken: string;
+    verificationTokenExpires: Date;
+    Address: {
+        connect: { id: number }; // Associe une adresse existante par son ID
+    };
 }
+
+
+// DTO for the created user response
+export interface CreatedUserDto {
+    id: number;
+    firstName: string;
+    lastName: string;
+    name: string;
+    birthDate: Date;
+    email: string;
+    phoneNumber: string;
+    image?: string | null;
+    roles: Roles[];
+    isVerified: boolean;
+    addressId: number;
+    Address: AddressDto;
+}
+
 
 export type RegisterClientDto =
     Required<Pick<UserDto, "firstName" | "lastName" | "birthDate" | "phoneNumber" | "email" | "password">>
@@ -52,7 +78,7 @@ export type UserResponseDto = Required<Pick<UserDto, "id" | "firstName" | "lastN
 
 // DTO for User response without a password
 export type FullUserResponseDto = Omit<UserDto, "password"> & {
-    address: CreateAddressDto;
+    Address: CreateAddressDto;
 };
 
 

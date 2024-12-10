@@ -5,7 +5,7 @@ import React, {useEffect, useState} from 'react';
 import {toast} from 'react-toastify';
 import {
     getSimulation,
-    updateSimulationWithSenderAndDestinataireIds
+    updateSimulation
 } from "@/services/frontend-services/simulation/SimulationService";
 import {SimulationDto} from "@/services/dtos";
 import LoginPromptModal from '@/components/modals/LoginPromptModal';
@@ -15,15 +15,20 @@ import {ArrowRight, Calendar, DollarSign, MapPin, Package, Weight} from "lucide-
 import {useSession} from "next-auth/react";
 import Link from "next/link";
 
+
 export default function SimulationResults() {
+    // get current user session
     const {data: session, status} = useSession();
     const searchParams = useSearchParams();
+    // check if the user is authenticated and set the userId state variable
+    const isAuthenticated = status === "authenticated";
+    const userId = session?.user?.id || null
+
     const router = useRouter();
 
     const [results, setResults] = useState<SimulationDto | null>(null);
     const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-    const isAuthenticated = status === "authenticated";
-    const userId = session?.user?.id || null;
+
 
     // get simulation results from the backend and set them in the state variable results when available or redirect to the simulation page if not
     useEffect(() => {
@@ -47,22 +52,18 @@ export default function SimulationResults() {
 
 
     const handleValidate = async () => {
-        if (isAuthenticated) {
-            const simulationResults = await getSimulation();
-            if (simulationResults) {
-                console.log("log ====> userId : ", userId)
+        if (isAuthenticated && userId && results?.userId) {
+            console.log("log ====> userId : ", userId)
 
-                if (userId && !simulationResults.userId) {
-                    console.log("log ====> userId found and in handleValidate function in SimulationResults.tsx: ", userId);
+            console.log("log ====> userId found and in handleValidate function in SimulationResults.tsx: ", userId);
 
-                    simulationResults.userId = Number(userId);
-                }
+            results.userId = Number(userId) || null;
 
-                console.log("log ====> simulationResults in handleValidate function in SimulationResults.tsx before calling updateSimulationWithSenderAndDestinataireIds function: ", simulationResults);
-                await updateSimulationWithSenderAndDestinataireIds(simulationResults);
+            console.log("log ====> results in handleValidate function in SimulationResults.tsx before calling updateSimulationWithSenderAndDestinataireIds function: ", results);
+            await updateSimulation(results);
 
-                router.push('/client/ajouter-destinataire');
-            }
+            router.push('/client/ajouter-destinataire');
+
         } else {
             setShowLoginPrompt(true);
         }
@@ -188,7 +189,7 @@ export default function SimulationResults() {
                 </CardContent>
             </Card>
 
-            <Link href="/client/simulation">
+            <Link href="/client/simulation/results/edit">
                 <Button
                     className="flex items-center gap-2 px-8 py-6 text-lg bg-green-500 hover:bg-green-600 text-white">
                     Modifier la simulation
@@ -196,13 +197,6 @@ export default function SimulationResults() {
                 </Button>
             </Link>
 
-            <Link href="/client/simulation">
-                <Button
-                    className="flex items-center gap-2 px-8 py-6 text-lg bg-green-500 hover:bg-green-600 text-white">
-                    Ajouter un Colis
-                    <ArrowRight className="h-4 w-4"/>
-                </Button>
-            </Link>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
                 <Button
@@ -216,7 +210,6 @@ export default function SimulationResults() {
                     Annuler
                 </Button>
             </div>
-
             <LoginPromptModal
                 show={showLoginPrompt}
                 handleClose={() => setShowLoginPrompt(false)}

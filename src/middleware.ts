@@ -1,3 +1,6 @@
+// src/middleware.ts
+
+
 import {NextRequest, NextResponse} from "next/server";
 import {getToken} from "next-auth/jwt";
 import {isPublicRoute} from "@/utils/publicRoutesHelper";
@@ -51,6 +54,9 @@ export async function middleware(req: NextRequest) {
 
         // Handle redirects for authenticated users
         if (isAuthenticated) {
+            if (req.nextUrl.pathname === "/client/auth/login" || req.nextUrl.pathname === "/client/auth/register") {
+                return NextResponse.redirect(new URL("/client", req.nextUrl.origin));
+            }
             if (req.nextUrl.pathname === "/") {
                 if (isSuperAdmin) {
                     console.log("Redirecting Super Admin to /admin/super-admin.");
@@ -67,13 +73,9 @@ export async function middleware(req: NextRequest) {
 
         if (req.nextUrl.pathname.startsWith("/admin") && !isSuperAdmin && !isAgencyAdmin) {
             console.log("Unauthorized access to admin route.");
-            return NextResponse.redirect(new URL("/client/unauthorized", req.nextUrl.origin));
+            return NextResponse.redirect(new URL( "/client/auth/login", req.nextUrl.origin));
         }
 
-        if (req.nextUrl.pathname.startsWith("/admin/super-admin") && !isSuperAdmin) {
-            console.log("Unauthorized access to admin route.");
-            return NextResponse.redirect(new URL("/client/unauthorized", req.nextUrl.origin));
-        }
 
         console.log("Access granted to protected route.");
         return response;
@@ -92,5 +94,6 @@ export const config = {
         "/admin/:path*",
         "/api/users/profile/:path*",
         "/client/:path*",
+        "/api/v1/users/logout/:path*",
     ],
 };

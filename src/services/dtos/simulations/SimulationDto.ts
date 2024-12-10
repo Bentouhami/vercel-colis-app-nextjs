@@ -5,6 +5,41 @@
 import {CreateParcelDto} from "@/services/dtos/parcels/ParcelDto";
 import {EnvoiStatus, SimulationStatus} from "@/services/dtos/enums/EnumsDto";
 
+// Interface utilisée pour les requêtes de création d'un nouvel envoi depuis le frontend. Cela inclut les informations nécessaires pour créer un envoi.
+
+export interface EnvoiDtoRequest {
+    userId?: number;
+    destinataireId?: number;
+    departureAgencyId: number;
+    arrivalAgencyId: number;
+    transportId?: number;
+    parcels: CreateParcelDto[];
+    totalWeight: number;
+    totalVolume: number;
+    totalPrice: number;
+    departureDate: Date;
+    arrivalDate: Date;
+    comment?: string;
+}
+
+export interface BaseEnvoiDto {
+    id: number;
+    trackingNumber: string | null;
+    qrCodeUrl?: string | null;
+    simulationStatus: SimulationStatus;
+    status: EnvoiStatus | null;
+    totalWeight: number;
+    totalVolume: number;
+    totalPrice: number;
+    paid: boolean;
+    departureDate: Date;
+    arrivalDate: Date;
+    createdAt: Date;
+    updatedAt: Date;
+    verificationToken: string;
+}
+
+
 export interface SimulationDtoRequest {
     departureCountry: string;
     departureCity: string;
@@ -26,7 +61,7 @@ export interface SimulationCalculationTotalsDto {
 }
 
 // SimulationResultsDto: used when getting simulation details from the frontend
-export interface BaseSimulationDto extends SimulationCalculationTotalsDto {
+export interface BaseSimulationDto extends SimulationCalculationTotalsDto , SimulationDtoRequest{
     departureAgencyId: number | null;
     arrivalAgencyId: number | null;
     simulationStatus: SimulationStatus;
@@ -42,6 +77,7 @@ export interface StatusSimulationAndEnvoiStatus {
 // Response DTO for a created simulation, used when receiving a new simulation ID and token
 export interface CreatedSimulationResponseDto {
     id: number;
+    trackingNumber: string;
     verificationToken: string;
 }
 
@@ -55,6 +91,7 @@ export interface SimulationDto extends StatusSimulationAndEnvoiStatus, Simulatio
     destinationCity: string | null;
     destinationAgency: string | null;
     parcels: CreateParcelDto[];
+    trackingNumber: string | null;
 }
 
 // DTO for a simulation with user and destination IDs, typically used in backend processing and database storage

@@ -7,7 +7,7 @@ export default function WrappedSimulationResults() {
     return (
         <Suspense fallback={<div>Loading...</div>}>
             <div className="d-flex justify-content-around">
-                <SimulationResults/>
+                <SimulationResults />
             </div>
 
         </Suspense>

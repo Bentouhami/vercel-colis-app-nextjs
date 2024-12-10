@@ -13,7 +13,7 @@ import prisma from "@/utils/db";
 import {getAgencyById} from "@/services/backend-services/AgencyService";
 import {generateTrackingNumber} from "@/utils/generateTrackingNumber";
 
-export async function getSimulationByIdAndToken(id: number, verificationToken: string): Promise<SimulationDto | null> {
+export async function getSimulationByIdAndToken(id: number, verificationToken: string, trackingNumber: any): Promise<SimulationDto | null> {
 
     console.log("log ====> getSimulationById function called in path: src/services/backend-services/simulation/SimulationService.ts", "simulationId: ", id, "verificationToken: ", verificationToken);
 
@@ -24,6 +24,7 @@ export async function getSimulationByIdAndToken(id: number, verificationToken: s
             where: {
                 id,
                 verificationToken,
+                trackingNumber: trackingNumber
             },
             include: { // Include all related data
                 // user: true,
@@ -76,6 +77,7 @@ export async function getSimulationByIdAndToken(id: number, verificationToken: s
             totalPrice: simulation.totalPrice,
             departureDate: simulation.departureDate,
             arrivalDate: simulation.arrivalDate,
+            trackingNumber: simulation.trackingNumber,
         };
 
 
@@ -230,4 +232,39 @@ export async function updateSimulation(simulation: SimulationDto, simulationIdAn
         console.error("Error updating simulation", error);
         throw new Error("Error updating simulation");
     }
+}
+
+
+/**
+ * Helper: Get agency details and ensure data consistency
+ */
+async function fetchAndValidateAgencies(departureAgencyId: number, arrivalAgencyId: number) {
+    const departureAgency = await getAgencyById(departureAgencyId);
+    const arrivalAgency = await getAgencyById(arrivalAgencyId);
+
+    if (!departureAgency || !arrivalAgency) {
+        throw new Error("Invalid agency IDs provided");
+    }
+
+    if (!departureAgency.address?.country || !departureAgency.address?.city) {
+        throw new Error("Departure agency address is incomplete");
+    }
+
+    if (!arrivalAgency.address?.country || !arrivalAgency.address?.city) {
+        throw new Error("Arrival agency address is incomplete");
+    }
+
+    return { departureAgency, arrivalAgency };
+}
+
+/**
+ * Helper: Prepare parcels for database operations
+ */
+function mapParcels(parcels: CreateParcelDto[]) {
+    return parcels.map(parcel => ({
+        height: parcel.height,
+        width: parcel.width,
+        length: parcel.length,
+        weight: parcel.weight,
+    }));
 }

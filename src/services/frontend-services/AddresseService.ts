@@ -1,4 +1,4 @@
-// path: src/services/frontend-services/AddresseService.ts
+// path: src/services/frontend-services/AddressService.ts
 'use client';
 
 import {DOMAIN} from "@/utils/constants";

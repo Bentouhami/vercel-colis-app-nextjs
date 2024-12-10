@@ -1,9 +1,8 @@
 import {NextRequest, NextResponse} from 'next/server';
 import {addressSchema} from "@/utils/validationSchema";
 import {errorHandler} from "@/utils/handelErrors";
-import {Address} from "@prisma/client";
-import prisma from "@/utils/db";
 import {capitalizeFirstLetter, toLowerCase} from "@/utils/stringUtils";
+import {createAddress, getAllAddresses, isAddressAlreadyExist} from "@/services/backend-services/AddressService";
 
 
 /**
@@ -15,7 +14,7 @@ import {capitalizeFirstLetter, toLowerCase} from "@/utils/stringUtils";
 export async function GET() {
     try {
         // on récupère toutes les adresses de la base de données via la fonction findMany de prisma
-        const addresses = await prisma.address.findMany() as Address[];
+        const addresses = await getAllAddresses();
 
         // si aucune adresse n'est trouvée, on renvoie une erreur
         if (!addresses) {
@@ -60,25 +59,24 @@ export async function POST(request: NextRequest) {
         }
         // Vérifier si l'adresse existe déjà dans la base de données
 
-        const existingAddress = await prisma.address.findFirst({
-            where: {
-                street: formattedAddress.street,
-                number: formattedAddress.number,
-                city: formattedAddress.city,
-                zipCode: formattedAddress.zipCode,
-                country: formattedAddress.country
-            },
-        });
+        const existingAddress = await isAddressAlreadyExist(formattedAddress);
 
 
-        // Si l'adresse existe, renvoyer une erreur 400 avec l'adresse existante comme donnée et renvoyer une erreur 400
+        // Si l'adresse existe, renvoyer une erreur 200 avec l'adresse existante
         if (existingAddress) {
-            return NextResponse.json({error: "Address already exists", address: existingAddress}, {status: 400});
+            return NextResponse.json(
+                {
+                    error: "Address found exists",
+                    address: existingAddress
+                },
+                {status: 200});
         }
 
-        const newAddress = await prisma.address.create({
-            data: formattedAddress
-        })
+        // const newAddress = await prisma.address.create({
+        //     data: formattedAddress
+        // })
+
+        const newAddress = await createAddress(formattedAddress);
         // on renvoie la liste des adresses
         return NextResponse.json({message: "Address created successfully", address: newAddress}, {status: 201});
 

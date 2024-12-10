@@ -2,9 +2,9 @@
 'use server';
 
 import {
-    AddressDto,
-    CreateAddressDto,
+    AddressDto, CreatedAddressDto,
     CreateDestinataireDto,
+    CreatedUserDto,
     CreateUserDto,
     DestinataireResponseDto,
     DestinataireResponseWithRoleDto,
@@ -18,60 +18,46 @@ import {
 import prisma from "@/utils/db";
 import {VerificationDataType} from "@/utils/types";
 import {sendVerificationEmail} from "@/lib/mailer";
+import {UserDAO} from "@/services/dal/users/UserDAO";
+import {UserMapper} from "@/services/mappers/UserMapper";
 
 /**
  *  Create new user as CLIENT
  *
  * @param newUser
- * @param address
- * @returns new created user data
+ * @returns new created user data or null if not created
  */
 
-export async function registerUser(newUser: CreateUserDto, address: UpdateAddressDto): Promise<FullUserResponseDto | null> {
-    console.log("log ====> registerUser called in path: src/services/backend-services/UserService.ts");
-
+export async function registerUser(newUser: CreateUserDto): Promise<CreatedUserDto | null> {
+    console.log("log ====> registerUser function called in path: src/services/backend-services/UserService.ts");
+    const userDAO = new UserDAO()
     try {
-        const formattedUser = {
-            firstName: newUser.firstName,
-            lastName: newUser.lastName,
-            name: newUser.name,
-            birthDate: newUser.birthDate,
-            phoneNumber: newUser.phoneNumber,
-            email: newUser.email,
-            password: newUser.password,
-            verificationToken: newUser.verificationToken,
-            verificationTokenExpires: newUser.verificationTokenExpires,
-            addressId: address.id,
-            isVerified: false,
-        };
 
-        const createdUser = await prisma.user.create({
-            data: formattedUser,
-            include: {
-                Address: true,
-            },
-        });
+        const createdUser = await userDAO.createUser(newUser);
 
-        console.log(" log ====> createdUser of type UserModelDto in path src/services/backend-services/UserService.ts: ", createdUser);
+        if (!createdUser) {
+            return null;
+        }
+
+
+        console.log(" log ====> createdUser returned from prisma.create in path src/services/backend-services/UserService.ts: ", createdUser);
+
         if (!createdUser) {
             console.error("Error: Cannot create user.");
             return null;
         }
 
+        console.log(" log ====> createdUser returned from prisma.create in path src/services/backend-services/UserService.ts: ", createdUser);
 
-        // Ensure fields are not null by using `?? undefined`
-        return {
-            id: createdUser.id,
-            firstName: createdUser.firstName ?? undefined,
-            lastName: createdUser.lastName ?? undefined,
-            name: createdUser.name ?? undefined,
-            birthDate: createdUser.birthDate ?? undefined,
-            email: createdUser.email ?? undefined,
-            phoneNumber: createdUser.phoneNumber ?? undefined,
-            image: createdUser.image ?? undefined,
-            roles: createdUser.roles as Roles[],
-            address: address as CreateAddressDto,
-        };
+        const mappedUser = UserMapper.toCreatedUserDto(createdUser);
+
+        console.log(" log ====> mappedUser returned from UserMapper.toCreatedUserDto in path src/services/backend-services/UserService.ts: ", mappedUser);
+
+        if (!mappedUser) {
+            return null;
+        }
+        return mappedUser;
+
     } catch (error) {
         console.error("Error registering user:", error);
         throw error;
@@ -462,7 +448,7 @@ export async function updateDestinataireToClient(
             emailVerified: user.emailVerified ?? new Date(),
             verificationToken: user.verificationToken ?? '',
             verificationTokenExpires: user.verificationTokenExpires ?? new Date(),
-            address: user.Address as AddressDto,
+            Address: user.Address as CreatedAddressDto,
         };
 
         await sendVerificationEmail(user.name ?? '', user.email, verificationData.verificationToken);

@@ -7,6 +7,7 @@ import bcrypt from "bcryptjs";
 import GoogleProvider from "@auth/core/providers/google";
 import GitHubProvider from "@auth/core/providers/github";
 import {Roles} from "@/services/dtos/enums/EnumsDto";
+import {UserDAO} from "@/services/dal/users/UserDAO";
 
 export const {handlers, signIn, signOut, auth} = NextAuth({
     adapter: PrismaAdapter(prisma),
@@ -15,10 +16,10 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
         CredentialsProvider({
             name: "credentials",
             credentials: {
-                email: {label: "Email", type: "email"},
-                password: {label: "Password", type: "password"},
+                email: {},
+                password: {},
             },
-            async authorize(credentials): Promise<User | null> {
+            authorize : async (credentials) => {
                 console.log("---------- authorize start ----------");
 
                 if (!credentials?.email || !credentials?.password) {
@@ -27,39 +28,18 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
 
 
                 try {
-                    const user = await prisma.user.findFirst({
-                        where: {email: credentials.email},
-                        include: {
-                            Address: {
-                                select: {
-                                    street: true,
-                                    number: true,
-                                    city: true,
-                                    zipCode: true,
-                                    country: true,
-                                },
-                            },
-                        },
-                    });
+
+                    // get User from db
+                    const user = await UserDAO.getUserLoginDto(credentials.email as string, credentials.password as string);
 
                     // Check if the user exists and has a password
                     if (!user) {
                         throw new Error("Incorrect credentials");
                     }
-
+                    console.log("log ====> user returned from UserDAO.getUserLoginUserDto function in path: src/auth/auth.ts: ", user);
                     // console.log("Credentials password:", credentials.password);
                     // console.log("User password:", user.password);
 
-                    const passwordValid = await bcrypt.compare(
-                        String(credentials.password), // Explicitly convert to string
-                        String(user.password) // Explicitly convert to string
-
-                    );
-
-                    if (!passwordValid) {
-                        throw new Error("Incorrect credentials");
-
-                    }
 
                     console.log("---------- authorize end ----------");
 
@@ -73,7 +53,9 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
                         phoneNumber: user.phoneNumber ?? undefined,
                         image: user.image ?? undefined,
                         roles: user.roles as Roles[],
-                        emailVerified: user.emailVerified ?? null, // Include emailVerified with a fallback
+                        emailVerified: user.emailVerified ?? null, // Include
+                        // emailVerified with a fallback
+                        isVerified: user.isVerified ?? false,
                     } as User;
                 } catch (error) {
                     console.error("Authorization error:", error);
@@ -103,6 +85,7 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
                     image: profile.picture,
                     phoneNumber: null,
                     roles: [Roles.CLIENT], // Assign default role using Roles enum
+
                 };
             },
         }),
@@ -146,6 +129,7 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
                 token.image = user.image ?? undefined;
                 token.roles = user.roles || [];
                 token.emailVerified = user.emailVerified ?? null;
+                token.isVerified = user.isVerified ?? false;
             }
             return token;
         },
@@ -160,7 +144,8 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
                     phoneNumber: token.phoneNumber ?? undefined,
                     image: token.image ?? undefined,
                     roles: token.roles ?? [],
-                    emailVerified: token.emailVerified ?? null
+                    emailVerified: token.emailVerified ?? null,
+                    isVerified: token.isVerified ?? false
                 };
             }
             return session;

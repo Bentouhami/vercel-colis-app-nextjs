@@ -127,9 +127,44 @@ export async function getSimulation(): Promise<SimulationDto | null> {
     }
 }
 
-export async function updateSimulationWithSenderAndDestinataireIds(simulation: SimulationDto) {
+export async function updateSimulation(simulation: SimulationDto) {
 
-    console.log("log ====> updateSimulationWithSenderAndDestinataireIds function called in src/services/frontend-services/simulation/SimulationService.ts : ", simulation);
+    console.log("log ====> updateSimulation function called in src/services/frontend-services/simulation/SimulationService.ts : ", simulation);
+
+    // get parcels from the simulation
+    const parcels = simulation.parcels;
+    if (!parcels) {
+        throw new Error("Parcels not found");
+    }
+
+    // fetch tarifs
+    const tarifs = await getTarifs();
+    if (!tarifs) {
+        throw new Error("Tarifs not found");
+    }
+
+    // calculate totals
+    const calculationResults =
+        await calculateEnvoiDetails(parcels, tarifs);
+
+    if (!calculationResults) {
+        throw new Error("Calculation results not found");
+    }
+
+    // prepare the updated simulation
+    const updatedSimulation: SimulationDto = {
+        ...simulation,
+        parcels: parcels,
+        totalWeight: calculationResults.totalWeight,
+        totalVolume: calculationResults.totalVolume,
+        totalPrice: calculationResults.totalPrice,
+        departureDate: calculationResults.departureDate,
+        arrivalDate: calculationResults.arrivalDate,
+    };
+
+    if(!updatedSimulation) {
+        throw new Error("Simulation not found");
+    }
 
     try {
         const response = await fetch(`${DOMAIN}/api/v1/simulations`, {
@@ -138,12 +173,10 @@ export async function updateSimulationWithSenderAndDestinataireIds(simulation: S
                 "Content-Type": "application/json",
             },
             credentials: 'include',
-            body: JSON.stringify(simulation),
+            body: JSON.stringify(updatedSimulation),
         });
 
-        if (!response.ok) {
-            throw new Error('Failed to update simulation');
-        }
+        if (!response.ok) throw new Error('Failed to update simulation');
 
 
     } catch (error) {

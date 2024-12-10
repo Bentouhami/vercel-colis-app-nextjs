@@ -10,7 +10,7 @@ import {registerUserBackendSchema} from "@/utils/validationSchema";
 import {saltAndHashPassword} from "@/lib/auth";
 import {generateVerificationTokenForUser} from "@/utils/generateToken";
 import {VerificationDataType} from "@/utils/types";
-import {createAddress, isAddressAlreadyExist} from "@/services/backend-services/AddresseService";
+import {createAddress, isAddressAlreadyExist} from "@/services/backend-services/AddressService";
 import {
     isUserAlreadyExist,
     registerUser,
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
 
         console.log("Formatted address registeredUser:", formattedUser.address);
 
-        let addressToUse: UpdateAddressDto | null = await isAddressAlreadyExist(extractedBaseAddress);
+        let addressToUse = await isAddressAlreadyExist(extractedBaseAddress);
 
         if (!addressToUse) {
             addressToUse = await createAddress(extractedBaseAddress);
@@ -115,7 +115,11 @@ export async function POST(request: NextRequest) {
                 email,
                 phoneNumber,
                 password: hashedPassword,
-                address: addressToUse,
+                Address: {
+                    connect: {
+                        id: addressToUse.id,
+                    },
+                },
                 verificationToken: verificationData.verificationToken,
                 verificationTokenExpires: verificationData.verificationTokenExpires,
             };
@@ -124,7 +128,7 @@ export async function POST(request: NextRequest) {
 
             console.log(" log ====> addressToUse of type CreateAddressDto in path src/app/api/v1/users/register/route.ts: ", addressToUse);
 
-            registeredUser = await registerUser(userData, addressToUse) as FullUserResponseDto;
+            registeredUser = await registerUser(userData) as FullUserResponseDto
 
             console.log(" log ====> registeredUser of type FullUserResponseDto in path src/app/api/v1/users/register/route.ts: ", registeredUser);
 

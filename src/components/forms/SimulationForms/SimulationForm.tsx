@@ -21,11 +21,13 @@ import {
 import {SimulationDtoRequest} from "@/services/dtos";
 import {ArrowRight, Box, Calculator, MapPin, Truck} from "lucide-react";
 import {COLIS_MAX_PER_ENVOI} from "@/utils/constants";
+import FoundSimulationPromptModal from "@/components/modals/FoundSimulationPromptModal";
 
 const SimulationForm = () => {
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
     const [departure, setDeparture] = useState({country: '', city: '', agencyName: ''});
+    const [showFoundSimulationPromptModal, setShowFoundSimulationPromptModal] = useState(false);
     const [destination, setDestination] = useState({country: '', city: '', agencyName: ''});
     const [options, setOptions] = useState({
         countries: [],
@@ -42,22 +44,19 @@ const SimulationForm = () => {
 
     useEffect(() => {
         const findExistingSimulation = async () => {
-
             try {
                 const simulation = await getSimulation();
                 if (simulation) {
                     toast.success("Simulation trouvée !");
-                    setTimeout(() => {
-                        router.push(`/client/simulation/results`);
-                    }, 3000);
+                    setShowFoundSimulationPromptModal(true); // Show modal
                 }
             } catch (error) {
-                console.error('Erreur lors de la recherche de la simulation:', error);
+                console.error("Erreur lors de la recherche de la simulation:", error);
             }
-        }
-
+        };
         findExistingSimulation();
-    }, [router])
+    }, [router]);
+
 
     useEffect(() => {
         fetchCountries().then(data => setOptions(prev => ({...prev, countries: data}))).catch(console.error);
@@ -356,6 +355,15 @@ const SimulationForm = () => {
                     </Button>
                 </div>
             </form>
+            <FoundSimulationPromptModal
+                show={showFoundSimulationPromptModal}
+                handleClose={() => setShowFoundSimulationPromptModal(false)}
+                handleSimulationRedirect={() => {
+                    setShowFoundSimulationPromptModal(false);
+                    router.push(`/client/simulation/results/edit`);
+                }}
+            />
+
 
             <ToastContainer
                 position="bottom-right"

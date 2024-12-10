@@ -18,6 +18,7 @@ declare module "next-auth" {
         roles?: Roles[];
         address?: CreateAddressDto | null;
         emailVerified?: Date | null;
+        isVerified?: boolean;
 
     }
 }
@@ -34,5 +35,6 @@ declare module "next-auth/jwt" {
         roles?: Roles[];
         address?: CreateAddressDto | null;
         emailVerified?: Date | null;
+        isVerified?: boolean;
     }
 }

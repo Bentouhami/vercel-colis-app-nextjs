@@ -1,33 +1,48 @@
-import {CreateAddressDto, CreatedAddressDto, FoundAddressDto, UpdateAddressDto} from "@/services/dtos";
 import {IAddressDAO} from "@/services/dal/addresses/IAddressDAO";
 import prisma from "@/utils/db";
-import {AddressMapper} from "@/services/mappers/AddressMapper";
+import {CreateAddressDto} from "@/services/dtos";
 
 export class AddressDAO implements IAddressDAO {
-    createAddress(data: CreateAddressDto): Promise<CreatedAddressDto> {
-        const createdAddress = prisma.address.create({
-            data
+
+    async getAllAddresses() {
+        return await prisma.address.findMany();
+    }
+
+    async createAddress(address: CreateAddressDto) {
+
+        const addressCreated = await prisma.address.create({
+            data: {
+                street: address.street,
+                number: address.number,
+                city: address.city,
+                zipCode: address.zipCode,
+                country: address.country,
+            }
         });
 
-        return  AddressMapper.toCreatedAddressDto(createdAddress) ;
+        return addressCreated;
+
     }
 
-    deleteAddress(id: number): Promise<void> {
-        return Promise.resolve(undefined);
+    async findAddressByFields(address: CreateAddressDto) {
+        try {
+            const addressFound = await prisma.address.findFirst({
+                where: {
+                    street: address.street,
+                    number: address.number,
+                    city: address.city,
+                    zipCode: address.zipCode,
+                    country: address.country,
+                }
+            });
+            if (!addressFound) {
+                return null;
+            }
+            return addressFound;
+        } catch (error) {
+            console.error("Error finding address by fields:", error);
+            throw error;
+        }
+
     }
-
-    getAddressById(id: number): Promise<FoundAddressDto | null> {
-        return Promise.resolve(undefined);
-    }
-
-    getAllAddresses(): Promise<FoundAddressDto[]> {
-        return Promise.resolve([]);
-    }
-
-    updateAddress(id: number, data: Partial<UpdateAddressDto>): Promise<UpdateAddressDto | null> {
-        return Promise.resolve(undefined);
-    }
-
-
-
 }

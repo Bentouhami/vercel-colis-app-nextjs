@@ -1,12 +1,12 @@
 // path: src/services/mappers/UserMapper.ts
 import {User as PrismaUser} from '@prisma/client'
-import {FullUserResponseDto, UserDto, UserLoginResponseDto} from '@/services/dtos/users/UserDto'
+import {CreatedUserDto, FullUserResponseDto, UserDto, UserLoginResponseDto} from '@/services/dtos/users/UserDto'
 import {RoleMapper} from "@/services/mappers/enums/RoleMapper";
 import {AddressMapper} from "@/services/mappers/AddressMapper";
 
 export class UserMapper {
     // Map Prisma User to UserDto
-    static toDto(user: PrismaUser): UserDto {
+    static toDto(user: PrismaUser & { Address?: any }): UserDto {
         return {
             id: user.id,
             firstName: user.firstName || '',
@@ -22,7 +22,7 @@ export class UserMapper {
             verificationToken: user.verificationToken || '',
             verificationTokenExpires: user.verificationTokenExpires || new Date(),
             addressId: user.addressId || 0,
-            // Note: Address mapping would be done separately if needed
+            Address: AddressMapper.toDto(user.Address),
         }
     }
 
@@ -42,7 +42,25 @@ export class UserMapper {
             emailVerified: user.emailVerified || new Date(),
             verificationToken: user.verificationToken || '',
             verificationTokenExpires: user.verificationTokenExpires || new Date(),
-            address: AddressMapper.toCreateDto(user.Address),
+            Address: AddressMapper.toCreatedAddressDto(user.Address),
+        }
+    }
+
+    // Map Prisma User to Created User DTO
+    static toCreatedUserDto(user: PrismaUser & { Address?: any }): CreatedUserDto {
+        return {
+            id: user.id,
+            firstName: user.firstName || '',
+            lastName: user.lastName || '',
+            name: user.name || '',
+            birthDate: user.birthDate || new Date(),
+            email: user.email,
+            phoneNumber: user.phoneNumber || '',
+            image: user.image,
+            roles: RoleMapper.toRolesEnum(user.roles), // Assuming Roles enum is imported
+            isVerified: user.isVerified || false,
+            addressId: user.addressId || 0,
+            Address: AddressMapper.toDto(user.Address),
         }
     }
 

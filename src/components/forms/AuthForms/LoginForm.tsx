@@ -176,9 +176,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
                             )}
                         </Button>
 
-                        <Card className={bgGreen('gradient-blue-100')} style={{backgroundImage: `url(${bgBlack})`}}>
 
-                        </Card>
 
                     </motion.div>
                 </Form>

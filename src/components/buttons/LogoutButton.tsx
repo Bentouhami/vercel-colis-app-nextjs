@@ -8,7 +8,7 @@ const LogoutButton = () => {
     const logoutHandler = async () => {
         try {
             // Sign out using NextAuth.js
-            await signOut({redirectTo: `${DOMAIN}/`}); // Redirect to home after logout
+            await signOut({callbackUrl: `${DOMAIN}/`}); // Redirect to home after logout
 
             // Call API to clear simulationResponse cookie
             const response = await fetch("/api/v1/users/logout", {method: "GET"});

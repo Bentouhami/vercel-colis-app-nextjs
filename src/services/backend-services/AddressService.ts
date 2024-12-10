@@ -1,7 +1,11 @@
-// path: src/backend-services/AddresseService.ts
+// path: src/backend-services/AddressService.ts
 'use server';
-import {AddressDto, CreateAddressDto, CreatedAddressDto, UpdateAddressDto} from "@/services/dtos";
-import prisma from "@/utils/db";
+import {
+    AddressDto,
+    CreateAddressDto,
+    CreatedAddressDto,
+
+} from "@/services/dtos";
 import {AddressDAO} from "@/services/dal/addresses/AddressDAO";
 import {AddressMapper} from "@/services/mappers/AddressMapper";
 
@@ -13,14 +17,18 @@ let addressDAO = new AddressDAO();
  * @param address - address object
  * @returns {Promise<UpdateAddressDto | null>} address or null
  */
-export async function isAddressAlreadyExist(address: CreateAddressDto): Promise<UpdateAddressDto | null> {
+export async function isAddressAlreadyExist(address: CreateAddressDto): Promise<CreatedAddressDto | null> {
     try {
         const addressFound = await addressDAO.findAddressByFields(address);
 
         if (!addressFound) {
             return null;
         }
+
+        console.log("addressFound returned from findAddressByFields function in path: src/services/backend-services/AddressService.ts: ", addressFound);
+
         return AddressMapper.toFoundAddressDto(addressFound);
+
     } catch (error) {
         console.error("Error checking address:", error);
         throw error;

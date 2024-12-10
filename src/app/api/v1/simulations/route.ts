@@ -82,7 +82,8 @@ export async function GET(request: NextRequest) {
 
         const simulation = await getSimulationByIdAndToken(
             Number(simulationIdAndToken.id),
-            simulationIdAndToken.verificationToken
+            simulationIdAndToken.verificationToken,
+            simulationIdAndToken.trackingNumber
         );
 
         if (!simulation) {
@@ -93,7 +94,7 @@ export async function GET(request: NextRequest) {
         console.log("log ====> simulation in GET request received in simulations route after calling getSimulationByIdAndToken function with id and verificationToken: ", simulation);
 
 
-        return NextResponse.json({data: simulation}, {status: 200});
+        return NextResponse.json({data: simulation} , {status: 200});
 
     } catch (error) {
         console.error("Erreur lors de la récupération de la simulation:", error);

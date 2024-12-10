@@ -82,7 +82,7 @@ const RegisterForm = () => {
                         toast.success("Compte créé avec succès ! Email de confirmation envoyé à " + email);
                         setTimeout(() => {
                             router.push('/');
-                        }, 3000);
+                        }, 2000);
                     } else {
                         toast.error("Erreur lors de la création du compte");
                     }
@@ -431,7 +431,7 @@ const RegisterForm = () => {
                         </Button>
                     </motion.div>
                 </Form>
-                <ToastContainer position="bottom-right" autoClose={5000} hideProgressBar theme="colored"/>
+                <ToastContainer position="bottom-right" autoClose={2000} hideProgressBar theme="colored"/>
             </div>
         </motion.div>
     );

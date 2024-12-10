@@ -3,23 +3,35 @@
 const PRODUCTION_ORIGIN = 'https://vercel-colis-app-nextjs.vercel.app';
 const DEVELOPMENT_ORIGIN = 'http://localhost:3000';
 
-export function setCorsHeaders(origin: string): HeadersInit | undefined {
-    // Liste dynamique des origines autorisées
+export function setCorsHeaders(origin: string | null): HeadersInit | undefined {
+    // Define allowed origins based on the environment
     const allowedOrigins =
         process.env.NODE_ENV === 'production'
             ? [PRODUCTION_ORIGIN]
             : [DEVELOPMENT_ORIGIN];
 
-    // Vérification si l'origine est autorisée
-    if (!allowedOrigins.includes(origin)) {
-        return undefined; // Origine non autorisée
+    // Allow requests with no origin (e.g., direct browser calls)
+    if (!origin) {
+        console.warn("Request with no origin header received");
+        return {
+            'Access-Control-Allow-Origin': '*', // Allow all origins for requests without `origin`
+            'Access-Control-Allow-Methods': 'POST, GET, OPTIONS', // Allowed methods
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization', // Allowed headers
+            'Access-Control-Allow-Credentials': 'true', // Allow cookies and credentials
+        };
     }
 
-    // En-têtes CORS configurés
+    // Check if the origin is allowed
+    if (!allowedOrigins.includes(origin)) {
+        console.warn(`Blocked origin: ${origin}`);
+        return undefined; // Origin not allowed
+    }
+
+    // Return CORS headers for allowed origins
     return {
-        'Access-Control-Allow-Origin': origin, // Origine autorisée
-        'Access-Control-Allow-Methods': 'POST, GET, OPTIONS', // Méthodes autorisées
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization', // En-têtes autorisés
-        'Access-Control-Allow-Credentials': 'true', // Autorise les cookies et credentials
+        'Access-Control-Allow-Origin': origin, // Allowed origin
+        'Access-Control-Allow-Methods': 'POST, GET, OPTIONS', // Allowed methods
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization', // Allowed headers
+        'Access-Control-Allow-Credentials': 'true', // Allow cookies and credentials
     };
 }
