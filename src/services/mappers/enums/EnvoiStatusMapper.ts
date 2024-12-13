@@ -19,8 +19,8 @@ export class EnvoiStatusMapper {
         }
     }
 
-    static toPrismaStatus(status: EnvoiStatus): PrismaEnvoiStatus {
-        switch (status) {
+    static toPrismaStatus(envoiStatus: EnvoiStatus): PrismaEnvoiStatus {
+        switch (envoiStatus) {
             case EnvoiStatus.PENDING:
                 return PrismaEnvoiStatus.PENDING;
             case EnvoiStatus.SENT:
@@ -32,7 +32,7 @@ export class EnvoiStatusMapper {
             case EnvoiStatus.RETURNED:
                 return PrismaEnvoiStatus.RETURNED;
             default:
-                throw new Error(`Invalid Envoi Status: ${status}`);
+                throw new Error(`Invalid Envoi Status: ${envoiStatus}`);
         }
     }
 }

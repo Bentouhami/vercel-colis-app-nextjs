@@ -5,7 +5,7 @@ import {Roles, UserResponseDto} from "@/services/dtos";
 import {
     getUserByValidToken,
     updateUserAndResetTokenVerificationAfterVerification
-} from "@/services/backend-services/UserService";
+} from "@/services/backend-services/Bk_UserService";
 
 
 /**

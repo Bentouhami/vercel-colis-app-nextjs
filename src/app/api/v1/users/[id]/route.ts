@@ -1,7 +1,7 @@
 // path: src/app/api/v1/users/[id]/route.ts
 
 import {NextRequest, NextResponse} from "next/server";
-import {getUserById} from "@/services/backend-services/UserService";
+import {getUserById} from "@/services/backend-services/Bk_UserService";
 
 export async function GET(req: NextRequest, {params}: { params: { id: string } }) {
     console.log("log ====> GET request received in path: src/app/api/v1/users/[id]/route.ts");

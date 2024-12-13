@@ -1,4 +1,4 @@
-// path: src/services/frontend-services/UserService.ts
+// path: src/services/frontend-services/Bk_UserService.ts
 
 import {JWTPayload} from "@/utils/types";
 import {setCookie} from "@/utils/generateToken";
@@ -70,7 +70,7 @@ export async function getConnectedUser() {
 }
 
 export async function getUserById(id: number): Promise<CreateDestinataireDto> {
-    console.log("log ====> getUserById called in src/services/frontend-services/UserService.ts")
+    console.log("log ====> getUserById called in src/services/frontend-services/Bk_UserService.ts")
 
     try {
         const response = await fetch(`${DOMAIN}/api/v1/users/${id}`, {
@@ -111,7 +111,7 @@ export async function registerUser(newUser: RegisterClientDto) {
 
         // Lire la réponse et la retourner directement
         const data = await response.json();
-        console.log("log ====> data in registerUser function after parsing JSON in path src/services/frontend-services/UserService.ts: ", data);
+        console.log("log ====> data in registerUser function after parsing JSON in path src/services/frontend-services/Bk_UserService.ts: ", data);
 
         if (!response.ok) {
             // Si la réponse n'est pas ok (2xx), lever une erreur avec le message retourné par l'API

@@ -21,6 +21,7 @@ import {
 import {SimulationDtoRequest} from "@/services/dtos";
 import {ArrowRight, Box, Calculator, MapPin, Truck} from "lucide-react";
 import {COLIS_MAX_PER_ENVOI} from "@/utils/constants";
+import {getSimulationFromCookie} from "@/lib/simulationCookie";
 
 const SimulationForm = () => {
     const router = useRouter();
@@ -40,16 +41,20 @@ const SimulationForm = () => {
     const [currentPackage, setCurrentPackage] = useState(0);
 
 
+    /**
+     * Find existing previous simulation in cookies and redirect to results page
+     * @returns {Promise<void>}
+     */
     useEffect(() => {
         const findExistingSimulation = async () => {
-
             try {
-                const simulation = await getSimulation();
+                const simulation = await getSimulationFromCookie();
+
                 if (simulation) {
                     toast.success("Simulation trouvée !");
                     setTimeout(() => {
                         router.push(`/client/simulation/results`);
-                    }, 3000);
+                    }, 2000);
                 }
             } catch (error) {
                 console.error('Erreur lors de la recherche de la simulation:', error);
@@ -161,17 +166,14 @@ const SimulationForm = () => {
 
                 // validate data with zod schema
                 const validated = simulationEnvoisSchema.safeParse(simulationData);
+
                 if (!validated.success) {
                     toast.error(validated.error.errors[0].message);
                     return;
                 }
 
                 try {
-                    console.log(
-                        "log ====> simulationData in SimulationForm.tsx before calling submitSimulation function: ",
-                        simulationData
-                    );
-
+                    // Submit simulation to the backend
                     const response = await submitSimulation(simulationData);
                     if (!response) {
                         toast.error("Une erreur est survenue lors de la soumission de la simulation.");

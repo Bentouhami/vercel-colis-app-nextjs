@@ -9,19 +9,18 @@ export default function UnauthorizedPage() {
     const router = useRouter();
 
     useEffect(() => {
+        // Countdown logic
         const timer = setInterval(() => {
-            setCountdown((prev) => {
-                if (prev <= 1) {
-                    clearInterval(timer);
-                    router.push('/');
-                    return 0;
-                }
-                return prev - 1;
-            });
+            setCountdown((prev) => prev - 1);
         }, 1000);
 
+        // Navigate when countdown reaches 0
+        if (countdown === 0) {
+            router.push('/');
+        }
+
         return () => clearInterval(timer);
-    }, [router]);
+    }, [countdown, router]);
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 text-center p-6">

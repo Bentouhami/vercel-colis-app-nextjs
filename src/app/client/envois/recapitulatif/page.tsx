@@ -10,9 +10,9 @@ import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Calendar, CreditCard, DollarSign, MapPin, Package, Truck, User, Weight, XCircle} from "lucide-react";
 import {Alert, AlertDescription} from "@/components/ui/alert";
 import {Button} from "@/components/ui/button";
-import {CreateDestinataireDto, SimulationDto} from "@/services/dtos";
+import {CreateDestinataireDto, SimulationResponseDto} from "@/services/dtos";
 
-interface SimulationDataType extends SimulationDto {
+interface SimulationDataType extends SimulationResponseDto {
     sender: CreateDestinataireDto;
     destinataire: CreateDestinataireDto;
 }

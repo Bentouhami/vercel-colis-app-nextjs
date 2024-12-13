@@ -1,6 +1,7 @@
-// Path: src/services/backend-services/envoiService.ts
+// Path: src/services/backend-services/Bk_EnvoiService.ts
 
 import prisma from "@/utils/db";
+import {EnvoiStatus, SimulationStatus} from "@/services/dtos";
 
 export async function cancelSimulation(envoiId: number): Promise<void> {
     try {
@@ -23,8 +24,8 @@ export async function cancelSimulation(envoiId: number): Promise<void> {
             prisma.envoi.update({
                 where: {id: envoiId},
                 data: {
-                    simulationStatus: "CANCELLED",
-                    status: null, // Vous pouvez ajuster selon les besoins
+                    simulationStatus: SimulationStatus.CANCELLED,
+                    envoiStatus: EnvoiStatus.CANCELLED, // Vous pouvez ajuster selon les besoins
                 },
             }),
         ]);

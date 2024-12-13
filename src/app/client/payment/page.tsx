@@ -7,6 +7,7 @@ import {Button} from '@/components/ui/button';
 import {toast} from 'react-toastify';
 import {useSearchParams} from "next/navigation";
 import {DOMAIN} from "@/utils/constants";
+import axios from "axios";
 
 
 // Charger la clé publique Stripe depuis les variables d'environnement
@@ -30,32 +31,26 @@ const PaymentContent = () => {
 
         try {
             // Créer une session de paiement en appelant votre route API
-            const response = await fetch(`${DOMAIN}/api/v1/payment`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({amount: amount}),
+            const response = await axios.post(`${DOMAIN}/api/v1/payment`, { amount: amount }, {
+                headers: { 'Content-Type': 'application/json' },
             });
 
-            if (!response.ok) {
-                throw new Error("Erreur lors de la création de la session de paiement.");
-            }
-
-            const {id: sessionId} = await response.json();
+            const { id: sessionId } = response.data; // Extract sessionId from response
 
             // Charger Stripe
             const stripe = await stripePromise;
-            const result = await stripe?.redirectToCheckout({sessionId});
+            const result = await stripe?.redirectToCheckout({ sessionId });
 
             if (result?.error) {
                 toast.error("Erreur lors de la redirection vers Stripe : " + result.error.message);
             }
-
         } catch (error) {
             console.error(error);
             toast.error("Une erreur est survenue. Veuillez réessayer.");
         } finally {
             setLoading(false);
         }
+
     };
 
     return (

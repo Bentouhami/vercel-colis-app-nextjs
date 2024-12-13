@@ -1,16 +1,16 @@
 // path: src/app/api/v1/simulations/route.ts
 
 import {NextRequest, NextResponse} from 'next/server';
-import {BaseSimulationDto, EnvoiStatus, FullSimulationDto, SimulationStatus
-} from "@/services/dtos";
+import {BaseSimulationDto, EnvoiStatus, FullSimulationDto, SimulationStatus} from "@/services/dtos";
 import {
-    getSimulationByIdAndToken,
+    getSimulationById,
     saveSimulation,
     updateSimulationWithSenderAndDestinataireIds
-} from "@/services/backend-services/simulationService";
+} from "@/services/backend-services/Bk_SimulationService";
 import {setSimulationResponseCookie} from "@/utils/generateSimulationToken";
 import {verifySimulationToken} from "@/utils/verifySimulationToken";
 import {getToken} from "next-auth/jwt";
+import {auth} from "@/auth/auth";
 
 /**
  * POST request handler for the /simulations route
@@ -25,16 +25,26 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-        const BaseSimulationDto = await request.json() as BaseSimulationDto;
+        let simulationDataToCreate = await request.json() as BaseSimulationDto;
 
-        if (!BaseSimulationDto) {
+        if (!simulationDataToCreate) {
             return NextResponse.json({error: 'Invalid request'}, {status: 400});
         }
+        // get connected user id if user is authenticated
+        let userId = null;
+        const session = await auth();
+        userId = Number(session?.user?.id);
 
-        const simulationIdAndVerificationToken = await saveSimulation(BaseSimulationDto);
+        if (!userId) {
+            simulationDataToCreate.userId = userId;
+        }
+
+        simulationDataToCreate.userId = userId;
+
+        const simulationIdAndVerificationToken = await saveSimulation(simulationDataToCreate);
 
         if (!simulationIdAndVerificationToken) {
-            return NextResponse.json({error: 'Failed to create simulation'}, {status: 500});
+            return NextResponse.json({success: false, error: 'Failed to create simulation'}, {status: 500});
         }
 
         console.log("log ====> simulationIdAndVerificationToken in POST request received in simulations route after saving path: src/app/api/v1/simulations/route.ts: ", simulationIdAndVerificationToken);
@@ -72,17 +82,21 @@ export async function GET(request: NextRequest) {
     console.log("GET request received in simulations route");
 
     try {
+
+        // get simulation id and token from cookies
         const simulationIdAndToken = verifySimulationToken(request);
 
+        // Check if the user has a simulation cookie
         if (!simulationIdAndToken) {
-            console.log("Aucun token ou ID de simulation valide.");
-            return NextResponse.json({data: null}, {status: 200});
+            return NextResponse.json(
+                {success: false},
+                {status: 200}
+            );
         }
-        console.log("log ====> simulationIdAndToken in GET request received in simulations route after verifying token: ", simulationIdAndToken);
 
-        const simulation = await getSimulationByIdAndToken(
+        // Get the simulation data from the database using the simulation ID and token
+        const simulation = await getSimulationById(
             Number(simulationIdAndToken.id),
-            simulationIdAndToken.verificationToken
         );
 
         if (!simulation) {
@@ -147,7 +161,7 @@ export async function PUT(request: NextRequest) {
         }
 
         body.simulationStatus = simulationStatus;
-        body.status = body.status || EnvoiStatus.PENDING;
+        body.envoiStatus = body.envoiStatus || EnvoiStatus.PENDING;
         body.id = Number(simulationIdAndToken.id);
         if (!body.id) {
             console.error("Error: Simulation ID not found in request body.");

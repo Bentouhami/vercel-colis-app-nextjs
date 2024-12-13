@@ -1,7 +1,7 @@
 // path: src/app/api/v1/agencies/findAgency/route.ts
 
 import {NextRequest, NextResponse} from 'next/server';
-import {getAgencyIdByCountryAndCityAndAgencyName} from "@/services/backend-services/AgencyService";
+import {getAgencyIdByCountryAndCityAndAgencyName} from "@/services/backend-services/Bk_AgencyService";
 
 export const dynamic = 'force-dynamic'
 
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
         if (!country || !city || !agencyName) {
             return NextResponse.json({error: 'Invalid request'}, {status: 400});
         }
-        // send data to backend-services/AgencyService.ts to find the agency
+        // send data to backend-services/Bk_AgencyService.ts to find the agency
         // based on country, city and agency name
         const agencyId = await getAgencyIdByCountryAndCityAndAgencyName(country, city, agencyName);
 

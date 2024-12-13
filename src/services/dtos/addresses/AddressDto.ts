@@ -20,3 +20,11 @@ export type CreateAddressDto = Omit<AddressDto, "id" | "latitude" | "longitude">
 export interface UpdateAddressDto extends Partial<CreateAddressDto> {
     id: number;
 }
+
+export interface AddressResponseDto  {
+    street: string;
+    number: string;
+    city: string;
+    zipCode: string;
+    country: string;
+}

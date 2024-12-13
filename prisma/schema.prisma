@@ -212,6 +212,16 @@ enum SimulationStatus {
   @@map("simulation_status")
 }
 
+enum EnvoiStatus {
+  PENDING
+  SENT
+  DELIVERED
+  CANCELLED
+  RETURNED
+
+  @@map("envoi_status")
+}
+
 model ClientDestinataire {
   id             Int      @id @default(autoincrement())
   clientId       Int // Référence au (client) l'utilisateur qui effectue la simulation
@@ -224,16 +234,6 @@ model ClientDestinataire {
 
   @@unique([clientId, destinataireId]) // Empêche un client d'ajouter deux fois le même destinataire
   @@map("clients_destinataires")
-}
-
-enum EnvoiStatus {
-  PENDING
-  SENT
-  DELIVERED
-  CANCELLED
-  RETURNED
-
-  @@map("envoi_status")
 }
 
 model Coupon {
@@ -301,7 +301,7 @@ model Envoi {
   arrivalAgencyId   Int
 
   simulationStatus SimulationStatus @default(DRAFT) // Statut de la simulation
-  status           EnvoiStatus?     @default(PENDING) // Statut de l'envoi
+  envoiStatus      EnvoiStatus      @default(PENDING) // Statut de l'envoi
 
   totalWeight   Float
   totalVolume   Float
@@ -311,7 +311,7 @@ model Envoi {
   arrivalDate   DateTime
 
   verificationToken String  @unique @default(uuid()) @db.Uuid
-  comment           String? @db.Text()
+  comment           String? @default("No comment provided yet!") @db.Text()
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

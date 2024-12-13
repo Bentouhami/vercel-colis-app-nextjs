@@ -4,15 +4,53 @@ import {DOMAIN} from "@/utils/constants";
 import {calculateEnvoiDetails} from "@/services/frontend-services/simulation/SimulationCalculationService";
 import {getTarifs} from "@/services/frontend-services/TarifsService";
 import {
-    SimulationDtoRequest,
-    SimulationDto,
-    TarifsDto,
     BaseSimulationDto,
     EnvoiStatus,
-    SimulationStatus
-}
-    from "@/services/dtos";
+    SimulationDtoRequest,
+    SimulationResponseDto,
+    SimulationStatus,
+    TarifsDto
+} from "@/services/dtos";
+import {getAgencyIdByCountryAndCityAndAgencyName} from "@/services/frontend-services/AgencyService";
+import axios from "axios";
 
+export async function getSimulationById(id: number): Promise<SimulationResponseDto | null> {
+    if (!id) {
+        return null;
+    }
+
+    try {
+        // Use axios to make the request
+        const response = await axios.get(`${DOMAIN}/api/v1/simulations/${id}`, {
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        // Check if the response contains data
+        if (!response.data || !response.data.data) {
+            console.log("log ====> simulationData not found in getSimulationById function");
+            return null;
+        }
+
+        return response.data.data as SimulationResponseDto;
+
+    } catch (error) {
+        // Enhanced error logging with axios
+        if (axios.isAxiosError(error)) {
+            console.error("Axios error in getSimulationById function:", error.response?.data || error.message);
+        } else {
+            console.error("Unknown error in getSimulationById function:", error);
+        }
+        return null;
+    }
+}
+
+
+/**
+ * Submit a simulation to the backend
+ * @param simulationData
+ */
 export async function submitSimulation(simulationData: SimulationDtoRequest) {
     if (!simulationData) {
         throw new Error("Simulation data not found");
@@ -58,7 +96,7 @@ export async function submitSimulation(simulationData: SimulationDtoRequest) {
         departureAgencyId: departureAgencyId,
         arrivalAgencyId: arrivalAgencyId,
         simulationStatus: SimulationStatus.DRAFT,
-        status: EnvoiStatus.PENDING,
+        envoiStatus: EnvoiStatus.PENDING,
         parcels: parcels,
         totalWeight: calculationResults.totalWeight,
         totalVolume: calculationResults.totalVolume,
@@ -93,7 +131,11 @@ export async function submitSimulation(simulationData: SimulationDtoRequest) {
 
 }
 
-export async function getSimulation(): Promise<SimulationDto | null> {
+/**
+ * Get the simulation from the cookies
+ * @returns {Promise<SimulationResponseDto | null>} simulation or null
+ */
+export async function getSimulation(): Promise<SimulationResponseDto | null> {
 
     console.log("log ====> getSimulation function called in src/services/frontend-services/simulation/SimulationService.ts");
 
@@ -119,7 +161,7 @@ export async function getSimulation(): Promise<SimulationDto | null> {
             return null;
         }
 
-        return simulationData.data as SimulationDto;
+        return simulationData.data as SimulationResponseDto;
 
     } catch (error) {
         console.error("Erreur lors de la récupération de la simulation:", error);
@@ -127,7 +169,7 @@ export async function getSimulation(): Promise<SimulationDto | null> {
     }
 }
 
-export async function updateSimulationWithSenderAndDestinataireIds(simulation: SimulationDto) {
+export async function updateSimulationWithSenderAndDestinataireIds(simulation: SimulationResponseDto) {
 
     console.log("log ====> updateSimulationWithSenderAndDestinataireIds function called in src/services/frontend-services/simulation/SimulationService.ts : ", simulation);
 
@@ -151,32 +193,6 @@ export async function updateSimulationWithSenderAndDestinataireIds(simulation: S
     }
 }
 
-// get agency id by country, city and agency name
-export async function getAgencyIdByCountryAndCityAndAgencyName(country: string, city: string, agencyName: string): Promise<number> {
-    try {
-        const response = await fetch(`${DOMAIN}/api/v1/agencies/findAgency?country=${country}&city=${city}&agency_name=${agencyName}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
-
-        if (!response.ok) {
-            throw new Error("Failed to get agency id");
-        }
-
-        const data = await response.json();
-
-        if (!data) {
-            throw new Error("Failed to get agency id");
-        }
-
-        return data.agencyId;
-
-    } catch (error) {
-        throw error;
-    }
-}
 
 export async function deleteSimulationCookie() {
     try {

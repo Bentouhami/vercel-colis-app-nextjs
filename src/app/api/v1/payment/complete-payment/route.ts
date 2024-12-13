@@ -1,7 +1,7 @@
 // Path: src/app/api/v1/payment/complete-payment/route.ts
 import {NextRequest, NextResponse} from "next/server";
 import {completePaymentService} from "@/services/frontend-services/payment/paymentService";
-import {getSimulationByIdAndToken, updateSimulation} from "@/services/backend-services/simulationService";
+import {getSimulationById, updateSimulation} from "@/services/backend-services/Bk_SimulationService";
 import {verifySimulationToken} from "@/utils/verifySimulationToken";
 import {SimulationStatus, EnvoiStatus} from "@/services/dtos";
 
@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
     try {
 
         // 1. Retrieve Simulation Data from Cookie
-        const simulationFromCookie = await verifySimulationToken(req);
+        const simulationFromCookie = verifySimulationToken(req);
 
 
         if (!simulationFromCookie) {
@@ -19,9 +19,8 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({data: null}, {status: 200});
         }
 
-        let simulation = await getSimulationByIdAndToken(
-            Number(simulationFromCookie.id),
-            simulationFromCookie.verificationToken);
+        let simulation = await getSimulationById(
+            Number(simulationFromCookie.id));
 
 
         if (!simulation) {
@@ -32,7 +31,7 @@ export async function GET(req: NextRequest) {
         simulation = simulation.simulationStatus === SimulationStatus.CONFIRMED ? {
             ...simulation,
             simulationStatus: SimulationStatus.COMPLETED,
-            status: EnvoiStatus.PENDING
+            envoiStatus: EnvoiStatus.PENDING
         } : simulation;
 
         if (!simulation) {

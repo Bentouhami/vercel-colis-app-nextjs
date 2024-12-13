@@ -1,4 +1,4 @@
-// path: src/services/backend-services/UserService.ts
+// path: src/services/backend-services/Bk_UserService.ts
 'use server';
 
 import {
@@ -28,7 +28,7 @@ import {sendVerificationEmail} from "@/lib/mailer";
  */
 
 export async function registerUser(newUser: CreateUserDto, address: UpdateAddressDto): Promise<FullUserResponseDto | null> {
-    console.log("log ====> registerUser called in path: src/services/backend-services/UserService.ts");
+    console.log("log ====> registerUser called in path: src/services/backend-services/Bk_UserService.ts");
 
     try {
         const formattedUser = {
@@ -52,7 +52,7 @@ export async function registerUser(newUser: CreateUserDto, address: UpdateAddres
             },
         });
 
-        console.log(" log ====> createdUser of type UserModelDto in path src/services/backend-services/UserService.ts: ", createdUser);
+        console.log(" log ====> createdUser of type UserModelDto in path src/services/backend-services/Bk_UserService.ts: ", createdUser);
         if (!createdUser) {
             console.error("Error: Cannot create user.");
             return null;
@@ -88,7 +88,7 @@ export async function registerUser(newUser: CreateUserDto, address: UpdateAddres
 
 export async function isUserAlreadyExist(email: string, phoneNumber: string): Promise<UserModelDto | null> {
 
-    console.log("log ====> isUserAlreadyExist called in path: src/services/backend-services/UserService.ts")
+    console.log("log ====> isUserAlreadyExist called in path: src/services/backend-services/Bk_UserService.ts")
 
     try {
 
@@ -117,10 +117,10 @@ export async function isUserAlreadyExist(email: string, phoneNumber: string): Pr
         }) as UserModelDto;
 
         if (!existedUser) {
-            console.log("user NOT found by email and or phone number in isUserAlreadyExist function in path: src/services/backend-services/UserService.ts return NULL");
+            console.log("user NOT found by email and or phone number in isUserAlreadyExist function in path: src/services/backend-services/Bk_UserService.ts return NULL");
             return null;
         }
-        console.log("user found by email and or phone number in isUserAlreadyExist function in path: src/services/backend-services/UserService.ts: ", existedUser);
+        console.log("user found by email and or phone number in isUserAlreadyExist function in path: src/services/backend-services/Bk_UserService.ts: ", existedUser);
         return existedUser;
 
     } catch (error) {
@@ -138,9 +138,9 @@ export async function isUserAlreadyExist(email: string, phoneNumber: string): Pr
 
 export async function isDestinataireAlreadyExist(email: string, phoneNumber: string): Promise<DestinataireResponseWithRoleDto | null> {
 
-    console.log("log ====> isDestinataireAlreadyExist function called in path: src/services/backend-services/UserService.ts")
+    console.log("log ====> isDestinataireAlreadyExist function called in path: src/services/backend-services/Bk_UserService.ts")
 
-    console.log("log ====> email and phoneNumber passed to isDestinataireAlreadyExist function in path: src/services/backend-services/UserService.ts: ", email, phoneNumber);
+    console.log("log ====> email and phoneNumber passed to isDestinataireAlreadyExist function in path: src/services/backend-services/Bk_UserService.ts: ", email, phoneNumber);
 
     try {
 
@@ -164,10 +164,10 @@ export async function isDestinataireAlreadyExist(email: string, phoneNumber: str
 
 
         if (!user) {
-            console.log("log ====> destinataire NOT FOUND in isDestinataireAlreadyExist function in path: src/services/backend-services/UserService.ts return NULL");
+            console.log("log ====> destinataire NOT FOUND in isDestinataireAlreadyExist function in path: src/services/backend-services/Bk_UserService.ts return NULL");
             return null;
         }
-        console.log("log ====> user found in isDestinataireAlreadyExist function in path: src/services/backend-services/UserService.ts: ", user);
+        console.log("log ====> user found in isDestinataireAlreadyExist function in path: src/services/backend-services/Bk_UserService.ts: ", user);
 
         return user;
 
@@ -184,7 +184,7 @@ export async function isDestinataireAlreadyExist(email: string, phoneNumber: str
  */
 
 export async function createDestinataire(newDestinataire: CreateDestinataireDto): Promise<DestinataireResponseWithRoleDto | null> {
-    console.log("log ====> createDestinataire function called in path: src/services/backend-services/UserService.ts");
+    console.log("log ====> createDestinataire function called in path: src/services/backend-services/Bk_UserService.ts");
 
     try {
         const destinataire = await prisma.user.create({
@@ -215,7 +215,7 @@ export async function createDestinataire(newDestinataire: CreateDestinataireDto)
             return null;
         }
 
-        console.log("log ====> destinataire created in path: src/services/backend-services/UserService.ts: ", destinataire);
+        console.log("log ====> destinataire created in path: src/services/backend-services/Bk_UserService.ts: ", destinataire);
 
         return destinataire as DestinataireResponseDto;
 
@@ -233,7 +233,7 @@ export async function createDestinataire(newDestinataire: CreateDestinataireDto)
  */
 export async function getUserByValidToken(token: string): Promise<UserResponseDto | null> {
 
-    console.log("log ====> getUserByValidToken function called in path: src/services/backend-services/UserService.ts")
+    console.log("log ====> getUserByValidToken function called in path: src/services/backend-services/Bk_UserService.ts")
 
     try {
         const user = await prisma.user.findFirst({
@@ -272,9 +272,9 @@ export async function getUserByValidToken(token: string): Promise<UserResponseDt
  */
 export async function updateUserAndResetTokenVerificationAfterVerification(userId: number) {
 
-    console.log("log ====> updateUserAndResetTokenVerificationAfterVerification function called in path: src/services/backend-services/UserService.ts")
+    console.log("log ====> updateUserAndResetTokenVerificationAfterVerification function called in path: src/services/backend-services/Bk_UserService.ts")
 
-    console.log("path: src/services/users/UserService.ts : updateUserAndResetTokenVerification : userId", userId);
+    console.log("path: src/services/users/Bk_UserService.ts : updateUserAndResetTokenVerification : userId", userId);
 
     try {
         await prisma.user.update({
@@ -314,7 +314,7 @@ export async function updateUserAndResetTokenVerificationAfterVerification(userI
  */
 export async function updateVerificationTokenForOldUser(userId: number, verificationData: VerificationDataType) {
 
-    console.log("log ====> updateVerificationTokenForOldUser function called in path: src/services/backend-services/UserService.ts")
+    console.log("log ====> updateVerificationTokenForOldUser function called in path: src/services/backend-services/Bk_UserService.ts")
 
     await prisma.user.update({
         where: {id: userId},
@@ -336,7 +336,7 @@ export async function updateVerificationTokenForOldUser(userId: number, verifica
  */
 export async function getUserByEmail(email: string): Promise<UserLoginResponseDto | null> {
 
-    console.log("log ====> getUserByEmail function called in path: src/services/backend-services/UserService.ts")
+    console.log("log ====> getUserByEmail function called in path: src/services/backend-services/Bk_UserService.ts")
 
     try {
         const userByEmailFound = await prisma.user.findFirst({
@@ -361,7 +361,7 @@ export async function getUserByEmail(email: string): Promise<UserLoginResponseDt
         });
 
         if (!userByEmailFound) {
-            console.log("userByEmailFound NOT found by email and or phone number in getUserByEmail function in path: src/services/backend-services/UserService.ts return NULL");
+            console.log("userByEmailFound NOT found by email and or phone number in getUserByEmail function in path: src/services/backend-services/Bk_UserService.ts return NULL");
 
             return null;
         }
@@ -374,7 +374,7 @@ export async function getUserByEmail(email: string): Promise<UserLoginResponseDt
 
 export async function getUserById(id: number): Promise<CreateDestinataireDto | null> {
 
-    console.log("log ====> getUserByEmail function called in path: src/services/backend-services/UserService.ts")
+    console.log("log ====> getUserByEmail function called in path: src/services/backend-services/Bk_UserService.ts")
 
     try {
         const userByEmailFound = await prisma.user.findFirst({
@@ -418,10 +418,10 @@ export async function updateDestinataireToClient(
     verificationData: VerificationDataType
 ): Promise<FullUserResponseDto | null> {
 
-    console.log("log ====> updateDestinataireToClient function called in path: src/services/backend-services/UserService.ts")
+    console.log("log ====> updateDestinataireToClient function called in path: src/services/backend-services/Bk_UserService.ts")
 
 
-    console.log("Updating destinataire to client with ID path: src/services/users/UserService.ts :", destinataire.id);
+    console.log("Updating destinataire to client with ID path: src/services/users/Bk_UserService.ts :", destinataire.id);
 
     try {
 
@@ -481,9 +481,9 @@ export async function updateDestinataireToClient(
  * @param destinataireId - destinataire id
  */
 export async function checkExistingAssociation(clientId: number, destinataireId: number) {
-    console.log("log ====> checkExistingAssociation function called in path: src/services/backend-services/UserService.ts")
+    console.log("log ====> checkExistingAssociation function called in path: src/services/backend-services/Bk_UserService.ts")
 
-    console.log("Checking if association exists between client and destinataire with IDs path: src/services/users/UserService.ts  :", clientId, destinataireId);
+    console.log("Checking if association exists between client and destinataire with IDs path: src/services/users/Bk_UserService.ts  :", clientId, destinataireId);
     try {
         const association = await prisma.clientDestinataire.findFirst({
             where: {
@@ -514,7 +514,7 @@ export async function checkExistingAssociation(clientId: number, destinataireId:
 
 export async function associateDestinataireToCurrentClient(userId: number, destinataireId: number) {
     try {
-        console.log("log ====> function associateDestinataireToCurrentClient called in path: src/services/users/UserService.ts  ")
+        console.log("log ====> function associateDestinataireToCurrentClient called in path: src/services/users/Bk_UserService.ts  ")
 
         console.log("Creating association between client and destinataire with IDs:", userId, destinataireId);
         const association = await prisma.clientDestinataire.create({

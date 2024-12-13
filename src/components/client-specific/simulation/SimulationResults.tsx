@@ -4,23 +4,23 @@ import {useRouter, useSearchParams} from 'next/navigation';
 import React, {useEffect, useState} from 'react';
 import {toast} from 'react-toastify';
 import {
-    getSimulation,
     updateSimulationWithSenderAndDestinataireIds
 } from "@/services/frontend-services/simulation/SimulationService";
-import {SimulationDto} from "@/services/dtos";
+import {SimulationResponseDto} from "@/services/dtos";
 import LoginPromptModal from '@/components/modals/LoginPromptModal';
 import {Button} from "@/components/ui/button";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {ArrowRight, Calendar, DollarSign, MapPin, Package, Weight} from "lucide-react";
 import {useSession} from "next-auth/react";
 import Link from "next/link";
+import {getSimulationFromCookie} from "@/lib/simulationCookie";
+import {getSimulationById} from "@/services/frontend-services/simulation/SimulationService";
 
 export default function SimulationResults() {
     const {data: session, status} = useSession();
-    const searchParams = useSearchParams();
     const router = useRouter();
 
-    const [results, setResults] = useState<SimulationDto | null>(null);
+    const [results, setResults] = useState<SimulationResponseDto | null>(null);
     const [showLoginPrompt, setShowLoginPrompt] = useState(false);
     const isAuthenticated = status === "authenticated";
     const userId = session?.user?.id || null;
@@ -29,37 +29,46 @@ export default function SimulationResults() {
     useEffect(() => {
         const getSimulationResults = async () => {
             try {
-                const simulationData = await getSimulation();
-                if (!simulationData) {
+                const simulationFromCookies = await  getSimulationFromCookie();
+
+                if (!simulationFromCookies) {
+                    console.log("log ====> simulationFromCookies not found in SimulationResults.tsx");
                     router.push('/client/simulation');
                     return;
                 }
+                console.log("log ====> simulationFromCookies in SimulationResults.tsx: ", simulationFromCookies);
 
-                console.log("log ====> simulationData returned from saveSimulation function in SimulationResults.tsx: ", simulationData);
+                const simulationData = await getSimulationById(simulationFromCookies.id);
+
+                if (!simulationData) {
+                    toast.error("Something went wrong, please try again.");
+                }
+
+                console.log("log ====> simulationData in SimulationResults.tsx after calling getSimulationById function: ", simulationData);
 
                 setResults(simulationData);
+
             } catch (error) {
                 toast.error("Erreur de chargement des résultats.");
             }
         };
         getSimulationResults();
-    }, [searchParams, router]);
+    }, [ router]);
 
 
     const handleValidate = async () => {
         if (isAuthenticated) {
-            const simulationResults = await getSimulation();
-            if (simulationResults) {
+            if (results) {
                 console.log("log ====> userId : ", userId)
 
-                if (userId && !simulationResults.userId) {
+                if (userId && !results.userId) {
                     console.log("log ====> userId found and in handleValidate function in SimulationResults.tsx: ", userId);
 
-                    simulationResults.userId = Number(userId);
+                    results.userId = Number(userId);
                 }
 
-                console.log("log ====> simulationResults in handleValidate function in SimulationResults.tsx before calling updateSimulationWithSenderAndDestinataireIds function: ", simulationResults);
-                await updateSimulationWithSenderAndDestinataireIds(simulationResults);
+                console.log("log ====> results in handleValidate function in SimulationResults.tsx before calling updateSimulationWithSenderAndDestinataireIds function: ", results);
+                await updateSimulationWithSenderAndDestinataireIds(results);
 
                 router.push('/client/ajouter-destinataire');
             }
@@ -75,7 +84,6 @@ export default function SimulationResults() {
     };
 
     const handleCancel = () => {
-        localStorage.removeItem('simulationResults');
         router.push('/client/simulation');
     };
 
@@ -86,6 +94,10 @@ export default function SimulationResults() {
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
             </div>
         );
+    }
+
+    function handleEdit() {
+        router.push('/client/simulation/edit');
     }
 
     return (
@@ -188,22 +200,6 @@ export default function SimulationResults() {
                 </CardContent>
             </Card>
 
-            <Link href="/client/simulation">
-                <Button
-                    className="flex items-center gap-2 px-8 py-6 text-lg bg-green-500 hover:bg-green-600 text-white">
-                    Modifier la simulation
-                    <ArrowRight className="h-4 w-4"/>
-                </Button>
-            </Link>
-
-            <Link href="/client/simulation">
-                <Button
-                    className="flex items-center gap-2 px-8 py-6 text-lg bg-green-500 hover:bg-green-600 text-white">
-                    Ajouter un Colis
-                    <ArrowRight className="h-4 w-4"/>
-                </Button>
-            </Link>
-
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
                 <Button
                     className="flex items-center gap-2 px-8 py-6 text-lg bg-green-500 hover:bg-green-600 text-white"
@@ -215,6 +211,17 @@ export default function SimulationResults() {
                         onClick={handleCancel}>
                     Annuler
                 </Button>
+
+
+                <Link href={`/client/simulation/edit`}>
+                    <Button
+                        onClick={handleEdit}
+                        className="flex items-center gap-2 px-8 py-6 text-lg bg-green-500 hover:bg-green-600 text-white">
+                        Modifier ma simulation
+                        <ArrowRight className="h-4 w-4"/>
+                    </Button>
+                </Link>
+
             </div>
 
             <LoginPromptModal

@@ -9,6 +9,6 @@ export * from "./envois/EnvoiDto";
 export * from "./tarifs/TarifDto";
 export * from "./enums/EnumsDto";
 export * from "./transports/TransportDto";
-export * from "./simulations/SimulationDto";
+export * from "./simulations/SimulationResponseDto";
 
 

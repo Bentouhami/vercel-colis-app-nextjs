@@ -1,6 +1,6 @@
-// path: src/backend-services/AgencyService.ts
+// path: src/backend-services/Bk_AgencyService.ts
 
-import {AgencyResponseDto, BaseAgencyDto} from "@/services/dtos";
+import {FullAgencyDto, BaseAgencyDto} from "@/services/dtos";
 import prisma from "@/utils/db";
 
 
@@ -8,14 +8,14 @@ import prisma from "@/utils/db";
  * Find agency by name
  * @param agencyName - agency name
  * @param agencyName
- * @returns {Promise<AgencyResponseDto | null>} agency or null
+ * @returns {Promise<FullAgencyDto | null>} agency or null
  */
-export async function findAgencyByName(agencyName: string): Promise<AgencyResponseDto | null> {
+export async function findAgencyByName(agencyName: string): Promise<FullAgencyDto | null> {
     const agency = await prisma.agency.findFirst({
         where: {
             name: agencyName,
         },
-    }) as AgencyResponseDto | null;
+    }) as FullAgencyDto | null;
 
     if (!agency) {
         return null;
@@ -25,7 +25,7 @@ export async function findAgencyByName(agencyName: string): Promise<AgencyRespon
 }
 
 export async function getAgencyIdByCountryAndCityAndAgencyName(country: string, city: string, agencyName: string): Promise<number> {
-    console.log("log ====> getAgencyIdByCountryAndCityAndAgencyName function called in src/services/backend-services/AgencyService.ts with country, city and agencyName: ", country, city, agencyName);
+
     try {
         const agencyId = await prisma.agency.findFirst({
             where: {
@@ -40,7 +40,7 @@ export async function getAgencyIdByCountryAndCityAndAgencyName(country: string, 
             },
         });
 
-        console.log("log ====> agencyId in getAgencyIdByCountryAndCityAndAgencyName function called in src/services/backend-services/AgencyService.ts: ", agencyId);
+
         if (!agencyId) {
             throw new Error("Agency not found");
         }
@@ -52,7 +52,7 @@ export async function getAgencyIdByCountryAndCityAndAgencyName(country: string, 
 }
 
 export async function getAgencyById(id: number): Promise<BaseAgencyDto | null> {
-    console.log("log ====> getAgencyById function called in src/services/backend-services/AgencyService.ts with id: ", id);
+    console.log("log ====> getAgencyById function called in src/services/backend-services/Bk_AgencyService.ts with id: ", id);
     try {
         const agency = await prisma.agency.findUnique({
             where: {
@@ -74,7 +74,7 @@ export async function getAgencyById(id: number): Promise<BaseAgencyDto | null> {
             },
         });
 
-        console.log("log ====> agency in getAgencyById function called in src/services/backend-services/AgencyService.ts: ", agency);
+        console.log("log ====> agency in getAgencyById function called in src/services/backend-services/Bk_AgencyService.ts: ", agency);
 
         if (!agency) {
             throw new Error("Agency not found");

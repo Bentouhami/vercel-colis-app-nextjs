@@ -10,9 +10,8 @@ import {LoginUserDto} from "@/services/dtos/users/UserDto";
 import {loginUserSchema} from "@/utils/validationSchema";
 import {motion} from "framer-motion";
 import Image from "next/image";
-import {Card} from "@/components/ui/card";
-import {bgBlack, bgGreen} from "next/dist/lib/picocolors";
 import {login} from "@/actions/UserActions";
+import Link from "next/link";
 
 interface LoginFormProps {
     onSuccess?: () => void;
@@ -176,10 +175,6 @@ const LoginForm: React.FC<LoginFormProps> = () => {
                             )}
                         </Button>
 
-                        <Card className={bgGreen('gradient-blue-100')} style={{backgroundImage: `url(${bgBlack})`}}>
-
-                        </Card>
-
                     </motion.div>
                 </Form>
 
@@ -193,15 +188,14 @@ const LoginForm: React.FC<LoginFormProps> = () => {
                     transition={{duration: 0.6, delay: 0.5}}
                     className="mt-6 text-center text-sm text-gray-500"
                 >
-                    <p>
-                        Vous avez oublié votre mot de passe ? <a href="/reset-password"
-                                                                 className="text-blue-600 hover:underline">Cliquez
-                        ici</a>
-                    </p>
-                    <p>
-                        Pas encore inscrit ? <a href="/client/register" className="text-blue-600 hover:underline">Créez
-                        un compte</a>
-                    </p>
+                    <Link href="/client/auth/login">
+                        Vous avez oublié votre mot de passe ? <span className="text-blue-600 hover:underline">Cliquez ici <br/> </span>
+                    </Link>
+
+                    <Link href="/client/auth/register">
+                        Pas encore inscrit ? <span className="text-blue-600 hover:underline">Créez
+                            un compte</span>
+                    </Link>
                 </motion.div>
             </div>
         </motion.div>

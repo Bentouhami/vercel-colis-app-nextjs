@@ -2,8 +2,9 @@
 
 
 // SimulationResultsDto: used when getting simulation details from the frontend
-import {CreateParcelDto} from "@/services/dtos/parcels/ParcelDto";
+import {CreateParcelDto, ParcelDto} from "@/services/dtos/parcels/ParcelDto";
 import {EnvoiStatus, SimulationStatus} from "@/services/dtos/enums/EnumsDto";
+import {AgencyDto, TransportDto} from "@/services/dtos";
 
 export interface SimulationDtoRequest {
     departureCountry: string;
@@ -23,20 +24,23 @@ export interface SimulationCalculationTotalsDto {
     totalPrice: number;
     departureDate: Date;
     arrivalDate: Date;
+
 }
 
 // SimulationResultsDto: used when getting simulation details from the frontend
 export interface BaseSimulationDto extends SimulationCalculationTotalsDto {
+    userId?: number | null;
+    destinataireId?: number | null;
     departureAgencyId: number | null;
     arrivalAgencyId: number | null;
     simulationStatus: SimulationStatus;
-    status: EnvoiStatus;
+    envoiStatus: EnvoiStatus;
     parcels: CreateParcelDto[];
 }
 
 export interface StatusSimulationAndEnvoiStatus {
     simulationStatus: SimulationStatus | null;
-    status: EnvoiStatus | null;
+    envoiStatus: EnvoiStatus | null;
 }
 
 // Response DTO for a created simulation, used when receiving a new simulation ID and token
@@ -45,7 +49,7 @@ export interface CreatedSimulationResponseDto {
     verificationToken: string;
 }
 
-export interface SimulationDto extends StatusSimulationAndEnvoiStatus, SimulationCalculationTotalsDto {
+export interface SimulationResponseDto extends StatusSimulationAndEnvoiStatus, SimulationCalculationTotalsDto {
     userId: number | null;
     destinataireId: number | null;
     departureCountry: string | null;
@@ -72,5 +76,24 @@ export interface FullSimulationDto extends SimulationWithIds {
 export interface UpdatingSimulationWithIdsDto {
     userId: number | null;
     destinataireId: number | null;
+
+}
+
+// Response for created simulation
+export interface CreatedSimultionDto {
+    id: number;
+    transportId: number;
+    departureAgencyId: number;
+    arrivalAgencyId: number;
+    simulationStatus: SimulationStatus;
+    totalWeight: number;
+    totalVolume: number;
+    totalPrice: number;
+    departureDate: Date;
+    arrivalDate: Date;
+    arrivalAgency: AgencyDto;
+    departureAgency: AgencyDto;
+    transport: TransportDto;
+    parcels: ParcelDto[];
 
 }

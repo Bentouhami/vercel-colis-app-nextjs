@@ -1,13 +1,12 @@
-// path: src/app/client/simulation/[id]/page.tsx
-
+// path: src/app/client/simulation/edit
 import {Suspense} from "react";
-import SimulationResults from "@/components/client-specific/simulation/SimulationResults";
+import EditForm from "@/components/forms/SimulationForms/SimulationEditForm";
 
 export default function WrappedSimulationResults() {
     return (
         <Suspense fallback={<div>Loading...</div>}>
             <div className="d-flex justify-content-around">
-                <SimulationResults />
+                <EditForm />
             </div>
 
         </Suspense>

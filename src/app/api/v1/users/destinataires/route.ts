@@ -8,7 +8,7 @@ import {
     checkExistingAssociation,
     createDestinataire,
     isDestinataireAlreadyExist,
-} from "@/services/backend-services/UserService";
+} from "@/services/backend-services/Bk_UserService";
 
 export async function POST(req: NextRequest) {
     console.log("POST request reached at: /api/v1/users/destinataires");

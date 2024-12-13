@@ -1,18 +1,43 @@
-// Agency Mapper
-import {Address, Agency} from "@prisma/client";
-import {AgencyDto} from "@/services/dtos";
-import {AddressMapper} from "@/services/mappers/AddressMapper";
+// path: src/services/mappers/AgencyMapper.ts
+
+import {AgencyResponseDto} from "@/services/dtos";
 
 export class AgencyMapper {
-    static toDto(agency: Agency & { address?: Address }): AgencyDto {
+    /**
+     * Maps raw agency data to AgencyResponseDto
+     * @returns Mapped AgencyResponseDto
+     * @param rawAgency
+     */
+    static toAgencyResponseDto(rawAgency: any): AgencyResponseDto | null {
+
+        if (!rawAgency) {
+            return null;
+        }
+
+        const {
+            id,
+            name,
+            location,
+            address,
+            capacity,
+            availableSlots,
+        } = rawAgency;
+
         return {
-            id: agency.id,
-            name: agency.name,
-            location: agency.location || undefined,
-            addressId: agency.addressId,
-            address: agency.address ? AddressMapper.toDto(agency.address) : undefined,
-            capacity: agency.capacity,
-            availableSlots: agency.availableSlots
+            id,
+            name,
+            location,
+            address: {
+                street: address.street,
+                number: address.number,
+                city: address.city,
+                zipCode: address.zipCode,
+                country: address.country,
+            },
+
+            capacity,
+            availableSlots,
         };
     }
 }
+

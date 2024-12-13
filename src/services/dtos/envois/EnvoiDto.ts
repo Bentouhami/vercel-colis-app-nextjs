@@ -21,7 +21,7 @@ export interface EnvoiDto {
     arrivalAgencyId: number;
     arrivalAgency?: AgencyDto;
     simulationStatus: SimulationStatus;
-    status: EnvoiStatus;
+    envoiStatus: EnvoiStatus;
     totalWeight: number;
     totalVolume: number;
     totalPrice: number;

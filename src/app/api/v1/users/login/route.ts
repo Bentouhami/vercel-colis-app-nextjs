@@ -9,7 +9,7 @@ import {toLowerCase} from "@/utils/stringUtils";
 import {generateJWTPayloadAndSetCookie} from "@/services/frontend-services/UserService";
 import {generateVerificationTokenForUser} from "@/utils/generateToken";
 import {VerificationDataType} from "@/utils/types";
-import {getUserByEmail, updateVerificationTokenForOldUser} from "@/services/backend-services/UserService";
+import {getUserByEmail, updateVerificationTokenForOldUser} from "@/services/backend-services/Bk_UserService";
 
 /**
  * @method POST

@@ -1,7 +1,7 @@
 //path: src/app/api/v1/tarifs/route.ts
 
 import {NextRequest, NextResponse} from 'next/server';
-import {findTarifs} from "@/services/backend-services/TarifService";
+import {findTarifs} from "@/services/backend-services/Bk_TarifService";
 
 export async function GET(req: NextRequest) {
     if (req.method !== 'GET') {

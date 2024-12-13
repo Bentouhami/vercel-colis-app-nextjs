@@ -10,13 +10,13 @@ import {registerUserBackendSchema} from "@/utils/validationSchema";
 import {saltAndHashPassword} from "@/lib/auth";
 import {generateVerificationTokenForUser} from "@/utils/generateToken";
 import {VerificationDataType} from "@/utils/types";
-import {createAddress, isAddressAlreadyExist} from "@/services/backend-services/AddresseService";
+import {createAddress, isAddressAlreadyExist} from "@/services/backend-services/Bk_AddressService";
 import {
     isUserAlreadyExist,
     registerUser,
     updateDestinataireToClient,
     updateVerificationTokenForOldUser
-} from "@/services/backend-services/UserService";
+} from "@/services/backend-services/Bk_UserService";
 import {sendVerificationEmail} from "@/lib/mailer";
 import {
     BaseClientDto,
