@@ -14,6 +14,7 @@ export class SimulationMapper {
 
         //TODO: get the simulation object need to be mapped
         const {
+            id,
             userId,
             destinataireId,
             departureAgency,
@@ -29,6 +30,7 @@ export class SimulationMapper {
         } = rawSimulation;
 
         return {
+            id,
             userId,
             destinataireId,
             departureAgency: departureAgency.name,

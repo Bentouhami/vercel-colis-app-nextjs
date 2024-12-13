@@ -4,6 +4,7 @@ import {useRouter, useSearchParams} from 'next/navigation';
 import React, {useEffect, useState} from 'react';
 import {toast} from 'react-toastify';
 import {
+    getSimulation,
     updateSimulationWithSenderAndDestinataireIds
 } from "@/services/frontend-services/simulation/SimulationService";
 import {SimulationResponseDto} from "@/services/dtos";
@@ -29,16 +30,8 @@ export default function SimulationResults() {
     useEffect(() => {
         const getSimulationResults = async () => {
             try {
-                const simulationFromCookies = await  getSimulationFromCookie();
 
-                if (!simulationFromCookies) {
-                    console.log("log ====> simulationFromCookies not found in SimulationResults.tsx");
-                    router.push('/client/simulation');
-                    return;
-                }
-                console.log("log ====> simulationFromCookies in SimulationResults.tsx: ", simulationFromCookies);
-
-                const simulationData = await getSimulationById(simulationFromCookies.id);
+                const simulationData = await getSimulation();
 
                 if (!simulationData) {
                     toast.error("Something went wrong, please try again.");

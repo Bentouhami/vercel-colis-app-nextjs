@@ -8,7 +8,7 @@ import PackageForm from './PackageForm';
 import CountrySelect from "@/components/forms/SimulationForms/CountrySelectForm";
 import CitySelect from "@/components/forms/SimulationForms/CitySelectForm";
 import AgencySelect from "@/components/forms/SimulationForms/AgencySelectForm";
-import {getSimulation, submitSimulation} from "@/services/frontend-services/simulation/SimulationService";
+import { submitSimulation} from "@/services/frontend-services/simulation/SimulationService";
 import {toast, ToastContainer} from "react-toastify";
 import {useRouter} from 'next/navigation';
 import {simulationEnvoisSchema} from "@/utils/validationSchema";

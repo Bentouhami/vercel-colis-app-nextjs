@@ -31,16 +31,16 @@ export interface SimulationCalculationTotalsDto {
 export interface BaseSimulationDto extends SimulationCalculationTotalsDto {
     userId?: number | null;
     destinataireId?: number | null;
-    departureAgencyId: number | null;
-    arrivalAgencyId: number | null;
+    departureAgencyId: number;
+    arrivalAgencyId: number;
     simulationStatus: SimulationStatus;
     envoiStatus: EnvoiStatus;
     parcels: CreateParcelDto[];
 }
 
 export interface StatusSimulationAndEnvoiStatus {
-    simulationStatus: SimulationStatus | null;
-    envoiStatus: EnvoiStatus | null;
+    simulationStatus: SimulationStatus;
+    envoiStatus: EnvoiStatus;
 }
 
 // Response DTO for a created simulation, used when receiving a new simulation ID and token
@@ -50,6 +50,7 @@ export interface CreatedSimulationResponseDto {
 }
 
 export interface SimulationResponseDto extends StatusSimulationAndEnvoiStatus, SimulationCalculationTotalsDto {
+    id: number;
     userId: number | null;
     destinataireId: number | null;
     departureCountry: string | null;
