@@ -1,3 +1,4 @@
+// path: src/components/forms/SimulationForms/SimulationEditForm.tsx
 'use client';
 
 import React, {ChangeEvent, useEffect, useState, useTransition} from 'react';
@@ -9,19 +10,20 @@ import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} fro
 import {Input} from '@/components/ui/input';
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
 import {Edit, MapPin, Package, PlusCircle, Trash2, Truck} from 'lucide-react';
-import {toast} from 'react-toastify';
+import {toast, ToastContainer} from 'react-toastify';
 import {
     fetchAgencies,
     fetchCities,
     fetchCountries,
     fetchDestinationCountries
-} from "@/services/frontend-services/AddresseService";
+} from "@/services/frontend-services/AddressService";
 import {getSimulation, submitSimulation} from "@/services/frontend-services/simulation/SimulationService";
 import AgencySelect from "@/components/forms/SimulationForms/AgencySelectForm";
 import CitySelect from "@/components/forms/SimulationForms/CitySelectForm";
 import CountrySelect from "@/components/forms/SimulationForms/CountrySelectForm";
 import {CardBody} from "react-bootstrap";
-import {simulationEnvoisSchema} from "@/utils/validationSchema";
+import {parcelsSchema, simulationEnvoisSchema} from "@/utils/validationSchema";
+import {z} from "zod";
 
 const SimulationEditForm = () => {
     const router = useRouter();
@@ -126,6 +128,7 @@ const SimulationEditForm = () => {
                 }
 
                 const countries = await fetchCountries();
+                const destinationCountries = await fetchDestinationCountries(simulationData.departureCountry!);
                 const departureCities = simulationData.departureCountry
                     ? await fetchCities(simulationData.departureCountry)
                     : [];
@@ -141,7 +144,7 @@ const SimulationEditForm = () => {
 
                 setOptions({
                     countries,
-                    destinationCountries: countries,
+                    destinationCountries: destinationCountries,
                     departureCities,
                     destinationCities,
                     departureAgencies,
@@ -155,7 +158,7 @@ const SimulationEditForm = () => {
                 });
 
                 setDestination({
-                    country: simulationData.destinationCountry || '',
+                    country: destinationCountries.country || simulationData.destinationCountry || '',
                     city: simulationData.destinationCity || '',
                     agencyName: simulationData.destinationAgency || '',
                 });
@@ -199,13 +202,22 @@ const SimulationEditForm = () => {
 
     const handleParcelUpdate = () => {
         if (editingParcel) {
+            const parcelsArraySchema = z.array(parcelsSchema);
+
             const updatedParcels = [...parcels];
             updatedParcels[editingParcel.index] = editingParcel.parcel;
+            //
+            // // Validate parcel dimensions
+            // const {height, width, length, weight} = editingParcel.parcel;
+            // if (height <= 0 || width <= 0 || length <= 0 || weight <= 0) {
+            //     toast.error("Toutes les dimensions et le poids doivent être supérieurs à zéro");
+            //     return;
+            // }
+            // validate data with zod schema
+            const validated = parcelsArraySchema.safeParse(updatedParcels);
 
-            // Validate parcel dimensions
-            const {height, width, length, weight} = editingParcel.parcel;
-            if (height <= 0 || width <= 0 || length <= 0 || weight <= 0) {
-                toast.error("Toutes les dimensions et le poids doivent être supérieurs à zéro");
+            if (!validated.success) {
+                toast.error(validated.error.errors[0].message);
                 return;
             }
 
@@ -489,6 +501,17 @@ const SimulationEditForm = () => {
 
             {/* Render the Parcel Edit Dialog */}
             {renderParcelEditDialog()}
+
+            <ToastContainer
+                position="bottom-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                theme="colored"
+                closeOnClick
+                pauseOnHover
+                draggable
+                pauseOnFocusLoss
+            />
         </motion.div>
     );
 };

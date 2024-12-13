@@ -1,4 +1,5 @@
-// path: src/services/frontend-services/Bk_AddressService.ts
+// path: src/services/frontend-services/AddressService.ts
+
 'use client';
 
 import {DOMAIN} from "@/utils/constants";

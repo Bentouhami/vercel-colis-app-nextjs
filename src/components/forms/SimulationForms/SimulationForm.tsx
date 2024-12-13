@@ -17,7 +17,7 @@ import {
     fetchCities,
     fetchCountries,
     fetchDestinationCountries
-} from "@/services/frontend-services/AddresseService";
+} from "@/services/frontend-services/AddressService";
 import {SimulationDtoRequest} from "@/services/dtos";
 import {ArrowRight, Box, Calculator, MapPin, Truck} from "lucide-react";
 import {COLIS_MAX_PER_ENVOI} from "@/utils/constants";
@@ -151,9 +151,7 @@ const SimulationForm = () => {
 
         startTransition(() => {
             (async () => {
-                // get departure agency id by Country and city and agency name
-
-                // data to be validated by zod schema
+               // data to be validated by zod schema
                 const simulationData: SimulationDtoRequest = {
                     departureCountry: departure.country,
                     departureCity: departure.city,
