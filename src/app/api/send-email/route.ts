@@ -101,7 +101,7 @@ export async function POST(req: NextRequest) {
                                 margin-top: 25px;
                                 text-align: center;
                                 font-style: italic;
-                            ">This verification link will expire in 15 minutes.</p>
+                            ">This verification link will expire in 7 days.</p>
 
                             <!-- Alternative Link -->
                             <div style="

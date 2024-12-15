@@ -3,14 +3,13 @@
 
 import {
     AddressDto,
-    CreateAddressDto,
     CreateDestinataireDto,
     CreateUserDto,
     DestinataireResponseDto,
     DestinataireResponseWithRoleDto,
     FullUserResponseDto,
     Roles,
-    UpdateAddressDto,
+    UpdateUserDto,
     UserLoginResponseDto,
     UserModelDto,
     UserResponseDto
@@ -18,19 +17,24 @@ import {
 import prisma from "@/utils/db";
 import {VerificationDataType} from "@/utils/types";
 import {sendVerificationEmail} from "@/lib/mailer";
+import {userRepositories} from "@/services/repositories/users/UserRepository";
 
 /**
  *  Create new user as CLIENT
  *
  * @param newUser
- * @param address
  * @returns new created user data
  */
 
-export async function registerUser(newUser: CreateUserDto, address: UpdateAddressDto): Promise<FullUserResponseDto | null> {
+export async function registerUser(newUser: CreateUserDto): Promise<FullUserResponseDto | null> {
     console.log("log ====> registerUser called in path: src/services/backend-services/Bk_UserService.ts");
 
     try {
+        // Ensure address ID exists for connection
+        if (!newUser.address.id) {
+            throw new Error("Address ID is required to connect the user to an existing address.");
+        }
+
         const formattedUser = {
             firstName: newUser.firstName,
             lastName: newUser.lastName,
@@ -41,25 +45,31 @@ export async function registerUser(newUser: CreateUserDto, address: UpdateAddres
             password: newUser.password,
             verificationToken: newUser.verificationToken,
             verificationTokenExpires: newUser.verificationTokenExpires,
-            addressId: address.id,
             isVerified: false,
         };
 
+        // Create user and connect existing address
         const createdUser = await prisma.user.create({
-            data: formattedUser,
+            data: {
+                ...formattedUser,
+                Address: {
+                    connect: {
+                        id: newUser.address.id,
+                    },
+                },
+            },
             include: {
-                Address: true,
+                Address: true, // Include the connected address in the result
             },
         });
 
-        console.log(" log ====> createdUser of type UserModelDto in path src/services/backend-services/Bk_UserService.ts: ", createdUser);
+        console.log(" log ====> createdUser in path src/services/backend-services/Bk_UserService.ts: ", createdUser);
         if (!createdUser) {
             console.error("Error: Cannot create user.");
             return null;
         }
 
-
-        // Ensure fields are not null by using `?? undefined`
+        // Map result to response DTO
         return {
             id: createdUser.id,
             firstName: createdUser.firstName ?? undefined,
@@ -70,13 +80,23 @@ export async function registerUser(newUser: CreateUserDto, address: UpdateAddres
             phoneNumber: createdUser.phoneNumber ?? undefined,
             image: createdUser.image ?? undefined,
             roles: createdUser.roles as Roles[],
-            address: address as CreateAddressDto,
+            address: {
+                id: createdUser.Address?.id,
+                street: createdUser?.Address?.street ?? '',
+                number: createdUser?.Address?.number ?? '',
+                city: createdUser.Address?.city ?? '',
+                zipCode: createdUser.Address?.zipCode ?? '',
+                country: createdUser.Address?.country ?? '',
+                latitude: createdUser.Address?.latitude ?? undefined,
+                longitude: createdUser.Address?.longitude ?? undefined,
+            },
         };
     } catch (error) {
         console.error("Error registering user:", error);
         throw error;
     }
 }
+
 
 
 /**
@@ -113,6 +133,7 @@ export async function isUserAlreadyExist(email: string, phoneNumber: string): Pr
                 verificationToken: true,
                 verificationTokenExpires: true,
                 addressId: true,
+
             }
         }) as UserModelDto;
 
@@ -328,50 +349,6 @@ export async function updateVerificationTokenForOldUser(userId: number, verifica
     });
 }
 
-
-/**
- * find user by email
- * @param email
- * @returns user data
- */
-export async function getUserByEmail(email: string): Promise<UserLoginResponseDto | null> {
-
-    console.log("log ====> getUserByEmail function called in path: src/services/backend-services/Bk_UserService.ts")
-
-    try {
-        const userByEmailFound = await prisma.user.findFirst({
-            where: {
-                email: email,
-            },
-            select: {
-                id: true,
-                email: true,
-                password: true,
-                firstName: true,
-                lastName: true,
-                name: true,
-                phoneNumber: true,
-                image: true,
-                roles: true,
-                isVerified: true,
-                emailVerified: true,
-                verificationToken: true,
-                verificationTokenExpires: true
-            }
-        });
-
-        if (!userByEmailFound) {
-            console.log("userByEmailFound NOT found by email and or phone number in getUserByEmail function in path: src/services/backend-services/Bk_UserService.ts return NULL");
-
-            return null;
-        }
-        return userByEmailFound as UserLoginResponseDto;
-    } catch (error) {
-        console.error("Error getting user by email:", error);
-        throw error;
-    }
-}
-
 export async function getUserById(id: number): Promise<CreateDestinataireDto | null> {
 
     console.log("log ====> getUserByEmail function called in path: src/services/backend-services/Bk_UserService.ts")
@@ -402,42 +379,48 @@ export async function getUserById(id: number): Promise<CreateDestinataireDto | n
 
 /**
  * Update destinataire to client
- * @param destinataire
- * @param birthDate
- * @param password
- * @param addressId
- * @param verificationData
  * @returns {Promise<DestinataireResponseDto>} user data with updated fields or null if not found
+ * @param userData
  */
 
 export async function updateDestinataireToClient(
-    destinataire: UserModelDto,
-    birthDate: Date,
-    password: string,
-    addressId: UpdateAddressDto,
-    verificationData: VerificationDataType
+    userData: UpdateUserDto,
 ): Promise<FullUserResponseDto | null> {
 
     console.log("log ====> updateDestinataireToClient function called in path: src/services/backend-services/Bk_UserService.ts")
 
 
-    console.log("Updating destinataire to client with ID path: src/services/users/Bk_UserService.ts :", destinataire.id);
+    console.log("Updating destinataire to client with ID path: src/services/users/Bk_UserService.ts :", userData.address?.id ?? null);
 
     try {
+        if (!userData.id || !userData.addressId || !userData.address) {
+            return null;
+        }
+        console.log("log ====> userData.id in path: src/services/backend-services/Bk_UserService.ts: ", userData.id);
+        console.log("log ====> userData.addressId in path: src/services/backend-services/Bk_UserService.ts: ", userData.addressId);
+        console.log("log ====> userData.address in path: src/services/backend-services/Bk_UserService.ts: ", userData.address);
 
         const user = await prisma.user.update({
             where: {
-                id: destinataire.id,
+                id: userData.id,
             },
             data: {
-                birthDate: birthDate,
-                roles: [Roles.CLIENT],
-                password: password,
-                addressId: addressId.id,
-                isVerified: false,
-                verificationToken: verificationData.verificationToken,
-                verificationTokenExpires: new Date(verificationData.verificationTokenExpires),
+                firstName: userData.firstName,
+                lastName: userData.lastName,
+                name: userData.name,
+                birthDate: userData.birthDate,
+                phoneNumber: userData.phoneNumber,
+                email: userData.email,
+                roles: userData.roles,
+                image: userData.image,
+                isVerified: userData.isVerified,
+                emailVerified: userData.emailVerified,
+                verificationToken: userData.verificationToken,
+                verificationTokenExpires: userData.verificationTokenExpires,
+                addressId: userData.address.id,
+
             },
+
             include: {
                 Address: true,
             },
@@ -460,12 +443,15 @@ export async function updateDestinataireToClient(
             image: user.image ?? '',
             isVerified: user.isVerified ?? false,
             emailVerified: user.emailVerified ?? new Date(),
-            verificationToken: user.verificationToken ?? '',
+            verificationToken: user?.verificationToken || '',
             verificationTokenExpires: user.verificationTokenExpires ?? new Date(),
             address: user.Address as AddressDto,
         };
+        if (!fullUserResponseDto) {
+            return null;
+        }
 
-        await sendVerificationEmail(user.name ?? '', user.email, verificationData.verificationToken);
+        await sendVerificationEmail(user.name ?? '', user.email, fullUserResponseDto?.verificationToken!);
 
         return fullUserResponseDto;
     } catch (error) {
@@ -535,4 +521,20 @@ export async function associateDestinataireToCurrentClient(userId: number, desti
         console.error("Error associating user as destinataire:", error);
         throw error; // Relancer l'erreur pour remonter jusqu'à l'appelant
     }
+}
+
+export async function getUserByEmail(email: string): Promise<UserLoginResponseDto | null> {
+    console.log("log ====> getUserByEmail function called in path: src/services/backend-services/Bk_UserService.ts")
+    try {
+        const user = await userRepositories.findUserByEmail(email);
+        if (!user) {
+            return null;
+        }
+        return user;
+    } catch (error) {
+        console.error("Error getting user from database:", error);
+        throw error;
+
+    }
+
 }

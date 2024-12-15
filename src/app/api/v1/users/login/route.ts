@@ -68,14 +68,14 @@ export async function POST(request: NextRequest) {
 
         // si le n'a pas vérifié son email
         if (user && !user.isVerified && user.emailVerified && user.emailVerified < new Date()) {
-            await updateVerificationTokenForOldUser(user.id, verificationData)
+            await updateVerificationTokenForOldUser(Number(user.id), verificationData)
 
         }
 
 
         // Generate JWTPayload object and setCookies
         const cookie = await generateJWTPayloadAndSetCookie(
-            user.id,
+            Number(user.id),
             user.email,
             user.firstName,
             user.lastName,

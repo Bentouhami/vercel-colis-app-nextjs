@@ -60,13 +60,12 @@ class SimulationDAO implements ISimulationDAO {
             }
 
             // return simulation;
-            console.log("log ====> DAO: simulation in getSimulationById function called in src/services/dal/DAO/simulations/SimulationDAO.ts: ", simulation);
             return simulation;
 
             // Handle any errors that may occur during the database query
-        } catch
-            (e) {
-            return null;
+        } catch (error) {
+            console.error("Error getting simulation:", error);
+            throw error;
         }
     }
 }

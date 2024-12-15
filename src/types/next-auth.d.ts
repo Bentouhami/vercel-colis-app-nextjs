@@ -1,5 +1,5 @@
 import {DefaultSession} from "next-auth";
-import {CreateAddressDto, Roles} from "@/services/dtos";
+import {AddressResponseDto, AddressResponseDto, Roles} from "@/services/dtos";
 
 
 declare module "next-auth" {
@@ -16,7 +16,7 @@ declare module "next-auth" {
         phoneNumber?: string | null;
         image?: string | null;
         roles?: Roles[];
-        address?: CreateAddressDto | null;
+        address?: AddressResponseDto | null;
         emailVerified?: Date | null;
 
     }
@@ -32,7 +32,7 @@ declare module "next-auth/jwt" {
         phoneNumber?: string | null;
         image?: string | null;
         roles?: Roles[];
-        address?: CreateAddressDto | null;
+        address?: AddressResponseDto | null;
         emailVerified?: Date | null;
     }
 }

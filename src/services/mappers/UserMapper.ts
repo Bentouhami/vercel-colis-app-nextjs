@@ -4,6 +4,9 @@ import {FullUserResponseDto, UserDto, UserLoginResponseDto} from '@/services/dto
 import {RoleMapper} from "@/services/mappers/enums/RoleMapper";
 import {AddressMapper} from "@/services/mappers/AddressMapper";
 
+import {Address as AddressPrisma} from "@prisma/client";
+
+
 export class UserMapper {
     // Map Prisma User to UserDto
     static toDto(user: PrismaUser): UserDto {
@@ -22,12 +25,13 @@ export class UserMapper {
             verificationToken: user.verificationToken || '',
             verificationTokenExpires: user.verificationTokenExpires || new Date(),
             addressId: user.addressId || 0,
+            // address: AddressMapper.toDto(user.Address) as AddressResponseDto,
             // Note: Address mapping would be done separately if needed
         }
     }
 
     // Map Prisma User to Full User Response DTO
-    static toFullUserResponseDto(user: PrismaUser & { Address?: any }): FullUserResponseDto {
+    static toFullUserResponseDto(user: PrismaUser & { Address: AddressPrisma }): FullUserResponseDto {
         return {
             id: user.id,
             firstName: user.firstName || '',
@@ -42,14 +46,18 @@ export class UserMapper {
             emailVerified: user.emailVerified || new Date(),
             verificationToken: user.verificationToken || '',
             verificationTokenExpires: user.verificationTokenExpires || new Date(),
-            address: AddressMapper.toCreateDto(user.Address),
+            address: AddressMapper.toDto(user.Address),
         }
     }
 
     // Map Prisma User to Login Response DTO
-    static toLoginResponseDto(user: PrismaUser): UserLoginResponseDto {
-        return {
-            id: user.id,
+    static toLoginResponseDto(user: PrismaUser & { Address?: AddressPrisma }): UserLoginResponseDto | null {
+        console.log("log ====> user in toLoginResponseDto function called in path: src/services/mappers/UserMapper.ts", user)
+        if (!user) {
+            return null;
+        }
+        const userDto = {
+            id: (user.id).toString(),
             email: user.email,
             password: user.password || '',
             firstName: user.firstName || '',
@@ -58,11 +66,15 @@ export class UserMapper {
             phoneNumber: user.phoneNumber || '',
             image: user.image,
             roles: RoleMapper.toRolesEnum(user.roles),
+            Address: AddressMapper.toResponseDto(user.Address!),
             isVerified: user.isVerified || false,
             emailVerified: user.emailVerified,
             verificationToken: user.verificationToken,
             verificationTokenExpires: user.verificationTokenExpires
-        }
+        };
+
+        console.log("log ====> userDto in toLoginResponseDto function called in path: src/services/mappers/UserMapper.ts", userDto)
+        return userDto;
     }
 
     // Map multiple users to DTOs

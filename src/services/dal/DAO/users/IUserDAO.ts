@@ -1,12 +1,15 @@
 // path: src/services/dal/users/IUserDAO.ts
 
 
-import {CreateUserDto, FullUserDto, UserDto} from "@/services/dtos/users/UserDto";
+import { FullUserDto, UserDto} from "@/services/dtos/users/UserDto";
+
+import {User as UserPrisma} from "@prisma/client";
 
 export interface IUserDAO {
-    getAllUsers(): Promise<UserDto[]>;
-    getUserById(id: number): Promise<UserDto | null>;
+    getAllUsers(): Promise<UserPrisma[] |  null>;
+    getUserById(id: number): Promise<UserPrisma | null>;
+    getUserByEmail(email: string): Promise<UserPrisma | null>;
     createUser(data: FullUserDto): Promise<void>;
-    updateUser(id: number, data: Partial<UserDto>): Promise<UserDto | null>;
+    updateUser(id: number, data: Partial<UserPrisma>): Promise<UserPrisma | null>;
     deleteUser(id: number): Promise<void>;
 }

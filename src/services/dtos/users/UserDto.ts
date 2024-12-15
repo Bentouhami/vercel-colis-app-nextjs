@@ -3,7 +3,7 @@
 
 // -------------------- User DTOs --------------------
 import {Roles} from "@/services/dtos/enums/EnumsDto";
-import {AddressDto, CreateAddressDto, UpdateAddressDto} from "@/services/dtos/addresses/AddressDto";
+import {AddressDto, AddressResponseDto, UpdateAddressDto} from "@/services/dtos/addresses/AddressDto";
 
 export interface UserDto {
     id: number;
@@ -28,20 +28,21 @@ export interface UserDto {
 // DTO for creating a new user
 export interface CreateUserDto extends Omit<UserDto, "id" | "isVerified" | "emailVerified" | "addressId" | "address"> {
     password: string; // Obligatoire
-    address: UpdateAddressDto; // Adresse complète requise
+    address: AddressDto; // Adresse complète requise
     verificationTokenExpires: Date; // Date d'expiration du token de vérification de l'email
     verificationToken: string; // Token de vérification de l'email
 }
 
+// export interface
 export type RegisterClientDto =
     Required<Pick<UserDto, "firstName" | "lastName" | "birthDate" | "phoneNumber" | "email" | "password">>
     & {
-    address: CreateAddressDto; // Champ supplémentaire obligatoire
+    address: AddressDto; // Champ supplémentaire obligatoire
 };
 
 
 // DTO for updating an existing user
-export interface UpdateUserDto extends Partial<CreateUserDto> {
+export interface UpdateUserDto extends Partial<Omit<UserDto, "id">> {
     id: number; // Required to identify the user to update
 }
 
@@ -52,7 +53,7 @@ export type UserResponseDto = Required<Pick<UserDto, "id" | "firstName" | "lastN
 
 // DTO for User response without a password
 export type FullUserResponseDto = Omit<UserDto, "password"> & {
-    address: CreateAddressDto;
+    address: AddressDto;
 };
 
 
@@ -69,7 +70,7 @@ export interface DestinataireResponseWithRoleDto {
 
 export interface BaseUserDto extends CreateDestinataireDto {
     birthDate: Date;
-    address: CreateAddressDto | UpdateAddressDto;
+    address: AddressResponseDto | UpdateAddressDto;
 }
 
 export interface BaseClientDto extends BaseUserDto {
@@ -85,6 +86,7 @@ export interface UserModelDto {
     phoneNumber: string;
     email: string;
     roles: Roles[];
+    // address: AddressDto;
     image: string | '',
     isVerified: boolean;
     emailVerified: Date;
@@ -121,13 +123,14 @@ export interface LoginUserDto {
 }
 
 export interface UserLoginResponseDto {
-    id: number;
+    id: string;
     email: string;
     password: string;
     firstName: string;
     lastName: string;
     name: string;
     phoneNumber: string;
+    Address: AddressResponseDto;
     image: string | null;
     roles: Roles[];
     isVerified: boolean;

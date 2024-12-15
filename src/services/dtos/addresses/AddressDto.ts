@@ -14,17 +14,18 @@ export interface AddressDto {
 }
 
 // DTO for creating a new address
-export type CreateAddressDto = Omit<AddressDto, "id" | "latitude" | "longitude">;
 
 // DTO for updating an existing address
-export interface UpdateAddressDto extends Partial<CreateAddressDto> {
+export interface UpdateAddressDto extends Partial<AddressResponseDto> {
     id: number;
 }
 
 export interface AddressResponseDto  {
+    id?: number;
     street: string;
-    number: string;
+    number: string | null;
     city: string;
     zipCode: string;
     country: string;
 }
+

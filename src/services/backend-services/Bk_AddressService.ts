@@ -1,6 +1,6 @@
 // path: src/backend-services/Bk_AddressService.ts
 'use server';
-import {CreateAddressDto, UpdateAddressDto} from "@/services/dtos";
+import {AddressDto, AddressResponseDto, UpdateAddressDto} from "@/services/dtos";
 import prisma from "@/utils/db";
 
 /**
@@ -8,7 +8,7 @@ import prisma from "@/utils/db";
  * @param address - address object
  * @returns {Promise<UpdateAddressDto | null>} address or null
  */
-export async function isAddressAlreadyExist(address: CreateAddressDto): Promise<UpdateAddressDto | null> {
+export async function isAddressAlreadyExist(address: AddressResponseDto): Promise<AddressDto | null> {
     try {
         const addressFound = await prisma.address.findFirst({
             where: {
@@ -27,7 +27,7 @@ export async function isAddressAlreadyExist(address: CreateAddressDto): Promise<
                 country: true,
             }
 
-        }) as UpdateAddressDto;
+        }) as AddressDto;
 
         if (!addressFound) {
             return null;
@@ -45,7 +45,7 @@ export async function isAddressAlreadyExist(address: CreateAddressDto): Promise<
  * @param address
  * @returns {Promise<UpdateAddressDto | null>} address or null
  */
-export async function createAddress(address: CreateAddressDto): Promise<UpdateAddressDto | null> {
+export async function createAddress(address: AddressResponseDto): Promise<AddressDto | null> {
     try {
         const addressCreated = await prisma.address.create({
             data: {
@@ -63,7 +63,7 @@ export async function createAddress(address: CreateAddressDto): Promise<UpdateAd
                 zipCode: true,
                 country: true,
             }
-        }) as UpdateAddressDto;
+        }) as AddressDto;
 
         if (!addressCreated) {
             return null;

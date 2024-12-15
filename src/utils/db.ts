@@ -1,24 +1,37 @@
 // path: src/utils/db.ts
+import { PrismaClient } from "@prisma/client";
+import { Pool } from "@neondatabase/serverless";
+import { PrismaNeon } from "@prisma/adapter-neon";
 
-
-import {PrismaClient} from "@prisma/client";
-import {Pool} from "@neondatabase/serverless";
-import {PrismaNeon} from "@prisma/adapter-neon";
-
-const prismaClientSingleton = () => {
-    const neon = new Pool({
-        connectionString: process.env.POSTGRES_PRISMA_URL
+// Function to create PrismaClient with Neon adapter
+const createPrismaClient = () => {
+    // Create a Neon connection pool
+    const neonPool = new Pool({
+        connectionString: process.env.POSTGRES_PRISMA_URL || "",
     });
-    const adapter = new PrismaNeon(neon)
-    return new PrismaClient({adapter});
+
+    // Use PrismaNeon adapter with the pool
+    const adapter = new PrismaNeon(neonPool);
+
+    // Return a PrismaClient instance
+    return new PrismaClient({ adapter });
 };
 
+// Global declaration to prevent multiple instances
 declare global {
-    var prismaGlobal: undefined | ReturnType<typeof prismaClientSingleton>;
+    // eslint-disable-next-line no-var
+    var prisma: PrismaClient | undefined;
 }
 
-const prisma = globalThis.prismaGlobal ?? prismaClientSingleton();
+// Create a PrismaClient instance
+const prisma =
+    global.prisma ||
+    (global.prisma = createPrismaClient());
 
+// Export the Prisma instance
 export default prisma;
 
-if (process.env.NODE_ENV !== "production") globalThis.prismaGlobal = prisma;
+// Ensure no global pollution in production
+if (process.env.NODE_ENV === "production") {
+    global.prisma = undefined;
+}

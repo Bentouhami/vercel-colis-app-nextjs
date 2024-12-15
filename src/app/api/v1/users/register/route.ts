@@ -20,22 +20,28 @@ import {
 import {sendVerificationEmail} from "@/lib/mailer";
 import {
     BaseClientDto,
-    CreateUserDto,
     FullUserResponseDto,
     RegisterClientDto,
     UserModelDto
 } from "@/services/dtos/users/UserDto";
-import {CreateAddressDto, UpdateAddressDto} from "@/services/dtos/addresses/AddressDto";
+import {AddressDto, AddressResponseDto} from "@/services/dtos/addresses/AddressDto";
 import {Roles} from "@/services/dtos/enums/EnumsDto";
 
+/**
+ * @method POST to register a new user in the database and send a verification email
+ * @route.ts /api/v1/users/register
+ * @desc Register a new user
+ * @access public
+ */
 export async function POST(request: NextRequest) {
+    console.log("log ====> POST request received in path: src/app/api/v1/users/register/route.ts");
+
+    // Check if the request method is POST and return an error if not
     if (request.method !== "POST") {
         return NextResponse.json({error: "Method not allowed"}, {status: 405});
     }
 
     try {
-        console.log("POST request received");
-
         const body = (await request.json()) as RegisterClientDto;
 
         if (!body) {
@@ -54,7 +60,7 @@ export async function POST(request: NextRequest) {
 
         const {firstName, lastName, birthDate, phoneNumber, email, password, address} = validatedData;
 
-        const extractedBaseAddress: CreateAddressDto = {
+        const extractedBaseAddress: AddressResponseDto = {
             street: toLowerCase(address.street),
             number: address.number,
             city: capitalizeFirstLetter(address.city),
@@ -73,12 +79,12 @@ export async function POST(request: NextRequest) {
             image: null,
             roles: [Roles.CLIENT], // Updated to roles array with default CLIENT Roles
             password,
-            address: extractedBaseAddress as CreateAddressDto
+            address: extractedBaseAddress as AddressResponseDto
         };
 
         console.log("Formatted address registeredUser:", formattedUser.address);
 
-        let addressToUse: UpdateAddressDto | null = await isAddressAlreadyExist(extractedBaseAddress);
+        let addressToUse: AddressDto | null = await isAddressAlreadyExist(extractedBaseAddress);
 
         if (!addressToUse) {
             addressToUse = await createAddress(extractedBaseAddress);
@@ -107,7 +113,7 @@ export async function POST(request: NextRequest) {
         if (!existedUser) {
             const {firstName, lastName, name, birthDate, phoneNumber, email} = formattedUser;
 
-            const userData: CreateUserDto = {
+            const userData = {
                 firstName,
                 lastName,
                 name,
@@ -116,15 +122,17 @@ export async function POST(request: NextRequest) {
                 phoneNumber,
                 password: hashedPassword,
                 address: addressToUse,
+                addressId: addressToUse?.id ?? null,
                 verificationToken: verificationData.verificationToken,
                 verificationTokenExpires: verificationData.verificationTokenExpires,
             };
+
 
             console.log(" log ====> userData of type CreateUserDto in path src/app/api/v1/users/register/route.ts: ", userData);
 
             console.log(" log ====> addressToUse of type CreateAddressDto in path src/app/api/v1/users/register/route.ts: ", addressToUse);
 
-            registeredUser = await registerUser(userData, addressToUse) as FullUserResponseDto;
+            registeredUser = await registerUser(userData) as FullUserResponseDto;
 
             console.log(" log ====> registeredUser of type FullUserResponseDto in path src/app/api/v1/users/register/route.ts: ", registeredUser);
 
@@ -147,17 +155,25 @@ export async function POST(request: NextRequest) {
             });
         }
 
+        // destinataire case
         if (existedUser.roles.includes(Roles.DESTINATAIRE)) {
+            const userData = {
+                ...existedUser,
+                birthDate: formattedUser.birthDate,
+                addressId: addressToUse?.id,
+                address: addressToUse,
+                password: hashedPassword,
+                verificationToken: verificationData.verificationToken,
+                verificationTokenExpires: verificationData.verificationTokenExpires,
+            };
+            console.log("log ====> userData of type UpdateUserDto in path src/app/api/v1/users/register/route.ts: ", userData);
+
             registeredUser = await updateDestinataireToClient(
-                existedUser,
-                formattedUser.birthDate,
-                hashedPassword,
-                addressToUse,
-                verificationData
+                userData
             );
 
             if (!registeredUser || registeredUser.name === undefined) {
-                return NextResponse.json({error: "Failed to update destinataire"}, {status: 500});
+                return NextResponse.json({error: "Failed to update destinataire to client"}, {status: 500});
             }
 
             await sendVerificationEmail(registeredUser.name, registeredUser.email, verificationData.verificationToken);

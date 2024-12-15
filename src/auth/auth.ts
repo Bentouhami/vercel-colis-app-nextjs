@@ -7,6 +7,8 @@ import bcrypt from "bcryptjs";
 import GoogleProvider from "@auth/core/providers/google";
 import GitHubProvider from "@auth/core/providers/github";
 import {Roles} from "@/services/dtos/enums/EnumsDto";
+import {AddressResponseDto} from "@/services/dtos";
+import {getUserByEmail} from "@/services/backend-services/Bk_UserService";
 
 export const {handlers, signIn, signOut, auth} = NextAuth({
     adapter: PrismaAdapter(prisma),
@@ -21,26 +23,16 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
             async authorize(credentials): Promise<User | null> {
                 console.log("---------- authorize start ----------");
 
+                // verify if credentials details are provided
                 if (!credentials?.email || !credentials?.password) {
                     throw new Error("Please enter a valid email and password");
                 }
 
 
                 try {
-                    const user = await prisma.user.findFirst({
-                        where: {email: credentials.email},
-                        include: {
-                            Address: {
-                                select: {
-                                    street: true,
-                                    number: true,
-                                    city: true,
-                                    zipCode: true,
-                                    country: true,
-                                },
-                            },
-                        },
-                    });
+
+                    // find user in database
+                    const user = await getUserByEmail(credentials.email as string);
 
                     // Check if the user exists and has a password
                     if (!user) {
@@ -72,6 +64,7 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
                         email: user.email,
                         phoneNumber: user.phoneNumber ?? undefined,
                         image: user.image ?? undefined,
+                        address: user.Address as AddressResponseDto | null,
                         roles: user.roles as Roles[],
                         emailVerified: user.emailVerified ?? null, // Include emailVerified with a fallback
                     } as User;
@@ -143,6 +136,7 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
                 token.name = user.name ?? undefined;
                 token.email = user.email ?? undefined;
                 token.phoneNumber = user.phoneNumber ?? undefined;
+                token.address = user.address as AddressResponseDto;
                 token.image = user.image ?? undefined;
                 token.roles = user.roles || [];
                 token.emailVerified = user.emailVerified ?? null;
@@ -158,6 +152,7 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
                     name: token.name ?? undefined,
                     email: token.email ?? '',
                     phoneNumber: token.phoneNumber ?? undefined,
+                    address: token.address as AddressResponseDto,
                     image: token.image ?? undefined,
                     roles: token.roles ?? [],
                     emailVerified: token.emailVerified ?? null

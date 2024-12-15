@@ -1,11 +1,11 @@
 // path: src/services/mappers/AddressMapper.ts
 
-import {Address as PrismaAddress} from '@prisma/client'
-import {AddressDto, CreateAddressDto} from "@/services/dtos";
+import {Address as AddressPrisma} from '@prisma/client'
+import {AddressDto, AddressResponseDto} from "@/services/dtos";
 
 export class AddressMapper {
     // Map Prisma Address to AddressDto
-    static toDto(address: PrismaAddress): AddressDto {
+    static toDto(address: AddressPrisma): AddressDto {
         return {
             id: address.id,
             street: address.street,
@@ -19,17 +19,18 @@ export class AddressMapper {
     }
 
     // Map Prisma Address to Create Address DTO
-    static toCreateDto(address: PrismaAddress): CreateAddressDto {
+    static toResponseDto(address: AddressPrisma): AddressResponseDto {
         return {
-            street: address.street,
+            id: address.id ?? null,
             number: address.number || '',
+            street: address.street,
             city: address.city,
             zipCode: address.zipCode,
             country: address.country
         }
     }
 
-    static toUpdateDto(address: PrismaAddress): AddressDto {
+    static toUpdateDto(address: AddressPrisma): AddressDto {
         return {
             id: address.id,
             street: address.street,

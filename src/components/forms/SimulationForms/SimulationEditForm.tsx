@@ -206,13 +206,7 @@ const SimulationEditForm = () => {
 
             const updatedParcels = [...parcels];
             updatedParcels[editingParcel.index] = editingParcel.parcel;
-            //
-            // // Validate parcel dimensions
-            // const {height, width, length, weight} = editingParcel.parcel;
-            // if (height <= 0 || width <= 0 || length <= 0 || weight <= 0) {
-            //     toast.error("Toutes les dimensions et le poids doivent être supérieurs à zéro");
-            //     return;
-            // }
+
             // validate data with zod schema
             const validated = parcelsArraySchema.safeParse(updatedParcels);
 
