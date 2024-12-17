@@ -10,7 +10,7 @@ export async function getTarifs(): Promise<TarifsDto> {
             },
         });
 
-        return response.data as TarifsDto;
+        return response.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
             console.error('Axios error getting tarifs:', error.message);

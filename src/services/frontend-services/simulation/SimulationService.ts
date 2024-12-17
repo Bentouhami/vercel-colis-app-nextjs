@@ -4,16 +4,23 @@ import {DOMAIN} from "@/utils/constants";
 import {calculateEnvoiDetails} from "@/services/frontend-services/simulation/SimulationCalculationService";
 import {getTarifs} from "@/services/frontend-services/TarifsService";
 import {
-    BaseSimulationDto,
+    CreateSimulationRequestDto,
     EnvoiStatus,
+    PartielUpdateSimulationDto,
     SimulationDtoRequest,
     SimulationResponseDto,
     SimulationStatus,
-    TarifsDto
+    UpdateEditedSimulationDto
 } from "@/services/dtos";
-import {getAgencyIdByCountryAndCityAndAgencyName} from "@/services/frontend-services/AgencyService";
+import {getAgencyId} from "@/services/frontend-services/AgencyService";
 import axios from "axios";
 
+
+/**
+ *  get a simulation by id
+ * @param id
+ *  @return SimulationResponseDto if exits or null otherwise
+ */
 export async function getSimulationById(id: number): Promise<SimulationResponseDto | null> {
     if (!id) {
         return null;
@@ -58,19 +65,19 @@ export async function submitSimulation(simulationData: SimulationDtoRequest) {
 
 
     // get agency id by Country and city and agency name
-    const departureAgencyId = await getAgencyIdByCountryAndCityAndAgencyName(simulationData.departureCountry, simulationData.departureCity, simulationData.departureAgency);
+    const departureAgencyId = await getAgencyId(simulationData.departureCountry, simulationData.departureCity, simulationData.departureAgency);
     if (!departureAgencyId) {
         throw new Error("Aucun agence trouvée pour cette ville");
     }
 
     // get arrival agency id by Country and city and agency name
-    const arrivalAgencyId = await getAgencyIdByCountryAndCityAndAgencyName(simulationData.destinationCountry, simulationData.destinationCity, simulationData.destinationAgency);
+    const arrivalAgencyId = await getAgencyId(simulationData.destinationCountry, simulationData.destinationCity, simulationData.destinationAgency);
     if (!arrivalAgencyId) {
         throw new Error("Aucun agence trouvée pour cette ville");
     }
 
     // 1. Récupérer les tarifs actuels
-    const tarifs: TarifsDto = await getTarifs();
+    const tarifs = await getTarifs();
 
     if (!tarifs) {
         throw new Error("Tarifs not found");
@@ -84,7 +91,7 @@ export async function submitSimulation(simulationData: SimulationDtoRequest) {
 
     // 2. Calculer les détails de l'envoi
     const calculationResults =
-        await calculateEnvoiDetails(parcels, tarifs);
+        calculateEnvoiDetails(parcels, tarifs);
 
 
     if (!calculationResults) {
@@ -92,12 +99,12 @@ export async function submitSimulation(simulationData: SimulationDtoRequest) {
     }
 
     // 3. Préparer les données à envoyer
-    const simulationBaseData: BaseSimulationDto = {
+    const simulationBaseData: CreateSimulationRequestDto = {
         departureAgencyId: departureAgencyId,
         arrivalAgencyId: arrivalAgencyId,
+        parcels: parcels,
         simulationStatus: SimulationStatus.DRAFT,
         envoiStatus: EnvoiStatus.PENDING,
-        parcels: parcels,
         totalWeight: calculationResults.totalWeight,
         totalVolume: calculationResults.totalVolume,
         totalPrice: calculationResults.totalPrice,
@@ -110,23 +117,14 @@ export async function submitSimulation(simulationData: SimulationDtoRequest) {
         throw new Error("Simulation base data not found");
     }
 
-    console.log("log ====> simulationBaseData in submitSimulation function before calling fetch function: ", simulationBaseData);
-
     // 4. Appeler l'API pour enregistrer la simulation return simulationId after saving
-    const response = await fetch(`${DOMAIN}/api/v1/simulations`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(simulationBaseData),
-    });
+    const response = await axios.post(`${DOMAIN}/api/v1/simulations`, simulationBaseData);
 
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to submit simulation');
+    if (!response.data) {
+        throw new Error("Failed to submit simulation");
     }
 
-    return response.json();
+    return response.data;
 
 
 }
@@ -169,31 +167,94 @@ export async function getSimulation(): Promise<SimulationResponseDto | null> {
     }
 }
 
-export async function updateSimulationWithSenderAndDestinataireIds(simulation: SimulationResponseDto) {
+export async function updateSimulationEdited(simulationData: PartielUpdateSimulationDto): Promise<any | null> {
 
-    console.log("log ====> updateSimulationWithSenderAndDestinataireIds function called in src/services/frontend-services/simulation/SimulationService.ts : ", simulation);
+    if (!simulationData) {
+        throw new Error("Simulation data not found");
+    }
+    console.log("log ====> simulationData of type PartielUpdateSimulationDto in updateSimulationEdited function called in path: src/services/frontend-services/simulation/SimulationService.ts: ", simulationData);
+
+    // get agency id by Country and city and agency name
+    const departureAgencyId = await getAgencyId(simulationData.departureCountry!, simulationData.departureCity!, simulationData.departureAgency!);
+    if (!departureAgencyId) {
+        throw new Error("Aucun agence trouvée pour cette ville");
+    }
+
+    // get arrival agency id by Country and city and agency name
+    const arrivalAgencyId = await getAgencyId(simulationData.destinationCountry!, simulationData.destinationCity!, simulationData.destinationAgency!);
+
+
+    if (!arrivalAgencyId) {
+        throw new Error("Aucun agence trouvée pour cette ville");
+    }
+
+    // 1. Récupérer les tarifs actuels
+    const tarifs = await getTarifs();
+
+    if (!tarifs) {
+        throw new Error("Tarifs not found");
+    }
+
+
+    const parcels = simulationData.parcels;
+    if (!parcels) {
+        throw new Error("Parcels not found");
+    }
+
+    // 2. Calculer les détails de l'envoi
+    const calculationResults =
+        calculateEnvoiDetails(parcels, tarifs);
+
+
+    if (!calculationResults) {
+        throw new Error("Calculation results not found");
+    }
+
+    if (!simulationData.id) {
+        throw new Error("Simulation ID not found");
+    }
+
+    // 3. Préparer les données à envoyer
+    const simulationBaseData: UpdateEditedSimulationDto = {
+        id: simulationData.id,
+        userId: simulationData.userId,
+        destinataireId: simulationData.destinataireId,
+        departureAgencyId: departureAgencyId,
+        arrivalAgencyId: arrivalAgencyId,
+        parcels: simulationData.parcels,
+        simulationStatus: SimulationStatus.DRAFT,
+        envoiStatus: EnvoiStatus.PENDING,
+        totalWeight: calculationResults.totalWeight,
+        totalVolume: calculationResults.totalVolume,
+        totalPrice: calculationResults.totalPrice,
+        departureDate: calculationResults.departureDate,
+        arrivalDate: calculationResults.arrivalDate,
+    }
+    console.log("log ====> simulationBaseData of type UpdateEditedSimulationDto in updateSimulationEdited function called in path: src/services/frontend-services/simulation/SimulationService.ts: ", simulationBaseData);
+    if (!simulationBaseData) {
+        throw new Error("Simulation base data not found");
+    }
 
     try {
-        const response = await fetch(`${DOMAIN}/api/v1/simulations`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: 'include',
-            body: JSON.stringify(simulation),
-        });
+        // 4. Appeler l'API pour enregistrer la simulation return simulationId after saving
+        const response = await axios.put(`${DOMAIN}/api/v1/simulations/edit`, simulationBaseData);
 
-        if (!response.ok) {
-            throw new Error('Failed to update simulation');
+        if (!response.data) {
+            throw new Error("Failed to update simulation");
         }
 
-
+        return response.data;
     } catch (error) {
+        console.error("Error updating simulation:", error);
         throw error;
     }
 }
 
 
+/**
+ * Delete the simulation cookie
+ * @returns {Promise<void | null>} A Promise that resolves when the status is updated
+ */
 export async function deleteSimulationCookie() {
     try {
         const response = await fetch(`${DOMAIN}/api/v1/simulations/delete-cookies`, {

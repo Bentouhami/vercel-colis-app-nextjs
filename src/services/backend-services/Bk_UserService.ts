@@ -18,6 +18,7 @@ import prisma from "@/utils/db";
 import {VerificationDataType} from "@/utils/types";
 import {sendVerificationEmail} from "@/lib/mailer";
 import {userRepositories} from "@/services/repositories/users/UserRepository";
+import {auth} from "@/auth/auth";
 
 /**
  *  Create new user as CLIENT
@@ -292,6 +293,13 @@ export async function getUserByValidToken(token: string): Promise<UserResponseDt
  * @param userId
  */
 export async function updateUserAndResetTokenVerificationAfterVerification(userId: number) {
+
+    // // get connected user
+    // const session = await auth();
+    // const user  = session?.user;
+    // if (!user) {
+    //     throw new Error("you have to be connected to update your user");
+    // }
 
     console.log("log ====> updateUserAndResetTokenVerificationAfterVerification function called in path: src/services/backend-services/Bk_UserService.ts")
 

@@ -8,10 +8,14 @@ export interface ParcelDto {
     weight: number;
     width: number;
     length: number;
-    envoiId?: number;
+    envoiId: number;
 }
 
 // DTO for creating a new parcel
-export type CreateParcelDto = Omit<ParcelDto, "id" | "envoiId">;
-export type ParcelDtoEdit = Partial<Omit<ParcelDto, "id" | "envoiId">> &
+export interface CreateParcelDto extends Omit<ParcelDto, "id" | "envoiId">
+{
+    envoiId?: number;
+}
+
+export type EditParcelDto = Partial<Omit<ParcelDto, "id" | "envoiId">> &
     { id: number };

@@ -16,7 +16,7 @@ import {CreateDestinataireDto} from "@/services/dtos/users/UserDto";
 
 import {
     getSimulation,
-    updateSimulationWithSenderAndDestinataireIds
+    updateSimulationEdited
 } from "@/services/frontend-services/simulation/SimulationService";
 
 export default function AddReceiverForm() {
@@ -98,7 +98,7 @@ export default function AddReceiverForm() {
                         simulationResults.destinataireId = Number(destinataireId);
 
                         // Update simulation status to CONFIRMED
-                        await updateSimulationWithSenderAndDestinataireIds(simulationResults);
+                        await updateSimulationEdited(simulationResults);
 
                         toast.success("Destinataire ajouté avec succès à votre simulation.");
                     } else {

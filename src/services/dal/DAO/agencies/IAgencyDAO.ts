@@ -9,5 +9,6 @@ export interface IAgencyDAO {
      * @returns An AgencyResponseDto or null if not found
      */
     getAgencyById(id: number): Promise<AgencyPrisma | null>;
+    getAgencyId(country: string, city: string, agencyName: string): Promise<number | null>;
 
 }

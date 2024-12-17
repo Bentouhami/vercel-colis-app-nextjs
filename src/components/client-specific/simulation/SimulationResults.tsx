@@ -1,12 +1,9 @@
 // path: src/app/client/simulation/results/page.tsx
 "use client";
-import {useRouter, useSearchParams} from 'next/navigation';
-import React, {useEffect, useState} from 'react';
-import {toast} from 'react-toastify';
-import {
-    getSimulation,
-    updateSimulationWithSenderAndDestinataireIds
-} from "@/services/frontend-services/simulation/SimulationService";
+import {useRouter} from 'next/navigation';
+import React, {useEffect, useState, useTransition} from 'react';
+import {toast, ToastContainer} from 'react-toastify';
+import {deleteSimulationCookie, getSimulation} from "@/services/frontend-services/simulation/SimulationService";
 import {SimulationResponseDto} from "@/services/dtos";
 import LoginPromptModal from '@/components/modals/LoginPromptModal';
 import {Button} from "@/components/ui/button";
@@ -14,13 +11,12 @@ import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {ArrowRight, Calendar, DollarSign, MapPin, Package, Weight} from "lucide-react";
 import {useSession} from "next-auth/react";
 import Link from "next/link";
-import {getSimulationFromCookie} from "@/lib/simulationCookie";
-import {getSimulationById} from "@/services/frontend-services/simulation/SimulationService";
+import {updateSimulationUserId} from "@/services/backend-services/Bk_SimulationService";
 
 export default function SimulationResults() {
     const {data: session, status} = useSession();
     const router = useRouter();
-
+    const [isPending, startTransition] = useTransition();
     const [results, setResults] = useState<SimulationResponseDto | null>(null);
     const [showLoginPrompt, setShowLoginPrompt] = useState(false);
     const isAuthenticated = status === "authenticated";
@@ -35,7 +31,11 @@ export default function SimulationResults() {
 
                 if (!simulationData) {
                     toast.error("Something went wrong, please try again.");
+                    setTimeout(() => {
+                        router.push("/client/simulation");
+                    }, 3000);
                 }
+                toast.success("Simulation results loaded successfully.");
 
                 console.log("log ====> simulationData in SimulationResults.tsx after calling getSimulationById function: ", simulationData);
 
@@ -46,29 +46,45 @@ export default function SimulationResults() {
             }
         };
         getSimulationResults();
-    }, [ router]);
+    }, [router]);
 
 
+
+    /**
+     * handle edit current simulation user id updating and redirecting to the add destinataire page
+     */
     const handleValidate = async () => {
-        if (isAuthenticated) {
-            if (results) {
-                console.log("log ====> userId : ", userId)
+        startTransition(() => {
+            (async () => {
+                try {
+                    // Check if the user is authenticated
+                    if (isAuthenticated) {
+                        // Check if the results object is not empty
+                        if (results) {
+                            if (userId && !results.userId) {
+                                results.userId = Number(userId);
 
-                if (userId && !results.userId) {
-                    console.log("log ====> userId found and in handleValidate function in SimulationResults.tsx: ", userId);
+                                // update simulation with sender and destinataire ids
+                                await updateSimulationUserId(results.id, results.userId);
+                            }
 
-                    results.userId = Number(userId);
+                            toast("Redirecting to add destinataire page in 3 seconds...");
+                            setTimeout(() => {
+                                router.push("/client/ajouter-destinataire");
+                            }, 3000);
+                        }
+                    } else {
+                        setShowLoginPrompt(true);
+                    }
+                } catch (error) {
+                    console.error("Error validating simulation:", error);
+                    toast.error("An error occurred while validating the simulation.");
+                    1
                 }
-
-                console.log("log ====> results in handleValidate function in SimulationResults.tsx before calling updateSimulationWithSenderAndDestinataireIds function: ", results);
-                await updateSimulationWithSenderAndDestinataireIds(results);
-
-                router.push('/client/ajouter-destinataire');
-            }
-        } else {
-            setShowLoginPrompt(true);
-        }
+            })();
+        });
     };
+
 
     const handleLoginRedirect = () => {
         setShowLoginPrompt(false);
@@ -77,8 +93,70 @@ export default function SimulationResults() {
     };
 
     const handleCancel = () => {
-        router.push('/client/simulation');
+
+        startTransition(() => {
+            (async () => {
+                try {
+
+                    toast.success("Cleaning up simulation...");
+
+                    const response = await deleteSimulationCookie();
+                    if (!response) {
+                        toast.error("Une erreur est survenue lors de la suppression de la simulation.");
+                        return;
+                    }
+                } catch (error) {
+                    console.error("Error deleting simulation cookie:", error);
+                    toast.error("An error occurred while cleaning up the simulation.");
+                } finally {
+                    toast("Redirecting to simulation page in 3 seconds...");
+
+                    setTimeout(() => {
+                        router.push('/client/simulation');
+                    }, 3000);
+                }
+            })();
+        });
     };
+
+
+    /**
+     * handle edit current simulation user id updating
+     * and redirecting to the edit simulation page
+     */
+    async function handleEdit() {
+        startTransition(() => {
+            (async () => {
+                try {
+                    if (isAuthenticated) {
+                        // Check if the results object is not empty
+                        if (results) {
+                            if (userId && !results.userId) {
+                                results.userId = Number(userId);
+
+                                // update simulation with sender and destinataire ids
+                                const repose = await updateSimulationUserId(results.id, results.userId);
+
+                                if (!repose) {
+                                    toast.error("Une erreur est survenue lors de la mise à jour de la simulation.");
+                                }
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error("Error updating simulation:", error);
+                    toast.error("Une erreur est survenue lors de la mise à jour de la simulation.");
+                } finally {
+                    // redirect to edit simulation page
+                    toast("Redirection en cours...");
+                    setTimeout(() => {
+                        router.push('/client/simulation/edit');
+                    }, 3000);
+                }
+
+            })();
+        });
+    }
 
     // render the loading spinner if the results are not available
     if (!results) {
@@ -89,9 +167,6 @@ export default function SimulationResults() {
         );
     }
 
-    function handleEdit() {
-        router.push('/client/simulation/edit');
-    }
 
     return (
         <div className="max-w-4xl mx-auto p-6 space-y-6 mb-52 bg-gray-50 rounded-lg shadow-lg">
@@ -195,13 +270,16 @@ export default function SimulationResults() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
                 <Button
+                    disabled={isPending}
                     className="flex items-center gap-2 px-8 py-6 text-lg bg-green-500 hover:bg-green-600 text-white"
                     onClick={handleValidate}>
                     Valider
                 </Button>
-                <Button variant="destructive"
-                        className="flex items-center gap-2 px-8 py-6 text-lg text-white bg-red-500 hover:bg-red-600"
-                        onClick={handleCancel}>
+                <Button
+                    disabled={isPending}
+                    variant="destructive"
+                    className="flex items-center gap-2 px-8 py-6 text-lg text-white bg-red-500 hover:bg-red-600"
+                    onClick={handleCancel}>
                     Annuler
                 </Button>
 
@@ -209,6 +287,7 @@ export default function SimulationResults() {
                 <Link href={`/client/simulation/edit`}>
                     <Button
                         onClick={handleEdit}
+                        disabled={isPending}
                         className="flex items-center gap-2 px-8 py-6 text-lg bg-green-500 hover:bg-green-600 text-white">
                         Modifier ma simulation
                         <ArrowRight className="h-4 w-4"/>
@@ -216,7 +295,7 @@ export default function SimulationResults() {
                 </Link>
 
             </div>
-
+            <ToastContainer position="bottom-right" autoClose={2000} hideProgressBar theme="colored"/>
             <LoginPromptModal
                 show={showLoginPrompt}
                 handleClose={() => setShowLoginPrompt(false)}

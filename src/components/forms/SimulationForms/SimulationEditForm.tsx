@@ -4,7 +4,7 @@
 import React, {ChangeEvent, useEffect, useState, useTransition} from 'react';
 import {motion} from 'framer-motion';
 import {useRouter} from 'next/navigation';
-import {CreateParcelDto, SimulationDtoRequest,} from '@/services/dtos';
+import {CreateParcelDto, PartielUpdateSimulationDto, SimulationResponseDto,} from '@/services/dtos';
 import {Button} from '@/components/ui/button';
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from '@/components/ui/dialog';
 import {Input} from '@/components/ui/input';
@@ -17,15 +17,23 @@ import {
     fetchCountries,
     fetchDestinationCountries
 } from "@/services/frontend-services/AddressService";
-import {getSimulation, submitSimulation} from "@/services/frontend-services/simulation/SimulationService";
+import {getSimulation, updateSimulationEdited} from "@/services/frontend-services/simulation/SimulationService";
 import AgencySelect from "@/components/forms/SimulationForms/AgencySelectForm";
 import CitySelect from "@/components/forms/SimulationForms/CitySelectForm";
 import CountrySelect from "@/components/forms/SimulationForms/CountrySelectForm";
 import {CardBody} from "react-bootstrap";
 import {parcelsSchema, simulationEnvoisSchema} from "@/utils/validationSchema";
 import {z} from "zod";
+import {useSession} from "next-auth/react";
+import {updateSimulationUserId} from "@/services/backend-services/Bk_SimulationService";
 
 const SimulationEditForm = () => {
+
+    const {data: session, status} = useSession();
+
+    const isAuthenticated = status === "authenticated";
+    const userId = session?.user?.id || null;
+    
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
 
@@ -33,22 +41,31 @@ const SimulationEditForm = () => {
     const [departure, setDeparture] = useState({country: '', city: '', agencyName: ''});
     const [destination, setDestination] = useState({country: '', city: '', agencyName: ''});
     const [options, setOptions] = useState({
-        countries: [],
+        departureCountries: [],
         destinationCountries: [],
         departureCities: [],
         departureAgencies: [],
         destinationCities: [],
         destinationAgencies: []
     });
+    const [simulation, setSimulation] = useState<SimulationResponseDto | null>(null);
+
 
     const [parcels, setParcels] = useState<CreateParcelDto[]>([{height: 0, width: 0, length: 0, weight: 0}]);
     const [isLoading, setIsLoading] = useState(true);
+
     const [editingParcel, setEditingParcel] = useState<{ index: number, parcel: CreateParcelDto } | null>(null);
 
+    /**
+     * Fetch departureCountries and set them in the state
+     */
     useEffect(() => {
-        fetchCountries().then(data => setOptions(prev => ({...prev, countries: data}))).catch(console.error);
+        fetchCountries().then(data => setOptions(prev => ({...prev, departureCountries: data}))).catch(console.error);
     }, []);
 
+    /**
+     * Fetch destination departureCountries when departure country changes
+     */
     useEffect(() => {
         if (departure.country) {
             fetchDestinationCountries(departure.country).then(data => setOptions(prev => ({
@@ -58,6 +75,9 @@ const SimulationEditForm = () => {
         }
     }, [departure.country]);
 
+    /**
+     * Fetch departure cities when departure country changes
+     */
     useEffect(() => {
         if (departure.country) {
             fetchCities(departure.country).then(data => setOptions(prev => ({
@@ -68,6 +88,9 @@ const SimulationEditForm = () => {
         }
     }, [departure.country]);
 
+    /**
+     * Fetch departure agencies when departure city changes
+     */
     useEffect(() => {
         if (departure.city && departure.country) {
             fetchAgencies(departure.city).then(data => setOptions(prev => ({
@@ -78,6 +101,9 @@ const SimulationEditForm = () => {
         }
     }, [departure.city, departure.country]);
 
+    /**
+     * Fetch destination cities when destination country changes
+     */
     useEffect(() => {
         if (destination.country) {
             fetchCities(destination.country).then(data => setOptions(prev => ({
@@ -88,6 +114,9 @@ const SimulationEditForm = () => {
         }
     }, [destination.country]);
 
+    /**
+     * Fetch destination agencies when destination city changes
+     */
     useEffect(() => {
         if (destination.city) {
             fetchAgencies(destination.city).then(data => setOptions(prev => ({
@@ -98,53 +127,90 @@ const SimulationEditForm = () => {
         }
     }, [destination.city]);
 
+    /**
+     * Fetch initial data when the component mounts
+     */
     useEffect(() => {
         const fetchInitialData = async () => {
             try {
-                const countries = await fetchCountries();
+                const departureCountries = await fetchCountries();
 
+                if (!departureCountries) {
+                    toast.error("Error while fetching departureCountries");
+                    return;
+                }
                 setOptions((prev) => ({
                     ...prev,
-                    countries,
-                    filteredDestinationCountries: countries,
+                    departureCountries,
+                    filteredDestinationCountries: departureCountries,
                 }));
             } catch (error) {
-                console.error("Error fetching countries:", error);
+                // Handle errors
+                console.error("Error fetching departureCountries:", error);
+                toast.error("Error while fetching departureCountries");
             }
         };
 
         fetchInitialData();
     }, []);
+// get existing simulation data from the backend
+    useEffect(() => {
+        const fetchSimulationData = async () => {
+            try {
+                setIsLoading(true);
+                const simulationData = await getSimulation();
+                if (!simulationData) {
+                    router.push('/client/simulation');
+                    return;
+                }
+                if (isAuthenticated && userId) {
+                    if (!simulationData.userId) {
+                        simulationData.userId = Number(session?.user?.id);
+                        // update simulation with sender connected user id
+                        await updateSimulationUserId(simulationData.id, Number(session?.user?.id));
+                    }
+                }
+                setSimulation(simulationData);
+            } catch (error) {
+                console.error("Error fetching simulation data:", error);
+                toast.error("Error while fetching simulation data.");
+                router.push('/client/simulation');
+            }
+            setIsLoading(false);
+        }
+        fetchSimulationData();
+    }, [isAuthenticated, router, session?.user?.id, userId]);
+
 
     // Fetch simulation data on mount
     useEffect(() => {
         const fetchSimulationData = async () => {
             try {
-                const simulationData = await getSimulation();
 
-                if (!simulationData) {
-                    router.push('/client/simulation');
+                if (!simulation) {
+                    toast.error("Simulation not found");
                     return;
                 }
+                const departureCountries = await fetchCountries();
 
-                const countries = await fetchCountries();
-                const destinationCountries = await fetchDestinationCountries(simulationData.departureCountry!);
-                const departureCities = simulationData.departureCountry
-                    ? await fetchCities(simulationData.departureCountry)
+                const destinationCountries = await fetchDestinationCountries(simulation.departureCountry!);
+                const departureCities = simulation.departureCountry
+                    ? await fetchCities(simulation.departureCountry)
                     : [];
-                const destinationCities = simulationData.destinationCountry
-                    ? await fetchCities(simulationData.destinationCountry)
+                const destinationCities = simulation.destinationCountry
+                    ? await fetchCities(simulation.destinationCountry)
                     : [];
-                const departureAgencies = simulationData.departureCity
-                    ? await fetchAgencies(simulationData.departureCity)
+                const departureAgencies = simulation.departureCity
+                    ? await fetchAgencies(simulation.departureCity)
                     : [];
-                const destinationAgencies = simulationData.destinationCity
-                    ? await fetchAgencies(simulationData.destinationCity)
+                const destinationAgencies = simulation.destinationCity
+                    ? await fetchAgencies(simulation.destinationCity)
                     : [];
+
 
                 setOptions({
-                    countries,
-                    destinationCountries: destinationCountries,
+                    departureCountries,
+                    destinationCountries,
                     departureCities,
                     destinationCities,
                     departureAgencies,
@@ -152,28 +218,28 @@ const SimulationEditForm = () => {
                 });
 
                 setDeparture({
-                    country: simulationData.departureCountry || '',
-                    city: simulationData.departureCity || '',
-                    agencyName: simulationData.departureAgency || '',
+                    country: simulation.departureCountry || '',
+                    city: simulation.departureCity || '',
+                    agencyName: simulation.departureAgency || '',
                 });
 
                 setDestination({
-                    country: destinationCountries.country || simulationData.destinationCountry || '',
-                    city: simulationData.destinationCity || '',
-                    agencyName: simulationData.destinationAgency || '',
+                    country: destinationCountries.country || simulation.destinationCountry || '',
+                    city: simulation.destinationCity || '',
+                    agencyName: simulation.destinationAgency || '',
                 });
 
-                setParcels(simulationData.parcels || []);
+                setParcels(simulation.parcels || []);
                 setIsLoading(false);
             } catch (error) {
                 console.error(error);
-                toast.error("Erreur lors du chargement des résultats.");
+                toast.error("Error while fetching simulation data.");
                 router.push('/client/simulation');
             }
         };
 
         fetchSimulationData();
-    }, [router]);
+    }, [router, simulation]);
 
     const handleDepartureChange = (field: keyof typeof departure, value: string) => {
         setDeparture(prev => ({...prev, [field]: value}));
@@ -194,9 +260,9 @@ const SimulationEditForm = () => {
         // Prevent removing the last parcel
         if (parcels.length > 1) {
             setParcels(parcels.filter((_, i) => i !== index));
-            toast.success("Colis supprimé avec succès");
+            toast.success("Parcel removed successfully");
         } else {
-            toast.error("Vous devez avoir au moins un colis");
+            toast.error("You must have at least one parcel");
         }
     };
 
@@ -217,24 +283,37 @@ const SimulationEditForm = () => {
 
             setParcels(updatedParcels);
             setEditingParcel(null);
-            toast.success("Colis mis à jour avec succès");
+            toast.success("Parcels updated successfully");
         }
     };
 
     const handleSubmit = async (e: ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log("save btn clicked");
+
+        console.log("log ====> handleSubmit function called in path: src/components/forms/SimulationForms/SimulationEditForm.tsx with simulationData: ", simulation);
 
         startTransition(() => {
             (async () => {
-                const simulationData: SimulationDtoRequest = {
+
+                setIsLoading(true);
+                if (!simulation) {
+                    toast.error("Simulation not found");
+                    return;
+                }
+
+                const simulationData: PartielUpdateSimulationDto = {
+                    id: simulation.id,
+                    userId: simulation.userId,
+                    destinataireId: simulation.destinataireId,
                     departureCountry: departure.country,
                     departureCity: departure.city,
                     departureAgency: departure.agencyName,
                     destinationCountry: destination.country,
                     destinationCity: destination.city,
                     destinationAgency: destination.agencyName,
-                    parcels,
+                    parcels: parcels,
+                    simulationStatus: simulation.simulationStatus,
+                    envoiStatus: simulation.envoiStatus
                 };
                 console.log("log ====> simulationData in handleSubmit function before calling submitSimulation function: ", simulationData);
 
@@ -248,18 +327,23 @@ const SimulationEditForm = () => {
 
                 try {
                     // Submit simulation to the backend
-                    const response = await submitSimulation(simulationData);
+                    const response = await updateSimulationEdited(simulationData);
                     if (!response) {
-                        toast.error("Une erreur est survenue lors de la soumission de la simulation.");
+                        toast.error("An error occurred while submitting the simulation.");
                         return;
                     }
 
-                    toast.success("Simulation envoyée avec succès !");
-                    router.push(`/client/simulation/results`);
+                    toast.success("Simulation submitted successfully!");
+                    setTimeout(() => {
+                        router.push(`/client/simulation/results`);
+                    }, 3000);
+
                 } catch (error) {
-                    console.error("Erreur lors de la soumission de la simulation:", error);
-                    toast.error("Une erreur est survenue lors de la soumission de la simulation.");
+                    console.error("Error submitting simulation:", error);
+                    toast.error("An error occurred while submitting the simulation.");
+                    return;
                 }
+                setIsLoading(false);
             })();
         });
     };
@@ -355,6 +439,7 @@ const SimulationEditForm = () => {
         );
     }
 
+
     return (
         <motion.div
             initial={{opacity: 0, y: 20}}
@@ -381,7 +466,7 @@ const SimulationEditForm = () => {
                         label="Pays de départ"
                         value={departure.country}
                         onChange={(e) => handleDepartureChange('country', e.target.value)}
-                        countries={options.countries}
+                        countries={options.departureCountries}
                         disabled={isPending}
                     />
                     <CitySelect

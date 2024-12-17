@@ -1,7 +1,7 @@
 // path: src/services/repositories/agencies/AgencyRepository.ts
 
 import {IAgencyRepository} from "@/services/repositories/agencies/IAgencyRepository";
-import {AgencyResponseDto, FullAgencyDto} from "@/services/dtos";
+import {AgencyResponseDto} from "@/services/dtos";
 import {agencyDAO} from "@/services/dal/DAO/agencies/AgencyDAO";
 import {AgencyMapper} from "@/services/mappers/AgencyMapper";
 
@@ -29,6 +29,24 @@ export class AgencyRepository implements IAgencyRepository {
             console.error("Error getting agency:", error);
             throw error;
         }
+    }
+
+    async getAgencyId(country: string, city: string, agencyName: string): Promise<number | null> {
+        if (!country || !city || !agencyName) {
+            return null;
+        }
+        try {
+            const agency = await agencyDAO.getAgencyId(country, city, agencyName);
+
+            if (!agency) {
+                return null;
+            }
+            return agency;
+        } catch (error) {
+            console.error("Error getting agency id:", error);
+            throw error;
+        }
+
     }
 }
 

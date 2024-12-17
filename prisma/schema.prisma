@@ -290,7 +290,7 @@ model Transport {
 
 model Envoi {
   id             Int     @id @default(autoincrement())
-  trackingNumber String? @unique @default("") @db.VarChar(50)
+  trackingNumber String? @unique @db.VarChar(50)
   qrCodeUrl      String? @default("") @db.VarChar(255) // URL du QR code pour le dépôt en agence
 
   userId         Int?

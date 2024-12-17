@@ -8,7 +8,7 @@ import PackageForm from './PackageForm';
 import CountrySelect from "@/components/forms/SimulationForms/CountrySelectForm";
 import CitySelect from "@/components/forms/SimulationForms/CitySelectForm";
 import AgencySelect from "@/components/forms/SimulationForms/AgencySelectForm";
-import { submitSimulation} from "@/services/frontend-services/simulation/SimulationService";
+import {submitSimulation} from "@/services/frontend-services/simulation/SimulationService";
 import {toast, ToastContainer} from "react-toastify";
 import {useRouter} from 'next/navigation';
 import {simulationEnvoisSchema} from "@/utils/validationSchema";
@@ -23,7 +23,13 @@ import {ArrowRight, Box, Calculator, MapPin, Truck} from "lucide-react";
 import {COLIS_MAX_PER_ENVOI} from "@/utils/constants";
 import {getSimulationFromCookie} from "@/lib/simulationCookie";
 
+import {updateSimulationUserId} from "@/services/backend-services/Bk_SimulationService";
+import {useSession} from "next-auth/react";
+
+
 const SimulationForm = () => {
+    const {data: session, status} = useSession();
+
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
     const [departure, setDeparture] = useState({country: '', city: '', agencyName: ''});
@@ -39,7 +45,8 @@ const SimulationForm = () => {
     const [packageCount, setPackageCount] = useState(1);
     const [parcels, setParcels] = useState([{height: 0, width: 0, length: 0, weight: 0}]);
     const [currentPackage, setCurrentPackage] = useState(0);
-
+    const isAuthenticated = status === "authenticated";
+    const userId = session?.user?.id || null;
 
     /**
      * Find existing previous simulation in cookies and redirect to results page
@@ -47,22 +54,32 @@ const SimulationForm = () => {
      */
     useEffect(() => {
         const findExistingSimulation = async () => {
-            try {
-                const simulation = await getSimulationFromCookie();
+            startTransition(() => {
+                (async () => {
+                    try {
+                        const simulation = await getSimulationFromCookie();
 
-                if (simulation) {
-                    toast.success("Simulation trouvée !");
-                    setTimeout(() => {
-                        router.push(`/client/simulation/results`);
-                    }, 2000);
-                }
-            } catch (error) {
-                console.error('Erreur lors de la recherche de la simulation:', error);
-            }
+                        if (simulation) {
+
+                            if (isAuthenticated && userId) {
+                                // update simulation with sender connected user id
+                                await updateSimulationUserId(simulation.id, Number(session?.user?.id));
+                            }
+
+                            toast.success("Simulation found!");
+                            setTimeout(() => {
+                                router.push(`/client/simulation/results`);
+                            }, 2000);
+                        }
+                    } catch (error) {
+                        console.error('Erreur lors de la recherche de la simulation:', error);
+                    }
+                })();
+            });
         }
 
         findExistingSimulation();
-    }, [router])
+    }, [isAuthenticated, router, session?.user?.id, userId])
 
     useEffect(() => {
         fetchCountries().then(data => setOptions(prev => ({...prev, countries: data}))).catch(console.error);
@@ -151,7 +168,7 @@ const SimulationForm = () => {
 
         startTransition(() => {
             (async () => {
-               // data to be validated by zod schema
+                // data to be validated by zod schema
                 const simulationData: SimulationDtoRequest = {
                     departureCountry: departure.country,
                     departureCity: departure.city,
@@ -184,7 +201,7 @@ const SimulationForm = () => {
                     console.error("Erreur lors de la soumission de la simulation:", error);
                     toast.error("Une erreur est survenue lors de la soumission de la simulation.");
                 }
-            })(); // L'IIFE s'exécute immédiatement
+            })();
         });
 
     };

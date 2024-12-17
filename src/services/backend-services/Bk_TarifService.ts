@@ -1,29 +1,23 @@
 // path: src/services/backend-services/Bk_TarifService.ts
 
 'use server';
-
-import prisma from "@/utils/db";
 import {TarifsDto} from "@/services/dtos";
-import Decimal from "decimal.js";
+import {tarifsRepository} from "@/services/repositories/tarifs/TarifRepositories";
 
+/**
+ * Find tarifs from the database
+ * @returns {Promise<TarifsDto | null>} tarifs or null
+ */
 export async function findTarifs(): Promise<TarifsDto | null> {
     try {
 
-        const tarifs = await prisma.tarifs.findFirst();
+        const tarifs = await tarifsRepository.getTarifs();
 
         if (!tarifs) {
             return null;
         }
 
-        // Convert `Decimal` fields to `number`
-        const formattedTarifs: TarifsDto = {
-            weightRate: (tarifs.weightRate as Decimal).toNumber(),
-            volumeRate: (tarifs.volumeRate as Decimal).toNumber(),
-            baseRate: (tarifs.baseRate as Decimal).toNumber(),
-            fixedRate: (tarifs.fixedRate as Decimal).toNumber(),
-        };
-
-        return formattedTarifs;
+        return tarifs;
 
     } catch (error) {
         return null;

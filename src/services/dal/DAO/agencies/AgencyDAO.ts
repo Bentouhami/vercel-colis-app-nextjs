@@ -47,6 +47,36 @@ class AgencyDAO implements IAgencyDAO {
             throw new Error("Error getting agency by ID: " + error);
         }
     }
+
+    async getAgencyId(country: string, city: string, agencyName: string): Promise<number | null> {
+        if (!country || !city || !agencyName) {
+            return null;
+        }
+
+        try {
+            const agency = await prisma.agency.findFirst({
+                where: {
+                    name: agencyName,
+                    address: {
+                        city: city,
+                        country: country,
+                    },
+                },
+                select: {
+                    id: true
+                },
+            });
+
+            if (!agency) {
+                return null;
+            }
+            return agency.id;
+        } catch (error) {
+            console.error("Error getting agency id:", error);
+            throw error;
+        }
+
+    }
 }
 
 // Export a single instance

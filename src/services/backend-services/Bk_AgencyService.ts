@@ -2,6 +2,7 @@
 
 import {FullAgencyDto, BaseAgencyDto} from "@/services/dtos";
 import prisma from "@/utils/db";
+import {agencyRepository} from "@/services/repositories/agencies/AgencyRepository";
 
 
 /**
@@ -24,27 +25,16 @@ export async function findAgencyByName(agencyName: string): Promise<FullAgencyDt
     return agency;
 }
 
-export async function getAgencyIdByCountryAndCityAndAgencyName(country: string, city: string, agencyName: string): Promise<number> {
+export async function getAgencyId(country: string, city: string, agencyName: string): Promise<number | null> {
 
     try {
-        const agencyId = await prisma.agency.findFirst({
-            where: {
-                name: agencyName,
-                address: {
-                    city: city,
-                    country: country,
-                },
-            },
-            select: {
-                id: true
-            },
-        });
+        const agencyId = await agencyRepository.getAgencyId(country, city, agencyName);
 
 
         if (!agencyId) {
             throw new Error("Agency not found");
         }
-        return agencyId.id;
+        return agencyId;
     } catch (error) {
         console.error("Error getting agency id:", error);
         throw error;

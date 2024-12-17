@@ -40,26 +40,21 @@ function calculateTotalPrice(totalWeight: number, tarifs: TarifsDto): number {
     return total.toNumber(); // Convert Decimal back to number
 }
 
-export async function calculateEnvoiDetails(parcels: CreateParcelDto[], tarifs: TarifsDto): Promise<SimulationCalculationTotalsDto> {
+export function calculateEnvoiDetails(parcels: CreateParcelDto[], tarifs: TarifsDto): SimulationCalculationTotalsDto {
+    if (!parcels) {
+        throw new Error("Parcels not found");
+    }
 
-    console.log("log ====> parcels in calculateEnvoiDetails function: ", parcels);
-
-    console.log("log ====> tarifs in calculateEnvoiDetails function: ", tarifs);
-
-    console.log(tarifs.baseRate);
-    console.log(tarifs.volumeRate);
-    console.log(tarifs.weightRate);
-    console.log(tarifs.fixedRate);
+    if (!tarifs) {
+        throw new Error("Tarifs not found");
+    }
+    console.log("log ====> calculateEnvoiDetails function called");
 
 
     const totalWeight: number = calculateTotalWeight(parcels);
     const totalVolume: number = calculateTotalVolume(parcels);
     const totalPrice: number = calculateTotalPrice(totalWeight, tarifs);
 
-
-    console.log("log ====> totalPrice in calculateEnvoiDetails function: ", totalPrice);
-    console.log("log ====> totalVolume in calculateEnvoiDetails function: ", totalVolume);
-    console.log("log ====> totalWeight in calculateEnvoiDetails function: ", totalWeight);
 
     // Ajouter les dates de départ et d’arrivée
     const today: Date = new Date();
@@ -73,8 +68,9 @@ export async function calculateEnvoiDetails(parcels: CreateParcelDto[], tarifs: 
         departureDate,
         arrivalDate,
     };
-
-    console.log("log ====> formatedCalculationResults in calculateEnvoiDetails function: ", formatedCalculationResults);
+    if (!formatedCalculationResults) {
+        throw new Error("Formated calculation results not found");
+    }
 
     return formatedCalculationResults;
 }

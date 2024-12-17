@@ -1,16 +1,11 @@
 // path: src/app/api/v1/simulations/route.ts
 
 import {NextRequest, NextResponse} from 'next/server';
-import {BaseSimulationDto, EnvoiStatus, FullSimulationDto, SimulationStatus} from "@/services/dtos";
-import {
-    getSimulationById,
-    saveSimulation,
-    updateSimulationWithSenderAndDestinataireIds
-} from "@/services/backend-services/Bk_SimulationService";
+import {CreateSimulationRequestDto, EnvoiStatus, SimulationResponseDto, SimulationStatus,} from "@/services/dtos";
+import {getSimulationById, saveSimulation, updatePaidEnvoi,} from "@/services/backend-services/Bk_SimulationService";
 import {setSimulationResponseCookie} from "@/utils/generateSimulationToken";
 import {verifySimulationToken} from "@/utils/verifySimulationToken";
 import {getToken} from "next-auth/jwt";
-import {auth} from "@/auth/auth";
 
 /**
  * POST request handler for the /simulations route
@@ -25,21 +20,25 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-        let simulationDataToCreate = await request.json() as BaseSimulationDto;
+        let simulationDataToCreate = await request.json() as CreateSimulationRequestDto;
 
         if (!simulationDataToCreate) {
             return NextResponse.json({error: 'Invalid request'}, {status: 400});
         }
-        // get connected user id if user is authenticated
-        let userId = null;
-        const session = await auth();
-        userId = Number(session?.user?.id);
 
-        if (!userId) {
-            simulationDataToCreate.userId = userId;
+        // Retrieve the connected user's token
+        const token = await getToken({req: request, secret: process.env.AUTH_SECRET as string});
+
+        console.log("loq ====> token in GET methode path: simulations/route.ts is : ", token);
+
+        let userId;
+        if (!token) {
+            userId = null;
+        } else {
+            userId = Number(token.id) || null;
         }
-
         simulationDataToCreate.userId = userId;
+
 
         const simulationIdAndVerificationToken = await saveSimulation(simulationDataToCreate);
 
@@ -125,7 +124,7 @@ export async function PUT(request: NextRequest) {
     console.log("PUT request received with body:", request.body);
 
     try {
-        const body = (await request.json()) as FullSimulationDto;
+        const body = (await request.json()) as SimulationResponseDto;
         console.log("Parsed body in PUT request:", body);
 
         if (!body) {
@@ -169,7 +168,7 @@ export async function PUT(request: NextRequest) {
         }
 
 
-        await updateSimulationWithSenderAndDestinataireIds(body);
+        await updatePaidEnvoi(body, simulationIdAndToken);
 
         return NextResponse.json({message: "Simulation updated successfully"}, {status: 200});
 

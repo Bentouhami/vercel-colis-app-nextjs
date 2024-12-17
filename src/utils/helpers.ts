@@ -10,3 +10,4 @@ export function hasRole(user: { roles: Roles[] }, role: Roles): boolean {
 export function hasAnyRole(user: { roles: Roles[] }, roles: Roles[]): boolean {
     return roles.some(role => user.roles.includes(role));
 }
+

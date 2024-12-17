@@ -9,12 +9,9 @@ export async function middleware(req: NextRequest) {
     const corsHeaders = setCorsHeaders(origin);
 
     console.log("--------------------------------");
-    console.log("Middleware started. Current Path:", req.nextUrl.pathname);
-    console.log("NEXTAUTH_URL:", process.env.NEXTAUTH_URL);
 
     // Handle OPTIONS requests (CORS preflight)
     if (req.method === "OPTIONS") {
-        console.log("OPTIONS request allowed");
         if (corsHeaders) {
             return new NextResponse(null, {headers: corsHeaders});
         }
@@ -33,14 +30,12 @@ export async function middleware(req: NextRequest) {
         // Retrieve JWT token
         const token = await getToken({req, secret: process.env.AUTH_SECRET});
 
-        console.log("JWT Token Retrieved:", token);
 
         // Check if the user is authenticated
         const isAuthenticated = !!token;
 
         // Handle public routes
         if (isPublicRoute(req.nextUrl.pathname)) {
-            console.log("Public route accessed:", req.nextUrl.pathname);
             return response;
         }
 
@@ -53,32 +48,26 @@ export async function middleware(req: NextRequest) {
         if (isAuthenticated) {
             if (req.nextUrl.pathname === "/") {
                 if (isSuperAdmin) {
-                    console.log("Redirecting Super Admin to /admin/super-admin.");
                     return NextResponse.redirect(new URL("/admin/super-admin", req.nextUrl.origin));
                 } else if (isAgencyAdmin) {
-                    console.log("Redirecting Agency Admin to /admin/agency-admin.");
                     return NextResponse.redirect(new URL("/admin/agency-admin", req.nextUrl.origin));
                 } else {
-                    console.log("Redirecting Client to /client.");
                     return NextResponse.redirect(new URL("/client", req.nextUrl.origin));
                 }
             }
         }
 
         if (req.nextUrl.pathname.startsWith("/admin") && !isSuperAdmin && !isAgencyAdmin) {
-            console.log("Unauthorized access to admin route.");
             return NextResponse.redirect(new URL("/client/unauthorized", req.nextUrl.origin));
         }
 
         if (req.nextUrl.pathname.startsWith("/admin/super-admin") && !isSuperAdmin) {
-            console.log("Unauthorized access to admin route.");
             return NextResponse.redirect(new URL("/client/unauthorized", req.nextUrl.origin));
         }
 
         console.log("Access granted to protected route.");
         return response;
     } catch (error) {
-        console.error("Error in middleware:", error);
         return NextResponse.redirect(new URL("/client/auth/login", req.nextUrl.origin));
     } finally {
         console.log("--------------------------------");

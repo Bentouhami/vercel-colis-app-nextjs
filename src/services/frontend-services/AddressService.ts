@@ -8,12 +8,19 @@ import {DOMAIN} from "@/utils/constants";
 export async function fetchCountries() {
     console.log("fetchCountries function called");
 
+    try {
 
-    const response = await fetch(`${DOMAIN}/api/v1/countries`);
-    if (response.ok) {
-        return response.json();
-    } else {
-        throw new Error('Failed to fetch countries');
+        const response = await fetch(`${DOMAIN}/api/v1/countries`);
+        if (!response.ok) {
+            console.error("An error occurred while fetching countries: ", response.status);
+            return null;
+        }
+
+        return  response.json();
+
+    } catch (error) {
+        console.error("An Error occurred while fetching countries: ", error);
+        throw error;
     }
 
 }

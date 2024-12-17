@@ -1,10 +1,11 @@
 // Tarifs Mapper
 import {TarifsDto} from "@/services/dtos";
-import {Tarifs} from "@prisma/client";
+import {Tarifs as TarifsPrisma} from "@prisma/client";
 
-export class TarifsMapper {
-    static toDto(tarifs: Tarifs): TarifsDto {
+export class TarifMapper {
+    static toDto(tarifs: TarifsPrisma): TarifsDto {
         return {
+            id: tarifs.id,
             weightRate: Number(tarifs.weightRate),
             volumeRate: Number(tarifs.volumeRate),
             baseRate: Number(tarifs.baseRate),

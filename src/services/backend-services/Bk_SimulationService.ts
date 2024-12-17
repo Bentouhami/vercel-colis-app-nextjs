@@ -1,23 +1,24 @@
 // path: src/services/backend-services/Bk_SimulationService.ts
 'use server';
 import {
-    BaseSimulationDto,
     CreatedSimulationResponseDto,
+    CreateSimulationRequestDto,
     FullSimulationDto,
     SimulationResponseDto,
+    UpdateEditedSimulationDto,
 } from "@/services/dtos";
 import prisma from "@/utils/db";
-import {getAgencyById} from "@/services/backend-services/Bk_AgencyService";
-import {generateTrackingNumber} from "@/utils/generateTrackingNumber";
 import {simulationRepository} from "@/services/repositories/simulations/SimulationRepository";
 import {agencyRepository} from "@/services/repositories/agencies/AgencyRepository";
+import {parcelRepository} from "@/services/repositories/parcels/ParcelRepository";
+
 
 
 export async function getSimulationById(id: number): Promise<SimulationResponseDto | null> {
 
     try {
         // 1. Get simulation by using repository
-        const simulation = await simulationRepository.getSimulationById(id);
+        const simulation = await simulationRepository.getSimulationResponseById(id);
 
         if (!simulation) {
             return null;
@@ -29,23 +30,20 @@ export async function getSimulationById(id: number): Promise<SimulationResponseD
     }
 }
 
-export async function saveSimulation(simulationData: BaseSimulationDto): Promise<CreatedSimulationResponseDto | null> {
+export async function saveSimulation(simulationData: CreateSimulationRequestDto): Promise<CreatedSimulationResponseDto | null> {
     console.log("log ====> simulationData in saveSimulation function called in src/services/backend-services/Bk_SimulationService.ts: ", simulationData);
 
     if (!simulationData.departureAgencyId) {
         return null;
     }
     try {
-        //TODO: use repository to get agency by id
-
-
         const departureAgency = await agencyRepository.getAgencyById(simulationData.departureAgencyId);
 
         // 3. get arrived date city, country and agency name from simulation by agencyId
         if (!simulationData.arrivalAgencyId) {
             return null;
         }
-        const arrivalAgency = await getAgencyById(simulationData.arrivalAgencyId);
+        const arrivalAgency = await agencyRepository.getAgencyById(simulationData.arrivalAgencyId);
 
         // 4. prepare needed data for simulation calculation and envoiStatus
         if (!departureAgency || !arrivalAgency) {
@@ -63,48 +61,15 @@ export async function saveSimulation(simulationData: BaseSimulationDto): Promise
             throw new Error("Arrival agency country or city is missing.");
         }
 
-        // generate tracking number
-        const trackingNumber = generateTrackingNumber(
-            departureAgency.address.country,
-            departureAgency.address.city,
-            arrivalAgency.address.country,
-            arrivalAgency.address.city
-        );
+        console.log("log ====> simulationData after getting agencies ids in saveSimulation function in path: src/services/backend-services/Bk_SimulationService.ts is : ", simulationData)
 
-        if (!trackingNumber) {
+
+        const simulation = await simulationRepository.createSimulation(simulationData);
+
+        if (!simulation) {
             return null;
         }
-
-        console.log("log ====> trackingNumber in saveSimulation function called in src/services/backend-services/Bk_SimulationService.ts: ", trackingNumber);
-
-        const simulation = await prisma.envoi.create({
-            data: {
-                trackingNumber: trackingNumber,
-                departureAgencyId: simulationData.departureAgencyId,
-                arrivalAgencyId: simulationData.arrivalAgencyId,
-                simulationStatus: simulationData.simulationStatus,
-                envoiStatus: simulationData.envoiStatus,
-                totalWeight: simulationData.totalWeight,
-                totalVolume: simulationData.totalVolume,
-                totalPrice: simulationData.totalPrice,
-                departureDate: simulationData.departureDate,
-                arrivalDate: simulationData.arrivalDate,
-                parcels: {
-                    create: simulationData.parcels.map(parcel => ({
-                        height: parcel.height,
-                        width: parcel.width,
-                        length: parcel.length,
-                        weight: parcel.weight,
-                    })),
-                },
-            },
-            select: {
-                id: true,
-                verificationToken: true,
-            },
-        });
-
-        return simulation as CreatedSimulationResponseDto;
+        return simulation;
 
     } catch (error) {
         console.error("Erreur lors de la sauvegarde de la simulation:", error);
@@ -113,32 +78,48 @@ export async function saveSimulation(simulationData: BaseSimulationDto): Promise
 }
 
 
-export async function updateSimulationWithSenderAndDestinataireIds(simulation: FullSimulationDto) {
+/**
+ * Update the user ID of a simulation
+ * @param id - The ID of the simulation to update
+ * @param userId - The new user ID
+ * @returns {Promise<void | null>} A Promise that resolves when the user ID is updated
+ */
+export async function updateSimulationUserId(id: number, userId: number): Promise<void | null> {
 
-    console.log("log ====> updateSimulationWithSenderAndDestinataireIds function called in src/services/backend-services/Bk_SimulationService.ts", simulation);
     try {
-        const updatedSimulation = await prisma.envoi.update({
-            where: {id: simulation.id},
-            data: {
-                userId: simulation.userId,
-                destinataireId: simulation.destinataireId,
-                simulationStatus: simulation.simulationStatus,
-                envoiStatus: simulation.envoiStatus,
-            }
-        });
+        const response = await simulationRepository.updateSimulationUserId(id, userId);
 
-        if (!updatedSimulation) {
+        if (!response) {
             return null;
-
         }
+
+
     } catch (error) {
-        console.error('Error during Prisma simulation update:', error);
+        console.error('Error updating user id in simulation:', error);
         throw new Error("Error updating simulation");
     }
 }
 
 
-export async function updateSimulation(simulation: SimulationResponseDto, simulationIdAndToken: CreatedSimulationResponseDto) {
+/**
+ * Update the destinataire ID of a simulation
+ * @param id - The ID of the simulation to update
+ * @param destinataireId - The new destinataire ID
+ * @returns {Promise<void | null>} A Promise that resolves when the destinataire ID is updated
+ */
+export async function updateSimulationDestinataireId(id: number, destinataireId: number): Promise<void | null> {
+
+    try {
+        await simulationRepository.updateSimulationDestinataireId(id, destinataireId);
+
+    } catch (error) {
+        console.error('Error updating destinataire id in simulation:', error);
+        throw new Error("Error updating simulation");
+    }
+}
+
+
+export async function updatePaidEnvoi(simulation: SimulationResponseDto, simulationIdAndToken: CreatedSimulationResponseDto) {
     console.log("log ====> updateSimulation function called in src/services/backend-services/Bk_SimulationService.ts", simulation);
     try {
 
@@ -171,3 +152,51 @@ export async function updateSimulation(simulation: SimulationResponseDto, simula
         throw new Error("Error updating simulation");
     }
 }
+
+export async function updateSimulationAndParcels(simulationData: UpdateEditedSimulationDto): Promise<void | null> {
+
+    console.log("log ====> simulationData in updateSimulationAndParcels function called in path: src/services/backend-services/Bk_SimulationService.ts: ", simulationData);
+
+
+    if (!simulationData || !simulationData.id) {
+        throw new Error("Invalid simulation data");
+    }
+
+    const { id, parcels, ...simulationFields } = simulationData;
+
+    // Ensure parcels are provided
+    if (!parcels || parcels.length === 0) {
+        throw new Error("Parcels data is required");
+    }
+
+    try {
+        // 1. Delete all existing parcels for this simulation
+        await parcelRepository.deleteParcelsBySimulationId(id);
+
+        // 2. Add new parcels
+        const parcelsToCreate = parcels.map((parcel) => ({
+            height: parcel.height,
+            width: parcel.width,
+            length: parcel.length,
+            weight: parcel.weight,
+            envoiId: id, // linking parcels to the simulation
+        }));
+        await parcelRepository.createParcels(parcelsToCreate);
+
+        // 3. Update simulation fields
+        await simulationRepository.updateSimulation(simulationData.id, simulationFields);
+
+
+
+        console.log("Simulation and parcels replaced successfully");
+    } catch (error) {
+        console.error("Error updating simulation and replacing parcels:", error);
+        throw new Error("Failed to update simulation and replace parcels");
+    }
+
+
+}
+
+
+
+

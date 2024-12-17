@@ -1,7 +1,7 @@
 // Path: src/app/api/v1/payment/complete-payment/route.ts
 import {NextRequest, NextResponse} from "next/server";
 import {completePaymentService} from "@/services/frontend-services/payment/paymentService";
-import {getSimulationById, updateSimulation} from "@/services/backend-services/Bk_SimulationService";
+import {getSimulationById, updatePaidEnvoi} from "@/services/backend-services/Bk_SimulationService";
 import {verifySimulationToken} from "@/utils/verifySimulationToken";
 import {SimulationStatus, EnvoiStatus} from "@/services/dtos";
 
@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
 
 
         // Update Simulation envoi status and simulationStatus
-        await updateSimulation(simulation, simulationFromCookie);
+        await updatePaidEnvoi(simulation, simulationFromCookie);
 
 
 

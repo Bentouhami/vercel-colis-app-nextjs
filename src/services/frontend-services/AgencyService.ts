@@ -1,4 +1,4 @@
-// path: src/services/frontend-services/Bk_AgencyService.ts
+// path: src/services/frontend-services/AgencyService.ts
 'use server';
 
 import axios from 'axios';
@@ -11,7 +11,12 @@ import { DOMAIN } from "@/utils/constants";
  * @param agencyName
  * @returns Agency ID
  */
-export async function getAgencyIdByCountryAndCityAndAgencyName(country: string, city: string, agencyName: string): Promise<number> {
+export async function getAgencyId(country: string, city: string, agencyName: string): Promise<number | null> {
+
+    if (!country || !city || !agencyName) {
+        throw new Error("Missing Agency Data");
+    }
+
     try {
         const response = await axios.get(`${DOMAIN}/api/v1/agencies/findAgency`, {
             params: {

@@ -9,6 +9,7 @@ export async function GET(req: NextRequest) {
     }
 
     try {
+        // Get tarifs from the backend
         const tarifs = await findTarifs();
 
         if (!tarifs) {
