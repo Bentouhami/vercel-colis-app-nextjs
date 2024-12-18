@@ -5,7 +5,19 @@ import {tarifsDAO} from "@/services/dal/DAO/tarifs/TarifDAO";
 import {TarifMapper} from "@/services/mappers/TarifMapper";
 import {TarifsDto} from "@/services/dtos";
 
+/**
+ * This class provides methods for interacting with the tarifs table in the database.
+ * @class TarifsRepository
+ * @description This class is responsible for handling database operations related to tarifs. It provides methods for retrieving tarifs from the database.
+ * @implements {ITarifRepository}
+ *
+ */
 export class TarifsRepository implements ITarifRepository {
+
+    /**
+     * get tarifs from database and map it to a TarifsResponseDto
+     * @returns {Promise<TarifsDto | null>} tarifs or null if not found
+     */
     async getTarifs(): Promise<TarifsDto | null> {
         // Call the DAO to get the tarifs
         try {

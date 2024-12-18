@@ -1,7 +1,7 @@
 // path: src/components/forms/EnvoiForms/AddReceiverForm.tsx
 
 'use client';
-import React, {ChangeEvent, useState, useTransition} from "react";
+import React, {ChangeEvent, useEffect, useState, useTransition} from "react";
 import {useRouter} from "next/navigation";
 import {Button} from "@/components/ui/button";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
@@ -15,11 +15,15 @@ import {Roles} from "@/services/dtos/enums/EnumsDto";
 import {CreateDestinataireDto} from "@/services/dtos/users/UserDto";
 
 import {
-    getSimulation,
-    updateSimulationEdited
+    updateSimulationDestination,
+    assignTransportToSimulation
 } from "@/services/frontend-services/simulation/SimulationService";
+import {getSimulationFromCookie} from "@/lib/simulationCookie";
+import {useSession} from "next-auth/react";
 
 export default function AddReceiverForm() {
+    const {data: session, status} = useSession();
+    const isAuthenticated = status === "authenticated";
     const router = useRouter();
     const [isPending, startTransition] = useTransition()
     const [destinataireFormData, setDestinataireFormData] = useState<DestinataireInput>({
@@ -42,6 +46,15 @@ export default function AddReceiverForm() {
         }
     };
 
+    useEffect(() => {
+        if (!isAuthenticated) {
+            toast.error("Vous devez être connecté pour ajouter un destinataire");
+            router.push("/client/auth/login");
+            return;
+        }
+    }, [isAuthenticated, router]);
+
+
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
         setDestinataireFormData(prev => ({...prev, [name]: value}));
@@ -57,6 +70,7 @@ export default function AddReceiverForm() {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+
         const validated = destinataireSchema.safeParse(destinataireFormData);
 
         if (!validated.success) {
@@ -75,15 +89,15 @@ export default function AddReceiverForm() {
         startTransition(() => {
             (async () => {
                 try {
+                    // Format the destinataire data
                     const formattedDestinataireData: CreateDestinataireDto = {
                         ...destinataireFormData,
                         name: `${destinataireFormData.firstName} ${destinataireFormData.lastName}`,
                         image: "",
-                        roles: [Roles.DESTINATAIRE] as Roles[],
+                        roles: [Roles.DESTINATAIRE],
                     };
 
-                    console.log("log ====> formattedDestinataireData in AddReceiverForm.tsx before adding destinataire to addDestinataire function in src/app/client/destinataires/add/page.tsx: ", formattedDestinataireData);
-
+                    // Add the destinataire to the database
                     const destinataireId = await addDestinataire(formattedDestinataireData);
 
                     if (!destinataireId) {
@@ -91,14 +105,18 @@ export default function AddReceiverForm() {
                         return;
                     }
 
-                    const simulationResults = await getSimulation();
+                    const simulationResults = await getSimulationFromCookie()
 
                     if (simulationResults) {
-                        // Update destinataireId in simulation
-                        simulationResults.destinataireId = Number(destinataireId);
-
                         // Update simulation status to CONFIRMED
-                        await updateSimulationEdited(simulationResults);
+                        const response = await updateSimulationDestination(simulationResults.id, destinataireId);
+
+                        if (!response) {
+                            toast.error("Une erreur est survenue lors de la mise à jour de la simulation. Vérifiez les informations saisies.");
+                            return;
+                        }
+
+                        await assignTransportToSimulation(simulationResults.id);
 
                         toast.success("Destinataire ajouté avec succès à votre simulation.");
                     } else {
