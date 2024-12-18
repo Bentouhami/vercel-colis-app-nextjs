@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
             {status: 201}
         );
 
-        console.log("log ====> simulationCookie in POST request received in simulations route after saving path: src/app/api/v1/simulations/route.ts: ", simulationCookie);
+        console.log("log ====> simulationCookie in POST request before setting cookie in path: src/app/api/v1/simulations/route.ts: ", simulationCookie);
 
         response.headers.set('Set-Cookie', simulationCookie);
 

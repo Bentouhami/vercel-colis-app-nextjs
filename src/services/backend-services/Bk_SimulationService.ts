@@ -64,12 +64,14 @@ export async function saveSimulation(simulationData: CreateSimulationRequestDto)
         console.log("log ====> simulationData after getting agencies ids in saveSimulation function in path: src/services/backend-services/Bk_SimulationService.ts is : ", simulationData)
 
 
-        const simulation = await simulationRepository.createSimulation(simulationData);
+        const createdSimulationResponse = await simulationRepository.createSimulation(simulationData);
 
-        if (!simulation) {
+        console.log("log ====> createdSimulationResponse after saving in saveSimulation function in path: src/services/backend-services/Bk_SimulationService.ts is : ", createdSimulationResponse)
+
+        if (!createdSimulationResponse) {
             return null;
         }
-        return simulation;
+        return createdSimulationResponse;
 
     } catch (error) {
         console.error("Erreur lors de la sauvegarde de la simulation:", error);

@@ -255,7 +255,7 @@ export async function updateSimulationEdited(simulationData: PartielUpdateSimula
  * Delete the simulation cookie
  * @returns {Promise<void | null>} A Promise that resolves when the status is updated
  */
-export async function deleteSimulationCookie() {
+export async function deleteSimulationCookie(): Promise<void | null> {
     try {
         const response = await fetch(`${DOMAIN}/api/v1/simulations/delete-cookies`, {
             method: "GET",
