@@ -1,8 +1,8 @@
 // path: src/app/client/envois/recapitulatif/page.tsx
 
 'use client';
-import React, {useEffect, useState} from 'react';
-import {useRouter} from 'next/navigation'; // Importer useRouter pour la navigation
+import React, {useEffect, useState, useTransition} from 'react';
+import {useRouter} from 'next/navigation';
 import {getSimulation} from "@/services/frontend-services/simulation/SimulationService";
 import {getUserById} from "@/services/frontend-services/UserService";
 import {toast} from "react-toastify";
@@ -11,6 +11,7 @@ import {Calendar, CreditCard, DollarSign, MapPin, Package, Truck, User, Weight, 
 import {Alert, AlertDescription} from "@/components/ui/alert";
 import {Button} from "@/components/ui/button";
 import {CreateDestinataireDto, SimulationResponseDto} from "@/services/dtos";
+import {useSession} from "next-auth/react";
 
 interface SimulationDataType extends SimulationResponseDto {
     sender: CreateDestinataireDto;
@@ -20,50 +21,60 @@ interface SimulationDataType extends SimulationResponseDto {
 export default function RecapitulatifPage() {
     const [simulationData, setSimulationData] = useState<SimulationDataType | null>(null);
     const [loading, setLoading] = useState(true);
-    const router = useRouter(); // Initialiser useRouter
+    const {data: session, status} = useSession();
+
+    const isAuthenticated = status === "authenticated";
+    const userId = session?.user?.id || null;
+
+    const router = useRouter();
+    const [isPending, startTransition] = useTransition();
 
     useEffect(() => {
         const getSimulationEffect = async () => {
-            try {
-                const data = await getSimulation();
-                console.log("log ====> data in RecapitulatifPage.tsx: ", data);
+            startTransition(() => {
+                (async () => {
+                    try {
+                        const data = await getSimulation();
+                        console.log("log ====> data in RecapitulatifPage.tsx: ", data);
 
-                if (!data) {
-                    toast.error("Impossible de trouver les données de simulation. Réessayez ou contactez le support.");
-                    setLoading(false);
-                    return;
-                }
+                        if (!data) {
+                            toast.error("Impossible de trouver les données de simulation. Réessayez ou contactez le support.");
+                            setLoading(false);
+                            return;
+                        }
 
-                if (!data.userId || !data.destinataireId) {
-                    toast.error("Données utilisateur manquantes.");
-                    setLoading(false);
-                    return;
-                }
+                        if (!data.userId || !data.destinataireId) {
+                            toast.error("Données utilisateur manquantes.");
+                            setLoading(false);
+                            return;
+                        }
 
-                const [senderData, destinataireData] = await Promise.all([
-                    getUserById(data.userId),
-                    getUserById(data.destinataireId),
-                ]) as [CreateDestinataireDto, CreateDestinataireDto];
+                        const [senderData, destinataireData] = await Promise.all([
+                            getUserById(data.userId),
+                            getUserById(data.destinataireId),
+                        ]) as [CreateDestinataireDto, CreateDestinataireDto];
 
-                if (!senderData || !destinataireData) {
-                    toast.error("Impossible de récupérer les données utilisateur.");
-                    setLoading(false);
-                    return;
-                }
+                        if (!senderData || !destinataireData) {
+                            toast.error("Impossible de récupérer les données utilisateur.");
+                            setLoading(false);
+                            return;
+                        }
 
-                setSimulationData({
-                    ...data,
-                    sender: senderData,
-                    destinataire: destinataireData,
-                });
-            } catch (error) {
-                toast.error("Une erreur est survenue lors du chargement des données.");
-            } finally {
-                setLoading(false);
-            }
+                        setSimulationData({
+                            ...data,
+                            sender: senderData,
+                            destinataire: destinataireData,
+                        });
+                    } catch (error) {
+                        toast.error("Une erreur est survenue lors du chargement des données.");
+                    } finally {
+                        setLoading(false);
+                    }
+                })();
+            })
         };
         getSimulationEffect();
-    }, []);
+    }, [isAuthenticated, router]);
 
     if (loading) {
         return (
