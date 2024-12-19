@@ -12,16 +12,26 @@ import {ArrowRight, Calendar, DollarSign, MapPin, Package, Weight} from "lucide-
 import {useSession} from "next-auth/react";
 import Link from "next/link";
 import {updateSimulationUserId} from "@/services/backend-services/Bk_SimulationService";
+import {checkAuthStatus} from "@/lib/auth";
 
 export default function SimulationResults() {
-    const {data: session, status} = useSession();
+
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
     const [results, setResults] = useState<SimulationResponseDto | null>(null);
     const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-    const isAuthenticated = status === "authenticated";
-    const userId = session?.user?.id || null;
 
+    const [userId, setUserId] = useState<string | null>(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    useEffect(() => {
+        const checkAuth = async () => {
+            const authResult = await checkAuthStatus(false);
+            setIsAuthenticated(authResult.isAuthenticated);
+            setUserId(authResult.userId || null);
+        };
+        checkAuth();
+    }, []);
     // get simulation results from the backend and set them in the state variable results when available or redirect to the simulation page if not
     useEffect(() => {
         const getSimulationResults = async () => {
@@ -58,19 +68,17 @@ export default function SimulationResults() {
             (async () => {
                 try {
                     // Check if the user is authenticated
-                    if (isAuthenticated) {
-                        // Check if the results object is not empty
+                    const authResult = await checkAuthStatus();
+                    if (authResult.isAuthenticated) {
+                    // Check if the results object is not empty
                         if (results) {
-                            if (userId && !results.userId) {
-                                results.userId = Number(userId);
-
-                                // update simulation with sender and destinataire ids
+                            if (authResult.userId && !results.userId) {
+                                results.userId = Number(authResult.userId);
                                 await updateSimulationUserId(results.id, results.userId);
                             }
-
                             toast("Redirecting to add destinataire page in 3 seconds...");
                             setTimeout(() => {
-                                router.push("/client/ajouter-destinataire");
+                                router.push("/client/simulation/ajouter-destinataire");
                             }, 3000);
                         }
                     } else {
@@ -124,20 +132,19 @@ export default function SimulationResults() {
      * handle edit current simulation user id updating
      * and redirecting to the edit simulation page
      */
-    async function handleEdit() {
+    const handleEdit = async () => {
         startTransition(() => {
             (async () => {
                 try {
-                    if (isAuthenticated) {
-                        // Check if the results object is not empty
+                    const authResult = await checkAuthStatus();
+
+                    if (authResult.isAuthenticated) {
                         if (results) {
-                            if (userId && !results.userId) {
-                                results.userId = Number(userId);
+                            if (authResult.userId && !results.userId) {
+                                results.userId = Number(authResult.userId);
+                                const response = await updateSimulationUserId(results.id, results.userId);
 
-                                // update simulation with sender and destinataire ids
-                                const repose = await updateSimulationUserId(results.id, results.userId);
-
-                                if (!repose) {
+                                if (!response) {
                                     toast.error("Une erreur est survenue lors de la mise à jour de la simulation.");
                                 }
                             }
@@ -147,16 +154,14 @@ export default function SimulationResults() {
                     console.error("Error updating simulation:", error);
                     toast.error("Une erreur est survenue lors de la mise à jour de la simulation.");
                 } finally {
-                    // redirect to edit simulation page
                     toast("Redirection en cours...");
                     setTimeout(() => {
                         router.push('/client/simulation/edit');
                     }, 3000);
                 }
-
             })();
         });
-    }
+    };
 
     // render the loading spinner if the results are not available
     if (!results) {

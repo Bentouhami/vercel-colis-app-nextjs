@@ -3,10 +3,24 @@
 
 import prisma from "@/utils/db";
 import {Envoi as EnvoiPrisma} from "@prisma/client";
-import {CreateSimulationRequestDto, UpdateEditedSimulationDto} from "@/services/dtos";
+import {CreateSimulationRequestDto} from "@/services/dtos";
 import {ISimulationDAO} from "@/services/dal/DAO/simulations/ISimulationDAO";
 
+
+/**
+ * @class SimulationDAO
+ * @description This class provides methods for interacting with the simulations table in the database.
+ * @classdesc This class is responsible for handling database operations related to simulations. It provides methods for creating, updating, and retrieving simulations from the database. It also includes methods for updating the destinataireId of a simulation.
+ * @implements {ISimulationDAO}
+ *
+ */
 class SimulationDAO implements ISimulationDAO {
+
+    /**
+     * get simulation response by id
+     * @param id
+     * @returns EnvoiPrisma if found or null if not
+     */
     async getSimulationResponseById(id: number): Promise<EnvoiPrisma | null> {
 
         if (!id) {
@@ -71,6 +85,12 @@ class SimulationDAO implements ISimulationDAO {
         }
     }
 
+    /**
+     * Creates a new simulation in the database
+     * @param simulationData The data to create the simulation
+     * @returns The created simulation or null if an error occurred
+     */
+
     async createSimulation(simulationData: CreateSimulationRequestDto): Promise<EnvoiPrisma | null> {
 
         if (!simulationData) {
@@ -117,9 +137,14 @@ class SimulationDAO implements ISimulationDAO {
 
     }
 
-    async updateSimulationUserId(id: number, userId: number): Promise<void | null> {
+    /**
+     * update simulation useId
+     * @param simulationId
+     * @param userId
+     */
+    async updateSimulationUserId(simulationId: number, userId: number): Promise<void | null> {
         const response = await prisma.envoi.update({
-            where: {id},
+            where: {id: simulationId},
             data: {
                 userId: userId,
             }
@@ -131,23 +156,62 @@ class SimulationDAO implements ISimulationDAO {
 
     }
 
-    async updateSimulationDestinataireId(id: number, destinataireId: number): Promise<void | null> {
-        const response = await prisma.envoi.update({
-            where: {id},
-            data: {
-                destinataireId: destinataireId,
-            }
-        });
+    /**
+     * Updates the destinataireId of a simulation in the database
+     * @param simulationId The ID of the simulation to update
+     * @param destinataireId The new destinataireId
+     * @returns true if the update was successful, false otherwise
+     */
+    async updateSimulationDestinataireId(simulationId: number, destinataireId: number): Promise<boolean> {
 
-        if (!response) {
-            return null;
+        if (!simulationId || !destinataireId) {
+            throw new Error("Invalid simulation or destinataire ID");
         }
 
+        console.log("updateSimulationDestinataireId function called in src/services/dal/DAO/simulations/SimulationDAO.ts");
+        try {
+            const response = await prisma.envoi.update({
+                where: {id: simulationId},
+                data: {
+                    destinataireId: destinataireId,
+                }
+            });
+            if (!response) {
+                console.log("log ====> response not found in updateSimulationDestinataireId function");
+                return false;
+            }
+
+            console.log("log ====> response found in updateSimulationDestinataireId function after updating destinataireId in path: src/services/dal/DAO/simulations/SimulationDAO.ts is : ", response);
+            return true;
+        } catch (error) {
+            console.error("Error updating destinataireId:", error);
+            return false; // Failure
+        }
     }
 
-    async updateSimulation(simulatioId : number, simulation: any): Promise<any | null> {
+    /**
+     * Retrieves a simulation with its parcels by its ID
+     * @param id The ID of the simulation
+     * @returns The simulation with its parcels or null if not found
+     */
+    async getSimulationWithParcelsById(id: number): Promise<any | null> {
+        return await prisma.envoi.findUnique({
+            where: {
+                id: id
+            },
+            include: {parcels: true}
+        });
+    }
+
+    /**
+     * Updates a simulation in the database
+     * @param simulationId The ID of the simulation to update
+     * @param simulation The updated simulation data
+     * @returns The updated simulation or null if an error occurred
+     */
+    async updateSimulation(simulationId: number, simulation: any): Promise<any | null> {
         await prisma.envoi.update({
-            where: {id: simulatioId},
+            where: {id: simulationId},
             data: {
                 ...simulation,
             }
@@ -155,13 +219,51 @@ class SimulationDAO implements ISimulationDAO {
 
     }
 
-    async getSimulationWithParcelsById(id: number): Promise<any | null> {
-        return await prisma.envoi.findUnique({
-            where: {
-                id: id
-            },
-            include: { parcels: true}
-        });
+    /**
+     * get simulation summary
+     * @param simulationId
+     */
+    async getSimulationSummary(simulationId: number): Promise<EnvoiPrisma | null> {
+        if (!simulationId) return null;
+        try {
+            return await prisma.envoi.findFirst({
+                where: {id: simulationId},
+            })
+
+        } catch (error) {
+            throw new Error("Error while fetching the simulation summary")
+        }
+    }
+
+
+    async updateSimulationTransportId(simulationId: number, transportId: number): Promise<boolean> {
+
+
+        if (!simulationId || !transportId) {
+            console.log("log ====> simulationId or transportId not found in updateSimulationTransportId function");
+            return false;
+        }
+        console.log("log ====> updateSimulationTransportId function called in src/services/dal/DAO/simulations/SimulationDAO.ts");
+
+        try {
+            const response = await prisma.envoi.update({
+                where: {id: simulationId},
+                data: {
+                    transportId: transportId
+                }
+            });
+
+            if (!response) {
+                console.log("log ====> response not found in updateSimulationTransportId function");
+                return false;
+            }
+            console.log("log ====> response found in updateSimulationTransportId function after updating transportId in path: src/services/dal/DAO/simulations/SimulationDAO.ts is : ", response);
+            return true;
+
+        } catch (error) {
+            throw new Error("Error while updating the simulation transportId")
+        }
+
     }
 }
 

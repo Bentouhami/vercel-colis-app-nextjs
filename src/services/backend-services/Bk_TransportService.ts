@@ -26,11 +26,20 @@ export async function getTransports(): Promise<TransportResponseDto[] | null> {
  * @returns The updated transport.
  */
 export async function updateTransport(transport: UpdateTransportRequestDto): Promise<TransportResponseDto | null> {
+
+    if (!transport) {
+        throw new Error("Invalid transport data");
+    }
+    console.log("log ====> updateTransport function called in src/services/frontend-services/transport/TransportService.ts");
     try {
         const response = await transportRepository.updateTransport(transport);
         if (!response) {
+            console.log("log ====> response not found in updateTransport function");
+
             return null;
         }
+        console.log("log ====> response found in updateTransport function after updating transport in path: src/services/frontend-services/transport/TransportService.ts is : ", response);
+
         return response;
     } catch (error) {
         console.error("Error updating transport:", error);

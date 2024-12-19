@@ -24,7 +24,6 @@ export default function RecapitulatifPage() {
     const {data: session, status} = useSession();
 
     const isAuthenticated = status === "authenticated";
-    const userId = session?.user?.id || null;
 
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
@@ -33,25 +32,31 @@ export default function RecapitulatifPage() {
         const getSimulationEffect = async () => {
             startTransition(() => {
                 (async () => {
-                    try {
-                        const data = await getSimulation();
-                        console.log("log ====> data in RecapitulatifPage.tsx: ", data);
 
-                        if (!data) {
+                    try {
+                        const simulation = await getSimulation();
+                        console.log("log ====> data in RecapitulatifPage.tsx: ", simulation);
+                        if (!isAuthenticated) {
+                            toast.error("Vous devez être connecté pour accéder à cette page");
+                            setLoading(false);
+                            return;
+                        }
+
+                        if (!simulation) {
                             toast.error("Impossible de trouver les données de simulation. Réessayez ou contactez le support.");
                             setLoading(false);
                             return;
                         }
 
-                        if (!data.userId || !data.destinataireId) {
+                        if (!simulation.userId || !simulation.destinataireId) {
                             toast.error("Données utilisateur manquantes.");
                             setLoading(false);
                             return;
                         }
 
                         const [senderData, destinataireData] = await Promise.all([
-                            getUserById(data.userId),
-                            getUserById(data.destinataireId),
+                            getUserById(simulation.userId),
+                            getUserById(simulation.destinataireId),
                         ]) as [CreateDestinataireDto, CreateDestinataireDto];
 
                         if (!senderData || !destinataireData) {
@@ -60,8 +65,9 @@ export default function RecapitulatifPage() {
                             return;
                         }
 
+
                         setSimulationData({
-                            ...data,
+                            ...simulation,
                             sender: senderData,
                             destinataire: destinataireData,
                         });
@@ -96,6 +102,9 @@ export default function RecapitulatifPage() {
 
     const handlePaymentRedirect = () => {
         if (simulationData?.totalPrice) {
+
+
+
             // Navigate to payment page with totalPrice as a query parameter
             router.push(`/client/payment?amount=${simulationData.totalPrice}`);
         } else {

@@ -2,7 +2,7 @@
 
 import {NextRequest, NextResponse} from 'next/server';
 import {CreateSimulationRequestDto, EnvoiStatus, SimulationResponseDto, SimulationStatus,} from "@/services/dtos";
-import {getSimulationById, saveSimulation, updatePaidEnvoi,} from "@/services/backend-services/Bk_SimulationService";
+import {getSimulationById, createSimulation, updatePaidEnvoi,} from "@/services/backend-services/Bk_SimulationService";
 import {setSimulationResponseCookie} from "@/utils/generateSimulationToken";
 import {verifySimulationToken} from "@/utils/verifySimulationToken";
 import {getToken} from "next-auth/jwt";
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
         simulationDataToCreate.userId = userId;
 
 
-        const simulationIdAndVerificationToken = await saveSimulation(simulationDataToCreate);
+        const simulationIdAndVerificationToken = await createSimulation(simulationDataToCreate);
 
         if (!simulationIdAndVerificationToken) {
             return NextResponse.json({success: false, error: 'Failed to create simulation'}, {status: 500});

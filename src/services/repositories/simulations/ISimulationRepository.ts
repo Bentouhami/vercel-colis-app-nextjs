@@ -15,6 +15,8 @@ export interface ISimulationRepository {
 
     updateSimulationUserId(id: number, userId: number): Promise<any | null>;
 
-    updateSimulationDestinataireId(id: number, destinataireId: number): Promise<void | null>;
+    updateSimulationDestinataireId(id: number, destinataireId: number): Promise<boolean>;
+
+    updateSimulationTransportId(simulationId: number, transportId: number): Promise<boolean>;
 
 }

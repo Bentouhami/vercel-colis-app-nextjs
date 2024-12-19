@@ -1,9 +1,12 @@
 // path: src/services/mappers/TransportMapper.ts
 import {CreateTransportRequestDto, TransportResponseDto} from "@/services/dtos";
-import {Transport} from "@prisma/client";
+import {Transport as TransportPrisma} from "@prisma/client";
 
 export class TransportMapper {
-    static toDto(transport: Transport): TransportResponseDto {
+    static toDto(transport: TransportPrisma): TransportResponseDto {
+        if (!transport) {
+            throw new Error("Invalid transport data");
+        }
         return {
             id: transport.id,
             number: transport.number,
@@ -15,7 +18,7 @@ export class TransportMapper {
         };
     }
 
-    static toCreateDto(transport: Transport): CreateTransportRequestDto {
+    static toCreateDto(transport: TransportPrisma): CreateTransportRequestDto {
         return {
             number: transport.number,
             baseVolume: Number(transport.baseVolume),
@@ -26,7 +29,7 @@ export class TransportMapper {
         };
     }
 
-    static toUpdateDto(transport: Transport): CreateTransportRequestDto {
+    static toUpdateDto(transport: TransportPrisma): CreateTransportRequestDto {
         return {
             number: transport.number,
             baseVolume: Number(transport.baseVolume),
@@ -37,7 +40,7 @@ export class TransportMapper {
         };
     }
 
-    static getTransports(transports: Transport[]): TransportResponseDto[] {
+    static getTransports(transports: TransportPrisma[]): TransportResponseDto[] {
         return transports.map(transport => this.toDto(transport));
     }
 }

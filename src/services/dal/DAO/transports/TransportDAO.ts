@@ -23,7 +23,11 @@ class TransportDAO implements ITransportDAO {
        return await prisma.transport.findMany();
     }
 
-    async updateTransport(transport: UpdateTransportRequestDto) {
+    async updateTransport(transport: UpdateTransportRequestDto) : Promise <TransportPrisma | null> {
+
+        if (!transport) {
+            throw new Error("Invalid transport data");
+        }
         const response = await prisma.transport.update({
             where: {id: transport.id},
             data: {
@@ -39,6 +43,9 @@ class TransportDAO implements ITransportDAO {
         if (!response) {
             return null;
         }
+
+        console.log("log ====> response found in updateTransport function after updating transport in path: src/services/dal/DAO/transports/TransportDAO.ts is : ", response);
+        return response;
 
     }
 }

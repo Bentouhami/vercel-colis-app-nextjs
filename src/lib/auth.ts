@@ -2,7 +2,8 @@
 
 
 import bcrypt from "bcryptjs";
-
+import { getSession } from "next-auth/react";
+import { toast } from "react-toastify";
 
 /**
  * Hash a password with bcrypt
@@ -22,6 +23,51 @@ export function saltAndHashPassword(password: string): Promise<string> {
             });
         });
     });
+}
+
+
+
+
+interface AuthCheckResult {
+    isAuthenticated: boolean;
+    userId?: string;
+    email?: string;
+    error?: string;
+}
+export async function checkAuthStatus(showToast: boolean = true): Promise<AuthCheckResult> {
+    try {
+        const session = await getSession();
+
+        if (!session) {
+            if (showToast) {
+                toast.error("Vous devez être connecté pour effectuer cette action");
+            }
+            return {
+                isAuthenticated: false,
+                error: "Not authenticated"
+            };
+        }
+
+        return {
+            isAuthenticated: true,
+            userId: session.user?.id,
+            email: session.user?.email!
+        };
+    } catch (error) {
+        if (showToast) {
+            toast.error("Une erreur est survenue lors de la vérification de l'authentification");
+        }
+        return {
+            isAuthenticated: false,
+            error: "Authentication check failed"
+        };
+    }
+}
+
+// Optional: Helper for getting just the userId
+export async function getCurrentUserId(): Promise<string | null> {
+    const { userId } = await checkAuthStatus(false);
+    return userId || null;
 }
 
 

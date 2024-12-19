@@ -3,6 +3,7 @@
 import {NextRequest, NextResponse} from 'next/server';
 import {getTransports} from "@/services/backend-services/Bk_TransportService";
 import {updateTransport} from "@/services/backend-services/Bk_TransportService";
+import {UpdateTransportRequestDto} from "@/services/dtos";
 
 export const dynamic = 'force-dynamic';
 
@@ -38,34 +39,31 @@ export async function GET(request: NextRequest) {
  * @param request - The incoming HTTP request.
  */
 export async function PUT(request: NextRequest) {
+
     console.log("PUT request received in transports route");
+
     if (request.method !== "PUT") {
         return NextResponse.json({error: "Method not allowed"}, {status: 405});
     }
     try {
         // Parse the request body
-        const body = await request.json();
+        const body = await request.json() as UpdateTransportRequestDto;
 
         // Validate required fields
         const {id, number, baseVolume, baseWeight, currentVolume, currentWeight, isAvailable} = body;
+
         if (!id || number === undefined || baseVolume === undefined || baseWeight === undefined) {
             return NextResponse.json({error: "Missing required fields"}, {status: 400});
         }
 
+        console.log("log ====> id in PUT request received in transports route after saving path: src/app/api/v1/transports/route.ts is : ", id);
         // Update the transport in the database
-        const updatedTransport = await updateTransport({
-            id,
-            number,
-            baseVolume,
-            baseWeight,
-            currentVolume,
-            currentWeight,
-            isAvailable,
-        });
+        const updatedTransport = await updateTransport(body);
 
         if (!updatedTransport) {
             return NextResponse.json({error: "Transport not found or failed to update"}, {status: 404});
         }
+        console.log("log ====> updatedTransport found in PUT request received in transports route after saving path: src/app/api/v1/transports/route.ts is : ", updatedTransport);
 
         return NextResponse.json({data: updatedTransport, message: "Transport updated successfully"}, {status: 200});
     } catch (error) {

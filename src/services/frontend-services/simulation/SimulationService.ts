@@ -14,6 +14,9 @@ import {
 } from "@/services/dtos";
 import {getAgencyId} from "@/services/frontend-services/AgencyService";
 import axios from "axios";
+import {getSimulationSummary, updateSimulationDestinataireId} from "@/services/backend-services/Bk_SimulationService";
+import {findSuitableTransport} from "@/services/frontend-services/transport/TransportServiceCalc";
+import {updateTransport} from "@/services/frontend-services/transport/TransportService";
 
 
 /**
@@ -167,6 +170,44 @@ export async function getSimulation(): Promise<SimulationResponseDto | null> {
     }
 }
 
+/**
+ * updateSimulationDestination, update destinataireId of a simulation
+ * @param simulationId
+ * @param destinataireId
+ * @returns {Promise<void | null>} A Promise that resolves when the destinataireId is updated
+ * @describe('simulationId', () => {
+ *      description: 'The ID of the simulation to update',
+ *      required: true,
+ *      type: 'number',
+ *  })
+ */
+export async function updateSimulationDestinataire(simulationId: number, destinataireId: number): Promise<boolean> {
+
+    if (!simulationId || !destinataireId) {
+        throw new Error("Invalid simulation or destinataire ID");
+    }
+    console.log("log ====> updateSimulationDestinataire function called in src/services/backend-services/Bk_SimulationService.ts");
+    try {
+        const response = await updateSimulationDestinataireId(simulationId, destinataireId);
+
+        if (!response) {
+            console.log("log ====> response not found in updateSimulationDestinataire function");
+            return false;
+        }
+        console.log("log ====> response found in updateSimulationDestinataire function after updating destinataireId in path: src/services/backend-services/Bk_SimulationService.ts is : ", response);
+        return true;
+
+    } catch (error) {
+        console.error("Error updating destinataireId:", error);
+        throw error;
+    }
+}
+
+/**
+ * updateSimulationEdited, update a simulation
+ * @param simulationData
+ * @returns {Promise<any | null>} A Promise that resolves when the simulation is updated
+ */
 export async function updateSimulationEdited(simulationData: PartielUpdateSimulationDto): Promise<any | null> {
 
     if (!simulationData) {
@@ -266,10 +307,104 @@ export async function deleteSimulationCookie(): Promise<void | null> {
 
         if (!response.ok) {
             throw new Error("Failed to delete simulation");
+
         }
 
         return response.json();
     } catch (error) {
         throw error;
     }
+}
+
+/**
+ * updateSimulationTransportId, update transportId of a simulation
+ * @param simulationId
+ * @returns {Promise<void | null>} A Promise that resolves when the transportId is updated
+ */
+export async function assignTransportToSimulation(simulationId: number): Promise<boolean> {
+    console.log("log ====> assignTransportToSimulation function called in src/services/frontend-services/simulation/SimulationService.ts")
+
+    try {
+
+        // get simulation summary by id
+        const simulation = await getSimulationSummary(simulationId);
+        // verify if simulation exists
+        if (!simulation) {
+            console.log("log ====> simulationSummary not found in assignTransportToSimulation function");
+            return false
+        }
+
+        // calculate and find suitable transport
+        const suitableTransport = await findSuitableTransport(simulation);
+
+        if (!suitableTransport) {
+            console.log("log ====> suitableTransport not found in assignTransportToSimulation function");
+            return false
+
+        }
+        console.log("log ====> suitableTransport found in assignTransportToSimulation function is called in path: src/services/frontend-services/simulation/SimulationService.ts is : ", suitableTransport);
+
+        // update transport with current volume and weight
+        const updatedTransport = await updateTransport(suitableTransport);
+        if (!updatedTransport) {
+            console.log("log ====> updatedTransport not found in findSuitableTransport function");
+            console.error("Failed to update transport current volume and weight");
+            return false;
+        }
+
+        console.log("log ====> updatedTransport in findSuitableTransport function called in path: src/services/frontend-services/transport/TransportServiceCalc.ts is : ", updatedTransport);
+
+        // update simulation with transportId
+        const response = await updateSimulationTransportId(simulationId, updatedTransport.id);
+
+        if (!response) {
+            console.log("log ====> response not found in assignTransportToSimulation function");
+            return false;
+        }
+
+        console.log("log ====> response found in assignTransportToSimulation function after updating transportId in path: src/services/frontend-services/simulation/SimulationService.ts is : ", response);
+        return true;
+    } catch (error) {
+        console.log("log ====> error in assignTransportToSimulation function after updating transportId in path: src/services/frontend-services/simulation/SimulationService.ts is : ", error);
+        return false;
+    }
+}
+
+/**
+ * updateSimulationTransportId, update transportId of a simulation
+ * @param simulationId
+ * @param transportId
+ * @returns {Promise<boolean>} A Promise that resolves when the transportId is updated
+ */
+async function updateSimulationTransportId(simulationId: number,
+                                           transportId: number): Promise<boolean> {
+
+    console.log("log ====> updateSimulationTransportId function called in src/services/frontend-services/simulation/SimulationService.ts");
+
+    if (!simulationId || !transportId) {
+        throw new Error("Invalid simulation or transport ID");
+    }
+
+    console.log("log ====> simulationId in updateSimulationTransportId function called in path: src/services/frontend-services/simulation/SimulationService.ts is : ", simulationId);
+    console.log("log ====> transportId in updateSimulationTransportId function called in path: src/services/frontend-services/simulation/SimulationService.ts is : ", transportId);
+    try {
+        // using axios to make the request
+        const response = await axios.put(`${DOMAIN}/api/v1/simulations/${simulationId}`, {
+            transportId
+        });
+
+        if (!response.data) {
+            console.log("log ====> response not found in updateSimulationTransportId function");
+            return false;
+
+        }
+        console.log("log ====> response found in updateSimulationTransportId function after updating transportId in path: src/services/frontend-services/simulation/SimulationService.ts is : ", response.data);
+
+        return true;
+
+    } catch (error) {
+        console.log("log ====> error in updateSimulationTransportId function after updating transportId in path: src/services/frontend-services/simulation/SimulationService.ts is : ", error);
+        return false;
+    }
+
 }

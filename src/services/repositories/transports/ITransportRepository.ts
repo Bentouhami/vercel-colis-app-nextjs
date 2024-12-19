@@ -1,7 +1,8 @@
 // path: src/services/repositories/transports/ITransportRepository.ts
 
-import {TransportResponseDto} from "@/services/dtos";
+import {TransportResponseDto, UpdateTransportRequestDto} from "@/services/dtos";
 
 export interface ITransportRepository {
     getTransports(): Promise<TransportResponseDto[] | null>
+    updateTransport(transport: UpdateTransportRequestDto): Promise<TransportResponseDto | null>
 }

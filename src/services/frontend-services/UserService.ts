@@ -127,7 +127,7 @@ export async function registerUser(newUser: RegisterClientDto) {
 }
 
 
-export async function addDestinataire(newUser: CreateDestinataireDto): Promise<number> {
+export async function addDestinataire(newUser: CreateDestinataireDto): Promise<number | null> {
     console.log("log ====> addDestinataire function called");
 
     try {
@@ -144,9 +144,7 @@ export async function addDestinataire(newUser: CreateDestinataireDto): Promise<n
         console.log("log ====> response headers: ", response.headers);  // Log headers
 
         if (!response.ok) {
-            // Gestion des erreurs en cas de réponse non OK
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Une erreur est survenue lors de l\'enregistrement.');
+          return null;
         }
 
         // Si la réponse est OK, log et parse le JSON

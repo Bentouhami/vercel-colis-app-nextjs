@@ -1,6 +1,6 @@
 // path: src/services/mappers/SimulationMapper.ts
 
-import {CreatedSimulationResponseDto, SimulationResponseDto} from "@/services/dtos";
+import {CreatedSimulationResponseDto, SimulationResponseDto, SimulationSummaryDto} from "@/services/dtos";
 import {EnvoiStatusMapper, SimulationStatusMapper} from "@/services/mappers/enums";
 import {Envoi as EnvoiPrisma} from "@prisma/client";
 
@@ -58,11 +58,46 @@ export class SimulationMapper {
         };
     }
 
-    static toCreatedSimulationResponseDto(simulation: EnvoiPrisma) : CreatedSimulationResponseDto {
+    /**
+     * map the envoi prisma to created simulation response dto
+     * @param simulation
+     */
+    static toCreatedSimulationResponseDto(simulation: EnvoiPrisma): CreatedSimulationResponseDto {
 
         return {
             id: simulation.id,
             verificationToken: simulation.verificationToken,
         };
+    }
+
+    /**
+     * map envoi prisma to simulation summary dto
+     * @param simulation
+     */
+    static toSimulationSummaryDto(simulation: EnvoiPrisma): SimulationSummaryDto {
+        const {
+            id,
+            transportId,
+            simulationStatus,
+            envoiStatus,
+            totalWeight,
+            totalVolume,
+            totalPrice,
+            departureDate,
+            arrivalDate
+        } = simulation;
+
+        return {
+            id,
+            transportId,
+            simulationStatus: SimulationStatusMapper.toDtoStatus(simulationStatus),
+            envoiStatus: EnvoiStatusMapper.toDtoStatus(envoiStatus),
+            totalWeight : Number(totalWeight),
+            totalVolume : Number(totalVolume),
+            totalPrice : Number(totalPrice),
+            departureDate,
+            arrivalDate
+        }
+
     }
 }

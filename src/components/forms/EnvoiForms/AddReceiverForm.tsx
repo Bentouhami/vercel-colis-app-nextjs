@@ -1,7 +1,7 @@
 // path: src/components/forms/EnvoiForms/AddReceiverForm.tsx
 
 'use client';
-import React, {ChangeEvent, useEffect, useState, useTransition} from "react";
+import React, {ChangeEvent, useState, useTransition} from "react";
 import {useRouter} from "next/navigation";
 import {Button} from "@/components/ui/button";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
@@ -15,17 +15,19 @@ import {Roles} from "@/services/dtos/enums/EnumsDto";
 import {CreateDestinataireDto} from "@/services/dtos/users/UserDto";
 
 import {
-    updateSimulationDestination,
-    assignTransportToSimulation
+    assignTransportToSimulation,
+    updateSimulationDestinataire
 } from "@/services/frontend-services/simulation/SimulationService";
 import {getSimulationFromCookie} from "@/lib/simulationCookie";
-import {useSession} from "next-auth/react";
+import RequireAuth from "@/components/auth/RequireAuth";
+import AddReceiverFormSkeleton from "@/components/forms/EnvoiForms/AddReceiverFormSkeleton";
 
 export default function AddReceiverForm() {
-    const {data: session, status} = useSession();
-    const isAuthenticated = status === "authenticated";
+
     const router = useRouter();
     const [isPending, startTransition] = useTransition()
+    const [isLoading, setIsLoading] = useState(true);
+
     const [destinataireFormData, setDestinataireFormData] = useState<DestinataireInput>({
         firstName: "",
         lastName: "",
@@ -46,15 +48,6 @@ export default function AddReceiverForm() {
         }
     };
 
-    useEffect(() => {
-        if (!isAuthenticated) {
-            toast.error("Vous devez être connecté pour ajouter un destinataire");
-            router.push("/client/auth/login");
-            return;
-        }
-    }, [isAuthenticated, router]);
-
-
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
         setDestinataireFormData(prev => ({...prev, [name]: value}));
@@ -70,6 +63,7 @@ export default function AddReceiverForm() {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        console.log("log ====> handleSubmit function is called in path: src/pages/destinataire/DestinataireForm.tsx");
 
         const validated = destinataireSchema.safeParse(destinataireFormData);
 
@@ -105,157 +99,170 @@ export default function AddReceiverForm() {
                         return;
                     }
 
+                    console.log("log ====> destinataireId found in handleSubmit function is called in path: src/pages/destinataire/DestinataireForm.tsx is : ", destinataireId);
                     const simulationResults = await getSimulationFromCookie()
 
-                    if (simulationResults) {
-                        // Update simulation status to CONFIRMED
-                        const response = await updateSimulationDestination(simulationResults.id, destinataireId);
+                    console.log("log ====> simulationResults found in handleSubmit function is called in path: src/pages/destinataire/DestinataireForm.tsx is : ", simulationResults);
 
-                        if (!response) {
+                    if (!simulationResults) {
+                        toast.error("Une erreur est survenue lors de la récupération de la simulation.");
+                        return;
+                    }
+                    if (simulationResults) {
+
+                        console.log("log ====> simulationResults trouvé dans la function handleSubmit dans path: src/pages/destinataire/DestinataireForm.tsx is : ", simulationResults);
+                        // Update simulation status to CONFIRMED
+                        const isUpdatedDestinataireId = await updateSimulationDestinataire(simulationResults.id, destinataireId);
+
+                        if (!isUpdatedDestinataireId) {
                             toast.error("Une erreur est survenue lors de la mise à jour de la simulation. Vérifiez les informations saisies.");
                             return;
                         }
+                        console.log("log ====> isUpdatedDestinataireId found in handleSubmit function is called in path: src/pages/destinataire/DestinataireForm.tsx is : ", isUpdatedDestinataireId);
 
-                        await assignTransportToSimulation(simulationResults.id);
+                        const isAssignedTransportToSimulation = await assignTransportToSimulation(simulationResults.id);
 
+                        if (!isAssignedTransportToSimulation) {
+                            toast.error("Une erreur est survenue lors de l'assignation du transport à la simulation. Vérifiez les informations saisies.");
+                            return;
+                        }
                         toast.success("Destinataire ajouté avec succès à votre simulation.");
-                    } else {
-                        toast.error("Une erreur est survenue lors de l'ajout du destinataire, vérifier les informations saisies.");
+                        // Attendre 3 secondes avant la redirection
+                        setTimeout(() => {
+                            router.push("/client/envois/recapitulatif");
+                        }, 3000);
                     }
 
-                    // Attendre 3 secondes avant la redirection
-                    setTimeout(() => {
-                        router.push("/client/envois/recapitulatif");
-                    }, 3000);
                 } catch (error) {
-                    console.error("Error updating simulation:", error);
+                    console.log("Error updating simulation:", error);
                     toast.error("Une erreur est survenue lors de l'ajout du destinataire.");
                 }
             })(); // Appelez l'IIFE (Immediately Invoked Function Expression)
         });
 
     }
-
     return (
-        <div className="container mx-auto px-4 py-8 max-w-lg">
-            <Card className="w-full">
-                <CardHeader className="text-center space-y-2">
-                    <CardTitle className="text-2xl font-bold text-blue-700 flex items-center justify-center gap-2">
-                        <UserPlus className="h-6 w-6"/>
-                        Ajouter un destinataire
-                    </CardTitle>
-                    <CardDescription>
-                        Veuillez remplir les informations du destinataire
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        <div className="space-y-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="firstName" className="flex items-center gap-2">
-                                    <User className="h-4 w-4"/>
-                                    Nom
-                                </Label>
-                                <Input
-                                    id="firstName"
-                                    name="firstName"
-                                    value={destinataireFormData.firstName}
-                                    onChange={handleInputChange}
-                                    onBlur={() => handleBlur('firstName')}
-                                    placeholder="Entrez le nom"
-                                    className={errors.firstName ? 'border-red-500' : ''}
-                                    disabled={isPending}
-                                />
-                                {errors.firstName && (
-                                    <p className="text-red-500 text-sm">{errors.firstName}</p>
-                                )}
+        <RequireAuth>
+            <div className="container mx-auto px-4 py-8 max-w-lg">
+                <Card className="w-full">
+                    <CardHeader className="text-center space-y-2">
+                        <CardTitle className="text-2xl font-bold text-blue-700 flex items-center justify-center gap-2">
+                            <UserPlus className="h-6 w-6"/>
+                            Ajouter un destinataire
+                        </CardTitle>
+                        <CardDescription>
+                            Veuillez remplir les informations du destinataire
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            <div className="space-y-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="firstName" className="flex items-center gap-2">
+                                        <User className="h-4 w-4"/>
+                                        Nom
+                                    </Label>
+                                    <Input
+                                        id="firstName"
+                                        name="firstName"
+                                        value={destinataireFormData.firstName}
+                                        onChange={handleInputChange}
+                                        onBlur={() => handleBlur('firstName')}
+                                        placeholder="Entrez le nom"
+                                        className={errors.firstName ? 'border-red-500' : ''}
+                                        disabled={isPending}
+                                    />
+                                    {errors.firstName && (
+                                        <p className="text-red-500 text-sm">{errors.firstName}</p>
+                                    )}
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="lastName" className="flex items-center gap-2">
+                                        <User className="h-4 w-4"/>
+                                        Prénom
+                                    </Label>
+                                    <Input
+                                        id="lastName"
+                                        name="lastName"
+                                        value={destinataireFormData.lastName}
+                                        onChange={handleInputChange}
+                                        onBlur={() => handleBlur('lastName')}
+                                        placeholder="Entrez le prénom"
+                                        className={errors.lastName ? 'border-red-500' : ''}
+                                        disabled={isPending}
+                                    />
+                                    {errors.lastName && (
+                                        <p className="text-red-500 text-sm">{errors.lastName}</p>
+                                    )}
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="email" className="flex items-center gap-2">
+                                        <Mail className="h-4 w-4"/>
+                                        Email
+                                    </Label>
+                                    <Input
+                                        id="email"
+                                        name="email"
+                                        type="email"
+                                        value={destinataireFormData.email}
+                                        onChange={handleInputChange}
+                                        onBlur={() => handleBlur('email')}
+                                        placeholder="exemple@email.com"
+                                        className={errors.email ? 'border-red-500' : ''}
+                                        disabled={isPending}
+                                    />
+                                    {errors.email && (
+                                        <p className="text-red-500 text-sm">{errors.email}</p>
+                                    )}
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="phoneNumber" className="flex items-center gap-2">
+                                        <Phone className="h-4 w-4"/>
+                                        Numéro de téléphone
+                                    </Label>
+                                    <Input
+                                        id="phoneNumber"
+                                        name="phoneNumber"
+                                        type="tel"
+                                        value={destinataireFormData.phoneNumber}
+                                        onChange={handleInputChange}
+                                        onBlur={() => handleBlur('phoneNumber')}
+                                        placeholder="+33 6 XX XX XX XX"
+                                        className={errors.phoneNumber ? 'border-red-500' : ''}
+                                        disabled={isPending}
+                                    />
+                                    {errors.phoneNumber && (
+                                        <p className="text-red-500 text-sm">{errors.phoneNumber}</p>
+                                    )}
+                                </div>
                             </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="lastName" className="flex items-center gap-2">
-                                    <User className="h-4 w-4"/>
-                                    Prénom
-                                </Label>
-                                <Input
-                                    id="lastName"
-                                    name="lastName"
-                                    value={destinataireFormData.lastName}
-                                    onChange={handleInputChange}
-                                    onBlur={() => handleBlur('lastName')}
-                                    placeholder="Entrez le prénom"
-                                    className={errors.lastName ? 'border-red-500' : ''}
-                                    disabled={isPending}
-                                />
-                                {errors.lastName && (
-                                    <p className="text-red-500 text-sm">{errors.lastName}</p>
-                                )}
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="email" className="flex items-center gap-2">
-                                    <Mail className="h-4 w-4"/>
-                                    Email
-                                </Label>
-                                <Input
-                                    id="email"
-                                    name="email"
-                                    type="email"
-                                    value={destinataireFormData.email}
-                                    onChange={handleInputChange}
-                                    onBlur={() => handleBlur('email')}
-                                    placeholder="exemple@email.com"
-                                    className={errors.email ? 'border-red-500' : ''}
-                                    disabled={isPending}
-                                />
-                                {errors.email && (
-                                    <p className="text-red-500 text-sm">{errors.email}</p>
-                                )}
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="phoneNumber" className="flex items-center gap-2">
-                                    <Phone className="h-4 w-4"/>
-                                    Numéro de téléphone
-                                </Label>
-                                <Input
-                                    id="phoneNumber"
-                                    name="phoneNumber"
-                                    type="tel"
-                                    value={destinataireFormData.phoneNumber}
-                                    onChange={handleInputChange}
-                                    onBlur={() => handleBlur('phoneNumber')}
-                                    placeholder="+33 6 XX XX XX XX"
-                                    className={errors.phoneNumber ? 'border-red-500' : ''}
-                                    disabled={isPending}
-                                />
-                                {errors.phoneNumber && (
-                                    <p className="text-red-500 text-sm">{errors.phoneNumber}</p>
-                                )}
-                            </div>
-                        </div>
-
-                        <Button
-                            type="submit"
-                            className="w-full h-11 text-base font-medium"
-                            disabled={isPending}
-                        >
-                            {isPending ? (
-                                <span className="flex items-center justify-center gap-2">
+                            <Button
+                                type="submit"
+                                className="w-full h-11 text-base font-medium"
+                                disabled={isPending}
+                            >
+                                {isPending ? (
+                                    <span className="flex items-center justify-center gap-2">
                                     <Loader2 className="h-4 w-4 animate-spin"/>
                                     Ajout en cours...
                                 </span>
-                            ) : (
-                                <span className="flex items-center justify-center gap-2">
+                                ) : (
+                                    <span className="flex items-center justify-center gap-2">
                                     <UserPlus className="h-4 w-4"/>
                                     Ajouter le destinataire
                                 </span>
-                            )}
-                        </Button>
-                    </form>
-                    <ToastContainer position="bottom-right" autoClose={2000} hideProgressBar theme="colored"/>
+                                )}
+                            </Button>
+                        </form>
+                        <ToastContainer position="bottom-right" autoClose={2000} hideProgressBar theme="colored"/>
 
-                </CardContent>
-            </Card>
-        </div>
+                    </CardContent>
+                </Card>
+            </div>
+        </RequireAuth>
     );
 }

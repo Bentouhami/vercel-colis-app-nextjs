@@ -24,12 +24,23 @@ class TransportRepository implements ITransportRepository {
         return TransportMapper.getTransports(transports);
     }
 
-    async updateTransport(transport: UpdateTransportRequestDto) {
+    async updateTransport(transport: UpdateTransportRequestDto) : Promise<TransportResponseDto | null> {
         const response = await transportDAO.updateTransport(transport);
 
         if (!response) {
             return null;
         }
+        console.log("log ====> response found in updateTransport function after updating transport in path: src/services/repositories/transports/TransportRepository.ts is : ", response);
+
+
+        const updatedTransport = TransportMapper.toDto(response);
+        if (!updatedTransport) {
+            console.log("log ====> updatedTransport not found in updateTransport function");
+            return null;
+        }
+
+        console.log("log ====> updatedTransport in updateTransport after mapping to TransportResponseDto in path: src/services/repositories/transports/TransportRepository.ts is : ", updatedTransport);
+        return updatedTransport;
 
     }
 }
