@@ -2,9 +2,8 @@
 
 
 // SimulationResultsDto: used when getting simulation details from the frontend
-import {CreateParcelDto, ParcelDto} from "@/services/dtos/parcels/ParcelDto";
+import {CreateParcelDto} from "@/services/dtos/parcels/ParcelDto";
 import {EnvoiStatus, SimulationStatus} from "@/services/dtos/enums/EnumsDto";
-import {AgencyDto, TransportDto} from "@/services/dtos";
 
 export interface SimulationDtoRequest {
     departureCountry: string;
@@ -26,6 +25,12 @@ export interface SimulationCalculationTotalsDto {
     arrivalDate: Date;
 
 }
+
+export interface SimulationSummaryDto extends SimulationCalculationTotalsDto, StatusSimulationAndEnvoiStatus {
+    id: number;
+    transportId: number | null;
+}
+
 
 // SimulationResultsDto: used when getting simulation details from the frontend
 export interface CreateSimulationRequestDto extends SimulationCalculationTotalsDto, StatusSimulationAndEnvoiStatus {
@@ -64,7 +69,8 @@ export interface SimulationResponseDto extends StatusSimulationAndEnvoiStatus, S
     parcels: CreateParcelDto[];
 }
 
-export interface PartielUpdateSimulationDto extends Partial<SimulationResponseDto> {}
+export interface PartielUpdateSimulationDto extends Partial<SimulationResponseDto> {
+}
 
 // DTO for a simulation with user and destination IDs, typically used in backend processing and database storage
 export interface SimulationWithIds extends CreateSimulationRequestDto {
