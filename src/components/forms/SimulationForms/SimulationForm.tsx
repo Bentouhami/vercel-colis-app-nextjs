@@ -25,11 +25,13 @@ import {getSimulationFromCookie} from "@/lib/simulationCookie";
 
 import {updateSimulationUserId} from "@/services/backend-services/Bk_SimulationService";
 import {useSession} from "next-auth/react";
+import {checkAuthStatus} from "@/lib/auth";
+import SimulationSkeleton from "@/app/client/simulation/simulationSkeleton";
 
 
 const SimulationForm = () => {
     const {data: session, status} = useSession();
-
+    const [loading, setLoading] = useState(true);
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
     const [departure, setDeparture] = useState({country: '', city: '', agencyName: ''});
@@ -45,8 +47,32 @@ const SimulationForm = () => {
     const [packageCount, setPackageCount] = useState(1);
     const [parcels, setParcels] = useState([{height: 0, width: 0, length: 0, weight: 0}]);
     const [currentPackage, setCurrentPackage] = useState(0);
-    const isAuthenticated = status === "authenticated";
-    const userId = session?.user?.id || null;
+    const [userId, setUserId] = useState<string | null>(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+
+    useEffect(() => {
+        setLoading(true);  // This is fine as is
+        const checkAuth = async () => {
+            const authResult = await checkAuthStatus(false);
+            setIsAuthenticated(authResult.isAuthenticated);
+            setUserId(authResult.userId || null);
+        };
+        checkAuth();
+    }, []);
+
+    // Add this new useEffect to handle loading state
+    useEffect(() => {
+        // Check if all necessary initial data is loaded
+        if (
+            options.countries.length > 0 && // Countries are loaded
+            userId !== undefined && // Auth check is complete (even if user is not logged in)
+            !isPending // No transitions are pending
+        ) {
+            setLoading(false);
+        }
+    }, [options.countries, userId, isPending]);
+
 
     /**
      * Find existing previous simulation in cookies and redirect to results page
@@ -63,7 +89,7 @@ const SimulationForm = () => {
 
                             if (isAuthenticated && userId) {
                                 // update simulation with sender connected user id
-                                await updateSimulationUserId(simulation.id, Number(session?.user?.id));
+                                await updateSimulationUserId(simulation.id, Number(userId));
                             }
 
                             toast.success("Simulation found!");
@@ -165,6 +191,7 @@ const SimulationForm = () => {
 
     const handleSubmit = async (e: ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setLoading(true);
 
         startTransition(() => {
             (async () => {
@@ -200,11 +227,16 @@ const SimulationForm = () => {
                 } catch (error) {
                     console.error("Erreur lors de la soumission de la simulation:", error);
                     toast.error("Une erreur est survenue lors de la soumission de la simulation.");
+                    setLoading(false);
                 }
             })();
         });
 
     };
+
+    if (loading) {
+        return ( <SimulationSkeleton />);
+    }
 
     return (
         <motion.div
@@ -218,7 +250,6 @@ const SimulationForm = () => {
                 transition={{delay: 0.1}}
                 className="text-center text-3xl font-bold text-blue-600"
             >
-                Simulation d&#39;Envoi
             </motion.h2>
 
             <form onSubmit={handleSubmit} className="space-y-8">

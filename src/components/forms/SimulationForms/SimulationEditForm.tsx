@@ -26,13 +26,12 @@ import {parcelsSchema, simulationEnvoisSchema} from "@/utils/validationSchema";
 import {z} from "zod";
 import {useSession} from "next-auth/react";
 import {updateSimulationUserId} from "@/services/backend-services/Bk_SimulationService";
+import {checkAuthStatus} from "@/lib/auth";
 
 const SimulationEditForm = () => {
 
-    const {data: session, status} = useSession();
-
-    const isAuthenticated = status === "authenticated";
-    const userId = session?.user?.id || null;
+    const [userId, setUserId] = useState<string | null>(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
@@ -56,6 +55,15 @@ const SimulationEditForm = () => {
 
     const [editingParcel, setEditingParcel] = useState<{ index: number, parcel: CreateParcelDto } | null>(null);
 
+    useEffect(() => {
+        const checkAuth = async () => {
+            const authResult = await checkAuthStatus(false);
+            setIsAuthenticated(authResult.isAuthenticated);
+            setUserId(authResult.userId || null);
+        };
+        checkAuth();
+    }, []);
+    
     /**
      * Fetch departureCountries and set them in the state
      */
@@ -163,11 +171,12 @@ const SimulationEditForm = () => {
                     router.push('/client/simulation');
                     return;
                 }
+              
                 if (isAuthenticated && userId) {
                     if (!simulationData.userId) {
-                        simulationData.userId = Number(session?.user?.id);
+                        simulationData.userId = Number(userId) ;
                         // update simulation with sender connected user id
-                        await updateSimulationUserId(simulationData.id, Number(session?.user?.id));
+                        await updateSimulationUserId(simulationData.id, Number(userId));
                     }
                 }
                 setSimulation(simulationData);
@@ -179,7 +188,7 @@ const SimulationEditForm = () => {
             setIsLoading(false);
         }
         fetchSimulationData();
-    }, [isAuthenticated, router, session?.user?.id, userId]);
+    }, [isAuthenticated, router, userId]);
 
 
     // Fetch simulation data on mount

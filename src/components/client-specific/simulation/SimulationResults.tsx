@@ -9,13 +9,13 @@ import LoginPromptModal from '@/components/modals/LoginPromptModal';
 import {Button} from "@/components/ui/button";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {ArrowRight, Calendar, DollarSign, MapPin, Package, Weight} from "lucide-react";
-import {useSession} from "next-auth/react";
 import Link from "next/link";
 import {updateSimulationUserId} from "@/services/backend-services/Bk_SimulationService";
 import {checkAuthStatus} from "@/lib/auth";
+import ResultsSkeleton from "@/app/client/simulation/results/resultsSkeleton";
 
 export default function SimulationResults() {
-
+    const [loading, setLoading] = useState(true);
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
     const [results, setResults] = useState<SimulationResponseDto | null>(null);
@@ -36,7 +36,7 @@ export default function SimulationResults() {
     useEffect(() => {
         const getSimulationResults = async () => {
             try {
-
+                setLoading(true);
                 const simulationData = await getSimulation();
 
                 if (!simulationData) {
@@ -50,27 +50,29 @@ export default function SimulationResults() {
                 console.log("log ====> simulationData in SimulationResults.tsx after calling getSimulationById function: ", simulationData);
 
                 setResults(simulationData);
-
+                setLoading(false);
             } catch (error) {
                 toast.error("Erreur de chargement des résultats.");
+                setLoading(false);
+
             }
         };
         getSimulationResults();
     }, [router]);
 
 
-
     /**
      * handle edit current simulation user id updating and redirecting to the add destinataire page
      */
     const handleValidate = async () => {
+        setLoading(true);
         startTransition(() => {
             (async () => {
                 try {
                     // Check if the user is authenticated
                     const authResult = await checkAuthStatus();
                     if (authResult.isAuthenticated) {
-                    // Check if the results object is not empty
+                        // Check if the results object is not empty
                         if (results) {
                             if (authResult.userId && !results.userId) {
                                 results.userId = Number(authResult.userId);
@@ -79,7 +81,7 @@ export default function SimulationResults() {
                             toast("Redirecting to add destinataire page in 3 seconds...");
                             setTimeout(() => {
                                 router.push("/client/simulation/ajouter-destinataire");
-                            }, 3000);
+                            }, 1000);
                         }
                     } else {
                         setShowLoginPrompt(true);
@@ -87,7 +89,7 @@ export default function SimulationResults() {
                 } catch (error) {
                     console.error("Error validating simulation:", error);
                     toast.error("An error occurred while validating the simulation.");
-                    1
+                    setLoading(false);
                 }
             })();
         });
@@ -164,16 +166,15 @@ export default function SimulationResults() {
     };
 
     // render the loading spinner if the results are not available
-    if (!results) {
-        return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-            </div>
-        );
+
+    if (loading || !results) {
+        return <ResultsSkeleton/>;
     }
 
 
+
     return (
+
         <div className="max-w-4xl mx-auto p-6 space-y-6 mb-52 bg-gray-50 rounded-lg shadow-lg">
             <h1 className="text-3xl font-bold text-center mb-8 text-blue-700">Résultats de la Simulation</h1>
 
