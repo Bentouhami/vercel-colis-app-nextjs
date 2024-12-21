@@ -330,7 +330,6 @@ export async function assignTransportToSimulation(simulationId: number): Promise
         const simulation = await getSimulationSummary(simulationId);
         // verify if simulation exists
         if (!simulation) {
-            console.log("log ====> simulationSummary not found in assignTransportToSimulation function");
             return false
         }
 
@@ -338,34 +337,25 @@ export async function assignTransportToSimulation(simulationId: number): Promise
         const suitableTransport = await findSuitableTransport(simulation);
 
         if (!suitableTransport) {
-            console.log("log ====> suitableTransport not found in assignTransportToSimulation function");
             return false
 
         }
-        console.log("log ====> suitableTransport found in assignTransportToSimulation function is called in path: src/services/frontend-services/simulation/SimulationService.ts is : ", suitableTransport);
-
         // update transport with current volume and weight
         const updatedTransport = await updateTransport(suitableTransport);
         if (!updatedTransport) {
-            console.log("log ====> updatedTransport not found in findSuitableTransport function");
-            console.error("Failed to update transport current volume and weight");
             return false;
         }
 
-        console.log("log ====> updatedTransport in findSuitableTransport function called in path: src/services/frontend-services/transport/TransportServiceCalc.ts is : ", updatedTransport);
 
         // update simulation with transportId
         const response = await updateSimulationTransportId(simulationId, updatedTransport.id);
 
         if (!response) {
-            console.log("log ====> response not found in assignTransportToSimulation function");
             return false;
         }
 
-        console.log("log ====> response found in assignTransportToSimulation function after updating transportId in path: src/services/frontend-services/simulation/SimulationService.ts is : ", response);
         return true;
     } catch (error) {
-        console.log("log ====> error in assignTransportToSimulation function after updating transportId in path: src/services/frontend-services/simulation/SimulationService.ts is : ", error);
         return false;
     }
 }

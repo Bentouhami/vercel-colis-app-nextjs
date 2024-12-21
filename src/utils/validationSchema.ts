@@ -1,9 +1,15 @@
 import {z} from "zod";
+import {
+    MAX_TRANSPORT_WEIGHT,
+    MAX_TRANSPORT_VOLUME,
+    PASSWORD_MIN_LENGTH,
+    PASSWORD_REGEX,
+    PHONE_REGEX
+} from "./constants";
+
 
 // Constants for validation
-const PASSWORD_MIN_LENGTH = 8;
-const PHONE_REGEX = /^\+?\d{1,3}[ -]?\d{9,12}$/;
-const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/;
+
 
 // Liste des domaines d'emails temporaires
 const TEMP_EMAIL_DOMAINS = [
@@ -118,22 +124,76 @@ export const parcelsSchema = z.object({
 }).refine(pkg => pkg.height * pkg.width * pkg.length >= 1728, {
     message: "The volume must be at least 1728 cm³",
 });
+// Updated Simulation Envois schema
 
-// Simulation Envois schema
-export const simulationEnvoisSchema = z.object({
+export const simulationEnvoisSchema  = z.object({
+    id: z.number()
+        .int()
+        .positive({ message: "Simulation ID must be a positive integer" }),
+    userId: z.number()
+        .int()
+        .positive({ message: "User ID must be a positive integer" })
+        .optional(), // Optional if user might not always be associated
+    destinataireId: z.number()
+        .int()
+        .positive({ message: "Destinataire ID must be a positive integer" })
+        .optional(), // Optional if destinataire might not always be assigned
     departureCountry: z.string()
-        .min(1, {message: "Departure country is required"}),
+        .min(1, { message: "Departure country is required" }),
     departureCity: z.string()
-        .min(1, {message: "Departure city is required"}),
+        .min(1, { message: "Departure city is required" }),
     departureAgency: z.string()
-        .min(1, {message: "Departure agency is required"}),
+        .min(1, { message: "Departure agency is required" }),
     destinationCountry: z.string()
-        .min(1, {message: "Destination country is required"}),
+        .min(1, { message: "Destination country is required" }),
     destinationCity: z.string()
-        .min(1, {message: "Destination city is required"}),
+        .min(1, { message: "Destination city is required" }),
     destinationAgency: z.string()
-        .min(1, {message: "Destination agency is required"}),
-    parcels: z.array(parcelsSchema),
+        .min(1, { message: "Destination agency is required" }),
+    parcels: z.array(
+        z.object({
+            height: z.number().positive({ message: "Parcel height must be a positive number" }),
+            width: z.number().positive({ message: "Parcel width must be a positive number" }),
+            length: z.number().positive({ message: "Parcel length must be a positive number" }),
+            weight: z.number().positive({ message: "Parcel weight must be a positive number" }),
+        })
+    ),
+    simulationStatus: z.string()
+        .min(1, { message: "Simulation status is required" })
+        .optional(), // Optional if status might not always be available
+    envoiStatus: z.string()
+        .min(1, { message: "Envoi status is required" })
+        .optional(), // Optional if status might not always be available
+});
+
+// Schema for the simulation request
+export const simulationRequestSchema = z.object({
+    departureCountry: z.string()
+        .min(1, { message: "Departure country is required" }),
+    departureCity: z.string()
+        .min(1, { message: "Departure city is required" }),
+    departureAgency: z.string()
+        .min(1, { message: "Departure agency is required" }),
+    destinationCountry: z.string()
+        .min(1, { message: "Destination country is required" }),
+    destinationCity: z.string()
+        .min(1, { message: "Destination city is required" }),
+    destinationAgency: z.string()
+        .min(1, { message: "Destination agency is required" }),
+    parcels: z.array(
+        z.object({
+            height: z.number().positive({ message: "Parcel height must be a positive number" }),
+            width: z.number().positive({ message: "Parcel width must be a positive number" }),
+            length: z.number().positive({ message: "Parcel length must be a positive number" }),
+            weight: z.number().positive({ message: "Parcel weight must be a positive number" }),
+        })
+    ),
+    simulationStatus: z.string()
+        .min(1, { message: "Simulation status is required" })
+        .optional(), // Optional if status might not always be available
+    envoiStatus: z.string()
+        .min(1, { message: "Envoi status is required" })
+        .optional(), // Optional if status might not always be available
 });
 
 // Schéma pour valider les tarifs
@@ -153,8 +213,8 @@ export const tarifsSchema = z.object({
 
 // Schema pour la formule de destinataire
 export const destinataireSchema = z.object({
-    firstName: z.string().min(1, {message: "Nom is required"}),
-    lastName: z.string().min(1, {message: "Prenom is required"}),
+    firstName: z.string().min(1, {message: "First name is required"}),
+    lastName: z.string().min(1, {message: "Last name is required"}),
     email: emailValidation,
     phoneNumber: phoneValidation,
 })
@@ -179,4 +239,26 @@ export function validateForm<T>(schema: z.ZodSchema<T>, data: unknown): {
     }
     return {success: true, data: result.data};
 }
+
+
+// Validation for transport
+export const transportSchema = z.object({
+    id: z.number()
+        .int({ message: "The ID must be an integer" })
+        .positive({ message: "The ID must be a positive number" }),
+    number: z.string().min(1, { message: "The vehicle number is required" }),
+    baseVolume: z.number()
+        .min(1, { message: "The base capacity of the vehicle is required" })
+        .max(MAX_TRANSPORT_VOLUME, { message: `Base volume cannot exceed ${MAX_TRANSPORT_VOLUME} cm³` }),
+    baseWeight: z.number()
+        .min(1, { message: "The base weight of the vehicle is required" })
+        .max(MAX_TRANSPORT_WEIGHT, { message: `Base weight cannot exceed ${MAX_TRANSPORT_WEIGHT} kg` }),
+    currentVolume: z.number()
+        .min(0, { message: "The current capacity cannot be negative" })
+        .max(MAX_TRANSPORT_VOLUME, { message: `Current volume cannot exceed ${MAX_TRANSPORT_VOLUME} cm³` }),
+    currentWeight: z.number()
+        .min(0, { message: "The current weight cannot be negative" })
+        .max(MAX_TRANSPORT_WEIGHT, { message: `Current weight cannot exceed ${MAX_TRANSPORT_WEIGHT} kg` }),
+    isAvailable: z.boolean().default(true),
+});
 

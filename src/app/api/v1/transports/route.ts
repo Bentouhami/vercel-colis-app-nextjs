@@ -4,6 +4,7 @@ import {NextRequest, NextResponse} from 'next/server';
 import {getTransports} from "@/services/backend-services/Bk_TransportService";
 import {updateTransport} from "@/services/backend-services/Bk_TransportService";
 import {UpdateTransportRequestDto} from "@/services/dtos";
+import {transportSchema} from "@/utils/validationSchema";
 
 export const dynamic = 'force-dynamic';
 
@@ -39,35 +40,51 @@ export async function GET(request: NextRequest) {
  * @param request - The incoming HTTP request.
  */
 export async function PUT(request: NextRequest) {
-
     console.log("PUT request received in transports route");
 
     if (request.method !== "PUT") {
-        return NextResponse.json({error: "Method not allowed"}, {status: 405});
+        return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
     }
+
     try {
         // Parse the request body
-        const body = await request.json() as UpdateTransportRequestDto;
+        const body = await request.json();
 
-        // Validate required fields
-        const {id, number, baseVolume, baseWeight, currentVolume, currentWeight, isAvailable} = body;
+        // Validate the request body using transportSchema
+        const validationResult = transportSchema.safeParse(body);
 
-        if (!id || number === undefined || baseVolume === undefined || baseWeight === undefined) {
-            return NextResponse.json({error: "Missing required fields"}, {status: 400});
+        if (!validationResult.success) {
+            // Return validation errors
+            return NextResponse.json(
+                { error: validationResult.error.errors },
+                { status: 400 }
+            );
         }
 
-        console.log("log ====> id in PUT request received in transports route after saving path: src/app/api/v1/transports/route.ts is : ", id);
+        // Destructure the parsed and validated data
+        const validData = validationResult.data;
+
         // Update the transport in the database
-        const updatedTransport = await updateTransport(body);
+        const updatedTransport = await updateTransport(validData);
 
         if (!updatedTransport) {
-            return NextResponse.json({error: "Transport not found or failed to update"}, {status: 404});
+            return NextResponse.json(
+                { error: "Transport not found or failed to update" },
+                { status: 404 }
+            );
         }
-        console.log("log ====> updatedTransport found in PUT request received in transports route after saving path: src/app/api/v1/transports/route.ts is : ", updatedTransport);
 
-        return NextResponse.json({data: updatedTransport, message: "Transport updated successfully"}, {status: 200});
+        console.log(
+            "Updated transport found in PUT request: ",
+            updatedTransport
+        );
+
+        return NextResponse.json(
+            { data: updatedTransport, message: "Transport updated successfully" },
+            { status: 200 }
+        );
     } catch (error) {
         console.error("Error updating transport:", error);
-        return NextResponse.json({error: "Failed to update transport"}, {status: 500});
+        return NextResponse.json({ error: "Failed to update transport" }, { status: 500 });
     }
 }

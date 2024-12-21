@@ -1,68 +1,74 @@
 // path: src/services/frontend-services/transport/TransportServiceCalc.ts
-
 import {SimulationSummaryDto, TransportResponseDto} from "@/services/dtos";
-import {getTransports, updateTransport} from "@/services/frontend-services/transport/TransportService";
+import {getTransports} from "@/services/frontend-services/transport/TransportService";
+import {MAX_ENVOI_VOLUME, MAX_ENVOI_WEIGHT} from '@/utils/constants';
 
 /**
- * find suitable transport for simulation based on current volume and weight of transports and simulation
- * @param simulation
+ * Finds suitable transport for the simulation based on volume, weight, and availability.
+ * Updates the transport's availability if it no longer satisfies constraints for maximum shipment.
+ * @param simulation - The simulation data containing volume and weight details.
+ * @returns A suitable transport if found; otherwise, null.
  */
-export async function findSuitableTransport(simulation: SimulationSummaryDto): Promise<TransportResponseDto | null> {
-
+export async function findSuitableTransport(
+    simulation: SimulationSummaryDto
+): Promise<TransportResponseDto | null> {
     if (!simulation) {
-        console.error("Simulation not found");
+        console.error("Simulation data is missing.");
         return null;
     }
 
-    console.log("log ====> simulation in findSuitableTransport function called in path: src/services/frontend-services/transport/TransportServiceCalc.ts is : ", simulation);
-
-    // Get transports
+    // Fetch transports from the data source
     const transports = await getTransports();
-    // Verify if there are any transports available
+
+    // Check if there are any available transports
     if (!transports || transports.length === 0) {
-        console.error("No transports available");
+        console.warn("No transports available.");
         return null;
     }
 
-    console.log("log ====> transports in findSuitableTransport function called in path: src/services/frontend-services/transport/TransportServiceCalc.ts is : ", transports);
-
-    // destructure simulation data to get total volume and weight
     const {totalVolume, totalWeight} = simulation;
 
-    console.log("log ====> totalVolume in findSuitableTransport function called in path: src/services/frontend-services/transport/TransportServiceCalc.ts is : ", totalVolume);
-
-    console.log("log ====> totalWeight in findSuitableTransport function called in path: src/services/frontend-services/transport/TransportServiceCalc.ts is : ", totalWeight);
-    // Find a transport that can accommodate the simulation
+    // Find a suitable transport
     const suitableTransport = transports.find((transport) => {
+        // Skip transport if it is not available
+        if (!transport.isAvailable) {
+            return false;
+        }
 
-        // Check if the transport has enough volume and weight remaining
+        // Calculate remaining volume and weight
         const remainingVolume = transport.baseVolume - transport.currentVolume;
-
-        console.log("log ====> remainingVolume in findSuitableTransport function called in path: src/services/frontend-services/transport/TransportServiceCalc.ts is : ", remainingVolume);
-
         const remainingWeight = transport.baseWeight - transport.currentWeight;
 
-        console.log("log ====> remainingWeight in findSuitableTransport function called in path: src/services/frontend-services/transport/TransportServiceCalc.ts is : ", remainingWeight);
-        // Check if the transport is available
-        return remainingVolume >= totalVolume && remainingWeight >= totalWeight && transport.isAvailable;
-    }) ;
-
-
+        // Check if the transport can accommodate the simulation
+        return (
+            remainingVolume >= totalVolume &&
+            remainingWeight >= totalWeight &&
+            transport.isAvailable
+        );
+    });
 
     if (!suitableTransport) {
-        console.error("No suitable transport found");
+        console.info("No suitable transport found.");
         return null;
     }
 
-    console.log("log ====> suitableTransport in findSuitableTransport function called in path: src/services/frontend-services/transport/TransportServiceCalc.ts is : ", suitableTransport);
+    // Update the transport's current volume and weight
+    suitableTransport.currentVolume += totalVolume;
+    suitableTransport.currentWeight += totalWeight;
 
-    // set the new transport summary
-    if (suitableTransport) {
-        suitableTransport.currentVolume += totalVolume;
-        suitableTransport.currentWeight += totalWeight;
+    // Recheck availability after update
+    const remainingVolume = suitableTransport.baseVolume - suitableTransport.currentVolume;
+    const remainingWeight = suitableTransport.baseWeight - suitableTransport.currentWeight;
+
+    // If the transport cannot accommodate a maximum shipment, mark it as unavailable
+    if (remainingWeight < MAX_ENVOI_WEIGHT || remainingVolume < MAX_ENVOI_VOLUME) {
+        suitableTransport.isAvailable = false;
+        console.warn(
+            `Transport ${suitableTransport.id} marked as unavailable due to insufficient capacity.`
+        );
     }
 
+    // Return the suitable transport
     return suitableTransport;
-
 }
 

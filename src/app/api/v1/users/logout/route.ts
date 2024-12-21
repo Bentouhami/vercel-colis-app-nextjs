@@ -1,3 +1,5 @@
+// path: src/app/api/v1/users/logout/route.ts
+
 import {NextResponse} from "next/server";
 import {cookies} from "next/headers";
 import {ALLOWED_ORIGINS} from "@/utils/constants";

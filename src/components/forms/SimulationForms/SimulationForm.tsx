@@ -11,7 +11,7 @@ import AgencySelect from "@/components/forms/SimulationForms/AgencySelectForm";
 import {submitSimulation} from "@/services/frontend-services/simulation/SimulationService";
 import {toast, ToastContainer} from "react-toastify";
 import {useRouter} from 'next/navigation';
-import {simulationEnvoisSchema} from "@/utils/validationSchema";
+import {simulationEnvoisSchema, simulationRequestSchema} from "@/utils/validationSchema";
 import {
     fetchAgencies,
     fetchCities,
@@ -207,7 +207,7 @@ const SimulationForm = () => {
                 };
 
                 // validate data with zod schema
-                const validated = simulationEnvoisSchema.safeParse(simulationData);
+                const validated = simulationRequestSchema.safeParse(simulationData);
 
                 if (!validated.success) {
                     toast.error(validated.error.errors[0].message);

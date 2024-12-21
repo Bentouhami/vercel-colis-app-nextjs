@@ -13,6 +13,7 @@ import Link from "next/link";
 import {updateSimulationUserId} from "@/services/backend-services/Bk_SimulationService";
 import {checkAuthStatus} from "@/lib/auth";
 import ResultsSkeleton from "@/app/client/simulation/results/resultsSkeleton";
+import {SimulationStatus} from "@/services/dtos/enums/EnumsDto";
 
 export default function SimulationResults() {
     const [loading, setLoading] = useState(true);
@@ -65,37 +66,33 @@ export default function SimulationResults() {
      * handle edit current simulation user id updating and redirecting to the add destinataire page
      */
     const handleValidate = async () => {
-        setLoading(true);
-        startTransition(() => {
-            (async () => {
-                try {
-                    // Check if the user is authenticated
-                    const authResult = await checkAuthStatus();
-                    if (authResult.isAuthenticated) {
-                        // Check if the results object is not empty
-                        if (results) {
-                            if (authResult.userId && !results.userId) {
-                                results.userId = Number(authResult.userId);
-                                await updateSimulationUserId(results.id, results.userId);
-                            }
-                            toast("Redirecting to add destinataire page in 3 seconds...");
-                            setTimeout(() => {
-                                router.push("/client/simulation/ajouter-destinataire");
-                            }, 1000);
-                        }
-                    } else {
-                        setShowLoginPrompt(true);
+        try {
+            setLoading(true);
+            // Check if the user is authenticated
+            const authResult = await checkAuthStatus();
+
+            if (authResult.isAuthenticated) {
+                // Check if the results object is not empty
+                if (results) {
+                    if (authResult.userId && !results.userId) {
+                        results.userId = Number(authResult.userId);
+                        await updateSimulationUserId(results.id, results.userId);
                     }
-                } catch (error) {
-                    console.error("Error validating simulation:", error);
-                    toast.error("An error occurred while validating the simulation.");
-                    setLoading(false);
+                    toast("Redirecting to add destinataire page in 3 seconds...");
+                    setTimeout(() => {
+                        router.push("/client/simulation/ajouter-destinataire");
+                    }, 1000);
                 }
-            })();
-        });
+            } else {
+                setShowLoginPrompt(true);  // This should now work properly
+            }
+        } catch (error) {
+            console.error("Error validating simulation:", error);
+            toast.error("An error occurred while validating the simulation.");
+        } finally {
+            setLoading(false);  // Always reset loading state
+        }
     };
-
-
     const handleLoginRedirect = () => {
         setShowLoginPrompt(false);
         const redirectUrl = encodeURIComponent('/client/simulation/results');
@@ -140,26 +137,35 @@ export default function SimulationResults() {
                 try {
                     const authResult = await checkAuthStatus();
 
-                    if (authResult.isAuthenticated) {
-                        if (results) {
+                    if (results) {
+                        if (authResult.isAuthenticated) {
                             if (authResult.userId && !results.userId) {
                                 results.userId = Number(authResult.userId);
+
+                                results.simulationStatus = SimulationStatus.CONFIRMED;
                                 const response = await updateSimulationUserId(results.id, results.userId);
+
 
                                 if (!response) {
                                     toast.error("Une erreur est survenue lors de la mise à jour de la simulation.");
                                 }
+                                toast("Redirection en cours...");
+                                setTimeout(() => {
+                                    router.push('/client/simulation/edit');
+                                }, 3000);
                             }
+                        } else {
+                            toast("Redirection en cours...");
+                            setTimeout(() => {
+                                router.push('/client/simulation/edit');
+                            }, 3000);
                         }
+                    } else {
+                        toast.error("Une erreur est survenue lors de la récupération des résultats de la simulation.");
                     }
                 } catch (error) {
                     console.error("Error updating simulation:", error);
                     toast.error("Une erreur est survenue lors de la mise à jour de la simulation.");
-                } finally {
-                    toast("Redirection en cours...");
-                    setTimeout(() => {
-                        router.push('/client/simulation/edit');
-                    }, 3000);
                 }
             })();
         });
@@ -170,7 +176,6 @@ export default function SimulationResults() {
     if (loading || !results) {
         return <ResultsSkeleton/>;
     }
-
 
 
     return (
