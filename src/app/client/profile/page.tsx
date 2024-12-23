@@ -1,12 +1,13 @@
 import ProfileComponent from "@/components/client-specific/profile/ProfileComponent";
+import RequireAuth from "@/components/auth/RequireAuth";
 
 
 function Profile() {
     return (
-        <div>
-            <ProfileComponent/>
-        </div>
-    )
+        <RequireAuth>
+            <ProfileComponent />
+        </RequireAuth>
+    );
 }
 
 export default Profile

@@ -6,6 +6,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Footer from "@/components/navigations/footer/Footer";
 import React from "react";
 import {SessionProvider} from "next-auth/react";
+import RequireAuth from "@/components/auth/RequireAuth";
 
 const inter = Inter({subsets: ["latin"]});
 
@@ -17,10 +18,14 @@ export const metadata: Metadata = {
 export default function RootLayout({children}: { children: React.ReactNode }) {
     return (
         <html lang="en">
-        <body className={inter.className + " d-flex flex-column min-vh-100"} data-theme="dark">
+        <body className={inter.className }>
         <SessionProvider>
-            <main>{children}</main>
-            <Footer/>
+            <div className="min-h-screen flex flex-col">
+                <main className="flex-grow">
+                    {children}
+                </main>
+                <Footer/>
+            </div>
         </SessionProvider>
         </body>
         </html>

@@ -11,7 +11,6 @@ generator client {
 }
 
 // User models
-
 model User {
   id          Int       @id @default(autoincrement())
   firstName   String?   @db.VarChar(50)

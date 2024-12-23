@@ -8,10 +8,14 @@ import PackageForm from './PackageForm';
 import CountrySelect from "@/components/forms/SimulationForms/CountrySelectForm";
 import CitySelect from "@/components/forms/SimulationForms/CitySelectForm";
 import AgencySelect from "@/components/forms/SimulationForms/AgencySelectForm";
-import {submitSimulation} from "@/services/frontend-services/simulation/SimulationService";
+import {
+    deleteSimulationCookie,
+    getSimulation,
+    submitSimulation
+} from "@/services/frontend-services/simulation/SimulationService";
 import {toast, ToastContainer} from "react-toastify";
 import {useRouter} from 'next/navigation';
-import {simulationEnvoisSchema, simulationRequestSchema} from "@/utils/validationSchema";
+import {simulationRequestSchema} from "@/utils/validationSchema";
 import {
     fetchAgencies,
     fetchCities,
@@ -27,6 +31,7 @@ import {updateSimulationUserId} from "@/services/backend-services/Bk_SimulationS
 import {useSession} from "next-auth/react";
 import {checkAuthStatus} from "@/lib/auth";
 import SimulationSkeleton from "@/app/client/simulation/simulationSkeleton";
+import SimulationConfirmationModal from "@/components/modals/SimulationConfirmationModal";
 
 
 const SimulationForm = () => {
@@ -49,6 +54,7 @@ const SimulationForm = () => {
     const [currentPackage, setCurrentPackage] = useState(0);
     const [userId, setUserId] = useState<string | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [simulationConfirmationModal, setSimulationConfirmationModal] = useState(false);
 
 
     useEffect(() => {
@@ -85,17 +91,17 @@ const SimulationForm = () => {
                     try {
                         const simulation = await getSimulationFromCookie();
 
+                        // get Simulation by id
+                        const simulationData = await getSimulation();
                         if (simulation) {
-
-                            if (isAuthenticated && userId) {
-                                // update simulation with sender connected user id
-                                await updateSimulationUserId(simulation.id, Number(userId));
+                            setSimulationConfirmationModal(true);
+                            if (!simulationData?.userId) {
+                                if (isAuthenticated && userId) {
+                                    // update simulation with sender connected user id
+                                    await updateSimulationUserId(simulation.id, Number(userId));
+                                }
+                                // show modal to confirm in the use wants to keep the simulation or create a new one
                             }
-
-                            toast.success("Simulation found!");
-                            setTimeout(() => {
-                                router.push(`/client/simulation/results`);
-                            }, 2000);
                         }
                     } catch (error) {
                         console.error('Erreur lors de la recherche de la simulation:', error);
@@ -107,10 +113,12 @@ const SimulationForm = () => {
         findExistingSimulation();
     }, [isAuthenticated, router, session?.user?.id, userId])
 
+    // fetch countries when component mounts
     useEffect(() => {
         fetchCountries().then(data => setOptions(prev => ({...prev, countries: data}))).catch(console.error);
     }, []);
 
+    // fetch destination countries when departure country changes
     useEffect(() => {
         if (departure.country) {
             fetchDestinationCountries(departure.country).then(data => setOptions(prev => ({
@@ -120,6 +128,7 @@ const SimulationForm = () => {
         }
     }, [departure.country]);
 
+    // fetch departure cities when departure country changes
     useEffect(() => {
         if (departure.country) {
             fetchCities(departure.country).then(data => setOptions(prev => ({
@@ -130,6 +139,7 @@ const SimulationForm = () => {
         }
     }, [departure.country]);
 
+    // fetch departure agencies when departure city changes
     useEffect(() => {
         if (departure.city && departure.country) {
             fetchAgencies(departure.city).then(data => setOptions(prev => ({
@@ -140,6 +150,8 @@ const SimulationForm = () => {
         }
     }, [departure.city, departure.country]);
 
+
+    // fetch destination cities when destination country changes
     useEffect(() => {
         if (destination.country) {
             fetchCities(destination.country).then(data => setOptions(prev => ({
@@ -150,6 +162,7 @@ const SimulationForm = () => {
         }
     }, [destination.country]);
 
+    // fetch destination agencies when destination city changes
     useEffect(() => {
         if (destination.city) {
             fetchAgencies(destination.city).then(data => setOptions(prev => ({
@@ -234,8 +247,27 @@ const SimulationForm = () => {
 
     };
 
+    const handleKeepSimulation = () => {
+        setSimulationConfirmationModal(false);
+
+        toast.success("Continuant avec la simulation...");
+        setTimeout(() => {
+            router.push(`/client/simulation/results`);
+        }, 2000);
+
+    };
+
+    const handleCreateNewSimulation = async () => {
+        setSimulationConfirmationModal(false);
+        setTimeout(async () => {
+            toast.success("La suppression de la simulation est en cours...");
+            await deleteSimulationCookie(); // Clear simulation cookies
+            router.refresh(); // Refresh the page
+        }, 2000);
+    };
+
     if (loading) {
-        return ( <SimulationSkeleton />);
+        return (<SimulationSkeleton/>);
     }
 
     return (
@@ -414,6 +446,13 @@ const SimulationForm = () => {
                 pauseOnHover
                 draggable
                 pauseOnFocusLoss
+            />
+
+            <SimulationConfirmationModal
+                show={simulationConfirmationModal}
+                handleClose={() => setSimulationConfirmationModal(false)}
+                handleConfirm={handleKeepSimulation} // Keep simulation and go to results
+                handleCreateNew={handleCreateNewSimulation} // Create a new simulation
             />
         </motion.div>
     );

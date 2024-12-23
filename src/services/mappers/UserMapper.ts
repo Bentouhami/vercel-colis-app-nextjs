@@ -1,15 +1,16 @@
 // path: src/services/mappers/UserMapper.ts
-import {User as PrismaUser} from '@prisma/client'
-import {FullUserResponseDto, UserDto, UserLoginResponseDto} from '@/services/dtos/users/UserDto'
+import {User as UserPrisma} from '@prisma/client'
+import {FullUserResponseDto, ProfileDto, UserDto, UserLoginResponseDto} from '@/services/dtos/users/UserDto'
 import {RoleMapper} from "@/services/mappers/enums/RoleMapper";
 import {AddressMapper} from "@/services/mappers/AddressMapper";
 
 import {Address as AddressPrisma} from "@prisma/client";
+import {AddressResponseDto} from "@/services/dtos";
 
 
 export class UserMapper {
     // Map Prisma User to UserDto
-    static toDto(user: PrismaUser): UserDto {
+    static toDto(user: UserPrisma): UserDto {
         return {
             id: user.id,
             firstName: user.firstName || '',
@@ -31,7 +32,7 @@ export class UserMapper {
     }
 
     // Map Prisma User to Full User Response DTO
-    static toFullUserResponseDto(user: PrismaUser & { Address: AddressPrisma }): FullUserResponseDto {
+    static toFullUserResponseDto(user: UserPrisma & { Address: AddressPrisma }): FullUserResponseDto {
         return {
             id: user.id,
             firstName: user.firstName || '',
@@ -51,7 +52,7 @@ export class UserMapper {
     }
 
     // Map Prisma User to Login Response DTO
-    static toLoginResponseDto(user: PrismaUser & { Address?: AddressPrisma }): UserLoginResponseDto | null {
+    static toLoginResponseDto(user: UserPrisma & { Address?: AddressPrisma }): UserLoginResponseDto | null {
         console.log("log ====> user in toLoginResponseDto function called in path: src/services/mappers/UserMapper.ts", user)
         if (!user) {
             return null;
@@ -78,7 +79,7 @@ export class UserMapper {
     }
 
     // Map multiple users to DTOs
-    static toDtos(users: PrismaUser[]): UserDto[] {
+    static toDtos(users: UserPrisma[]): UserDto[] {
         return users.map(this.toDto)
     }
 
@@ -102,5 +103,21 @@ export class UserMapper {
             verificationTokenExpires: createDto.verificationTokenExpires,
             addressId: createDto.addressId
         }
+    }
+
+    static toUserProfile(user: UserPrisma & { Address?: AddressPrisma }): ProfileDto {
+        return {
+            id: user.id!,
+            firstName: user?.firstName!,
+            lastName: user.lastName!,
+            name: user.name!,
+            birthDate: user.birthDate!,
+            email: user.email!,
+            phoneNumber: user.phoneNumber!,
+            image: user.image || null,
+            roles: RoleMapper.toRolesEnum(user.roles),
+            Address: AddressMapper.toResponseDto(user.Address!),
+            isVerified: user.isVerified || false,
+        };
     }
 }

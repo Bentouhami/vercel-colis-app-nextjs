@@ -6,6 +6,11 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
 .toast-container {
     bottom: 20px !important;
     right: 20px !important;
@@ -76,4 +81,78 @@
     body {
         @apply bg-background text-foreground;
     }
+}
+
+/* Add this CSS to your stylesheet */
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.card {
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-content {
+    padding: 1.5rem;
+}
+
+.avatar {
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.tabs-list {
+    display: flex;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.tabs-trigger {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #6b7280;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.tabs-trigger:hover,
+.tabs-trigger:focus {
+    color: #374151;
+    outline: none;
+}
+
+.tabs-content {
+    padding: 1rem;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.info-item p {
+    margin: 0;
+}
+
+.info-item .label {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.info-item .value {
+    font-size: 1rem;
+    font-weight: 500;
 }

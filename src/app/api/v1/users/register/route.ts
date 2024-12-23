@@ -42,19 +42,15 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-        const body = (await request.json()) as RegisterClientDto;
+        const body: RegisterClientDto = await request.json();
 
         if (!body) {
             return NextResponse.json({error: "Missing required fields"}, {status: 400});
         }
-
-        console.log("Register registeredUser request body: ", body);
-
         const {success, error, data: validatedData} = registerUserBackendSchema.safeParse(body);
 
         if (!success) {
             console.log(" log ====> error of type z.ZodError in path src/app/api/v1/users/register/route.ts: ", error);
-
             return NextResponse.json({error: error?.errors[0].message}, {status: 400});
         }
 
@@ -139,6 +135,8 @@ export async function POST(request: NextRequest) {
             if (!registeredUser || registeredUser.name === undefined) {
                 return NextResponse.json({error: "Failed to create registeredUser"}, {status: 500});
             }
+
+            console.log("log ====> registeredUser of type FullUserResponseDto in path src/app/api/v1/users/register/route.ts: ", registeredUser);
 
             await sendVerificationEmail(registeredUser.name, registeredUser.email, verificationData.verificationToken);
 

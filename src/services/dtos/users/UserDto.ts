@@ -138,3 +138,19 @@ export interface UserLoginResponseDto {
     verificationToken: string | null;
     verificationTokenExpires: Date | null;
 }
+
+// DTO for User Profile
+export interface ProfileDto {
+    id: number;
+    email: string;
+    firstName: string;
+    lastName: string;
+    birthDate: Date;
+    name: string;
+    phoneNumber: string;
+    Address: AddressResponseDto;
+    image: string | null;
+    roles: Roles[];
+    isVerified: boolean;
+}
+

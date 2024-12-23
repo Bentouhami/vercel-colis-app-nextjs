@@ -3,7 +3,8 @@
 import {JWTPayload} from "@/utils/types";
 import {setCookie} from "@/utils/generateToken";
 import {DOMAIN} from "@/utils/constants";
-import {CreateDestinataireDto, RegisterClientDto, Roles} from "@/services/dtos";
+import {CreateDestinataireDto, ProfileDto, RegisterClientDto, Roles} from "@/services/dtos";
+import axios from "axios";
 
 /**
  * Generate JWTPayload object and setCookies with JWT token and cookie
@@ -69,6 +70,29 @@ export async function getConnectedUser() {
     }
 }
 
+export async function getUserProfileById(id: number): Promise<ProfileDto | null> {
+    console.log("log ====> getUserProfileById called in src/services/frontend-services/Bk_UserService.ts")
+
+    try {
+        const response = await fetch(`${DOMAIN}/api/v1/users/${id}/profile`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch user profile');
+        }
+
+        const data = await response.json();
+        return data.profile; // Return the user profile
+    } catch (error) {
+        console.error('Error fetching user profile:', error);
+        return null;
+    }
+}
+
 export async function getUserById(id: number): Promise<CreateDestinataireDto> {
     console.log("log ====> getUserById called in src/services/frontend-services/Bk_UserService.ts")
 
@@ -101,19 +125,19 @@ export async function getUserById(id: number): Promise<CreateDestinataireDto> {
 // register new user via API
 export async function registerUser(newUser: RegisterClientDto) {
     try {
-        const response = await fetch(`${DOMAIN}/api/v1/users/register`, {
-            method: 'POST',
+        const response = await axios.post(`${DOMAIN}/api/v1/users/register`, newUser, {
+
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(newUser),
+
         });
 
         // Lire la réponse et la retourner directement
-        const data = await response.json();
+        const data = await response.data;
         console.log("log ====> data in registerUser function after parsing JSON in path src/services/frontend-services/Bk_UserService.ts: ", data);
 
-        if (!response.ok) {
+        if (data.error) {
             // Si la réponse n'est pas ok (2xx), lever une erreur avec le message retourné par l'API
             throw new Error(data.error || 'Une erreur est survenue lors de l\'enregistrement.');
         }

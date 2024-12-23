@@ -1,10 +1,13 @@
 // path: src/services/repositories/transports/TransportRepository.ts
 
-import {TransportResponseDto, UpdateTransportRequestDto} from "@/services/dtos";
+import {ProfileDto, TransportResponseDto, UpdateTransportRequestDto} from "@/services/dtos";
 import {ITransportRepository} from "@/services/repositories/transports/ITransportRepository";
 import {transportDAO} from "@/services/dal/DAO/transports/TransportDAO";
 import {Transport as TransportPrisma} from "@prisma/client";
 import {TransportMapper} from "@/services/mappers/TransportMapper";
+import {userDAO} from "@/services/dal/DAO/users/UserDAO";
+import {UserMapper} from "@/services/mappers/UserMapper";
+import {getUserProfileById} from "@/services/frontend-services/UserService";
 
 /**
  * This class provides methods for interacting with the transports table in the database.
@@ -41,6 +44,17 @@ class TransportRepository implements ITransportRepository {
 
         console.log("log ====> updatedTransport in updateTransport after mapping to TransportResponseDto in path: src/services/repositories/transports/TransportRepository.ts is : ", updatedTransport);
         return updatedTransport;
+
+    }
+
+    async getUserProfileById(userId: number) : Promise<ProfileDto | null> {
+
+        if (!userId) return null;
+        const user = await userDAO.getUserById(userId);
+
+        if (!user) return null;
+
+        return UserMapper.toUserProfile(user);
 
     }
 }

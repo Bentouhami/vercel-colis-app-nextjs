@@ -1,6 +1,6 @@
 // path: src/services/backend-services/Bk_TransportService.ts
 
-import {TransportResponseDto, UpdateTransportRequestDto} from "@/services/dtos";
+import {ProfileDto, TransportResponseDto, UpdateTransportRequestDto} from "@/services/dtos";
 import {transportRepository} from "@/services/repositories/transports/TransportRepository";
 
 /**
@@ -43,6 +43,19 @@ export async function updateTransport(transport: UpdateTransportRequestDto): Pro
         return response;
     } catch (error) {
         console.error("Error updating transport:", error);
+        throw error;
+    }
+}
+
+export async function getUserProfileById(userId: number) : Promise<ProfileDto | null> {
+    try {
+        const response = await transportRepository.getUserProfileById(userId);
+        if (!response) {
+            return null;
+        }
+        return response;
+    } catch (error) {
+        console.error("Error getting user profile:", error);
         throw error;
     }
 }
