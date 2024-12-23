@@ -1,7 +1,7 @@
 // path: components/forms/ContactComponent.tsx
 'use client';
 
-import React, {FormEvent, useState} from "react";
+import React, {FormEvent, useEffect, useState} from "react";
 import {toast} from "react-toastify";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import {Input} from "@/components/ui/input";
@@ -10,6 +10,10 @@ import {Button} from "@/components/ui/button";
 import {Mail, MapPin, Phone, Send} from "lucide-react";
 import {motion} from "framer-motion";
 import {sendContactEmail} from "@/services/frontend-services/contact/ContactService";
+import {getCurrentUserId} from "@/lib/auth";
+import {router} from "next/client";
+import {getUserProfileById} from "@/services/frontend-services/UserService";
+import {ProfileDto} from "@/services/dtos";
 
 function ContactComponent() {
     const [name, setName] = useState('');
@@ -18,6 +22,42 @@ function ContactComponent() {
     const [subject, setSubject] = useState('');
     const [message, setMessage] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+
+    // check if the user is logged in and fetch their data if so to pre-fill the form with their information (name, email, phone)
+    const [userData, setUserData] = useState<ProfileDto | null>(null);
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                setIsLoading(true);
+                const userId = await getCurrentUserId();
+                if (!userId) {
+                    setUserData(null);
+                    setIsLoading(false);
+                    return;
+                }
+                const user = await getUserProfileById(Number(userId));
+
+                if (user) {
+                    setUserData(user);
+                    // pré-remplir le formulaire
+                    setName(user.name ?? "");
+                    setEmail(user.email ?? "");
+                    setPhone(user.phoneNumber ?? "");
+                }
+                setIsLoading(false);
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+            }
+        };
+
+        fetchUserData();
+    }, []);
+
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
+
 
     async function handleSubmit(e: FormEvent) {
         e.preventDefault();
@@ -27,7 +67,7 @@ function ContactComponent() {
 
         try {
 
-            console.log("log ====> messageBody in path: components/conatct-us/ContactComponent.tsx: ", messageBody);
+            console.log("log ====> messageBody in path: components/contact-us/ContactComponent.tsx: ", messageBody);
             const mailSent = await sendContactEmail(messageBody);
             toast.success("Votre message a été envoyé !");
             setName('');
