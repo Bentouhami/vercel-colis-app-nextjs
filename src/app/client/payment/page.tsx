@@ -1,5 +1,4 @@
 // path: src/app/client/payment/page.tsx
-
 "use client";
 import React, {Suspense, useEffect, useState} from 'react';
 import {loadStripe} from '@stripe/stripe-js';
@@ -9,9 +8,9 @@ import {useSearchParams} from "next/navigation";
 import {DOMAIN} from "@/utils/constants";
 import axios from "axios";
 
-
 // Charger la clé publique Stripe depuis les variables d'environnement
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!);
+
 const PaymentContent = () => {
     const [loading, setLoading] = useState(false);
     const [amount, setAmount] = useState<number | null>(null);
@@ -31,15 +30,15 @@ const PaymentContent = () => {
 
         try {
             // Créer une session de paiement en appelant votre route API
-            const response = await axios.post(`${DOMAIN}/api/v1/payment`, { amount: amount }, {
-                headers: { 'Content-Type': 'application/json' },
+            const response = await axios.post(`${DOMAIN}/api/v1/payment`, {amount: amount}, {
+                headers: {'Content-Type': 'application/json'},
             });
 
-            const { id: sessionId } = response.data; // Extract sessionId from response
+            const {id: sessionId} = response.data; // Extract sessionId from response
 
             // Charger Stripe
             const stripe = await stripePromise;
-            const result = await stripe?.redirectToCheckout({ sessionId });
+            const result = await stripe?.redirectToCheckout({sessionId});
 
             if (result?.error) {
                 toast.error("Erreur lors de la redirection vers Stripe : " + result.error.message);

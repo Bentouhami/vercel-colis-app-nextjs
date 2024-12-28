@@ -1,9 +1,7 @@
 // path: src/app/api/v1/transports/route.ts
 
 import {NextRequest, NextResponse} from 'next/server';
-import {getTransports} from "@/services/backend-services/Bk_TransportService";
-import {updateTransport} from "@/services/backend-services/Bk_TransportService";
-import {UpdateTransportRequestDto} from "@/services/dtos";
+import {getTransports, updateTransport} from "@/services/backend-services/Bk_TransportService";
 import {transportSchema} from "@/utils/validationSchema";
 
 export const dynamic = 'force-dynamic';
@@ -43,7 +41,7 @@ export async function PUT(request: NextRequest) {
     console.log("PUT request received in transports route");
 
     if (request.method !== "PUT") {
-        return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
+        return NextResponse.json({error: "Method not allowed"}, {status: 405});
     }
 
     try {
@@ -56,8 +54,8 @@ export async function PUT(request: NextRequest) {
         if (!validationResult.success) {
             // Return validation errors
             return NextResponse.json(
-                { error: validationResult.error.errors },
-                { status: 400 }
+                {error: validationResult.error.errors},
+                {status: 400}
             );
         }
 
@@ -69,8 +67,8 @@ export async function PUT(request: NextRequest) {
 
         if (!updatedTransport) {
             return NextResponse.json(
-                { error: "Transport not found or failed to update" },
-                { status: 404 }
+                {error: "Transport not found or failed to update"},
+                {status: 404}
             );
         }
 
@@ -80,11 +78,11 @@ export async function PUT(request: NextRequest) {
         );
 
         return NextResponse.json(
-            { data: updatedTransport, message: "Transport updated successfully" },
-            { status: 200 }
+            {data: updatedTransport, message: "Transport updated successfully"},
+            {status: 200}
         );
     } catch (error) {
         console.error("Error updating transport:", error);
-        return NextResponse.json({ error: "Failed to update transport" }, { status: 500 });
+        return NextResponse.json({error: "Failed to update transport"}, {status: 500});
     }
 }

@@ -8,7 +8,6 @@ import {getUserById} from "@/services/frontend-services/UserService";
 import {toast} from "react-toastify";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Calendar, CreditCard, DollarSign, MapPin, Package, Truck, User, Weight, XCircle} from "lucide-react";
-import {Alert, AlertDescription} from "@/components/ui/alert";
 import {Button} from "@/components/ui/button";
 import {CreateDestinataireDto, SimulationResponseDto} from "@/services/dtos";
 import RequireAuth from "@/components/auth/RequireAuth";
@@ -84,16 +83,11 @@ export default function RecapitulatifPage() {
     }
 
     if (!simulationData) {
-
         return <RecapSkeleton/>;
-
-
     }
 
     const handlePaymentRedirect = () => {
         if (simulationData?.totalPrice) {
-
-
             // Navigate to payment page with totalPrice as a query parameter
             router.push(`/client/payment?amount=${simulationData.totalPrice}`);
         } else {

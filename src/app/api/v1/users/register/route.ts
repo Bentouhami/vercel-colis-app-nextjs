@@ -18,12 +18,7 @@ import {
     updateVerificationTokenForOldUser
 } from "@/services/backend-services/Bk_UserService";
 import {sendVerificationEmail} from "@/lib/mailer";
-import {
-    BaseClientDto,
-    FullUserResponseDto,
-    RegisterClientDto,
-    UserModelDto
-} from "@/services/dtos/users/UserDto";
+import {BaseClientDto, FullUserResponseDto, RegisterClientDto, UserModelDto} from "@/services/dtos/users/UserDto";
 import {AddressDto, AddressResponseDto} from "@/services/dtos/addresses/AddressDto";
 import {Roles} from "@/services/dtos/enums/EnumsDto";
 

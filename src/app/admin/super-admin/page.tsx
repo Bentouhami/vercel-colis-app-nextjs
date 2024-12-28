@@ -57,8 +57,8 @@ function DashboardPage() {
 
             </h1>
 
-            <AgencyList  />
-            <AgencyForm  />
+            <AgencyList/>
+            <AgencyForm/>
         </div>
     )
 }

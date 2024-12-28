@@ -5,7 +5,7 @@ import {
     CreatedSimulationResponseDto,
     CreateSimulationRequestDto,
     SimulationResponseDto,
-    SimulationSummaryDto, UpdateEditedSimulationDto
+    SimulationSummaryDto
 } from "@/services/dtos";
 import {simulationDAO} from "@/services/dal/DAO/simulations/SimulationDAO";
 import {SimulationMapper} from "@/services/mappers/SimulationMapper";
@@ -26,22 +26,28 @@ export class SimulationRepository implements ISimulationRepository {
      *      type: 'number',
      *  })
 
-     *@param id
      * @returns SimulationResponseDto if found or null if not
+     * @param envoiId
      */
-    async getSimulationResponseById(id: number): Promise<SimulationResponseDto | null> {
-        if (!id) {
+    async getSimulationResponseById(envoiId: number): Promise<SimulationResponseDto | null> {
+        if (!envoiId) {
             return null;
         }
 
         // Call the DAO to get the simulation
         try {
-            const simulation = await simulationDAO.getSimulationResponseById(id);
+
+            console.log("log ====> envoiId in getSimulationResponseById function called in path: src/services/frontend-services/simulation/SimulationService.ts is : ", envoiId);
+
+            const simulation = await simulationDAO.getSimulationResponseById(envoiId);
 
             // Check if the simulation exists
             if (!simulation) {
                 return null;
             }
+
+
+            console.log("log ====> simulation in getSimulationResponseById function called in path: src/services/frontend-services/simulation/SimulationService.ts returned from simulationDAO.getSimulationResponseById function is : ", simulation);
 
             // Map the simulation to a SimulationRequestDto and return it
             return SimulationMapper.toSimulationResponseDto(simulation);
@@ -191,7 +197,7 @@ export class SimulationRepository implements ISimulationRepository {
         return simulationSummary;
     }
 
-    async updateSimulationTransportId(simulationId: number, transportId: number) : Promise<boolean> {
+    async updateSimulationTransportId(simulationId: number, transportId: number): Promise<boolean> {
 
         if (!simulationId || !transportId) {
             console.log("log ====> simulationId or transportId not found in updateSimulationTransportId function");

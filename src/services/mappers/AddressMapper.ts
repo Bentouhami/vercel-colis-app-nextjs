@@ -7,7 +7,7 @@ export class AddressMapper {
     // Map Prisma Address to AddressDto
     static toDto(address: AddressPrisma): AddressDto {
         return {
-            id: address.id,
+            id: address.id!,
             street: address.street,
             number: address.number || '',
             city: address.city,
@@ -21,7 +21,7 @@ export class AddressMapper {
     // Map Prisma Address to Create Address DTO
     static toResponseDto(address: AddressPrisma): AddressResponseDto {
         return {
-            id: address.id ?? null,
+            id: address.id,
             number: address.number || '',
             street: address.street,
             city: address.city,

@@ -5,7 +5,7 @@ import RequireAuth from "@/components/auth/RequireAuth";
 function Profile() {
     return (
         <RequireAuth>
-            <ProfileComponent />
+            <ProfileComponent/>
         </RequireAuth>
     );
 }

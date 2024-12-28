@@ -5,7 +5,7 @@ import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 import { CreatedSimulationResponseDto } from "@/services/dtos";
 
-export async function getSimulationFromCookie() {
+export async function getSimulationFromCookie() : Promise<CreatedSimulationResponseDto | null> {
     try {
         const cookieName = process.env.SIMULATION_COOKIE_NAME;
         if (!cookieName) return null;

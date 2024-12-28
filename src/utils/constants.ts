@@ -42,3 +42,7 @@ export const ALLOWED_ORIGINS =
     process.env.NODE_ENV === "production"
         ? [PRODUCTION_DOMAIN]
         : [DEVELOPMENT_DOMAIN];
+
+
+// Cloudinary constants
+export const QR_CODES_FOLDER = "qr_codes";

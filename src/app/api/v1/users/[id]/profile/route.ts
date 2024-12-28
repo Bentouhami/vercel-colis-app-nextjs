@@ -1,16 +1,14 @@
 // path: src/app/api/v1/users/[id]/profile/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma'; // Adjust the import path if necessary
-import { ProfileDto } from '@/services/dtos/users/UserDto';
+import {NextRequest, NextResponse} from 'next/server';
 import {getUserProfileById} from "@/services/backend-services/Bk_TransportService";
 
 export async function GET(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    {params}: { params: { id: string } }
 ): Promise<NextResponse> {
 
-    if (req.method !== 'GET'){
-        return  NextResponse.json("Not allowed method!")
+    if (req.method !== 'GET') {
+        return NextResponse.json("Not allowed method!")
     }
 
     try {
@@ -18,8 +16,8 @@ export async function GET(
 
         if (isNaN(userId)) {
             return NextResponse.json(
-                { error: 'Invalid user ID provided.' },
-                { status: 400 }
+                {error: 'Invalid user ID provided.'},
+                {status: 400}
             );
         }
 
@@ -29,17 +27,17 @@ export async function GET(
 
         if (!userProfile) {
             return NextResponse.json(
-                { error: 'User not found.' },
-                { status: 404 }
+                {error: 'User not found.'},
+                {status: 404}
             );
         }
 
-        return NextResponse.json({ profile: userProfile }, { status: 200 });
+        return NextResponse.json({profile: userProfile}, {status: 200});
     } catch (error) {
         console.error('Error fetching user profile:', error);
         return NextResponse.json(
-            { error: 'Internal server error.' },
-            { status: 500 }
+            {error: 'Internal server error.'},
+            {status: 500}
         );
     }
 }

@@ -3,7 +3,7 @@ import {NextRequest, NextResponse} from "next/server";
 import {completePaymentService} from "@/services/frontend-services/payment/paymentService";
 import {getSimulationById, updatePaidEnvoi} from "@/services/backend-services/Bk_SimulationService";
 import {verifySimulationToken} from "@/utils/verifySimulationToken";
-import {SimulationStatus, EnvoiStatus} from "@/services/dtos";
+import {EnvoiStatus, SimulationStatus} from "@/services/dtos";
 
 export async function GET(req: NextRequest) {
 
@@ -44,7 +44,6 @@ export async function GET(req: NextRequest) {
 
         // Update Simulation envoi status and simulationStatus
         await updatePaidEnvoi(simulation, simulationFromCookie);
-
 
 
         await completePaymentService();

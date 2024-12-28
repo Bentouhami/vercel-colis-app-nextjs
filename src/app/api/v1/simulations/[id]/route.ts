@@ -42,7 +42,7 @@ export async function PUT(request: NextRequest, {params}: { params: { id: string
         const simulationId = Number(params.id);
 
         // extract transport is from the request body
-        const { transportId } = await request.json();
+        const {transportId} = await request.json();
 
 
         console.log("log ====> transportId in PUT request received in simulations/[id] route after saving path: src/app/api/v1/simulations/[id]/route.ts is : ", transportId);

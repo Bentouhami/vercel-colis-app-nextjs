@@ -24,7 +24,7 @@ const LoginContent = () => {
 const LoginPage = () => {
     return (
         <Suspense fallback={<div>Chargement...</div>}>
-            <LoginContent />
+            <LoginContent/>
         </Suspense>
     );
 };

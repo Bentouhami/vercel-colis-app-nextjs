@@ -13,6 +13,11 @@ export class SimulationMapper {
      */
     static toSimulationResponseDto(rawSimulation: any): SimulationResponseDto | null {
 
+        if (!rawSimulation) {
+            return null;
+        }
+        console.log("log ====> rawSimulation in SimulationMapper.ts is : ", rawSimulation);
+
         //TODO: get the simulation object need to be mapped
         const {
             id,

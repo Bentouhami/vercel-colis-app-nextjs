@@ -1,9 +1,9 @@
 // Parcel Mapper
-import {Parcel} from "@prisma/client";
+import {Parcel as ParcelPrisma} from "@prisma/client";
 import {CreateParcelDto, ParcelDto} from "@/services/dtos";
 
 export class ParcelMapper {
-    static toDto(parcel: Parcel): ParcelDto {
+    static toDto(parcel: ParcelPrisma): ParcelDto {
         return {
             id: parcel.id,
             height: Number(parcel.height),
@@ -14,7 +14,7 @@ export class ParcelMapper {
         };
     }
 
-    static toCreateDto(parcel: Parcel): CreateParcelDto {
+    static toCreateDto(parcel: ParcelPrisma): CreateParcelDto {
         return {
             height: Number(parcel.height),
             weight: Number(parcel.weight),
@@ -22,4 +22,10 @@ export class ParcelMapper {
             length: Number(parcel.length)
         };
     }
+
+    // map many parcels to DTO
+    static toDtos(parcels: ParcelPrisma[]): ParcelDto[] {
+        return parcels.map(parcel => ParcelMapper.toDto(parcel));
+    }
+
 }

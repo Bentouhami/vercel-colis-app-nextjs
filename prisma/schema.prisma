@@ -315,8 +315,8 @@ model Envoi {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  arrivalAgency   Agency?    @relation("ArrivalAgency", fields: [arrivalAgencyId], references: [id])
-  departureAgency Agency?    @relation("DepartureAgency", fields: [departureAgencyId], references: [id])
+  arrivalAgency   Agency     @relation("ArrivalAgency", fields: [arrivalAgencyId], references: [id])
+  departureAgency Agency     @relation("DepartureAgency", fields: [departureAgencyId], references: [id])
   transport       Transport? @relation(fields: [transportId], references: [id])
 
   destinataire User? @relation("DestinataireEnvoi", fields: [destinataireId], references: [id])

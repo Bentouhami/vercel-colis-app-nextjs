@@ -46,6 +46,9 @@ export async function middleware(req: NextRequest) {
 
         // Handle redirects for authenticated users
         if (isAuthenticated) {
+            if(req.nextUrl.pathname === "/client/auth/login" || req.nextUrl.pathname === "/client/auth/register") {
+                return NextResponse.redirect(new URL("/client", req.nextUrl.origin));
+            }
             if (req.nextUrl.pathname === "/") {
                 if (isSuperAdmin) {
                     return NextResponse.redirect(new URL("/admin/super-admin", req.nextUrl.origin));

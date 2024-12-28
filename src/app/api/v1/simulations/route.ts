@@ -2,7 +2,7 @@
 
 import {NextRequest, NextResponse} from 'next/server';
 import {CreateSimulationRequestDto, EnvoiStatus, SimulationResponseDto, SimulationStatus,} from "@/services/dtos";
-import {getSimulationById, createSimulation, updatePaidEnvoi,} from "@/services/backend-services/Bk_SimulationService";
+import {createSimulation, getSimulationById, updatePaidEnvoi,} from "@/services/backend-services/Bk_SimulationService";
 import {setSimulationResponseCookie} from "@/utils/generateSimulationToken";
 import {verifySimulationToken} from "@/utils/verifySimulationToken";
 import {getToken} from "next-auth/jwt";
