@@ -1,5 +1,5 @@
 import {DefaultSession} from "next-auth";
-import {AddressResponseDto, AddressResponseDto, Roles} from "@/services/dtos";
+import {AddressResponseDto, Roles} from "@/services/dtos";
 
 
 declare module "next-auth" {

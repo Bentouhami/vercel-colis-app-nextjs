@@ -101,8 +101,10 @@ const SimulationForm = () => {
                                     await updateSimulationUserId(simulation.id, Number(userId));
                                 }
                                 // show modal to confirm in the use wants to keep the simulation or create a new one
+                                setSimulationConfirmationModal(true);
                             }
                         }
+                        setLoading(false);
                     } catch (error) {
                         console.error('Erreur lors de la recherche de la simulation:', error);
                     }

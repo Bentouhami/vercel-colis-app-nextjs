@@ -11,7 +11,7 @@ import {randomBytes} from "crypto";
  * @returns {string} token
  *
  */
-export function generateJwt(jwtPayload: JWTPayload) {
+export function generateJwt(jwtPayload: JWTPayload): string {
     const privateKey = process.env.JWT_SECRET as string;
 
     // return token

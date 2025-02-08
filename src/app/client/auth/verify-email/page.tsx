@@ -19,7 +19,7 @@ const VerifyEmailContent = () => {
             setCountdown((prev) => {
                 if (prev <= 1) {
                     clearInterval(timer);
-                    router.push('/client/auth//login');
+                    router.push('/client/auth/login');
                     return 0;
                 }
                 return prev - 1;

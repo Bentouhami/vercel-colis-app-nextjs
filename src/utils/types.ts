@@ -22,7 +22,7 @@ export type JWTPayload = {
     userEmail: string;
     phoneNumber: string;
     image?: string | null;
-    roles: string[]; // Changed from `role` to `roles` for multiple roles
+    roles: string[];
 };
 
 export type Country = {

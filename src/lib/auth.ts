@@ -33,6 +33,7 @@ interface AuthCheckResult {
     userId?: string;
     email?: string;
     error?: string;
+    roles?: string[];
 }
 export async function checkAuthStatus(showToast: boolean = true): Promise<AuthCheckResult> {
     try {
@@ -51,7 +52,8 @@ export async function checkAuthStatus(showToast: boolean = true): Promise<AuthCh
         return {
             isAuthenticated: true,
             userId: session.user?.id,
-            email: session.user?.email!
+            email: session.user?.email!,
+            roles: session.user?.roles
         };
     } catch (error) {
         if (showToast) {
