@@ -1,184 +1,196 @@
 // Path: src/app/api/v1/users/register/route.ts
 
+import { NextRequest, NextResponse } from "next/server"
 
-import {NextRequest, NextResponse} from 'next/server';
-
-
-import {errorHandler} from "@/utils/handelErrors";
-import {capitalizeFirstLetter, toLowerCase} from "@/utils/stringUtils";
-import {registerUserBackendSchema} from "@/utils/validationSchema";
-import {saltAndHashPassword} from "@/lib/auth";
-import {generateVerificationTokenForUser} from "@/utils/generateToken";
-import {VerificationDataType} from "@/utils/types";
-import {createAddress, isAddressAlreadyExist} from "@/services/backend-services/Bk_AddressService";
+import { errorHandler } from "@/utils/handelErrors"
+import { capitalizeFirstLetter, toLowerCase } from "@/utils/stringUtils"
+import { registerUserBackendSchema } from "@/utils/validationSchema"
+import { saltAndHashPassword } from "@/lib/auth"
+import { generateVerificationTokenForUser } from "@/utils/generateToken"
+import { VerificationDataType } from "@/utils/types"
+import {
+    createAddress,
+    isAddressAlreadyExist,
+} from "@/services/backend-services/Bk_AddressService"
 import {
     isUserAlreadyExist,
     registerUser,
     updateDestinataireToClient,
-    updateVerificationTokenForOldUser
-} from "@/services/backend-services/Bk_UserService";
-import {sendVerificationEmail} from "@/lib/mailer";
-import {BaseClientDto, FullUserResponseDto, RegisterClientDto, UserModelDto} from "@/services/dtos/users/UserDto";
-import {AddressDto, AddressResponseDto} from "@/services/dtos/addresses/AddressDto";
-import {Roles} from "@/services/dtos/enums/EnumsDto";
+    updateVerificationTokenForOldUser,
+} from "@/services/backend-services/Bk_UserService"
+import { sendVerificationEmail } from "@/lib/mailer"
+import {
+    BaseClientDto,
+    FullUserResponseDto,
+    RegisterClientDto,
+    UserModelDto,
+} from "@/services/dtos/users/UserDto"
+import { AddressResponseDto } from "@/services/dtos/addresses/AddressDto"
+import { Roles } from "@/services/dtos/enums/EnumsDto"
 
 /**
- * @method POST to register a new user in the database and send a verification email
- * @route.ts /api/v1/users/register
- * @desc Register a new user
- * @access public
+ * @method POST - Register a new user in DB and send a verification email
+ * @route /api/v1/users/register
+ * @access Public
  */
-export async function POST(request: NextRequest) {
-    console.log("log ====> POST request received in path: src/app/api/v1/users/register/route.ts");
+// ... Previous imports and setup remain the same
 
-    // Check if the request method is POST and return an error if not
+export async function POST(request: NextRequest) {
+    console.log("POST request received in path: src/app/api/v1/users/register/route.ts");
+
     if (request.method !== "POST") {
-        return NextResponse.json({error: "Method not allowed"}, {status: 405});
+        return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
     }
 
     try {
         const body: RegisterClientDto = await request.json();
-
         if (!body) {
-            return NextResponse.json({error: "Missing required fields"}, {status: 400});
+            return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
         }
-        const {success, error, data: validatedData} = registerUserBackendSchema.safeParse(body);
 
+        const { success, error, data: validatedData } = registerUserBackendSchema.safeParse(body);
         if (!success) {
-            console.log(" log ====> error of type z.ZodError in path src/app/api/v1/users/register/route.ts: ", error);
-            return NextResponse.json({error: error?.errors[0].message}, {status: 400});
+            console.log("Validation error:", error);
+            return NextResponse.json({ error: error?.errors[0].message }, { status: 400 });
         }
 
-        const {firstName, lastName, birthDate, phoneNumber, email, password, address} = validatedData;
+        const { firstName, lastName, birthDate, phoneNumber, email, password, address, roles } = validatedData;
 
-        const extractedBaseAddress: AddressResponseDto = {
-            street: toLowerCase(address.street),
-            number: address.number,
-            city: capitalizeFirstLetter(address.city),
-            zipCode: address.zipCode,
-            country: capitalizeFirstLetter(address.country),
-        };
+        // Format email and phoneNumber for checking
+        const formattedEmail = toLowerCase(email);
+        const formattedPhone = phoneNumber;
 
-        // Format user data with roles array
-        const formattedUser: BaseClientDto = {
-            firstName: capitalizeFirstLetter(firstName),
-            lastName: capitalizeFirstLetter(lastName),
-            name: `${capitalizeFirstLetter(firstName)} ${capitalizeFirstLetter(lastName)}`,
-            birthDate: new Date(birthDate),
-            phoneNumber,
-            email: toLowerCase(email),
-            image: null,
-            roles: [Roles.CLIENT], // Updated to roles array with default CLIENT Roles
-            password,
-            address: extractedBaseAddress as AddressResponseDto
-        };
+        // Check user existence first
+        let existedUser = await isUserAlreadyExist(formattedEmail, formattedPhone);
+        console.log("User existence check result:", existedUser);
 
-        console.log("Formatted address registeredUser:", formattedUser.address);
+        if (existedUser) {
+            // Handle existing user cases
+            if (existedUser.roles.includes(Roles.CLIENT) || existedUser.roles.includes(Roles.SUPER_ADMIN)) {
+                if (existedUser.isVerified) {
+                    return NextResponse.json(
+                        { error: "User already exists and is verified. Please log in." },
+                        { status: 400 }
+                    );
+                } else {
+                    // User is a client but not verified: update token and resend email
+                    const verificationData = generateVerificationTokenForUser();
+                    if (!verificationData) {
+                        return NextResponse.json({ error: "Failed to generate verification data" }, { status: 500 });
+                    }
+                    await updateVerificationTokenForOldUser(existedUser.id, verificationData);
+                    await sendVerificationEmail(existedUser.name, existedUser.email, verificationData.verificationToken);
+                    return NextResponse.json({
+                        message: "User already exists, please check your email to verify your account"
+                    }, { status: 200 });
+                }
+            } else if (existedUser.roles.includes(Roles.DESTINATAIRE)) {
+                // Process address for destinataire upgrade
+                const extractedBaseAddress: AddressResponseDto = {
+                    street: toLowerCase(address.street),
+                    number: address.number,
+                    city: capitalizeFirstLetter(address.city),
+                    zipCode: address.zipCode,
+                    country: capitalizeFirstLetter(address.country),
+                };
 
-        let addressToUse: AddressDto | null = await isAddressAlreadyExist(extractedBaseAddress);
+                let addressToUse = await isAddressAlreadyExist(extractedBaseAddress);
+                if (!addressToUse) {
+                    addressToUse = await createAddress(extractedBaseAddress);
+                    if (!addressToUse) {
+                        return NextResponse.json({ error: "Failed to create address" }, { status: 500 });
+                    }
+                }
 
-        if (!addressToUse) {
-            addressToUse = await createAddress(extractedBaseAddress);
+                // Generate verification data and hash password
+                const verificationData = generateVerificationTokenForUser();
+                const hashedPassword = await saltAndHashPassword(password);
+
+                // Prepare user data for update
+                const userData = {
+                    ...existedUser,
+                    birthDate: new Date(birthDate),
+                    addressId: addressToUse.id,
+                    address: addressToUse,
+                    password: hashedPassword,
+                    verificationToken: verificationData.verificationToken,
+                    verificationTokenExpires: verificationData.verificationTokenExpires,
+                };
+
+                const registeredUser = await updateDestinataireToClient(userData);
+                if (!registeredUser) {
+                    return NextResponse.json({ error: "Failed to update destinataire to client" }, { status: 500 });
+                }
+
+                await sendVerificationEmail(registeredUser?.name!, registeredUser.email, verificationData.verificationToken);
+                return NextResponse.json({
+                    message: "User updated successfully, please check your email to verify your account"
+                }, { status: 200 });
+            }
+        } else {
+            // User doesn't exist: process address and create new user
+            const extractedBaseAddress: AddressResponseDto = {
+                street: toLowerCase(address.street),
+                number: address.number,
+                city: capitalizeFirstLetter(address.city),
+                zipCode: address.zipCode,
+                country: capitalizeFirstLetter(address.country),
+            };
+
+            let addressToUse = await isAddressAlreadyExist(extractedBaseAddress);
             if (!addressToUse) {
-                return NextResponse.json({error: "Failed to create address"}, {status: 500});
+                addressToUse = await createAddress(extractedBaseAddress);
+                if (!addressToUse) {
+                    return NextResponse.json({ error: "Failed to create address" }, { status: 500 });
+                }
             }
-        }
 
-        console.log("addressToUse is: ", addressToUse);
-
-        const verificationData = generateVerificationTokenForUser() as VerificationDataType;
-
-        if (!verificationData) {
-            return NextResponse.json({error: "Failed to generate verification data"}, {status: 500});
-        }
-
-        const hashedPassword = await saltAndHashPassword(formattedUser.password);
-
-        let existedUser: UserModelDto | null = await isUserAlreadyExist(formattedUser.email, formattedUser.phoneNumber);
-
-        console.log("isUserAlreadyExist returned:", existedUser);
-
-        let registeredUser: FullUserResponseDto | null;
-
-        // Create a new user if not existing
-        if (!existedUser) {
-            const {firstName, lastName, name, birthDate, phoneNumber, email} = formattedUser;
-
-            const userData = {
-                firstName,
-                lastName,
-                name,
-                birthDate,
-                email,
-                phoneNumber,
-                password: hashedPassword,
+            // Format user data with address
+            const formattedUser: BaseClientDto = {
+                firstName: capitalizeFirstLetter(firstName),
+                lastName: capitalizeFirstLetter(lastName),
+                name: `${capitalizeFirstLetter(firstName)} ${capitalizeFirstLetter(lastName)}`,
+                birthDate: new Date(birthDate),
+                phoneNumber: formattedPhone,
+                email: formattedEmail,
+                image: null,
+                roles: roles ? [Roles.CLIENT] : [],
+                password: password,
                 address: addressToUse,
-                addressId: addressToUse?.id ?? null,
-                verificationToken: verificationData.verificationToken,
-                verificationTokenExpires: verificationData.verificationTokenExpires,
             };
 
-
-            console.log(" log ====> userData of type CreateUserDto in path src/app/api/v1/users/register/route.ts: ", userData);
-
-            console.log(" log ====> addressToUse of type CreateAddressDto in path src/app/api/v1/users/register/route.ts: ", addressToUse);
-
-            registeredUser = await registerUser(userData) as FullUserResponseDto;
-
-            console.log(" log ====> registeredUser of type FullUserResponseDto in path src/app/api/v1/users/register/route.ts: ", registeredUser);
-
-            if (!registeredUser || registeredUser.name === undefined) {
-                return NextResponse.json({error: "Failed to create registeredUser"}, {status: 500});
+            const verificationData = generateVerificationTokenForUser();
+            if (!verificationData) {
+                return NextResponse.json({ error: "Failed to generate verification data" }, { status: 500 });
             }
 
-            console.log("log ====> registeredUser of type FullUserResponseDto in path src/app/api/v1/users/register/route.ts: ", registeredUser);
+            const hashedPassword = await saltAndHashPassword(formattedUser.password);
 
-            await sendVerificationEmail(registeredUser.name, registeredUser.email, verificationData.verificationToken);
-
-            return NextResponse.json({message: "User created successfully, please check your email to verify your account"}, {status: 201});
-        }
-
-        // Handle other cases if user already exists
-        if (existedUser.roles.includes(Roles.CLIENT) && !existedUser.isVerified) {
-            await updateVerificationTokenForOldUser(existedUser.id, verificationData);
-            await sendVerificationEmail(existedUser.name, existedUser.email, verificationData.verificationToken);
-            return NextResponse.json({
-                message: "User already exists, please login or verify your email to activate your account",
-                status: 200
-            });
-        }
-
-        // destinataire case
-        if (existedUser.roles.includes(Roles.DESTINATAIRE)) {
+            // Prepare user data for creation
             const userData = {
-                ...existedUser,
+                firstName: formattedUser.firstName,
+                lastName: formattedUser.lastName,
+                name: formattedUser.name,
                 birthDate: formattedUser.birthDate,
-                addressId: addressToUse?.id,
-                address: addressToUse,
+                phoneNumber: formattedUser.phoneNumber,
+                email: formattedUser.email,
                 password: hashedPassword,
                 verificationToken: verificationData.verificationToken,
                 verificationTokenExpires: verificationData.verificationTokenExpires,
+                addressId: addressToUse.id,
+                address: addressToUse,
             };
-            console.log("log ====> userData of type UpdateUserDto in path src/app/api/v1/users/register/route.ts: ", userData);
 
-            registeredUser = await updateDestinataireToClient(
-                userData
-            );
-
-            if (!registeredUser || registeredUser.name === undefined) {
-                return NextResponse.json({error: "Failed to update destinataire to client"}, {status: 500});
+            const registeredUser = await registerUser(userData);
+            if (!registeredUser || !registeredUser.name) {
+                return NextResponse.json({ error: "Failed to create user" }, { status: 500 });
             }
 
             await sendVerificationEmail(registeredUser.name, registeredUser.email, verificationData.verificationToken);
-
-            return NextResponse.json({message: "User created successfully, please check your email to verify your account"}, {status: 201});
+            return NextResponse.json({
+                message: "User created successfully, please check your email to verify your account"
+            }, { status: 201 });
         }
-
-        if ((existedUser.roles.includes(Roles.CLIENT) || existedUser.roles.includes(Roles.SUPER_ADMIN)) && existedUser.isVerified) {
-            console.log("User is a client or admin and verified, returning error");
-            return NextResponse.json({error: "User already exists and is verified. Please log in."}, {status: 400});
-        }
-
     } catch (error) {
         return errorHandler(`Internal server error: ${error}`, 500);
     }

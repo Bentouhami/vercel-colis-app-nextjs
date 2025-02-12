@@ -31,7 +31,7 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
 
                 try {
 
-                    // find user in database
+                    // find user in a database
                     const user = await getUserByEmail(credentials.email as string);
 
                     // Check if the user exists and has a password

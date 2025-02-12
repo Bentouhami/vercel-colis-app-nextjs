@@ -66,3 +66,21 @@ export async function getEnvoiById(envoiId: number): Promise<EnvoiDto | null> {
     }
 }
 
+
+export async function fetchUserDeliveries(userId: string): Promise<EnvoiDto[]> {
+    const response = await axios.get(`${DOMAIN}/api/v1/envois/user/${userId}`, {
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    });
+    return response.data;
+}
+
+export async function createEnvoi(envoi: EnvoiDto): Promise<EnvoiDto> {
+    const response = await axios.post(`${DOMAIN}/api/v1/envois`, envoi, {
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    });
+    return response.data;
+}

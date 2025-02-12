@@ -1,7 +1,8 @@
+/* components/brand/brand.module.css */
 .logoBrand {
     display: flex;
     align-items: center;
-    margin-top: 2rem;
+    /* Removed margin-top to align properly */
 }
 
 .logo {

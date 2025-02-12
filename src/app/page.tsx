@@ -13,8 +13,6 @@ export default async function Home() {
                 href="/client"
 
             >
-
-
                 <span className="absolute -start-full transition-all group-hover:start-4">
                     <svg
                         className="size-5 rtl:rotate-180"

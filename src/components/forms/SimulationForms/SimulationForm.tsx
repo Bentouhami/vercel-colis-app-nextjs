@@ -3,7 +3,7 @@
 
 import React, {ChangeEvent, useEffect, useState, useTransition} from 'react';
 import {motion} from 'framer-motion';
-import {Button, Pagination, Spinner} from 'react-bootstrap';
+import {Button, Pagination} from 'react-bootstrap';
 import PackageForm from './PackageForm';
 import CountrySelect from "@/components/forms/SimulationForms/CountrySelectForm";
 import CitySelect from "@/components/forms/SimulationForms/CitySelectForm";
@@ -32,6 +32,17 @@ import {useSession} from "next-auth/react";
 import {checkAuthStatus} from "@/lib/auth";
 import SimulationSkeleton from "@/app/client/simulation/simulationSkeleton";
 import SimulationConfirmationModal from "@/components/modals/SimulationConfirmationModal";
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
+
+import {Label} from '@/components/ui/label';
+import {Input} from "@/components/ui/input";
+import {
+    PaginationContent,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious
+} from '@/components/ui/pagination';
 
 
 const SimulationForm = () => {
@@ -49,6 +60,7 @@ const SimulationForm = () => {
         destinationCities: [],
         destinationAgencies: []
     });
+
     const [packageCount, setPackageCount] = useState(1);
     const [parcels, setParcels] = useState([{height: 0, width: 0, length: 0, weight: 0}]);
     const [currentPackage, setCurrentPackage] = useState(0);
@@ -58,7 +70,7 @@ const SimulationForm = () => {
 
 
     useEffect(() => {
-        setLoading(true);  // This is fine as is
+        setLoading(true);
         const checkAuth = async () => {
             const authResult = await checkAuthStatus(false);
             setIsAuthenticated(authResult.isAuthenticated);
@@ -67,7 +79,6 @@ const SimulationForm = () => {
         checkAuth();
     }, []);
 
-    // Add this new useEffect to handle loading state
     useEffect(() => {
         // Check if all necessary initial data is loaded
         if (
@@ -202,7 +213,7 @@ const SimulationForm = () => {
 
     const handlePageChange = (pageIndex: number) => {
         setCurrentPackage(pageIndex);
-    };
+    }
 
     const handleSubmit = async (e: ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -221,13 +232,18 @@ const SimulationForm = () => {
                     parcels,
                 };
 
-                // validate data with zod schema
+                console.log("Simulation Data before validation:", simulationData);
                 const validated = simulationRequestSchema.safeParse(simulationData);
+                console.log("Validation Result:", validated);
 
                 if (!validated.success) {
-                    toast.error(validated.error.errors[0].message);
+                    validated.error.errors.forEach((err) => {
+                        toast.error(err.message);
+                    });
+                    console.log("Validation Errors:", validated.error.errors);
                     return;
                 }
+
 
                 try {
                     // Submit simulation to the backend
@@ -276,7 +292,7 @@ const SimulationForm = () => {
         <motion.div
             initial={{opacity: 0}}
             animate={{opacity: 1}}
-            className="container mx-auto p-8 mt-10 bg-gray-50 rounded-lg shadow-lg space-y-8"
+            className="max-w-4xl mx-auto p-8 mt-10 space-y-8"
         >
             <motion.h2
                 initial={{opacity: 0, y: -20}}
@@ -284,151 +300,158 @@ const SimulationForm = () => {
                 transition={{delay: 0.1}}
                 className="text-center text-3xl font-bold text-blue-600"
             >
+                Simulation Form
             </motion.h2>
 
             <form onSubmit={handleSubmit} className="space-y-8">
                 {/* Departure Information */}
-                <motion.div
-                    initial={{opacity: 0, y: 20}}
-                    animate={{opacity: 1, y: 0}}
-                    transition={{delay: 0.2}}
-                    className="p-6 bg-white rounded-md shadow-md"
-                >
-                    <h3 className="text-lg font-semibold text-blue-700 mb-4 flex items-center gap-2">
-                        <MapPin className="text-blue-500"/> Informations de Départ
-                    </h3>
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                        <CountrySelect
-                            label="Pays de départ"
-                            value={departure.country}
-                            onChange={(e) => handleDepartureChange('country', e.target.value)}
-                            countries={options.countries}
-                            disabled={isPending}
-                        />
-                        <CitySelect
-                            label="Ville de départ"
-                            value={departure.city}
-                            onChange={(e) => handleDepartureChange('city', e.target.value)}
-                            cities={options.departureCities}
-                            disabled={!departure.country}
-                        />
-                        <AgencySelect
-                            label="Agence de départ"
-                            value={departure.agencyName}
-                            onChange={(e) => handleDepartureChange('agencyName', e.target.value)}
-                            agencies={options.departureAgencies}
-                            disabled={!departure.city || isPending}
-                        />
-                    </div>
-                </motion.div>
+                <Card>
+                    <CardHeader className="flex items-center gap-2">
+                        <MapPin className="text-blue-500"/>
+                        <CardTitle>Informations de Départ</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <CountrySelect
+                                label="Pays de départ"
+                                value={departure.country}
+                                onChange={(e) => handleDepartureChange('country', e.target.value)}
+                                countries={options.countries}
+                                disabled={isPending}
+                                placeholder="Sélectionnez un pays avant de continuer"
+                            />
+                            <CitySelect
+                                label="Ville de départ"
+                                value={departure.city}
+                                onChange={(e) => handleDepartureChange('city', e.target.value)}
+                                cities={options.departureCities}
+                                disabled={!departure.country}
+                            />
+                            <AgencySelect
+                                label="Agence de départ"
+                                value={departure.agencyName}
+                                onChange={(e) => handleDepartureChange('agencyName', e.target.value)}
+                                agencies={options.departureAgencies}
+                                disabled={!departure.city || isPending}
+                            />
+                        </div>
+                    </CardContent>
+                </Card>
 
                 {/* Destination Information */}
-                <motion.div
-                    initial={{opacity: 0, y: 20}}
-                    animate={{opacity: 1, y: 0}}
-                    transition={{delay: 0.3}}
-                    className="p-6 bg-white rounded-md shadow-md"
-                >
-                    <h3 className="text-lg font-semibold text-blue-700 mb-4 flex items-center gap-2">
-                        <Truck className="text-blue-500"/> Informations de Destination
-                    </h3>
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                        <CountrySelect
-                            label="Pays de destination"
-                            value={destination.country}
-                            onChange={(e) => handleDestinationChange('country', e.target.value)}
-                            countries={options.destinationCountries}
-                            disabled={isPending}
-                        />
-                        <CitySelect
-                            label="Ville de destination"
-                            value={destination.city}
-                            onChange={(e) => handleDestinationChange('city', e.target.value)}
-                            cities={options.destinationCities}
-                            disabled={!destination.country}
-                        />
-                        <AgencySelect
-
-                            label="Agence d'arrivée"
-                            value={destination.agencyName}
-                            onChange={(e) => handleDestinationChange('agencyName', e.target.value)}
-                            agencies={options.destinationAgencies}
-                            disabled={!destination.city || isPending}
-                        />
-                    </div>
-                </motion.div>
+                <Card>
+                    <CardHeader className="flex items-center gap-2">
+                        <Truck className="text-blue-500"/>
+                        <CardTitle>Informations de Destination</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <CountrySelect
+                                label="Pays de destination"
+                                value={destination.country}
+                                onChange={(e) => handleDestinationChange('country', e.target.value)}
+                                countries={options.destinationCountries}
+                                disabled={!departure.country || isPending}
+                                placeholder="Sélectionnez un pays de départ avant de continuer"
+                            />
+                            <CitySelect
+                                label="Ville de destination"
+                                value={destination.city}
+                                onChange={(e) => handleDestinationChange('city', e.target.value)}
+                                cities={options.destinationCities}
+                                disabled={!destination.country}
+                            />
+                            <AgencySelect
+                                label="Agence d'arrivée"
+                                value={destination.agencyName}
+                                onChange={(e) => handleDestinationChange('agencyName', e.target.value)}
+                                agencies={options.destinationAgencies}
+                                disabled={!destination.city || isPending}
+                            />
+                        </div>
+                    </CardContent>
+                </Card>
 
                 {/* Parcel Information */}
-                <motion.div
-                    initial={{opacity: 0, y: 20}}
-                    animate={{opacity: 1, y: 0}}
-                    transition={{delay: 0.4}}
-                    className="p-6 bg-white rounded-md shadow-md"
-                >
-                    <h3 className="text-lg font-semibold text-blue-700 mb-4 flex items-center gap-2">
-                        <Box className="text-blue-500"/> Informations des Colis
-                    </h3>
-                    <div className="mb-4">
-                        <label className="block text-gray-600 font-medium mb-2">Nombre de colis</label>
-                        <input
-                            disabled={isPending}
-                            type="number"
-                            max={COLIS_MAX_PER_ENVOI}
-                            min="1"
-                            value={packageCount}
-                            onChange={handlePackageCountChange}
-                            className="w-full p-3 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-600"
-                        />
-                    </div>
-                    {parcels.map((pkg, index) => (
-                        index === currentPackage && (
-                            <PackageForm
-
-                                disabled={isPending}
-                                key={index}
-                                index={index}
-                                pkg={pkg}
-                                onChange={handlePackageChange}
-
-                            />
-                        )
-                    ))}
-                    {parcels.length > 1 && (
-                        <Pagination className="flex justify-center mt-4">
-                            {parcels.map((_, index) => (
-                                <Pagination.Item
+                <Card>
+                    <CardHeader className="flex items-center gap-2">
+                        <Box className="text-blue-500"/>
+                        <CardTitle>Informations des Colis</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-4">
+                            <div>
+                                <Label htmlFor="packageCount" className="block text-gray-600 font-medium">
+                                    Nombre de colis
+                                </Label>
+                                <Input
+                                    id="packageCount"
+                                    type="number"
+                                    max={COLIS_MAX_PER_ENVOI}
+                                    min="1"
+                                    value={packageCount}
+                                    onChange={handlePackageCountChange}
                                     disabled={isPending}
-                                    key={index}
-                                    active={index === currentPackage}
-                                    onClick={() => handlePageChange(index)}
-                                >
-                                    {index + 1}
-                                </Pagination.Item>
-                            ))}
-                        </Pagination>
-                    )}
-                </motion.div>
+                                    className="mt-1"
+                                />
+                            </div>
+
+                            {/* Display the current package form */}
+                            {parcels.map((pkg, index) =>
+                                    index === currentPackage && (
+                                        <PackageForm
+                                            key={index}
+                                            index={index}
+                                            pkg={pkg}
+                                            onChange={handlePackageChange}
+                                            disabled={isPending}
+                                        />
+                                    )
+                            )}
+
+                            {/* Pagination Controls */}
+                            {parcels.length > 1 && (
+                                <Pagination>
+                                    <PaginationContent>
+                                        <PaginationItem>
+                                            <PaginationPrevious
+                                                isDisabled={currentPackage === 0}
+                                                onClick={() => setCurrentPackage((prev) => Math.max(prev - 1, 0))}
+                                            />
+                                        </PaginationItem>
+
+                                        {parcels.map((_, index) => (
+                                            <PaginationItem key={index}>
+                                                <PaginationLink
+                                                    isActive={index === currentPackage}
+                                                    onClick={() => handlePageChange(index)}
+                                                >
+                                                    {index + 1}
+                                                </PaginationLink>
+                                            </PaginationItem>
+                                        ))}
+
+                                        <PaginationItem>
+                                            <PaginationNext
+                                                isDisabled={currentPackage === parcels.length - 1}
+                                                onClick={() => setCurrentPackage((prev) => Math.min(prev + 1, parcels.length - 1))}
+                                            />
+                                        </PaginationItem>
+                                    </PaginationContent>
+                                </Pagination>
+
+                            )}
+                        </div>
+                    </CardContent>
+                </Card>
 
                 <div className="text-center">
-                    <Button
-                        type="submit"
-                        variant="primary"
-                        className="px-8 py-3 flex items-center gap-2"
-                        disabled={isPending}>
+                    <Button type="submit" disabled={isPending} className="flex items-center gap-2">
                         {isPending ? (
                             <>
-                                <Spinner
-                                    as="span"
-                                    animation="border"
-                                    size="sm"
-                                    role="status"
-                                    aria-hidden="true"
-                                    className="mr-2"
-                                />
                                 <Calculator className="h-4 w-4"/>
-                                Calculation... 🤗
+                                Calculation...
                             </>
-
                         ) : (
                             <>
                                 <ArrowRight className="h-4 w-4"/>
@@ -453,8 +476,8 @@ const SimulationForm = () => {
             <SimulationConfirmationModal
                 show={simulationConfirmationModal}
                 handleClose={() => setSimulationConfirmationModal(false)}
-                handleConfirm={handleKeepSimulation} // Keep simulation and go to results
-                handleCreateNew={handleCreateNewSimulation} // Create a new simulation
+                handleConfirm={handleKeepSimulation}
+                handleCreateNew={handleCreateNewSimulation}
             />
         </motion.div>
     );

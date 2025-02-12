@@ -13,10 +13,18 @@ interface PackageFormProps {
 }
 
 const PackageForm = ({index, pkg, onChange, disabled = false}: PackageFormProps) => {
+
     const handleInputChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = parseFloat(e.target.value);
-        onChange(index, field, value);
+        const value = e.target.value ? parseFloat(e.target.value) : 0;
+
+        console.log(`Updating ${field}:`, value, "Type:", typeof value);
+
+        if (!isNaN(value)) {
+            onChange(index, field, value);
+        }
     };
+
+
 
     return (
         <div className="p-4 bg-gray-50 rounded-md shadow-sm mb-4">
@@ -30,6 +38,7 @@ const PackageForm = ({index, pkg, onChange, disabled = false}: PackageFormProps)
                     onChange={handleInputChange('height')}
                     className="border-2 border-gray-300 rounded-lg p-2"
                     min="0"
+                    max="120" // The Maximum height allowed is 120 cm
                     placeholder="Hauteur maximum 120 cm"
                 />
             </FormGroup>
@@ -42,6 +51,7 @@ const PackageForm = ({index, pkg, onChange, disabled = false}: PackageFormProps)
                     onChange={handleInputChange('width')}
                     className="border-2 border-gray-300 rounded-lg p-2"
                     min="0"
+                    max="120" // The Maximum width allowed is 120 cm
                     placeholder="Largeur maximum 120 cm"
                 />
             </FormGroup>
@@ -54,6 +64,7 @@ const PackageForm = ({index, pkg, onChange, disabled = false}: PackageFormProps)
                     onChange={handleInputChange('length')}
                     className="border-2 border-gray-300 rounded-lg p-2"
                     min="0"
+                    max="120" // The Maximum length allowed is 120 cm
                     placeholder="Largeur maximum 120 cm"
                 />
             </FormGroup>
@@ -65,9 +76,9 @@ const PackageForm = ({index, pkg, onChange, disabled = false}: PackageFormProps)
                     value={pkg.weight || ''}
                     onChange={handleInputChange('weight')}
                     className="border-2 border-gray-300 rounded-lg p-2"
-                    min="0"
-                    step="0.1" // pour autoriser les décimales
-                    placeholder="Poids maximum 70 kg"
+                    min="1"
+                    max="70" // The Maximum weight allowed is 70 kg
+                    step="0.1"
                 />
             </FormGroup>
         </div>

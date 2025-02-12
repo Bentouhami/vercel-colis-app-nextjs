@@ -25,6 +25,17 @@ const DEVELOPMENT_DOMAIN = "http://localhost:3000";
 export const DOMAIN = process.env.NODE_ENV === 'production'
     ? PRODUCTION_DOMAIN
     : DEVELOPMENT_DOMAIN;
+//endregion
+
+
+//region API Domains for the current environment
+// api base url
+const API_VERSION = "v1";
+// api url
+export const API_BASE_URL = `/api/${API_VERSION}`;
+export const API_DOMAIN = `${DOMAIN}${API_BASE_URL}`;
+//endregion
+
 
 
 // URLs for payment success and cancel

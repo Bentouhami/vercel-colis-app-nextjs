@@ -123,30 +123,28 @@ export async function getUserById(id: number): Promise<CreateDestinataireDto> {
 }
 
 // register new user via API
+
 export async function registerUser(newUser: RegisterClientDto) {
     try {
+        // 1) POST the data
         const response = await axios.post(`${DOMAIN}/api/v1/users/register`, newUser, {
+            headers: { "Content-Type": "application/json" },
+            // withCredentials: true, // If you need cookies
+        })
 
-            headers: {
-                'Content-Type': 'application/json',
-            },
+        // 2) The server should respond with {error?: string, message?: string}
+        return response.data // We'll handle .error or .message in the component
+    } catch (error: any) {
+        // If the server returned a non-2xx status, axios throws
+        console.error("Error registering user:", error)
 
-        });
-
-        // Lire la réponse et la retourner directement
-        const data = await response.data;
-        console.log("log ====> data in registerUser function after parsing JSON in path src/services/frontend-services/Bk_UserService.ts: ", data);
-
-        if (data.error) {
-            // Si la réponse n'est pas ok (2xx), lever une erreur avec le message retourné par l'API
-            throw new Error(data.error || 'Une erreur est survenue lors de l\'enregistrement.');
+        // If the backend sent a JSON error, we can pass that up
+        if (error.response?.data?.error) {
+            // Re-throw with the server's error message
+            throw new Error(error.response.data.error)
         }
-
-        // Retourner les données en cas de succès
-        return data;
-    } catch (error) {
-        console.error('Error registering user:', error);
-        throw error; // Relancer l'erreur pour la capturer dans RegisterForm
+        // Otherwise, throw the generic error
+        throw error
     }
 }
 

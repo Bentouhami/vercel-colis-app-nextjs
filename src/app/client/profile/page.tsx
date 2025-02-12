@@ -1,13 +1,14 @@
+// path: src/app/client/profile/page.tsx
+
 import ProfileComponent from "@/components/client-specific/profile/ProfileComponent";
-import RequireAuth from "@/components/auth/RequireAuth";
 
 
+// path: src/app/client/profile/page.tsx
 function Profile() {
     return (
-        <RequireAuth>
+        <div className="w-full">
             <ProfileComponent/>
-        </RequireAuth>
+        </div>
     );
 }
-
 export default Profile

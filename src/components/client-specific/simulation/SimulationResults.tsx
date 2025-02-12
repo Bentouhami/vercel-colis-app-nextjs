@@ -1,30 +1,37 @@
 // path: src/app/client/simulation/results/page.tsx
 "use client";
-import {useRouter} from 'next/navigation';
-import React, {useEffect, useState, useTransition} from 'react';
-import {toast, ToastContainer} from 'react-toastify';
-import {deleteSimulationCookie, getSimulation} from "@/services/frontend-services/simulation/SimulationService";
-import {SimulationResponseDto} from "@/services/dtos";
-import LoginPromptModal from '@/components/modals/LoginPromptModal';
-import {Button} from "@/components/ui/button";
-import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import {ArrowRight, Calendar, DollarSign, MapPin, Package, Weight} from "lucide-react";
+
+import React, { useEffect, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import {updateSimulationUserId} from "@/services/backend-services/Bk_SimulationService";
-import {checkAuthStatus} from "@/lib/auth";
+import { toast, ToastContainer } from "react-toastify";
+
+// Services & Helpers
+import { deleteSimulationCookie, getSimulation } from "@/services/frontend-services/simulation/SimulationService";
+import { updateSimulationUserId } from "@/services/backend-services/Bk_SimulationService";
+import { checkAuthStatus } from "@/lib/auth";
 import ResultsSkeleton from "@/app/client/simulation/results/resultsSkeleton";
-import {SimulationStatus} from "@/services/dtos/enums/EnumsDto";
+import LoginPromptModal from "@/components/modals/LoginPromptModal";
+import { SimulationResponseDto } from "@/services/dtos";
+import { SimulationStatus } from "@/services/dtos/enums/EnumsDto";
+
+// Shadcn UI Components
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+// Icons
+import { ArrowRight, Calendar, DollarSign, MapPin, Package, Weight } from "lucide-react";
 
 export default function SimulationResults() {
-    const [loading, setLoading] = useState(true);
     const router = useRouter();
+    const [loading, setLoading] = useState(true);
     const [isPending, startTransition] = useTransition();
     const [results, setResults] = useState<SimulationResponseDto | null>(null);
     const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-
     const [userId, setUserId] = useState<string | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+    // Check user authentication status
     useEffect(() => {
         const checkAuth = async () => {
             const authResult = await checkAuthStatus(false);
@@ -33,7 +40,8 @@ export default function SimulationResults() {
         };
         checkAuth();
     }, []);
-    // get simulation results from the backend and set them in the state variable results when available or redirect to the simulation page if not
+
+    // Fetch simulation results from the backend
     useEffect(() => {
         const getSimulationResults = async () => {
             try {
@@ -45,68 +53,61 @@ export default function SimulationResults() {
                     setTimeout(() => {
                         router.push("/client/simulation");
                     }, 3000);
+                    return;
                 }
                 toast.success("Simulation results loaded successfully.");
-
-                console.log("log ====> simulationData in SimulationResults.tsx after calling getSimulationById function: ", simulationData);
-
+                console.log("SimulationData:", simulationData);
                 setResults(simulationData);
-                setLoading(false);
             } catch (error) {
                 toast.error("Erreur de chargement des résultats.");
+            } finally {
                 setLoading(false);
-
             }
         };
         getSimulationResults();
     }, [router]);
 
-
-    /**
-     * handle edit current simulation user id updating and redirecting to the add destinataire page
-     */
+    // Validate the simulation and redirect to the add destinataire page
     const handleValidate = async () => {
         try {
             setLoading(true);
-            // Check if the user is authenticated
             const authResult = await checkAuthStatus();
 
             if (authResult.isAuthenticated) {
-                // Check if the results object is not empty
                 if (results) {
                     if (authResult.userId && !results.userId) {
                         results.userId = Number(authResult.userId);
                         await updateSimulationUserId(results.id, results.userId);
                     }
-                    toast("Redirecting to add destinataire page in 3 seconds...");
+                    toast("Redirecting to add destinataire page...");
                     setTimeout(() => {
                         router.push("/client/simulation/ajouter-destinataire");
                     }, 1000);
                 }
             } else {
-                setShowLoginPrompt(true);  // This should now work properly
+                setShowLoginPrompt(true);
             }
         } catch (error) {
             console.error("Error validating simulation:", error);
             toast.error("An error occurred while validating the simulation.");
         } finally {
-            setLoading(false);  // Always reset loading state
+            setLoading(false);
         }
     };
+
+    // Redirect to login if user is not authenticated
     const handleLoginRedirect = () => {
         setShowLoginPrompt(false);
-        const redirectUrl = encodeURIComponent('/client/simulation/results');
+        const redirectUrl = encodeURIComponent("/client/simulation/results");
         router.push(`/client/auth/login?redirect=${redirectUrl}`);
     };
 
+    // Cancel the simulation and clean up
     const handleCancel = () => {
-
         startTransition(() => {
             (async () => {
                 try {
-
                     toast.success("Cleaning up simulation...");
-
                     const response = await deleteSimulationCookie();
                     if (!response) {
                         toast.error("Une erreur est survenue lors de la suppression de la simulation.");
@@ -116,48 +117,40 @@ export default function SimulationResults() {
                     console.error("Error deleting simulation cookie:", error);
                     toast.error("An error occurred while cleaning up the simulation.");
                 } finally {
-                    toast("Redirecting to simulation page in 3 seconds...");
-
+                    toast("Redirecting to simulation page...");
                     setTimeout(() => {
-                        router.push('/client/simulation');
+                        router.push("/client/simulation");
                     }, 3000);
                 }
             })();
         });
     };
 
-
-    /**
-     * handle edit current simulation user id updating
-     * and redirecting to the edit simulation page
-     */
+    // Edit the current simulation and redirect to the edit page
     const handleEdit = async () => {
         startTransition(() => {
             (async () => {
                 try {
                     const authResult = await checkAuthStatus();
-
                     if (results) {
                         if (authResult.isAuthenticated) {
                             if (authResult.userId && !results.userId) {
                                 results.userId = Number(authResult.userId);
-
                                 results.simulationStatus = SimulationStatus.CONFIRMED;
                                 const response = await updateSimulationUserId(results.id, results.userId);
-
-
                                 if (!response) {
                                     toast.error("Une erreur est survenue lors de la mise à jour de la simulation.");
+                                    return;
                                 }
                                 toast("Redirection en cours...");
                                 setTimeout(() => {
-                                    router.push('/client/simulation/edit');
+                                    router.push("/client/simulation/edit");
                                 }, 3000);
                             }
                         } else {
                             toast("Redirection en cours...");
                             setTimeout(() => {
-                                router.push('/client/simulation/edit');
+                                router.push("/client/simulation/edit");
                             }, 3000);
                         }
                     } else {
@@ -171,59 +164,71 @@ export default function SimulationResults() {
         });
     };
 
-    // render the loading spinner if the results are not available
-
     if (loading || !results) {
-        return <ResultsSkeleton/>;
+        return <ResultsSkeleton />;
     }
 
-
     return (
-
-        <div className="max-w-4xl mx-auto p-6 space-y-6 mb-52 bg-gray-50 rounded-lg shadow-lg">
+        <div className="max-w-4xl mx-auto p-6 space-y-6 mb-52 bg-gray-50 rounded-lg shadow-lg mt-5">
             <h1 className="text-3xl font-bold text-center mb-8 text-blue-700">Résultats de la Simulation</h1>
 
+            {/* Departure & Destination Cards */}
             <div className="grid md:grid-cols-2 gap-6">
                 <Card className="border-l-4 border-blue-500 shadow-sm">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-gray-700">
-                            <MapPin className="h-5 w-5 text-blue-500"/>
+                            <MapPin className="h-5 w-5 text-blue-500" />
                             Départ
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p><span className="font-medium">Pays:</span> {results.departureCountry}</p>
-                        <p><span className="font-medium">Ville:</span> {results.departureCity}</p>
-                        <p><span className="font-medium">Agence:</span> {results.departureAgency}</p>
+                        <p>
+                            <span className="font-medium">Pays:</span> {results.departureCountry}
+                        </p>
+                        <p>
+                            <span className="font-medium">Ville:</span> {results.departureCity}
+                        </p>
+                        <p>
+                            <span className="font-medium">Agence:</span> {results.departureAgency}
+                        </p>
                     </CardContent>
                 </Card>
 
                 <Card className="border-l-4 border-green-500 shadow-sm">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-gray-700">
-                            <MapPin className="h-5 w-5 text-green-500"/>
+                            <MapPin className="h-5 w-5 text-green-500" />
                             Destination
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p><span className="font-medium">Pays:</span> {results.destinationCountry}</p>
-                        <p><span className="font-medium">Ville:</span> {results.destinationCity}</p>
-                        <p><span className="font-medium">Agence:</span> {results.destinationAgency}</p>
+                        <p>
+                            <span className="font-medium">Pays:</span> {results.destinationCountry}
+                        </p>
+                        <p>
+                            <span className="font-medium">Ville:</span> {results.destinationCity}
+                        </p>
+                        <p>
+                            <span className="font-medium">Agence:</span> {results.destinationAgency}
+                        </p>
                     </CardContent>
                 </Card>
             </div>
 
+            {/* Parcel Details Card */}
             <Card className="mt-6 bg-blue-50">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                        <Package className="h-5 w-5 text-blue-500"/>
+                        <Package className="h-5 w-5 text-blue-500" />
                         Détails des Colis
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="grid md:grid-cols-2 gap-4">
                     {results.parcels?.map((pkg, index) => (
                         <div key={index} className="p-4 bg-white rounded-lg shadow-sm border">
-                            <p><span className="font-medium">Colis {index + 1}:</span></p>
+                            <p>
+                                <span className="font-medium">Colis {index + 1}:</span>
+                            </p>
                             <p>Hauteur: {pkg.height} cm</p>
                             <p>Largeur: {pkg.width} cm</p>
                             <p>Longueur: {pkg.length} cm</p>
@@ -233,80 +238,85 @@ export default function SimulationResults() {
                 </CardContent>
             </Card>
 
+            {/* Summary Calculations Card */}
             <Card className="bg-blue-100">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-blue-700">
-                        <DollarSign className="h-5 w-5"/>
+                        <DollarSign className="h-5 w-5" />
                         Résumé des Calculs
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="grid md:grid-cols-2 gap-4">
                     <div className="flex items-center gap-3">
-                        <Weight className="h-5 w-5 text-gray-500"/>
+                        <Weight className="h-5 w-5 text-gray-500" />
                         <div>
                             <p className="text-sm text-gray-500">Poids total</p>
                             <p className="font-medium">{results.totalWeight} kg</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                        <Calendar className="h-5 w-5 text-gray-500"/>
+                        <Calendar className="h-5 w-5 text-gray-500" />
                         <div>
                             <p className="text-sm text-gray-500">Date de départ</p>
                             <p className="font-medium">{new Date(results.departureDate).toLocaleDateString()}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                        <Calendar className="h-5 w-5 text-gray-500"/>
+                        <Calendar className="h-5 w-5 text-gray-500" />
                         <div>
-                            <p className="text-sm text-gray-500">Date d&#39;arrivée estimée</p>
+                            <p className="text-sm text-gray-500">Date d’arrivée estimée</p>
                             <p className="font-medium">{new Date(results.arrivalDate).toLocaleDateString()}</p>
                         </div>
                     </div>
                 </CardContent>
             </Card>
 
+            {/* Total Price Card */}
             <Card className="bg-blue-100">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-blue-700">
-                        <DollarSign className="h-5 w-5"/>
+                        <DollarSign className="h-5 w-5" />
                         Prix Total
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
                     <p className="text-3xl font-bold text-center text-blue-800">
-                        {results.totalPrice ? `${results.totalPrice} €` : 'À calculer'}
+                        {results.totalPrice ? `${results.totalPrice} €` : "À calculer"}
                     </p>
                 </CardContent>
             </Card>
 
+            {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
                 <Button
                     disabled={isPending}
                     className="flex items-center gap-2 px-8 py-6 text-lg bg-green-500 hover:bg-green-600 text-white"
-                    onClick={handleValidate}>
+                    onClick={handleValidate}
+                >
                     Valider
                 </Button>
                 <Button
                     disabled={isPending}
                     variant="destructive"
-                    className="flex items-center gap-2 px-8 py-6 text-lg text-white bg-red-500 hover:bg-red-600"
-                    onClick={handleCancel}>
+                    className="flex items-center gap-2 px-8 py-6 text-lg bg-red-500 hover:bg-red-600 text-white"
+                    onClick={handleCancel}
+                >
                     Annuler
                 </Button>
-
-
-                <Link href={`/client/simulation/edit`}>
+                <Link href="/client/simulation/edit">
                     <Button
                         onClick={handleEdit}
                         disabled={isPending}
-                        className="flex items-center gap-2 px-8 py-6 text-lg bg-green-500 hover:bg-green-600 text-white">
+                        className="flex items-center gap-2 px-8 py-6 text-lg bg-green-500 hover:bg-green-600 text-white"
+                    >
                         Modifier ma simulation
-                        <ArrowRight className="h-4 w-4"/>
+                        <ArrowRight className="h-4 w-4" />
                     </Button>
                 </Link>
-
             </div>
-            <ToastContainer position="bottom-right" autoClose={2000} hideProgressBar theme="colored"/>
+
+            <ToastContainer position="bottom-right" autoClose={2000} hideProgressBar theme="colored" />
+
             <LoginPromptModal
                 show={showLoginPrompt}
                 handleClose={() => setShowLoginPrompt(false)}

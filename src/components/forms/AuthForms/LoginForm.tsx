@@ -77,7 +77,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
             </div>
 
             {/* Form Section */}
-            <div className="flex-grow">
+            <div className="flex-grow w-full max-w-md m-5">
 
                 <Form onSubmit={handleSubmit}>
                     {/* Email Input */}

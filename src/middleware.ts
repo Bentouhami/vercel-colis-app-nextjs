@@ -3,8 +3,13 @@ import {getToken} from "next-auth/jwt";
 import {isPublicRoute} from "@/utils/publicRoutesHelper";
 import {setCorsHeaders} from "@/utils/cors";
 import {Roles} from "@/services/dtos";
+import { ipAddress } from '@vercel/functions'
+
 
 export async function middleware(req: NextRequest) {
+    const ip = ipAddress(req);
+    console.log("IP address:", ip);
+
     const origin = req.headers.get("origin") || "";
     const corsHeaders = setCorsHeaders(origin);
 
@@ -46,26 +51,25 @@ export async function middleware(req: NextRequest) {
 
         // Handle redirects for authenticated users
         if (isAuthenticated) {
-            if(req.nextUrl.pathname === "/client/auth/login" || req.nextUrl.pathname === "/client/auth/register") {
+            if (req.nextUrl.pathname === "/client/auth/login" ||
+                req.nextUrl.pathname === "/client/auth/register"
+            ) {
                 return NextResponse.redirect(new URL("/client", req.nextUrl.origin));
             }
             if (req.nextUrl.pathname === "/") {
-                if (isSuperAdmin) {
-                    return NextResponse.redirect(new URL("/admin/super-admin", req.nextUrl.origin));
-                } else if (isAgencyAdmin) {
-                    return NextResponse.redirect(new URL("/admin/agency-admin", req.nextUrl.origin));
+                if (isSuperAdmin || isAgencyAdmin) {
+                    return NextResponse.redirect(new URL("/admin", req.nextUrl.origin));
                 } else {
                     return NextResponse.redirect(new URL("/client", req.nextUrl.origin));
                 }
             }
         }
 
-        if (req.nextUrl.pathname.startsWith("/admin") && !isSuperAdmin && !isAgencyAdmin) {
-            return NextResponse.redirect(new URL("/client/unauthorized", req.nextUrl.origin));
-        }
-
-        if (req.nextUrl.pathname.startsWith("/admin/super-admin") && !isSuperAdmin) {
-            return NextResponse.redirect(new URL("/client/unauthorized", req.nextUrl.origin));
+        if (req.nextUrl.pathname.startsWith("/admin")) {
+            // Il faut être super-admin ou agency-admin
+            if (!isSuperAdmin && !isAgencyAdmin) {
+                return NextResponse.redirect(new URL("/client/unauthorized", req.nextUrl.origin));
+            }
         }
 
         console.log("Access granted to protected route.");

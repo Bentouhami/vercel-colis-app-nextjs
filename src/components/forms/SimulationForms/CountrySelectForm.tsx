@@ -9,11 +9,12 @@ interface CountrySelectProps {
     onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
     countries: { id: number, country: string }[];
     disabled?: boolean;
+    placeholder?: string;
 
 }
 
-const CountrySelect = ({label, value, onChange, countries, disabled = false}: CountrySelectProps) => {
-    const placeholder = "Sélectionner un pays";
+const CountrySelect = ({label, value, onChange, countries, disabled = false, placeholder = ''}: CountrySelectProps) => {
+    // const placeholder = disabled ? 'Sélectionnez un pays de départ avant de continuer' : 'Sélectionnez un pays';
 
     return (
         <Form.Group className="mb-4">

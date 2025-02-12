@@ -1,3 +1,4 @@
+// path: src/components/navigations/header/HeaderWrapper.tsx
 "use client";
 
 import {useSession} from "next-auth/react";
@@ -6,11 +7,6 @@ import {Roles} from "@/services/dtos/enums/EnumsDto";
 
 const HeaderWrapper = () => {
     const {data: session, status} = useSession();
-
-    // if (status === "loading") {
-    //     // Optionally show a loading state
-    //     return <div>Loading...</div>;
-    // }
 
     // Extract user details from the session
     const isLoggedIn = status === "authenticated";

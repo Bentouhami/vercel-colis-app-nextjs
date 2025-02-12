@@ -481,6 +481,7 @@ const SimulationEditForm = () => {
                         onChange={(e) => handleDepartureChange('country', e.target.value)}
                         countries={options.departureCountries}
                         disabled={isPending}
+                        placeholder="Sélectionnez un pays de départ"
                     />
                     <CitySelect
                         label="Ville de départ"
@@ -510,6 +511,7 @@ const SimulationEditForm = () => {
                         onChange={(e) => handleDestinationChange('country', e.target.value)}
                         countries={options.destinationCountries}
                         disabled={isPending}
+                        placeholder="Sélectionnez un pays de destination avant de continuer"
                     />
                     <CitySelect
                         label="Ville de destination"

@@ -95,6 +95,7 @@ export const registerUserBackendSchema = z.object({
         }, {message: "Vous devez avoir au moins 18 ans pour vous inscrire"}),
     phoneNumber: phoneValidation,
     email: emailValidation,
+    roles: z.array(z.string()).nonempty().optional(),
     password: passwordValidation,
     address: addressSchema,
 });
@@ -124,8 +125,8 @@ export const parcelsSchema = z.object({
 }).refine(pkg => pkg.height * pkg.width * pkg.length >= 1728, {
     message: "The volume must be at least 1728 cm³",
 });
-// Updated Simulation Envois schema
 
+// Updated Simulation Envois schema
 export const simulationEnvoisSchema  = z.object({
     id: z.number()
         .int()
@@ -168,33 +169,17 @@ export const simulationEnvoisSchema  = z.object({
 
 // Schema for the simulation request
 export const simulationRequestSchema = z.object({
-    departureCountry: z.string()
-        .min(1, { message: "Departure country is required" }),
-    departureCity: z.string()
-        .min(1, { message: "Departure city is required" }),
-    departureAgency: z.string()
-        .min(1, { message: "Departure agency is required" }),
-    destinationCountry: z.string()
-        .min(1, { message: "Destination country is required" }),
-    destinationCity: z.string()
-        .min(1, { message: "Destination city is required" }),
-    destinationAgency: z.string()
-        .min(1, { message: "Destination agency is required" }),
-    parcels: z.array(
-        z.object({
-            height: z.number().positive({ message: "Parcel height must be a positive number" }),
-            width: z.number().positive({ message: "Parcel width must be a positive number" }),
-            length: z.number().positive({ message: "Parcel length must be a positive number" }),
-            weight: z.number().positive({ message: "Parcel weight must be a positive number" }),
-        })
-    ),
-    simulationStatus: z.string()
-        .min(1, { message: "Simulation status is required" })
-        .optional(), // Optional if status might not always be available
-    envoiStatus: z.string()
-        .min(1, { message: "Envoi status is required" })
-        .optional(), // Optional if status might not always be available
+    departureCountry: z.string().min(1, { message: "Departure country is required" }),
+    departureCity: z.string().min(1, { message: "Departure city is required" }),
+    departureAgency: z.string().min(1, { message: "Departure agency is required" }),
+    destinationCountry: z.string().min(1, { message: "Destination country is required" }),
+    destinationCity: z.string().min(1, { message: "Destination city is required" }),
+    destinationAgency: z.string().min(1, { message: "Destination agency is required" }),
+    parcels: z.array(parcelsSchema), // USE parcelsSchema instead of redefining it
+    simulationStatus: z.string().min(1, { message: "Simulation status is required" }).optional(),
+    envoiStatus: z.string().min(1, { message: "Envoi status is required" }).optional(),
 });
+
 
 // Schéma pour valider les tarifs
 export const tarifsSchema = z.object({

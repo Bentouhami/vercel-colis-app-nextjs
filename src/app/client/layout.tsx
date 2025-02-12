@@ -1,20 +1,19 @@
-// path: src/app/client/layout.tsx
+// src/app/client/layout.tsx
+'use client';
 
-import React from 'react'
+import React from "react";
 import HeaderWrapper from "@/components/navigations/header/HeaderWrapper";
 
-// import 'bootstrap/dist/css/bootstrap.min.css';
-
-
-function Layout({children}: { children: React.ReactNode }) {
+export default function Layout({ children }: { children: React.ReactNode }) {
     return (
-        <div>
-            <HeaderWrapper/>
-            <main>
-                {children}
-            </main>
-        </div>
-    )
-}
+        <div className="min-h-screen">
+            {/* Always show HeaderNavbar across all client pages */}
+            <HeaderWrapper />
 
-export default Layout
+            {/* Page Content */}
+            <div className="pt-[70px]">
+                {children}
+            </div>
+        </div>
+    );
+}

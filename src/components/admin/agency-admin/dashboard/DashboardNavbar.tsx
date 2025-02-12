@@ -10,16 +10,16 @@ export default function DashboardNavbar() {
         <nav className="dashboard-navbar bg-dark text-white p-4">
             <ul className="nav-list flex">
                 <li className="nav-item me-4">
-                    <Link href="/admin/agency-admin">Agency Admin Dashboard</Link>
+                    <Link href="/admin">Agency Admin Dashboard</Link>
                 </li>
                 <li className="nav-item me-4">
-                    <Link href="/admin/agency-admin/customers">Customers</Link>
+                    <Link href="/admin/customers">Customers</Link>
                 </li>
                 <li className="nav-item">
-                    <Link href="/admin/agency-admin/invoices">Invoices</Link>
+                    <Link href="/admin/invoices">Invoices</Link>
                 </li>
                 <li className="nav-item">
-                    <Link href="/admin/agency-admin/agencies">Agencies</Link>
+                    <Link href="/admin/agencies">Agencies</Link>
                 </li>
             </ul>
         </nav>

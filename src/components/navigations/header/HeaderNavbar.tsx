@@ -1,14 +1,16 @@
-// path: src/components/navigations/header/HeaderNavbar.tsx
 "use client";
 
-import React, {useState} from 'react';
-import {Button, Container, Nav, Navbar} from 'react-bootstrap';
-import Link from 'next/link';
-import {usePathname} from 'next/navigation';
-import styles from './Header.module.css';
-import LogoutButton from '../../buttons/LogoutButton';
+import React, { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Separator } from "@/components/ui/separator";
+import { Bell, Settings, User, Menu } from "lucide-react";
 import ColisBrand from "@/components/navigations/brand/ColisBrand";
-import Image from "next/image";
+import LogoutButton from "../../buttons/LogoutButton";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 interface NavbarProps {
     isLoggedIn: boolean;
@@ -19,7 +21,6 @@ interface NavbarProps {
     name: string;
     email: string | null;
     image: string;
-
 }
 
 const HeaderNavbar: React.FC<NavbarProps> = ({
@@ -27,90 +28,155 @@ const HeaderNavbar: React.FC<NavbarProps> = ({
                                                  isSuperAdmin,
                                                  isLoggedIn,
                                                  name,
-                                                 firstName,
-                                                 lastName,
                                                  email,
-                                                 image
+                                                 image,
                                              }) => {
-    const [expanded, setExpanded] = useState(false);
     const pathname = usePathname();
-
-
-    const handleSelect = () => {
-        setExpanded(false);
-    };
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     return (
-        <Navbar className="sticky-top" expand="lg" bg="light" data-bs-theme="light" expanded={expanded}>
-            <Container>
-                <Link href={"/client"} passHref>
-                    <Navbar.Brand onClick={handleSelect}><ColisBrand/></Navbar.Brand>
+        <header className="border-b shadow-sm bg-white fixed top-0 left-0 w-full z-50">
+            <div className="container flex justify-between items-center h-16">
+                {/* Left - Brand */}
+                <Link href="/client" className="flex items-center">
+                    <ColisBrand />
                 </Link>
-                <Navbar.Toggle aria-controls="basic-navbar-nav" onClick={() => setExpanded(!expanded)}/>
-                <Navbar.Collapse id="basic-navbar-nav">
-                    <Nav className={`mx-auto justify-content-center flex-lg-row flex-column ${styles.navLinks}`}
-                         onClick={handleSelect}>
-                        <Link href="/client/home" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`}
-                              onClick={handleSelect}>Accueil</Link>
-                        <Link href="/client/simulation" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`}
-                              onClick={handleSelect}>Simulation</Link>
-                        <Link href="/client/services" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`}
-                              onClick={handleSelect}>Services</Link>
-                        <Link href="/client/tarifs" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`}
-                              onClick={handleSelect}>Tarifs</Link>
-                        <Link href="/client/contact-us" className={`me-lg-2 my-1 my-lg-0 ${styles.navLink}`}
-                              onClick={handleSelect}>Contact-nous</Link>
-                    </Nav>
-                    <div className="d-flex flex-column flex-lg-row justify-content-end align-items-center">
+
+                {/* Navigation Links (Hidden on mobile, visible on md+) */}
+                <nav className="hidden md:flex gap-6 items-center">
+                    <Link href="/client/home" className="hover:text-primary text-gray-700 flex items-center">
+                        Accueil
+                    </Link>
+                    <Link href="/client/simulation" className="hover:text-primary text-gray-700 flex items-center">
+                        Simulation
+                    </Link>
+                    <Link href="/client/services" className="hover:text-primary text-gray-700">
+                        Services
+                    </Link>
+                    <Link href="/client/tarifs" className="hover:text-primary text-gray-700">
+                        Tarifs
+                    </Link>
+                    <Link href="/client/contact-us" className="hover:text-primary text-gray-700">Contact-nous</Link>
+                </nav>
+
+                {/* Right - User Profile & Mobile Menu */}
+                <div className="flex items-center gap-4">
+                    {/* Desktop - User Dropdown */}
+                    <div className="hidden md:flex items-center gap-4">
                         {isLoggedIn ? (
-                            <div className="d-flex flex-column justify-content-center align-items-center mt-3">
-                                <Image src={image} priority={true} alt={"avatar"}
-                                       width={50} height={50}/>
-                                <strong>
-                                    {`Bienvenue: ${name}`}
-                                    {isSuperAdmin && ' (SUPER_ADMIN)'}
-                                    {!isSuperAdmin && isAgencyAdmin && ' (AGENCY_ADMIN)'}
-                                    {!isSuperAdmin && !isAgencyAdmin && ' (utilisateur)'}
-                                </strong>
-
-                                <strong>{email}</strong>
-
-                                {(isSuperAdmin) && pathname !== '/admin/super-admin' && (
-                                    <Link href="/admin/super-admin" passHref legacyBehavior>
-                                        <Button variant="primary" onClick={handleSelect}
-                                                className="mt-3 mb-3 bg-pink-500 border-0">Dashboard</Button>
-                                    </Link>
-                                )}
-                                {(isAgencyAdmin) && pathname !== '/admin/agency-admin' && (
-                                    <Link href="/admin/agency-admin" passHref legacyBehavior>
-                                        <Button variant="primary" onClick={handleSelect}
-                                                className="mt-3 mb-3 bg-pink-500 border-0">Dashboard</Button>
-                                    </Link>
-                                )}
-
-                                <LogoutButton />
-                            </div>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger className="flex items-center gap-2">
+                                    <Avatar>
+                                        <AvatarImage src={image} alt={name} />
+                                        <AvatarFallback>{name.charAt(0)}</AvatarFallback>
+                                    </Avatar>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-56">
+                                    <div className="px-4 py-2">
+                                        <p className="text-sm font-medium">{name}</p>
+                                        <p className="text-xs text-gray-500">{email}</p>
+                                    </div>
+                                    <Separator />
+                                    {!isSuperAdmin && !isAgencyAdmin && (
+                                        <>
+                                            <DropdownMenuItem asChild>
+                                                <Link href="/client/profile" className="flex items-center gap-2">
+                                                    <User className="w-4 h-4" /> Mon Profil
+                                                </Link>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem asChild>
+                                                <Link href="/client/profile/notifications" className="flex items-center gap-2">
+                                                    <Bell className="w-4 h-4" /> Mes Notifications
+                                                </Link>
+                                            </DropdownMenuItem>
+                                        </>
+                                    )}
+                                    {isSuperAdmin && (
+                                        <DropdownMenuItem asChild>
+                                            <Link href="/admin" className="flex items-center gap-2">
+                                                <Settings className="w-4 h-4" /> Dashboard Admin
+                                            </Link>
+                                        </DropdownMenuItem>
+                                    )}
+                                    {isAgencyAdmin && !isSuperAdmin && (
+                                        <DropdownMenuItem asChild>
+                                            <Link href="/admin" className="flex items-center gap-2">
+                                                <User className="w-4 h-4" /> Dashboard Agence
+                                            </Link>
+                                        </DropdownMenuItem>
+                                    )}
+                                    <Separator />
+                                    <div className="px-4 py-3 flex justify-center">
+                                        <LogoutButton />
+                                    </div>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         ) : (
-                            <>
-                                <Link href="/client/auth/login" passHref legacyBehavior>
-                                    <Button variant="outline-primary" onClick={handleSelect}
-                                            className="btn-custom me-lg-2 mb-2 mb-lg-0">
-                                        SE CONNECTER
-                                    </Button>
+                            <div className="flex gap-2">
+                                <Link href="/client/auth/login">
+                                    <Button variant="outline">Se connecter</Button>
                                 </Link>
-                                <Link href="/client/auth/register" passHref legacyBehavior>
-                                    <Button variant="outline-primary" onClick={handleSelect} className="btn-custom">
-                                        S&apos;INSCRIRE
-                                    </Button>
+                                <Link href="/client/auth/register">
+                                    <Button>Inscription</Button>
                                 </Link>
-                            </>
+                            </div>
                         )}
                     </div>
-                </Navbar.Collapse>
-            </Container>
-        </Navbar>
+
+                    {/* Mobile Menu Button */}
+                    <div className="md:hidden">
+                        <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+                            <SheetTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                    <Menu className="w-6 h-6" />
+                                </Button>
+                            </SheetTrigger>
+                            <SheetContent side="right" className="w-64">
+                                <nav className="flex flex-col gap-4">
+                                    <Link href="/client/home" className="hover:text-primary text-gray-700">
+                                        Accueil
+                                    </Link>
+                                    <Link href="/client/simulation" className="hover:text-primary text-gray-700">
+                                        Simulation
+                                    </Link>
+                                    <Link href="/client/services" className="hover:text-primary text-gray-700">
+                                        Services
+                                    </Link>
+                                    <Link href="/client/tarifs" className="hover:text-primary text-gray-700">
+                                        Tarifs
+                                    </Link>
+                                    <Link href="/client/contact-us" className="hover:text-primary text-gray-700">
+                                        Contact-nous
+                                    </Link>
+                                </nav>
+                                <Separator />
+                                {isLoggedIn && (
+                                    <div className="mt-4">
+                                        <p className="text-sm font-medium">{name}</p>
+                                        <p className="text-xs text-gray-500">{email}</p>
+                                        <Separator className="my-3" />
+                                        {isSuperAdmin && (
+                                            <Link href="/admin">
+                                                <Button className="w-full">Dashboard Admin</Button>
+                                            </Link>
+                                        )}
+                                        {isAgencyAdmin && !isSuperAdmin && (
+                                            <Link href="/admin">
+                                                <Button className="w-full">Dashboard Agence</Button>
+                                            </Link>
+                                        )}
+                                        <div className="mt-2">
+                                            <LogoutButton/>
+                                        </div>
+                                    </div>
+                                )}
+                            </SheetContent>
+                        </Sheet>
+                    </div>
+                </div>
+            </div>
+        </header>
     );
 };
-
 
 export default HeaderNavbar;
