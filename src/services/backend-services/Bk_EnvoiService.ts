@@ -288,6 +288,7 @@ export async function getAllEnvoisByUserId(userId: number): Promise<EnvoisListDt
                 envoiStatus: true,
                 paid: true,
                 trackingNumber: true,
+                createdAt : true,
                 destinataire: {
                     select: {
                         name: true,
@@ -348,6 +349,7 @@ export async function getAllEnvoisByUserId(userId: number): Promise<EnvoisListDt
                 paid: envoi.paid,
                 destinataire: envoi.destinataire?.name || "",
                 trackingNumber: envoi.trackingNumber || "",
+                createdAt: envoi.createdAt,
             }
         });
         console.log("log ====> formattedEnvois returned from envoiRepository.getAllEnvoisByUserId function in path: src/services/backend-services/Bk_EnvoiService.ts is : ", formattedEnvois);

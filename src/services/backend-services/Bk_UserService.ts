@@ -18,6 +18,7 @@ import prisma from "@/utils/db";
 import {VerificationDataType} from "@/utils/types";
 import {sendVerificationEmail} from "@/lib/mailer";
 import {userRepositories} from "@/services/repositories/users/UserRepository";
+import {capitalizeFirstLetter, toLowerCase} from "@/utils/stringUtils";
 
 /**
  *  Create new user as CLIENT
@@ -181,7 +182,7 @@ export async function isDestinataireAlreadyExist(email: string, phoneNumber: str
                 roles: true,
                 image: true,
             }
-        }) as DestinataireResponseWithRoleDto;
+        });
 
 
         if (!user) {
@@ -190,13 +191,122 @@ export async function isDestinataireAlreadyExist(email: string, phoneNumber: str
         }
         console.log("log ====> user found in isDestinataireAlreadyExist function in path: src/services/backend-services/Bk_UserService.ts: ", user);
 
-        return user;
+        return user as DestinataireResponseWithRoleDto;
 
     } catch (error) {
         console.error("Error getting user by email:", error);
         throw error;
     }
 }
+
+export async function handleDestinataire(
+    userId: number,
+    destinataireData: CreateDestinataireDto
+): Promise<DestinataireResponseWithRoleDto | null> {
+
+    if (!userId || !destinataireData) return null;
+
+    const destinataire = await prisma.$transaction(async (tx) => {
+        // 1. Chercher un utilisateur avec l'email et le téléphone (peu importe les rôles)
+        let found = await tx.user.findFirst({
+            where: {
+                email: toLowerCase(destinataireData.email),
+                phoneNumber: destinataireData.phoneNumber,
+            },
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                name: true,
+                email: true,
+                phoneNumber: true,
+                image: true,
+                roles: true,
+            },
+        });
+
+        // 2. Si l'utilisateur existe, mais ne possède pas le rôle DESTINATAIRE, on le met à jour
+        if (found) {
+            if (!found.roles.includes(Roles.DESTINATAIRE)) {
+                found = await tx.user.update({
+                    where: { id: found.id },
+                    data: {
+                        roles: { set: [...found.roles, Roles.DESTINATAIRE] },
+                    },
+                    select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        name: true,
+                        email: true,
+                        phoneNumber: true,
+                        image: true,
+                        roles: true,
+                    },
+                });
+            }
+        } else {
+            // 3. Sinon, créer un nouvel utilisateur avec le rôle DESTINATAIRE
+            found = await tx.user.create({
+                data: {
+                    firstName: capitalizeFirstLetter(destinataireData.firstName),
+                    lastName: capitalizeFirstLetter(destinataireData.lastName),
+                    name: `${capitalizeFirstLetter(destinataireData.firstName)} ${capitalizeFirstLetter(destinataireData.lastName)}`  || "",
+                    email: toLowerCase(destinataireData.email),
+                    phoneNumber: destinataireData.phoneNumber,
+                    image: destinataireData.image || "",
+                    roles: { set: [Roles.DESTINATAIRE] },
+                },
+                select: {
+                    id: true,
+                    firstName: true,
+                    lastName: true,
+                    name: true,
+                    email: true,
+                    phoneNumber: true,
+                    image: true,
+                    roles: true,
+                },
+            });
+        }
+
+        // 4. Vérifier l'association entre le client et le destinataire
+        const existingAssociation = await tx.clientDestinataire.findUnique({
+            where: {
+                clientId_destinataireId: {
+                    clientId: userId,
+                    destinataireId: found.id,
+                },
+            },
+        });
+
+        // 5. Si l'association n'existe pas, la créer
+        if (!existingAssociation) {
+            await tx.clientDestinataire.create({
+                data: {
+                    clientId: userId,
+                    destinataireId: found.id,
+                },
+            });
+        }
+        // Transform the result to ensure non-nullable fields are set
+        const safeFound: DestinataireResponseWithRoleDto = {
+            id: found.id,
+            firstName: found.firstName ?? "",
+            lastName: found.lastName ?? "",
+            name: found.name, // allowed to be string or null
+            email: found.email,
+            phoneNumber: found.phoneNumber ?? "",
+            image: found.image,
+            roles: found.roles as Roles[],
+        };
+
+        return safeFound;
+    });
+
+    return destinataire;
+}
+
 
 /**
  * Create destinataire and return user

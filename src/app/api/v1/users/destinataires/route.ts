@@ -1,14 +1,13 @@
 import {NextRequest, NextResponse} from "next/server";
-import {getToken} from "next-auth/jwt";
 import {capitalizeFirstLetter, toLowerCase} from "@/utils/stringUtils";
 import {CreateDestinataireDto, DestinataireResponseWithRoleDto, Roles} from "@/services/dtos";
 import {destinataireSchema} from "@/utils/validationSchema";
 import {
     associateDestinataireToCurrentClient,
     checkExistingAssociation,
-    createDestinataire,
-    isDestinataireAlreadyExist,
+    createDestinataire, handleDestinataire,
 } from "@/services/backend-services/Bk_UserService";
+import {auth} from "@/auth/auth";
 
 export async function POST(req: NextRequest) {
     console.log("POST request reached at: /api/v1/users/destinataires");
@@ -31,25 +30,30 @@ export async function POST(req: NextRequest) {
 
         const {firstName, lastName, phoneNumber, email} = validationResult.data;
 
-        // Validate the user's session using getToken
-        const token = await getToken({req, secret: process.env.AUTH_SECRET});
-        if (!token) {
-            console.log("Unauthorized request: Missing or invalid token.");
-            return NextResponse.json({error: "Unauthorized"}, {status: 401});
-        }
+        const sess = await auth();
+        if (!sess) return NextResponse.json({error: "Unauthorized"}, {status: 401});
 
-        const userId = Number(token.id);
-        const userRoles = token.roles || [] as Roles[];
+        const userId = Number(sess?.user?.id);
+        const userRoles = sess?.user?.roles || [] as Roles[];
+
+        // Validate the user's session using getToken
+        // const token = await getToken({req, secret: process.env.AUTH_SECRET});
+        // if (!token) {
+        //     console.log("Unauthorized request: Missing or invalid token.");
+        //     return NextResponse.json({error: "Unauthorized"}, {status: 401});
+        // }
+        //
+        // const userId = Number(token.id);
+        // const userRoles = token.roles || [] as Roles[];
 
         console.log("User's session:", {userId, userRoles});
 
         console.log("Authenticated user:", {userId, userRoles});
 
         // Check if destinataire already exists
-        let destinataireData: DestinataireResponseWithRoleDto | null = await isDestinataireAlreadyExist(toLowerCase(email), phoneNumber);
-
+        let destinataireData: DestinataireResponseWithRoleDto | null = await handleDestinataire (userId , body)
         if (destinataireData) {
-            // Check if association already exists
+            // Check if the association already exists
             const existingAssociation = await checkExistingAssociation(userId, destinataireData.id);
 
             if (existingAssociation) {

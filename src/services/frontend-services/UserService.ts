@@ -128,7 +128,7 @@ export async function registerUser(newUser: RegisterClientDto) {
     try {
         // 1) POST the data
         const response = await axios.post(`${DOMAIN}/api/v1/users/register`, newUser, {
-            headers: { "Content-Type": "application/json" },
+            headers: {"Content-Type": "application/json"},
             // withCredentials: true, // If you need cookies
         })
 
@@ -162,11 +162,8 @@ export async function addDestinataire(newUser: CreateDestinataireDto): Promise<n
             body: JSON.stringify(newUser),
         });
 
-        console.log("log ====> response status: ", response.status);  // Log status
-        console.log("log ====> response headers: ", response.headers);  // Log headers
-
         if (!response.ok) {
-          return null;
+            return null;
         }
 
         // Si la réponse est OK, log et parse le JSON
