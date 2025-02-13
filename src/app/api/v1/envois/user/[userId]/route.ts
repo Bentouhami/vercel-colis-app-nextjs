@@ -19,5 +19,12 @@ export async function GET(req: NextRequest, { params }: { params: { userId: stri
         return NextResponse.json({ error: "EnvoiList not found" }, { status: 404 });
     }
 
-    return NextResponse.json(envoisList);
+    return NextResponse.json(envoisList, {
+        headers: {
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0",
+        },
+    });
 }
+
