@@ -1,7 +1,7 @@
 // Path: src/services/backend-services/Bk_EnvoiService.ts
 
 import prisma from "@/utils/db";
-import {EnvoiDto, EnvoiStatus, SimulationStatus} from "@/services/dtos";
+import {EnvoiDto, EnvoisListDto, EnvoiStatus, SimulationStatus} from "@/services/dtos";
 import {generateTrackingNumber} from "@/utils/generateTrackingNumber";
 import {simulationRepository} from "@/services/repositories/simulations/SimulationRepository";
 import {generateAndUploadQRCode} from "@/utils/qrUtils";
@@ -260,6 +260,102 @@ export async function getEnvoiById(envoiId: number): Promise<EnvoiDto | null> {
         return envoiDto;
     } catch (error) {
         console.error("Error getting envoi:", error);
+        throw error;
+    }
+}
+
+/**
+ *  get all envois by user id
+ *  @return EnvoiDto[]
+ *  @param userId
+ */
+
+export async function getAllEnvoisByUserId(userId: number): Promise<EnvoisListDto[]> {
+    try {
+        console.log("log ====> userId in getAllEnvoisByUserId function called in path: src/services/backend-services/Bk_EnvoiService.ts is : ", userId);
+
+        const envois = await prisma.envoi.findMany({
+            where: {
+                userId,
+                simulationStatus: SimulationStatus.COMPLETED
+            },
+            select: {
+                id: true,
+                totalWeight: true,
+                totalPrice: true,
+                departureDate: true,
+                arrivalDate: true,
+                envoiStatus: true,
+                paid: true,
+                trackingNumber: true,
+                destinataire: {
+                    select: {
+                        name: true,
+                        email: true,
+                        phoneNumber: true,
+                    }
+                },
+                arrivalAgency: {
+                    select: {
+                        name: true,
+                        address: {
+                            select: {
+                                number: true,
+                                street: true,
+                                city: true,
+                                country: true,
+                            }
+                        }
+                    }
+                },
+                departureAgency: {
+                    select: {
+                        name: true,
+                        address: {
+                            select: {
+                                number: true,
+                                street: true,
+                                city: true,
+                                country: true,
+                            }
+                        }
+                    }
+                }
+            },
+            orderBy: {
+                createdAt: "desc",
+            }
+        });
+
+        if (!envois || envois.length === 0) {
+            console.log("log ====> envois not found in envoiRepository.getAllEnvoisByUserId function in path: src/services/backend-services/Bk_EnvoiService.ts is : ", envois);
+            return [];
+        }
+
+
+        console.log("log ====> envois returned from envoiRepository.getAllEnvoisByUserId function in path: src/services/backend-services/Bk_EnvoiService.ts is : ", envois);
+
+        const formattedEnvois = envois.map((envoi) => {
+            return {
+                id: envoi.id,
+                departureAgency: envoi.departureAgency?.name,
+                arrivalAgency: envoi.arrivalAgency?.name,
+                totalWeight: envoi.totalWeight,
+                totalPrice: envoi.totalPrice,
+                arrivalDate: envoi.arrivalDate,
+                departureDate: envoi.departureDate,
+                envoiStatus: envoi.envoiStatus,
+                paid: envoi.paid,
+                destinataire: envoi.destinataire?.name || "",
+                trackingNumber: envoi.trackingNumber || "",
+            }
+        });
+        console.log("log ====> formattedEnvois returned from envoiRepository.getAllEnvoisByUserId function in path: src/services/backend-services/Bk_EnvoiService.ts is : ", formattedEnvois);
+        return formattedEnvois;
+
+
+    } catch (error) {
+        console.error("Error getting envois:", error);
         throw error;
     }
 }

@@ -1,7 +1,7 @@
 // Path: src/services/frontend-services/envoi/EnvoiService.ts
 
 import {DOMAIN} from "@/utils/constants";
-import {EnvoiDto} from "@/services/dtos";
+import {EnvoiDto, EnvoisListDto} from "@/services/dtos";
 import axios from "axios";
 
 /**
@@ -67,13 +67,14 @@ export async function getEnvoiById(envoiId: number): Promise<EnvoiDto | null> {
 }
 
 
-export async function fetchUserDeliveries(userId: string): Promise<EnvoiDto[]> {
+export async function fetchUserDeliveries(userId: string): Promise<EnvoisListDto[]> {
     const response = await axios.get(`${DOMAIN}/api/v1/envois/user/${userId}`, {
         headers: {
             'Content-Type': 'application/json',
         }
     });
-    return response.data;
+    // Ensure the response is an array
+    return Array.isArray(response.data) ? response.data : [response.data];
 }
 
 export async function createEnvoi(envoi: EnvoiDto): Promise<EnvoiDto> {

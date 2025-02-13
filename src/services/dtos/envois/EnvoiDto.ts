@@ -33,6 +33,21 @@ export interface EnvoiDto {
     parcels?: ParcelDto[];
 }
 
+// DTO for envoi list response
+export interface EnvoisListDto {
+    id: number;
+    departureAgency: string;
+    arrivalAgency: string;
+    totalWeight: number;
+    totalPrice: number;
+    arrivalDate: Date;
+    departureDate: Date;
+    envoiStatus: string;
+    paid: boolean;
+    destinataire: string;
+    trackingNumber: string;
+}
+
 // DTO for creating a new envoi
 export interface CreateEnvoiDto extends Omit<EnvoiDto, "id" | "trackingNumber" | "qrCodeUrl" | "user" | "destinataire" | "departureAgency" | "arrivalAgency" | "parcels"> {
     parcels: Omit<ParcelDto, "id" | "envoiId">[];
@@ -42,10 +57,15 @@ export interface CreateEnvoiDto extends Omit<EnvoiDto, "id" | "trackingNumber" |
 export interface UpdateEnvoiDto extends Partial<Omit<EnvoiDto, "id">> {
     id: number;
 }
+interface DestinataireDto {
+    name: string;
+    email: string;
+    phoneNumber: string;
+}
 
 export interface EnvoiResponseDto {
     id: number;
-    destinataireId: number;
+    destinataire: DestinataireDto;
     trackingNumber: string;
     qrCodeUrl: string;
     arrivalAgencyId: number;
