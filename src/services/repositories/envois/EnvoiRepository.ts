@@ -7,7 +7,7 @@ import {EnvoiMapper} from "@/services/mappers/EnvoiMapper";
 import {simulationRepository} from "@/services/repositories/simulations/SimulationRepository";
 
 /**
- * This class provides methods for interacting with the envois table in the database.
+ * This class provides methods for interacting with the envoi table in the database.
  * @class EnvoiRepository
  * @description This class is responsible for handling database operations related to envois. It provides methods for retrieving envois from the database.
  * @implements {IEnvoiRepository}

@@ -46,6 +46,7 @@ export interface EnvoisListDto {
     paid: boolean;
     destinataire: string;
     trackingNumber: string;
+    createdAt: Date;
 }
 
 // DTO for creating a new envoi

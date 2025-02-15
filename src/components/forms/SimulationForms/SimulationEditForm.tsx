@@ -326,7 +326,7 @@ const SimulationEditForm = () => {
                 };
                 console.log("log ====> simulationData in handleSubmit function before calling submitSimulation function: ", simulationData);
 
-                // // validate data with zod schema
+                // validate data with zod schema
                 // const validated = simulationEnvoisSchema.safeParse(simulationData);
                 //
                 // if (!validated.success) {
@@ -335,7 +335,7 @@ const SimulationEditForm = () => {
                 //     toast.error(validated.error.errors[0].message);
                 //     return;
                 // }
-
+                //
                 // console.log("log ====> validated.data in handleSubmit function after calling submitSimulation function: ", validated.data);
 
                 try {

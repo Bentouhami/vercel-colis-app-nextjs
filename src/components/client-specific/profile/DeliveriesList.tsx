@@ -7,9 +7,10 @@ import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components
 import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button";
 import {CalendarDays, CheckCircle, Euro, MapPin, Package, XCircle} from "lucide-react";
+import {EnvoisListDto} from "@/services/dtos";
 
 export default function DeliveriesList() {
-    const [deliveries, setDeliveries] = useState<any[]>([]);
+    const [deliveries, setDeliveries] = useState<EnvoisListDto[]>([]);
 
     useEffect(() => {
         (async () => {

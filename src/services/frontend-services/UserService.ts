@@ -157,6 +157,7 @@ export async function addDestinataire(newUser: CreateDestinataireDto): Promise<n
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'cache': 'no-cache',
             },
             credentials: 'include',
             body: JSON.stringify(newUser),

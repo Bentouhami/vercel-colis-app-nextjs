@@ -6,12 +6,12 @@ import {getEnvoiById, updateEnvoi} from "@/services/backend-services/Bk_EnvoiSer
 /**
  * Update an envoi
  * @param req
- * @param res
+ * @param params {id: string} The ID of the envoi to update
  * @returns
  */
 export async function PUT(
     req: NextRequest,
-    {params}: { params: { id: string } } // Correct way to get params in Next.js App Router
+    {params}: { params: { id: string } }
 ) {
 
     if (req.method !== 'PUT') {
@@ -22,7 +22,7 @@ export async function PUT(
 
         console.log("log ====> req in PUT request received to update the envoi after successful payment in path: src/app/api/v1/envois/[id]/route.ts is : ", req);
 
-        const envoiId = parseInt(params.id, 10); // Ensure the ID is parsed as an integer
+        const envoiId = parseInt(params.id, 10);
         if (isNaN(envoiId)) {
             return NextResponse.json(
                 {error: 'Invalid envoi ID provided.'},

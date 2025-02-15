@@ -1,24 +1,24 @@
 // path: src/components/forms/EnvoiForms/AddReceiverForm.tsx
 'use client';
 
-import React, { ChangeEvent, useState } from "react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Loader2, Mail, Phone, User, UserPlus } from "lucide-react";
-import { toast, ToastContainer } from "react-toastify";
+import React, {ChangeEvent, useState} from "react";
+import {useRouter} from "next/navigation";
+import {Button} from "@/components/ui/button";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
+import {Input} from "@/components/ui/input";
+import {Label} from "@/components/ui/label";
+import {Loader2, Mail, Phone, User, UserPlus} from "lucide-react";
+import {toast, ToastContainer} from "react-toastify";
 
-import { DestinataireInput, destinataireSchema } from "@/utils/validationSchema";
-import { addDestinataire } from "@/services/frontend-services/UserService";
-import { Roles } from "@/services/dtos/enums/EnumsDto";
-import { CreateDestinataireDto } from "@/services/dtos/users/UserDto";
+import {DestinataireInput, destinataireSchema} from "@/utils/validationSchema";
+import {addDestinataire} from "@/services/frontend-services/UserService";
+import {Roles} from "@/services/dtos/enums/EnumsDto";
+import {CreateDestinataireDto} from "@/services/dtos/users/UserDto";
 import {
     assignTransportToSimulation,
     updateSimulationDestinataire
 } from "@/services/frontend-services/simulation/SimulationService";
-import { getSimulationFromCookie } from "@/lib/simulationCookie";
+import {getSimulationFromCookie} from "@/lib/simulationCookie";
 import RequireAuth from "@/components/auth/RequireAuth";
 
 export default function AddReceiverForm() {
@@ -42,7 +42,7 @@ export default function AddReceiverForm() {
         try {
             const fieldSchema = destinataireSchema.shape[name as keyof DestinataireInput];
             fieldSchema.parse(value);
-            setErrors((prev) => ({ ...prev, [name]: "" }));
+            setErrors((prev) => ({...prev, [name]: ""}));
         } catch (error: any) {
             setErrors((prev) => ({
                 ...prev,
@@ -52,15 +52,15 @@ export default function AddReceiverForm() {
     };
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setDestinataireFormData((prev) => ({ ...prev, [name]: value }));
+        const {name, value} = e.target;
+        setDestinataireFormData((prev) => ({...prev, [name]: value}));
         if (touched[name]) {
             validateField(name, value);
         }
     };
 
     const handleBlur = (name: string) => {
-        setTouched((prev) => ({ ...prev, [name]: true }));
+        setTouched((prev) => ({...prev, [name]: true}));
         validateField(name, destinataireFormData[name as keyof DestinataireInput]);
     };
 
@@ -146,7 +146,7 @@ export default function AddReceiverForm() {
                 <Card className="w-full">
                     <CardHeader className="text-center space-y-2">
                         <CardTitle className="text-2xl font-bold text-blue-700 flex items-center justify-center gap-2">
-                            <UserPlus className="h-6 w-6" />
+                            <UserPlus className="h-6 w-6"/>
                             Ajouter un destinataire
                         </CardTitle>
                         <CardDescription>Veuillez remplir les informations du destinataire</CardDescription>
@@ -156,7 +156,7 @@ export default function AddReceiverForm() {
                             <div className="space-y-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="firstName" className="flex items-center gap-2">
-                                        <User className="h-4 w-4" />
+                                        <User className="h-4 w-4"/>
                                         Nom
                                     </Label>
                                     <Input
@@ -174,7 +174,7 @@ export default function AddReceiverForm() {
 
                                 <div className="space-y-2">
                                     <Label htmlFor="lastName" className="flex items-center gap-2">
-                                        <User className="h-4 w-4" />
+                                        <User className="h-4 w-4"/>
                                         Prénom
                                     </Label>
                                     <Input
@@ -192,7 +192,7 @@ export default function AddReceiverForm() {
 
                                 <div className="space-y-2">
                                     <Label htmlFor="email" className="flex items-center gap-2">
-                                        <Mail className="h-4 w-4" />
+                                        <Mail className="h-4 w-4"/>
                                         Email
                                     </Label>
                                     <Input
@@ -211,7 +211,7 @@ export default function AddReceiverForm() {
 
                                 <div className="space-y-2">
                                     <Label htmlFor="phoneNumber" className="flex items-center gap-2">
-                                        <Phone className="h-4 w-4" />
+                                        <Phone className="h-4 w-4"/>
                                         Numéro de téléphone
                                     </Label>
                                     <Input
@@ -237,18 +237,18 @@ export default function AddReceiverForm() {
                             >
                                 {isLoading ? (
                                     <span className="flex items-center justify-center gap-2">
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <Loader2 className="h-4 w-4 animate-spin"/>
                     Ajout en cours...
                   </span>
                                 ) : (
                                     <span className="flex items-center justify-center gap-2">
-                    <UserPlus className="h-4 w-4" />
+                    <UserPlus className="h-4 w-4"/>
                     Ajouter le destinataire
                   </span>
                                 )}
                             </Button>
                         </form>
-                        <ToastContainer position="bottom-right" autoClose={2000} hideProgressBar theme="colored" />
+                        <ToastContainer position="bottom-right" autoClose={2000} hideProgressBar theme="colored"/>
                     </CardContent>
                 </Card>
             </div>

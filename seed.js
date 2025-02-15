@@ -1,6 +1,9 @@
 // path: /seed.js
 
 const {PrismaClient} = require('@prisma/client');
+const axios = require("axios");
+
+
 const prisma = new PrismaClient();
 
 async function main() {
@@ -145,6 +148,7 @@ async function main() {
 
     console.log('Tarifs globaux créés:', tarifs);
 
+    // Insert stuff here
 
     // Afficher les données insérées
     console.log({

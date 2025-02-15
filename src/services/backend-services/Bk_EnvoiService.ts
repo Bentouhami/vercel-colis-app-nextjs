@@ -52,19 +52,33 @@ export async function cancelSimulation(envoiId: number): Promise<void> {
 }
 
 /**
- * Delete all parcels associated with an envoi
- * @param envoiId
+ * Link a client to an agency if not already linked
+ * @param clientId
+ * @param agencyId
  */
-export async function deleteParcelsByEnvoiId(envoiId: number) {
-    try {
-        await prisma.parcel.deleteMany({
-            where: {envoiId},
+async function linkClientToAgency(clientId: number, agencyId: number): Promise<void> {
+    const existingLink = await prisma.agencyClients.findUnique({
+        where: {
+            clientId_agencyId: {
+                clientId,
+                agencyId,
+            },
+        },
+    });
+
+    if (!existingLink) {
+        await prisma.agencyClients.create({
+            data: {
+                clientId,
+                agencyId,
+            },
         });
-    } catch (error) {
-        console.error("Erreur lors de la suppression des parcels:", error);
-        throw error;
+        console.log(`✅ Client ${clientId} linked to Agency ${agencyId}`);
+    } else {
+        console.log(`ℹ️ Client ${clientId} is already linked to Agency ${agencyId}`);
     }
 }
+
 
 /**
  * Update an envoi
@@ -169,12 +183,14 @@ export async function updateEnvoi(envoiId: number): Promise<boolean> {
 
         const updatedEnvoi = await envoiRepository.updateEnvoi(envoi.id!, updatedEnvoiData);
 
-        console.log("log ====> updatedEnvoi generated in backend updateEnvoi function called in path: src/services/backend-services/Bk_EnvoiService.ts is : ", updatedEnvoi);
-
         if (!updatedEnvoi) {
             console.log("log ====> updatedEnvoi not found in backend updateEnvoi function in path: src/services/backend-services/Bk_EnvoiService.ts is : ", updatedEnvoi);
             return false;
         }
+        if (envoi.userId && envoi.departureAgencyId) {
+            await linkClientToAgency(envoi.userId, envoi.departureAgencyId);
+        }
+
         console.log("log ====> updatedEnvoi in backend updateEnvoi function called in path: src/services/backend-services/Bk_EnvoiService.ts is : ", updatedEnvoi);
         console.log('Envoi updated successfully:', updatedEnvoi);
 
