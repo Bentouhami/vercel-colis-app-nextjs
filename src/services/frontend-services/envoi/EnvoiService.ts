@@ -20,6 +20,8 @@ export async function updateEnvoiDatas(envoiId: number): Promise<boolean> {
         const response = await axios.put(`${DOMAIN}/api/v1/envois/${envoiId}`, {}, {
             headers: {
                 'Content-Type': 'application/json',
+                cache: "no-cache",
+                pragma: "no-cache",
             }
         });
 
@@ -73,6 +75,8 @@ export async function fetchUserDeliveries(userId: string): Promise<EnvoisListDto
     const response = await axios.get(`${DOMAIN}/api/v1/envois/user/${userId}`, {
         headers: {
             'Content-Type': 'application/json',
+            cache: "no-cache",
+            pragma: "no-cache",
         }
     });
     // Ensure the response is an array
