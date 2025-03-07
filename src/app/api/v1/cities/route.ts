@@ -1,35 +1,49 @@
 // path: src/app/api/v1/cities/route.ts
-
-import {NextRequest, NextResponse} from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import prisma from "@/utils/db";
 
 /**
  * @method GET
- * @route /api/v1/cities?country=CountryName
- * @desc Get cities for a given country
+ * @route /api/v1/cities?country=CountryID
+ * @desc Get cities that have an agency for a given country
  * @access public
  */
 export async function GET(req: NextRequest) {
+
+    if (req.method !== 'GET') {
+        return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
+    }
+
     try {
-        const country = req.nextUrl.searchParams.get('country');
-        if (!country) {
-            return NextResponse.json({error: "Country is required"}, {status: 400});
+        const countryId = req.nextUrl.searchParams.get('countryId');
+
+        if (!countryId) {
+            return NextResponse.json({ error: "Country ID is required" }, { status: 400 });
         }
 
-        const cities = await prisma.address.findMany({
+        console.log(`📡 Fetching cities in method GET in path: src/app/api/v1/cities/route.ts for country ID:  ${countryId}`);
+
+        const cities = await prisma.city.findMany({
             where: {
-                country: country,
-                Agency: {isNot: null},
+                countryId: Number(countryId), // Filter cities by country ID
+                addresses: {
+                    some: { agency: { isNot: null } }, // Only cities with an agency
+                },
             },
             select: {
                 id: true,
-                city: true,
+                name: true, // Ensure API returns `{ id, name }`
             },
-            distinct: ["city"],
+            orderBy: {
+                name: 'asc',
+            }
         });
 
-        return NextResponse.json(cities, {status: 200});
+        console.log(`Cities found for country ID ${countryId}:`, cities);
+
+        return NextResponse.json(cities, { status: 200 });
     } catch (error) {
-        return NextResponse.json({error: "Internal server error"}, {status: 500});
+        console.error("Error fetching cities:", error);
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }

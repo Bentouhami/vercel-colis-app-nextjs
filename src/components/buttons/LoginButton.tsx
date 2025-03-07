@@ -6,7 +6,7 @@ import {LogInIcon} from "lucide-react";
 const LoginButton = () => {
     return (
         <Link href="/client/auth/login">
-            <Button variant={"login"}  className={"w-full hover:bg-gray-700 hover:text-gray-200"}>
+            <Button className={"w-full hover:bg-gray-700 hover:text-gray-200"}>
                 <LogInIcon className="mr-2 h-4 w-4"/>
                 Se connecter
             </Button>

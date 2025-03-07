@@ -1,7 +1,7 @@
 // path: src/app/api/v1/envois/[id]/route.ts
 
 import {NextRequest, NextResponse} from 'next/server';
-import {getEnvoiById, updateEnvoi} from "@/services/backend-services/Bk_EnvoiService";
+import { getPaymentSuccessDataById, updateEnvoi} from "@/services/backend-services/Bk_EnvoiService";
 
 /**
  * Update an envoi
@@ -19,9 +19,6 @@ export async function PUT(
     }
 
     try {
-
-        console.log("log ====> req in PUT request received to update the envoi after successful payment in path: src/app/api/v1/envois/[id]/route.ts is : ", req);
-
         const envoiId = parseInt(params.id, 10);
         if (isNaN(envoiId)) {
             return NextResponse.json(
@@ -30,20 +27,14 @@ export async function PUT(
             );
         }
 
-        console.log("log ====> envoiId in PUT request received to update the envoi after successful payment in path: src/app/api/v1/envois/[id]/route.ts is : ", envoiId);
-
         // Update envoi in the database
         const updatedEnvoi = await updateEnvoi(envoiId);
-
         if (!updatedEnvoi) {
-            console.log("log ====> updatedEnvoi not found in updateEnvoi function in path: src/app/api/v1/envois/[id]/route.ts is : ", updatedEnvoi);
             return NextResponse.json(
                 {error: 'Envoi not found.'},
                 {status: 404}
             );
         }
-
-        console.log("log ====> updatedEnvoi in updateEnvoi function in path: src/app/api/v1/envois/[id]/route.ts is : ", updatedEnvoi); 
 
         return NextResponse.json({envoi: updatedEnvoi}, {status: 200});
     } catch (error) {
@@ -61,29 +52,24 @@ export async function PUT(
  * @param res
  * */
 
-export async function GET(
-    req: NextRequest,
-    {params}: { params: { id: string } } // Correct way to get params in Next.js App Router
-) {
+export async function GET(req: NextRequest, {params}: { params: { id: string } }) {
     if (req.method !== 'GET') {
         return NextResponse.json("Not allowed method!")
     }
-
     try {
-        console.log("log ====> req in GET request received to get the envoi after successful payment in path: src/app/api/v1/envois/[id]/route.ts is : ", req);
+        console.log("log ====> params.id in GET function called in path: src/app/api/v1/envois/[id]/route.ts is : ", params.id);
 
-        const envoiId = parseInt(params.id, 10); // Ensure the ID is parsed as an integer
-        // if (isNaN(envoiId)) {
-        //     return NextResponse.json(
-        //         {error: 'Invalid envoi ID provided.'},
-        //         {status: 400}
-        //     );
-        // }
+        const envoiId = parseInt(params.id, 10);
 
-        console.log("log ====> envoiId in GET request received to get the envoi after successful payment in path: src/app/api/v1/envois/[id]/route.ts is : ", envoiId);
+        if (!envoiId || isNaN(envoiId)) {
+            return NextResponse.json(
+                {error: 'Invalid envoi ID provided.'},
+                {status: 400}
+            );
+        }
 
         // Get envoi from the database
-        const envoi = await getEnvoiById(envoiId);
+        const envoi = await getPaymentSuccessDataById(envoiId);
 
         if (!envoi) {
             return NextResponse.json(
@@ -91,7 +77,7 @@ export async function GET(
                 {status: 404}
             );
         }
-        return NextResponse.json({envoi: envoi}, {status: 200});
+        return NextResponse.json(envoi, {status: 200});
     } catch (error) {
         console.error('Error getting envoi:', error);
         return NextResponse.json(

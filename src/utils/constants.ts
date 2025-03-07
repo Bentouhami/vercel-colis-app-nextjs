@@ -37,7 +37,6 @@ export const API_DOMAIN = `${DOMAIN}${API_BASE_URL}`;
 //endregion
 
 
-
 // URLs for payment success and cancel
 export const successUrl =
     `${DOMAIN}/client/payment/payment-success`;

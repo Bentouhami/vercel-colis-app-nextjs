@@ -4,6 +4,7 @@
 import bcrypt from "bcryptjs";
 import { getSession } from "next-auth/react";
 import { toast } from "react-toastify";
+import {RoleDto} from "@/services/dtos";
 
 /**
  * Hash a password with bcrypt
@@ -33,7 +34,7 @@ interface AuthCheckResult {
     userId?: string;
     email?: string;
     error?: string;
-    roles?: string[];
+    role?: RoleDto;
 }
 export async function checkAuthStatus(showToast: boolean = true): Promise<AuthCheckResult> {
     try {
@@ -53,7 +54,7 @@ export async function checkAuthStatus(showToast: boolean = true): Promise<AuthCh
             isAuthenticated: true,
             userId: session.user?.id,
             email: session.user?.email!,
-            roles: session.user?.roles
+            role: session.user?.role
         };
     } catch (error) {
         if (showToast) {

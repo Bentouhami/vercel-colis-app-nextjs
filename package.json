@@ -7,16 +7,18 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "seed": "node seed.js"
+    "seed": "node prisma/seed.js",
+    "reset": "prisma migrate reset --force --skip-generate"
   },
   "prisma": {
-    "seed": "ts-node prisma/seed.ts"
+    "seed": "node prisma/seed.js"
   },
   "dependencies": {
     "@austinkelleher/next-rest-framework": "^5.2.1",
     "@auth/core": "^0.37.4",
     "@auth/prisma-adapter": "^2.7.4",
     "@clerk/nextjs": "^6.3.1",
+    "@date-fns/tz": "^1.2.0",
     "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^3.10.0",
     "@neondatabase/serverless": "^0.9.0",
@@ -62,13 +64,18 @@
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "bootstrap": "^5.3.3",
+    "cities.json": "^1.1.47",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.5.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
     "colisapp": "file:",
     "cookie": "^1.0.0",
+    "country-json": "^2.3.0",
+    "country-state-city": "^3.2.1",
+    "country-state-city-nextjs": "^10.0.0",
     "date-fns": "^3.6.0",
+    "date-fns-tz": "^3.2.0",
     "decimal.js": "^10.4.3",
     "edge-csrf": "^1.0.11",
     "embla-carousel-react": "^8.5.2",
@@ -89,13 +96,16 @@
     "qrcode": "^1.5.4",
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.5",
+    "react-country-state-city": "^1.1.11",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.54.2",
     "react-icons": "^5.2.1",
+    "react-phone-number-input": "^3.4.12",
     "react-resizable-panels": "^2.1.7",
     "react-toastify": "^10.0.5",
     "recharts": "^2.15.1",
+    "shadcn": "^2.3.0",
     "sonner": "^1.7.4",
     "stripe": "^17.3.1",
     "tailwind-merge": "^2.6.0",
@@ -103,7 +113,7 @@
     "uuid": "^11.0.3",
     "vaul": "^1.1.2",
     "ws": "^8.18.0",
-    "zod": "^3.24.1"
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
@@ -117,7 +127,7 @@
     "eslint-config-next": "^14.2.13",
     "postcss": "^8",
     "prisma": "^6.1.0",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
   }
 }

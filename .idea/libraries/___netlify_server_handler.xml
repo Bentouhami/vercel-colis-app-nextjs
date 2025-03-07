@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="___netlify-server-handler">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/.netlify/functions/___netlify-server-handler.zip!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

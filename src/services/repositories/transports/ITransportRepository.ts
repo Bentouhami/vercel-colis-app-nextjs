@@ -7,5 +7,4 @@ export interface ITransportRepository {
 
     updateTransport(transport: UpdateTransportRequestDto): Promise<TransportResponseDto | null>;
 
-    getUserProfileById(userId: number): Promise<ProfileDto | null>;
 }

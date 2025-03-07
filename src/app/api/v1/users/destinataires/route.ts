@@ -1,6 +1,8 @@
+// path: src/app/api/v1/users/destinataires/route.ts
+
 import {NextRequest, NextResponse} from "next/server";
 import {capitalizeFirstLetter, toLowerCase} from "@/utils/stringUtils";
-import {CreateDestinataireDto, DestinataireResponseWithRoleDto, Roles} from "@/services/dtos";
+import {CreateDestinataireDto, DestinataireResponseWithRoleDto, RoleDto} from "@/services/dtos";
 import {destinataireSchema} from "@/utils/validationSchema";
 import {
     associateDestinataireToCurrentClient,
@@ -18,13 +20,19 @@ export async function POST(req: NextRequest) {
 
     try {
         // Parse and validate the request body
-        const body = (await req.json()) as CreateDestinataireDto;
-        if (!body) {
+        const { newUser } = (await req.json()) as { newUser: CreateDestinataireDto };
+
+        if (!newUser) {
             return NextResponse.json({error: "Missing required fields"}, {status: 400});
         }
 
-        const validationResult = destinataireSchema.safeParse(body);
+        console.log("log ====> body in destinataire route: ", newUser);
+
+
+        const validationResult = destinataireSchema.safeParse(newUser);
         if (!validationResult.success) {
+            console.log("log ====> error validation : ", validationResult.error.errors)
+
             return NextResponse.json({error: validationResult.error.errors[0].message}, {status: 400});
         }
 
@@ -34,24 +42,14 @@ export async function POST(req: NextRequest) {
         if (!sess) return NextResponse.json({error: "Unauthorized"}, {status: 401});
 
         const userId = Number(sess?.user?.id);
-        const userRoles = sess?.user?.roles || [] as Roles[];
+        const userRole = sess?.user?.role;
 
-        // Validate the user's session using getToken
-        // const token = await getToken({req, secret: process.env.AUTH_SECRET});
-        // if (!token) {
-        //     console.log("Unauthorized request: Missing or invalid token.");
-        //     return NextResponse.json({error: "Unauthorized"}, {status: 401});
-        // }
-        //
-        // const userId = Number(token.id);
-        // const userRoles = token.roles || [] as Roles[];
+        console.log("User's session:", {userId, userRole});
 
-        console.log("User's session:", {userId, userRoles});
-
-        console.log("Authenticated user:", {userId, userRoles});
+        console.log("Authenticated user:", {userId, userRole});
 
         // Check if destinataire already exists
-        let destinataireData: DestinataireResponseWithRoleDto | null = await handleDestinataire (userId , body)
+        let destinataireData: DestinataireResponseWithRoleDto | null = await handleDestinataire (userId , newUser)
         if (destinataireData) {
             // Check if the association already exists
             const existingAssociation = await checkExistingAssociation(userId, destinataireData.id);
@@ -78,7 +76,7 @@ export async function POST(req: NextRequest) {
             email: toLowerCase(email),
             phoneNumber,
             image: null,
-            roles: [Roles.DESTINATAIRE],
+            role: RoleDto.DESTINATAIRE,
         };
 
         console.log("Creating new destinataire:", newDestinataireData);

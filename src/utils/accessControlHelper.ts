@@ -1,14 +1,37 @@
-// path: src/lib/utils/accessControlHelper.ts
-
-
 import {Session} from "next-auth";
+import {RoleDto} from "@/services/dtos";
 
 export const accessControlHelper = {
-    canManageUsers: ( session: Session) => {
-        const isSuperAdmin = session?.user?.role === 'SUPER_ADMIN';
-        const isAdmin = session?.user?.role === 'ADMIN';
-        return isSuperAdmin || isAdmin;
+    canManageUsers: (session: Session) => {
+        const isSuperAdmin = session?.user?.role === RoleDto.SUPER_ADMIN;
+        const isAgencyAdmin = session?.user?.role === RoleDto.AGENCY_ADMIN;
+
+        return isSuperAdmin || isAgencyAdmin;
+    },
+    canManageAgencies: (session: Session) => {
+        const isSuperAdmin = session?.user?.role === RoleDto.SUPER_ADMIN;
+        const isAgencyAdmin = session?.user?.role === RoleDto.AGENCY_ADMIN;
+
+        return isSuperAdmin || isAgencyAdmin;
+    },
+    canManageEnvoi: (session: Session) => {
+        console.log("log ====> canManageEnvoi function called in path: src/utils/accessControlHelper.ts")
+        const isSuperAdmin = session?.user?.role === RoleDto.SUPER_ADMIN;
+        const isAgencyAdmin = session?.user?.role === RoleDto.AGENCY_ADMIN;
+
+        return isSuperAdmin || isAgencyAdmin;
     },
 
+    isSuperAdmin: (session: Session) => {
+        return session?.user?.role === RoleDto.SUPER_ADMIN;
+    },
+
+    isAgencyAdmin: (session: Session) => {
+        return session?.user?.role === RoleDto.AGENCY_ADMIN;
+    },
+
+    isAdmin: (session: Session) => {
+        return session?.user?.role === RoleDto.SUPER_ADMIN || session?.user?.role === RoleDto.AGENCY_ADMIN;
+    },
 
 }

@@ -2,18 +2,19 @@
 
 
 // Enums matching the database schema
-export enum Roles {
+export enum RoleDto {
     CLIENT = 'CLIENT',
     SUPER_ADMIN = 'SUPER_ADMIN',
     DESTINATAIRE = 'DESTINATAIRE',
-    AGENCY_ADMIN = 'AGENCY_ADMIN'
+    AGENCY_ADMIN = 'AGENCY_ADMIN',
+    ACCOUNTANT = 'ACCOUNTANT'
 }
 
 export enum SimulationStatus {
     DRAFT = 'DRAFT',
     CONFIRMED = 'CONFIRMED',
     COMPLETED = 'COMPLETED',
-    CANCELLED = 'CANCELLED'
+    CANCELLED = 'CANCELLED',
 }
 
 export enum EnvoiStatus {

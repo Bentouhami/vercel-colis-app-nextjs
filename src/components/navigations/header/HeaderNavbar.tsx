@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {Button} from "@/components/ui/button";
@@ -13,11 +13,11 @@ import LogoutButton from "../../buttons/LogoutButton";
 import {Sheet, SheetContent, SheetTrigger} from "@/components/ui/sheet";
 import LoginButton from "@/components/buttons/LoginButton";
 import RegisterButton from "@/components/buttons/RegisterButton";
+import {RoleDto} from "@/services/dtos";
 
 interface NavbarProps {
-    isLoggedIn: boolean;
-    isAgencyAdmin: boolean;
-    isSuperAdmin: boolean;
+    role: RoleDto | undefined;
+    isLoggedIn: boolean | undefined;
     firstName: string;
     lastName: string;
     name: string;
@@ -26,8 +26,7 @@ interface NavbarProps {
 }
 
 const HeaderNavbar: React.FC<NavbarProps> = ({
-                                                 isAgencyAdmin,
-                                                 isSuperAdmin,
+                                                 role,
                                                  isLoggedIn,
                                                  name,
                                                  email,
@@ -35,6 +34,12 @@ const HeaderNavbar: React.FC<NavbarProps> = ({
                                              }) => {
     const pathname = usePathname();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [hasDashboardAccess, setHasDashboardAccess] = useState(false);
+    useEffect(() => {
+        if (role === RoleDto.SUPER_ADMIN || role === RoleDto.AGENCY_ADMIN || role === RoleDto.ACCOUNTANT) {
+            setHasDashboardAccess(true);
+        }
+    }, [role]);
 
     return (
         <header className="border-b shadow-sm bg-white fixed top-0 left-0 w-full z-50">
@@ -95,20 +100,14 @@ const HeaderNavbar: React.FC<NavbarProps> = ({
                                         </>
                                     )}
 
-                                    {isSuperAdmin && (
+                                    {hasDashboardAccess && (
                                         <DropdownMenuItem asChild>
                                             <Link href="/admin" className="flex items-center gap-2">
-                                                <Settings className="w-4 h-4"/> Dashboard Admin
+                                                <Settings className="w-4 h-4"/> Dashboard
                                             </Link>
                                         </DropdownMenuItem>
                                     )}
-                                    {isAgencyAdmin && !isSuperAdmin && (
-                                        <DropdownMenuItem asChild>
-                                            <Link href="/admin" className="flex items-center gap-2">
-                                                <Settings className="w-4 h-4"/> Dashboard Agence
-                                            </Link>
-                                        </DropdownMenuItem>
-                                    )}
+
                                     <Separator/>
                                     <div className="px-4 py-3 flex justify-center">
                                         <LogoutButton/>
@@ -150,7 +149,7 @@ const HeaderNavbar: React.FC<NavbarProps> = ({
                                     </Link>
                                 </nav>
                                 <Separator/>
-                                {isLoggedIn && (
+                                {isLoggedIn ? (
                                     <div className="mt-4">
                                         <p className="text-sm font-medium">{name}</p>
                                         <p className="text-xs text-gray-500">{email}</p>
@@ -167,29 +166,24 @@ const HeaderNavbar: React.FC<NavbarProps> = ({
                                                 <Bell className="w-4 h-4"/> Mes Notifications
                                             </Link>
                                         </div>
-                                        {isSuperAdmin && (
+                                        {hasDashboardAccess && (
                                             <Link href="/admin" className="flex items-center gap-2">
-                                                <Settings className="w-4 h-4"/> Dashboard Admin
+                                                <Settings className="w-4 h-4"/> Dashboard
                                             </Link>
                                         )}
-                                        {isAgencyAdmin && !isSuperAdmin && (
-                                            <Link href="/admin" className="flex items-center gap-2">
-                                                <Settings className="w-4 h-4"/> Dashboard Agence
-                                            </Link>
-                                        )}
+
                                         <div className="mt-2 flex flex-col gap-2">
                                             <LogoutButton/>
                                         </div>
                                     </div>
-                                )}
-                                {
+                                ) : (
                                     !isLoggedIn && (
                                         <div className="mt-2 flex flex-column gap-2 justify-items-center">
                                             <LoginButton/>
                                             <RegisterButton/>
                                         </div>
                                     )
-                                }
+                                )}
                             </SheetContent>
                         </Sheet>
                     </div>

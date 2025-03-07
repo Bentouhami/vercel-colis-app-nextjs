@@ -15,7 +15,7 @@ import {capitalizeFirstLetter, toLowerCase} from "@/utils/stringUtils";
 export async function GET() {
     try {
         // on récupère toutes les adresses de la base de données via la fonction findMany de prisma
-        const addresses = await prisma.address.findMany() as Address[];
+        const addresses = await prisma.address.findMany();
 
         // si aucune adresse n'est trouvée, on renvoie une erreur
         if (!addresses) {

@@ -31,7 +31,7 @@ export async function GET(request: NextRequest, {params}: Props) {
 
         // si aucune adresse n'est trouvée, on renvoie une erreur
         return NextResponse.json(
-            {message: "addresse found", address},
+            {message: "address found", address},
             {status: 200});
 
         // si une erreur survient, on renvoie une erreur
@@ -50,16 +50,20 @@ export async function GET(request: NextRequest, {params}: Props) {
  * @access public
  */
 export async function PUT(request: NextRequest, {params}: Props) {
+    if (request.method !== "PUT") {
+        return errorHandler("Method not allowed", 405);
+    }
+
     try {
         // récupérer le body de la requête et le transformer en adresse DTO
-        const address: Address | null = await prisma.address.findUnique({
+        const address = await prisma.address.findUnique({
             where: {id: parseInt(params.id)}
         })
 
         if (!address) {
             return errorHandler("No address found", 404);
         }
-        const body = (await request.json());
+        const body = await request.json();
 
         const updatedAddress = await prisma.address.update({
             where: {
@@ -67,10 +71,11 @@ export async function PUT(request: NextRequest, {params}: Props) {
             },
             data: {
                 street: body.street,
-                number: body.number,
+                streetNumber: body.number,
                 city: body.city,
-                zipCode: body.zipCode,
-                country: body.country
+                cityId: body.cityId,
+                boxNumber: body.boxNumber,
+                complement: body.complement,
             }
         });
 

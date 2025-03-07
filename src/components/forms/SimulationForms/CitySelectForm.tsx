@@ -1,37 +1,47 @@
-import {Form} from 'react-bootstrap';
-import {ChangeEvent, useMemo} from "react";
+import { Form } from 'react-bootstrap';
+import React, { ChangeEvent, useMemo } from "react";
+import { Label } from "@/components/ui/label";
 
 interface CitySelectProps {
     label: string;
     value: string;
     onChange: (e: ChangeEvent<HTMLSelectElement>) => void;
-    cities: { id: string, city: string }[];
+    cities: { id: number; name: string }[]; // ✅ Fix type (id as `number`, name as `string`)
     disabled?: boolean;
 }
 
-const CitySelect = ({label, value, onChange, cities, disabled = false}: CitySelectProps) => {
+const CitySelect = ({ label, value, onChange, cities, disabled = false }: CitySelectProps) => {
     const placeholder = useMemo(() => disabled ? "Sélection non disponible" : "Sélectionner une ville", [disabled]);
 
     return (
-        <Form.Group className="mb-4">
-            <Form.Label className="text-gray-700 font-semibold">{label}</Form.Label>
-            <Form.Select
+        <div className="mb-4">
+            <Label className="text-gray-700 font-semibold">{label}</Label>
+            <select
                 value={value}
                 onChange={onChange}
                 disabled={disabled}
-                aria-label={label}
-                className="border-2 border-gray-300 rounded-lg focus:border-blue-600 transition duration-200 ease-in-out"
+                className="
+                  mt-1 w-full
+                  border-2 border-gray-300
+                  rounded-lg
+                  p-2
+                  focus:outline-none
+                  focus:border-blue-600
+                  transition duration-200
+                "
             >
                 <option value="">{placeholder}</option>
                 {cities.length > 0 ? (
                     cities.map((city) => (
-                        <option key={city.id} value={city.city}>{city.city}</option>
+                        <option key={city.id} value={city.name}> {/* ✅ Ensure correct key and value */}
+                            {city.name}
+                        </option>
                     ))
                 ) : (
                     <option disabled>Aucune ville disponible</option>
                 )}
-            </Form.Select>
-        </Form.Group>
+            </select>
+        </div>
     );
 };
 

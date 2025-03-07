@@ -1,59 +1,65 @@
-// path: src/components/forms/LoginForm.tsx
-'use client';
+"use client";
 
-import {Button, Form, InputGroup, Spinner} from "react-bootstrap";
 import React, {useState, useTransition} from "react";
-import {toast, ToastContainer} from "react-toastify";
-import {useRouter, useSearchParams} from "next/navigation";
-import {FaEnvelope, FaEye, FaEyeSlash, FaLock} from 'react-icons/fa';
-import {LoginUserDto} from "@/services/dtos/users/UserDto";
-import {loginUserSchema} from "@/utils/validationSchema";
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
 import {motion} from "framer-motion";
 import Image from "next/image";
-import {login} from "@/actions/UserActions";
-import Link from "next/link";
+import {useRouter, useSearchParams} from "next/navigation";
+import {toast, ToastContainer} from "react-toastify";
 
-interface LoginFormProps {
-    onSuccess?: () => void;
+// --- shadcn UI imports (adjust paths as needed)
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form";
+import {Input} from "@/components/ui/input";
+import {Button} from "@/components/ui/button";
+
+// --- Icons (lucide or whichever icon set you prefer)
+import {Eye, EyeOff, Lock, Mail} from "lucide-react";
+
+// --- Your existing utilities & actions
+import {loginUserSchema} from "@/utils/validationSchema";
+import {login} from "@/actions/UserActions";
+
+interface LoginUserDto {
+    email: string;
+    password: string;
 }
 
-const LoginForm: React.FC<LoginFormProps> = () => {
+export default function LoginForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [isPending, startTransition] = useTransition();
 
-    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-        event.preventDefault();
+    const form = useForm<LoginUserDto>({
+        resolver: zodResolver(loginUserSchema),
+        defaultValues: {
+            email: "",
+            password: "",
+        },
+    });
 
-        const loginData: LoginUserDto = {email, password};
-        const validated = loginUserSchema.safeParse(loginData);
+    async function onSubmit(data: LoginUserDto) {
 
-        if (!validated.success) {
-            toast.error(validated.error.errors[0].message);
-            return;
-        }
-
-        // @ts-ignore
-        startTransition(async () => {
-            try {
-                const result = await login(email, password);
-
-                if (result?.error) {
-                    toast.error(result.error);
-                } else {
-                    toast.success("Connexion réussie");
-                    const redirectUrl = searchParams.get("redirect") || "/client/simulation";
-                    setTimeout(() => {
-                        router.replace(redirectUrl);
-                        router.refresh();
-                    }, 600);
+        console.log("log ====> data in onSubmit function called in path: src/components/forms/AuthForms/LoginForm.tsx: ", data);
+        startTransition(() => {
+            (async () => {
+                try {
+                    const result = await login(data.email, data.password);
+                    if (result?.error) {
+                        toast.error(result.error);
+                    } else {
+                        toast.success("Connexion réussie");
+                        const redirectUrl = searchParams.get("redirect") || "/client/simulation";
+                        setTimeout(() => {
+                            router.replace(redirectUrl);
+                            router.refresh();
+                        }, 600);
+                    }
+                } catch (error) {
+                    toast.error("Erreur lors de la connexion");
                 }
-            } catch (error) {
-                toast.error("Erreur lors de la connexion");
-            }
+            })();
         });
     }
 
@@ -62,120 +68,105 @@ const LoginForm: React.FC<LoginFormProps> = () => {
             initial={{opacity: 0, scale: 0.95}}
             animate={{opacity: 1, scale: 1}}
             transition={{duration: 0.6}}
-            className="container mx-auto p-6 mt-10 bg-white rounded-lg shadow-lg flex flex-col md:flex-row items-center space-y-6 md:space-y-0 md:space-x-8"
+            className="mx-auto mt-10 flex max-w-4xl flex-col items-center justify-center space-y-8 rounded-lg bg-white p-6 shadow-lg md:mt-20 md:flex-row md:space-x-8 md:space-y-0"
         >
             {/* Image Section */}
-            <div className="flex-shrink-0">
+            <motion.div
+                initial={{opacity: 0, x: -20}}
+                animate={{opacity: 1, x: 0}}
+                transition={{duration: 0.5}}
+                className="flex-shrink-0"
+            >
                 <Image
-                    src="/svg/login/login.svg"
+                    src="/svg/login/login.svg"    // <-- Adjust to your actual file path
                     alt="Welcome"
                     width={300}
                     height={300}
                     priority
                     className="rounded-md"
                 />
-            </div>
+            </motion.div>
 
             {/* Form Section */}
-            <div className="flex-grow w-full max-w-md m-5">
-
-                <Form onSubmit={handleSubmit}>
-                    {/* Email Input */}
-                    <motion.div
-                        initial={{opacity: 0, x: -20}}
-                        animate={{opacity: 1, x: 0}}
-                        transition={{duration: 0.5, delay: 0.2}}
-                    >
-                        <Form.Group controlId="loginEmail" className="mb-4">
-                            <Form.Label disabled={isPending} className="text-gray-700 font-medium">
-                                Adresse Email
-                            </Form.Label>
-                            <InputGroup>
-                                <InputGroup.Text className="bg-blue-50 border-0 text-blue-600">
-                                    <FaEnvelope/>
-                                </InputGroup.Text>
-                                <Form.Control
-                                    disabled={isPending}
-                                    type="email"
-                                    placeholder="Entrez votre email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    required
-                                    className="border border-gray-300 rounded-r-lg focus:ring-blue-500 focus:border-blue-500"
-                                />
-                            </InputGroup>
-                        </Form.Group>
-                    </motion.div>
-
-                    {/* Password Input */}
-                    <motion.div
-                        initial={{opacity: 0, x: 20}}
-                        animate={{opacity: 1, x: 0}}
-                        transition={{duration: 0.5, delay: 0.3}}
-                    >
-                        <Form.Group controlId="loginPassword" className="mb-4">
-                            <Form.Label disabled={isPending} className="text-gray-700 font-medium">
-                                Mot de Passe
-                            </Form.Label>
-                            <InputGroup>
-                                <InputGroup.Text className="bg-blue-50 border-0 text-blue-600">
-                                    <FaLock/>
-                                </InputGroup.Text>
-                                <Form.Control
-                                    disabled={isPending}
-                                    type={showPassword ? "text" : "password"}
-                                    placeholder="Entrez votre mot de passe"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                    className="border border-gray-300 rounded-r-lg focus:ring-blue-500 focus:border-blue-500"
-                                />
-                                <Button
-                                    disabled={isPending}
-                                    variant="outline-secondary"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    aria-label="Toggle password visibility"
-                                    className="border-l-0 rounded-r-lg"
-                                >
-                                    {showPassword ? <FaEyeSlash/> : <FaEye/>}
-                                </Button>
-                            </InputGroup>
-                        </Form.Group>
-                    </motion.div>
-
-                    {/* Submit Button */}
-                    <motion.div
-                        initial={{opacity: 0, y: 20}}
-                        animate={{opacity: 1, y: 0}}
-                        transition={{duration: 0.6, delay: 0.4}}
-                        className="text-center"
-                    >
-                        <Button
-                            type="submit"
-                            variant="primary"
-                            disabled={isPending}
-                            className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition duration-150 ease-in-out shadow-sm hover:shadow-md"
-                        >
-                            {isPending ? (
-                                <>
-                                    <Spinner
-                                        as="span"
-                                        animation="border"
-                                        size="sm"
-                                        role="status"
-                                        aria-hidden="true"
-                                        className="mr-2"
-                                    />
-                                    <span>  Connexion en cours...</span>
-                                </>
-                            ) : (
-
-                                "Se connecter"
-
+            <motion.div
+                initial={{opacity: 0, x: 20}}
+                animate={{opacity: 1, x: 0}}
+                transition={{duration: 0.5, delay: 0.2}}
+                className="w-full max-w-md"
+            >
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+                        {/* Email Field */}
+                        <FormField
+                            control={form.control}
+                            name="email"
+                            render={({field}) => (
+                                <FormItem>
+                                    <FormLabel className="text-gray-700 font-medium">Adresse Email</FormLabel>
+                                    <div className="relative">
+                                        <Mail className="absolute left-2 top-2.5 h-5 w-5 text-muted-foreground"/>
+                                        <FormControl>
+                                            <Input
+                                                placeholder="Entrez votre email"
+                                                disabled={isPending}
+                                                className="pl-8"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                    </div>
+                                    <FormMessage/>
+                                </FormItem>
                             )}
-                        </Button>
+                        />
 
-                    </motion.div>
+                        {/* Password Field */}
+                        <FormField
+                            control={form.control}
+                            name="password"
+                            render={({field}) => (
+                                <FormItem>
+                                    <FormLabel className="text-gray-700 font-medium">Mot de Passe</FormLabel>
+                                    <div className="relative">
+                                        <Lock className="absolute left-2 top-2.5 h-5 w-5 text-muted-foreground"/>
+                                        <FormControl>
+                                            <Input
+                                                type={showPassword ? "text" : "password"}
+                                                placeholder="Entrez votre mot de passe"
+                                                disabled={isPending}
+                                                className="pl-8 pr-10"
+                                                {...field}
+                                            />
+                                        </FormControl>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            className="absolute right-2 top-2.5 inline-flex h-5 w-5 items-center justify-center text-muted-foreground"
+                                            tabIndex={-1}
+                                        >
+                                            {showPassword ? <EyeOff className="h-4 w-4"/> : <Eye className="h-4 w-4"/>}
+                                        </button>
+                                    </div>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}
+                        />
+
+                        {/* Submit Button */}
+                        <motion.div
+                            initial={{opacity: 0, y: 20}}
+                            animate={{opacity: 1, y: 0}}
+                            transition={{duration: 0.6, delay: 0.3}}
+                        >
+                            <Button
+                                type="submit"
+                                disabled={isPending}
+                                className="w-full py-2 font-semibold shadow-sm transition duration-150 ease-in-out"
+                            >
+                                {isPending ? "Connexion en cours..." : "Se connecter"}
+                            </Button>
+                        </motion.div>
+                    </form>
                 </Form>
 
                 {/* Toast Notification */}
@@ -188,18 +179,14 @@ const LoginForm: React.FC<LoginFormProps> = () => {
                     transition={{duration: 0.6, delay: 0.5}}
                     className="mt-6 text-center text-sm text-gray-500"
                 >
-                    <Link href="/client/auth/login">
-                        Vous avez oublié votre mot de passe ? <span className="text-blue-600 hover:underline">Cliquez ici <br/> </span>
-                    </Link>
-
-                    <Link href="/client/auth/register">
-                        Pas encore inscrit ? <span className="text-blue-600 hover:underline">Créez
-                            un compte</span>
-                    </Link>
+                    <a href="/client/auth/login" className="block mb-2 text-blue-600 hover:underline">
+                        Vous avez oublié votre mot de passe ?
+                    </a>
+                    <a href="/client/auth/register" className="text-blue-600 hover:underline">
+                        Pas encore inscrit ? Créez un compte
+                    </a>
                 </motion.div>
-            </div>
+            </motion.div>
         </motion.div>
     );
-};
-
-export default LoginForm;
+}

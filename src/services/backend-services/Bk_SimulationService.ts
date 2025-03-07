@@ -14,14 +14,16 @@ import {parcelRepository} from "@/services/repositories/parcels/ParcelRepository
 
 /**
  * get simulation by id
- * @param id
  * @return found simulation as type of SimulationResponseDto or null if not found
+ * @param simulationId
  */
-export async function getSimulationById(id: number): Promise<SimulationResponseDto | null> {
+export async function getSimulationById(simulationId: number): Promise<SimulationResponseDto | null> {
+
+    console.log("log ====> simulationId in getSimulationById function called in src/services/backend-services/Bk_SimulationService.ts is : ", simulationId);
 
     try {
         // 1. Get simulation by using repository
-        const simulation = await simulationRepository.getSimulationResponseById(id);
+        const simulation = await simulationRepository.getSimulationResponseById(simulationId);
 
         if (!simulation) {
             return null;
@@ -39,42 +41,44 @@ export async function getSimulationById(id: number): Promise<SimulationResponseD
  * @return the created simulation as type or CreatedSimulationResponseDto
  */
 export async function createSimulation(simulationData: CreateSimulationRequestDto): Promise<CreatedSimulationResponseDto | null> {
-    console.log("log ====> simulationData in saveSimulation function called in src/services/backend-services/Bk_SimulationService.ts: ", simulationData);
+    console.log("log ====> simulationData in saveSimulation function:", simulationData);
 
     if (!simulationData.departureAgencyId) {
         return null;
     }
     try {
+        // Fetch the departure agency using its ID
         const departureAgency = await agencyRepository.getAgencyById(simulationData.departureAgencyId);
+        if (!departureAgency) {
+            throw new Error("Departure agency not found");
+        }
 
-        // 3. get arrived date city, country and agency name from simulation by agencyId
+        // Fetch the arrival agency using its ID
         if (!simulationData.arrivalAgencyId) {
             return null;
         }
         const arrivalAgency = await agencyRepository.getAgencyById(simulationData.arrivalAgencyId);
-
-        // 4. prepare needed data for simulation calculation and envoiStatus
-        if (!departureAgency || !arrivalAgency) {
-            return null;
+        if (!arrivalAgency) {
+            throw new Error("Arrival agency not found");
         }
 
-        console.log("log ====> departureAgency in saveSimulation function called in src/services/backend-services/Bk_SimulationService.ts: ", departureAgency);
-        console.log("log ====> arrivalAgency in saveSimulation function called in src/services/backend-services/Bk_SimulationService.ts: ", arrivalAgency);
-
-        if (!departureAgency.address.country || !departureAgency.address.city) {
+        // IMPORTANT: Check the nested fields properly.
+        if (!departureAgency.address.city.name || !departureAgency.address.city.country.name) {
             throw new Error("Departure agency country or city is missing.");
         }
 
-        if (!arrivalAgency.address.country || !arrivalAgency.address.city) {
+        if (!arrivalAgency.address.city.name || !arrivalAgency.address.city.country.name) {
             throw new Error("Arrival agency country or city is missing.");
         }
 
-        console.log("log ====> simulationData after getting agencies ids in saveSimulation function in path: src/services/backend-services/Bk_SimulationService.ts is : ", simulationData)
+        console.log("log ====> departureAgency in saveSimulation:", departureAgency);
+        console.log("log ====> arrivalAgency in saveSimulation:", arrivalAgency);
 
+        console.log("log ====> simulationData after getting agency ids:", simulationData);
 
         const createdSimulationResponse = await simulationRepository.createSimulation(simulationData);
 
-        console.log("log ====> createdSimulationResponse after saving in saveSimulation function in path: src/services/backend-services/Bk_SimulationService.ts is : ", createdSimulationResponse)
+        console.log("log ====> createdSimulationResponse after saving:", createdSimulationResponse);
 
         if (!createdSimulationResponse) {
             return null;

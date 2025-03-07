@@ -1,6 +1,6 @@
 // path: src/backend-services/Bk_AgencyService.ts
 
-import {FullAgencyDto, BaseAgencyDto} from "@/services/dtos";
+import {FullAgencyDto, BaseAgencyDto, AgencyResponseDto, AgencyDto} from "@/services/dtos";
 import prisma from "@/utils/db";
 import {agencyRepository} from "@/services/repositories/agencies/AgencyRepository";
 
@@ -76,3 +76,59 @@ export async function getAgencyById(id: number): Promise<BaseAgencyDto | null> {
         throw error;
     }
 }
+
+
+// region agency admin functions
+export async function getAgenciesByAdminId(adminId: number): Promise<AgencyDto[] | null> {
+    if (!adminId) {
+        console.log("log ====> Invalid admin id in src/services/backend-services/Bk_AgencyService.ts");
+        throw new Error("Invalid admin id");
+    }
+
+    try {
+        const agencies = await prisma.agencyAdmins.findMany({
+            where: {
+                adminId,
+            },
+            include: {
+                agency: {
+                    select: {
+                        id: true,
+                        name: true,
+                        location: true,
+                        addressId: true,
+                        capacity: true,
+                        availableSlots: true,
+                        createdAt: true,
+                        updatedAt: true,
+                    },
+                },
+
+            },
+
+        });
+        if (!agencies) {
+            throw new Error("Agencies not found");
+        }
+        // format the response to match the AgencyResponseDto interface
+        const formattedAgencies = agencies.map((agency) => ({
+            id: agency.agency.id,
+            name: agency.agency.name,
+            location: agency.agency.location || '',
+            addressId: agency.agency.addressId,
+            capacity: agency.agency.capacity,
+            availableSlots: agency.agency.availableSlots,
+            createdAt: agency.agency.createdAt,
+            updatedAt: agency.agency.updatedAt,
+        }));
+        return formattedAgencies;
+
+    } catch (error) {
+        console.error("Error getting agencies by admin id:", error);
+        throw error;
+    }
+}
+
+// endregion
+
+

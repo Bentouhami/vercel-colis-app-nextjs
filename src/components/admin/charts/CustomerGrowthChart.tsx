@@ -1,7 +1,7 @@
 // src/components/charts/CustomerGrowthChart.tsx
 import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { formatAxisDate } from '@/lib/utils/dateUtils';
+import {formatAxisDate} from "@/utils/dateUtils";
 
 interface ChartData {
     name: string;

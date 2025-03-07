@@ -1,11 +1,11 @@
 // path: src/app/dashboard/users/[id]/edit/page.tsx
 'use client'
 import React, {useEffect, useState} from 'react'
-import UsersForm from "@/components/dashboard/forms/UsersForm";
 import RequireAuth from '@/components/auth/RequireAuth';
 import {useSession} from "next-auth/react";
 import {useRouter} from "next/navigation";
-import {accessControlHelper} from "@/lib/utils/accessControlHelper";
+import {accessControlHelper} from "@/utils/accessControlHelper";
+import UsersForm from "@/components/forms/admins/UsersForm";
 
 const EditUserPage = ({params}: { params: { id: string } }) => {
     const {data: session, status} = useSession();

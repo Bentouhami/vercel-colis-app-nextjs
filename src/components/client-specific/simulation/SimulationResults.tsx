@@ -1,26 +1,26 @@
 // path: src/app/client/simulation/results/page.tsx
 "use client";
 
-import React, { useEffect, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import React, {useEffect, useState, useTransition} from "react";
+import {useRouter} from "next/navigation";
 import Link from "next/link";
-import { toast, ToastContainer } from "react-toastify";
+import {toast, ToastContainer} from "react-toastify";
 
 // Services & Helpers
-import { deleteSimulationCookie, getSimulation } from "@/services/frontend-services/simulation/SimulationService";
-import { updateSimulationUserId } from "@/services/backend-services/Bk_SimulationService";
-import { checkAuthStatus } from "@/lib/auth";
+import {deleteSimulationCookie, getSimulation} from "@/services/frontend-services/simulation/SimulationService";
+import {updateSimulationUserId} from "@/services/backend-services/Bk_SimulationService";
+import {checkAuthStatus} from "@/lib/auth";
 import ResultsSkeleton from "@/app/client/simulation/results/resultsSkeleton";
 import LoginPromptModal from "@/components/modals/LoginPromptModal";
-import { SimulationResponseDto } from "@/services/dtos";
-import { SimulationStatus } from "@/services/dtos/enums/EnumsDto";
+import {SimulationResponseDto} from "@/services/dtos";
+import {SimulationStatus} from "@/services/dtos/enums/EnumsDto";
 
 // Shadcn UI Components
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {Button} from "@/components/ui/button";
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 
 // Icons
-import { ArrowRight, Calendar, DollarSign, MapPin, Package, Weight } from "lucide-react";
+import {ArrowRight, Calendar, DollarSign, MapPin, Package, Weight} from "lucide-react";
 
 export default function SimulationResults() {
     const router = useRouter();
@@ -43,11 +43,10 @@ export default function SimulationResults() {
 
     // Fetch simulation results from the backend
     useEffect(() => {
-        const getSimulationResults = async () => {
+        (async () => {
             try {
                 setLoading(true);
                 const simulationData = await getSimulation();
-
                 if (!simulationData) {
                     toast.error("Something went wrong, please try again.");
                     setTimeout(() => {
@@ -56,27 +55,24 @@ export default function SimulationResults() {
                     return;
                 }
                 toast.success("Simulation results loaded successfully.");
-                console.log("SimulationData:", simulationData);
+                console.log("log ====> simulationData in SimulationResults.tsx after getting simulation data in path: src/app/client/simulation/results/page.tsx is : ", simulationData);
                 setResults(simulationData);
             } catch (error) {
                 toast.error("Erreur de chargement des résultats.");
             } finally {
                 setLoading(false);
             }
-        };
-        getSimulationResults();
+        })();
     }, [router]);
 
     // Validate the simulation and redirect to the add destinataire page
     const handleValidate = async () => {
         try {
             setLoading(true);
-            const authResult = await checkAuthStatus();
-
-            if (authResult.isAuthenticated) {
+            if (isAuthenticated) {
                 if (results) {
-                    if (authResult.userId && !results.userId) {
-                        results.userId = Number(authResult.userId);
+                    if (userId && !results.userId) {
+                        results.userId = Number(userId);
                         await updateSimulationUserId(results.id, results.userId);
                     }
                     toast("Redirecting to add destinataire page...");
@@ -108,11 +104,8 @@ export default function SimulationResults() {
             (async () => {
                 try {
                     toast.success("Cleaning up simulation...");
-                    const response = await deleteSimulationCookie();
-                    if (!response) {
-                        toast.error("Une erreur est survenue lors de la suppression de la simulation.");
-                        return;
-                    }
+                    await deleteSimulationCookie();
+                    toast.success("Simulation deleted successfully.");
                 } catch (error) {
                     console.error("Error deleting simulation cookie:", error);
                     toast.error("An error occurred while cleaning up the simulation.");
@@ -131,23 +124,16 @@ export default function SimulationResults() {
         startTransition(() => {
             (async () => {
                 try {
-                    const authResult = await checkAuthStatus();
+                    // const authResult = await checkAuthStatus();
                     if (results) {
-                        if (authResult.isAuthenticated) {
-                            if (authResult.userId && !results.userId) {
-                                results.userId = Number(authResult.userId);
-                                results.simulationStatus = SimulationStatus.CONFIRMED;
-                                const response = await updateSimulationUserId(results.id, results.userId);
-                                if (!response) {
-                                    toast.error("Une erreur est survenue lors de la mise à jour de la simulation.");
-                                    return;
-                                }
-                                toast("Redirection en cours...");
-                                setTimeout(() => {
-                                    router.push("/client/simulation/edit");
-                                }, 3000);
+                        if (userId && !results.userId) {
+                            results.userId = Number(userId);
+                            results.simulationStatus = SimulationStatus.CONFIRMED;
+                            const response = await updateSimulationUserId(results.id, results.userId);
+                            if (!response) {
+                                toast.error("Une erreur est survenue lors de la mise à jour de la simulation.");
+                                return;
                             }
-                        } else {
                             toast("Redirection en cours...");
                             setTimeout(() => {
                                 router.push("/client/simulation/edit");
@@ -165,7 +151,7 @@ export default function SimulationResults() {
     };
 
     if (loading || !results) {
-        return <ResultsSkeleton />;
+        return <ResultsSkeleton/>;
     }
 
     return (
@@ -177,7 +163,7 @@ export default function SimulationResults() {
                 <Card className="border-l-4 border-blue-500 shadow-sm">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-gray-700">
-                            <MapPin className="h-5 w-5 text-blue-500" />
+                            <MapPin className="h-5 w-5 text-blue-500"/>
                             Départ
                         </CardTitle>
                     </CardHeader>
@@ -197,7 +183,7 @@ export default function SimulationResults() {
                 <Card className="border-l-4 border-green-500 shadow-sm">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-gray-700">
-                            <MapPin className="h-5 w-5 text-green-500" />
+                            <MapPin className="h-5 w-5 text-green-500"/>
                             Destination
                         </CardTitle>
                     </CardHeader>
@@ -219,7 +205,7 @@ export default function SimulationResults() {
             <Card className="mt-6 bg-blue-50">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                        <Package className="h-5 w-5 text-blue-500" />
+                        <Package className="h-5 w-5 text-blue-500"/>
                         Détails des Colis
                     </CardTitle>
                 </CardHeader>
@@ -242,27 +228,27 @@ export default function SimulationResults() {
             <Card className="bg-blue-100">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-blue-700">
-                        <DollarSign className="h-5 w-5" />
+                        <DollarSign className="h-5 w-5"/>
                         Résumé des Calculs
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="grid md:grid-cols-2 gap-4">
                     <div className="flex items-center gap-3">
-                        <Weight className="h-5 w-5 text-gray-500" />
+                        <Weight className="h-5 w-5 text-gray-500"/>
                         <div>
                             <p className="text-sm text-gray-500">Poids total</p>
                             <p className="font-medium">{results.totalWeight} kg</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                        <Calendar className="h-5 w-5 text-gray-500" />
+                        <Calendar className="h-5 w-5 text-gray-500"/>
                         <div>
                             <p className="text-sm text-gray-500">Date de départ</p>
                             <p className="font-medium">{new Date(results.departureDate).toLocaleDateString()}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                        <Calendar className="h-5 w-5 text-gray-500" />
+                        <Calendar className="h-5 w-5 text-gray-500"/>
                         <div>
                             <p className="text-sm text-gray-500">Date d’arrivée estimée</p>
                             <p className="font-medium">{new Date(results.arrivalDate).toLocaleDateString()}</p>
@@ -275,7 +261,7 @@ export default function SimulationResults() {
             <Card className="bg-blue-100">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-blue-700">
-                        <DollarSign className="h-5 w-5" />
+                        <DollarSign className="h-5 w-5"/>
                         Prix Total
                     </CardTitle>
                 </CardHeader>
@@ -310,12 +296,12 @@ export default function SimulationResults() {
                         className="flex items-center gap-2 px-8 py-6 text-lg bg-green-500 hover:bg-green-600 text-white"
                     >
                         Modifier ma simulation
-                        <ArrowRight className="h-4 w-4" />
+                        <ArrowRight className="h-4 w-4"/>
                     </Button>
                 </Link>
             </div>
 
-            <ToastContainer position="bottom-right" autoClose={2000} hideProgressBar theme="colored" />
+            <ToastContainer position="bottom-right" autoClose={2000} hideProgressBar theme="colored"/>
 
             <LoginPromptModal
                 show={showLoginPrompt}

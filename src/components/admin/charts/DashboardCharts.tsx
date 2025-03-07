@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { RevenueChart } from './RevenueChart';
 import { CustomerGrowthChart } from './CustomerGrowthChart';
 import { TotalInvoicesChart } from './TotalInvoicesChart';
-import { API_DOMAIN } from "@/lib/utils/constants";
+import {API_DOMAIN} from "@/utils/constants";
 
 interface DailyData {
     [date: string]: {

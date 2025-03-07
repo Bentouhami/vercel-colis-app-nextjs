@@ -1,6 +1,6 @@
 // path: src/app/api/v1/users/[id]/profile/route.ts
 import {NextRequest, NextResponse} from 'next/server';
-import {getUserProfileById} from "@/services/backend-services/Bk_TransportService";
+import {getUserProfileById} from "@/services/backend-services/Bk_UserService";
 
 export async function GET(
     req: NextRequest,

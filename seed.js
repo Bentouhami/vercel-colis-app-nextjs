@@ -1,126 +1,295 @@
 // path: /seed.js
 
 const {PrismaClient} = require('@prisma/client');
-const axios = require("axios");
 
 
 const prisma = new PrismaClient();
 
 async function main() {
+
+    // region Countries and cities
+    const countries = [{name: 'Belgique', countryCode: 'BE'}, {name: 'France', countryCode: 'FR'}, {
+        name: 'Maroc',
+        countryCode: 'MA'
+    }, {name: 'Espagne', countryCode: 'ES'}];
+
+    for (const countryData of countries) {
+        await prisma.country.upsert({
+            where: {countryCode: countryData.countryCode}, update: {}, create: countryData
+        });
+    }
+
+    // Belgium Country
+    const belgique = await prisma.country.findUnique({where: {countryCode: 'BE'}});
+
+    // France Country
+    const france = await prisma.country.findUnique({where: {countryCode: 'FR'}});
+
+    // Morocco Country
+    const maroc = await prisma.country.findUnique({where: {countryCode: 'MA'}});
+
+    // Spain country
+    const espagne = await prisma.country.findUnique({where: {countryCode: 'ES'}});
+
+    console.log(' 🌍 Countries seeded.');
+
+// region Cities
+    const cities = [
+        // Belgium
+        {name: 'Bruxelles', cityCode: '1000', countryId: belgique.id},
+        {name: 'Anvers', cityCode: '2000', countryId: belgique.id},
+        {name: 'Gand', cityCode: '9000', countryId: belgique.id},
+        {name: 'Charleroi', cityCode: '6000', countryId: belgique.id},
+        {name: 'Liège', cityCode: '4000', countryId: belgique.id},
+        {name: 'Bruges', cityCode: '8000', countryId: belgique.id},
+        {name: 'Namur', cityCode: '5000', countryId: belgique.id},
+        {name: 'Louvain', cityCode: '3000', countryId: belgique.id},
+        {name: 'Mons', cityCode: '7000', countryId: belgique.id},
+        {name: 'Frameries', cityCode: '7080', countryId: belgique.id},
+
+        // Morocco
+        {name: 'Casablanca', cityCode: '20000', countryId: maroc.id},
+        {name: 'Rabat', cityCode: '10000', countryId: maroc.id},
+        {name: 'Fès', cityCode: '30000', countryId: maroc.id},
+        {name: 'Marrakech', cityCode: '40000', countryId: maroc.id},
+        {name: 'Tanger', cityCode: '90000', countryId: maroc.id},
+        {name: 'Agadir', cityCode: '80000', countryId: maroc.id},
+        {name: 'Nador', cityCode: '62000', countryId: maroc.id},
+        {name: 'Oujda', cityCode: '60000', countryId: maroc.id},
+        {name: 'Saidia', cityCode: '60600', countryId: maroc.id},
+        {name: 'Berkane', cityCode: '63600', countryId: maroc.id},
+        // France
+        {name: 'Paris', cityCode: '75000', countryId: france.id},
+        {name: 'Marseille', cityCode: '13000', countryId: france.id},
+        {name: 'Lyon', cityCode: '69000', countryId: france.id},
+        {name: 'Toulouse', cityCode: '31000', countryId: france.id},
+        {name: 'Nice', cityCode: '06000', countryId: france.id},
+        {name: 'Nantes', cityCode: '44000', countryId: france.id},
+        {name: 'Strasbourg', cityCode: '67000', countryId: france.id},
+        {name: 'Montpellier', cityCode: '34000', countryId: france.id},
+        {name: 'Bordeaux', cityCode: '33000', countryId: france.id},
+        {name: 'Lille', cityCode: '59000', countryId: france.id},
+
+        // Spain
+        {name: 'Madrid', cityCode: '28000', countryId: espagne.id},
+        {name: 'Barcelona', cityCode: '08000', countryId: espagne.id},
+        {name: 'Valencia', cityCode: '46000', countryId: espagne.id},
+        {name: 'Seville', cityCode: '41000', countryId: espagne.id},
+        {name: 'Zaragoza', cityCode: '50000', countryId: espagne.id},
+        {name: 'Málaga', cityCode: '29000', countryId: espagne.id},
+        {name: 'Murcia', cityCode: '30000', countryId: espagne.id},
+        {name: 'Palma', cityCode: '07000', countryId: espagne.id},
+        {name: 'Bilbao', cityCode: '48000', countryId: espagne.id},
+        {name: 'Alicante', cityCode: '03000', countryId: espagne.id},
+    ];
+
+    for (const city of cities) {
+        await prisma.city.upsert({
+            where: {cityCode: city.cityCode}, update: {}, create: city
+        });
+    }
+
+    // Get city records for addresses
+
+    // Belgium
+
+    const frameriesCity = await prisma.city.findFirst({
+        where: { cityCode: '7080', countryId: belgique.id }
+    });
+
+    const monsCity = await prisma.city.findFirst({
+        where: {cityCode: '7000', countryId: belgique.id}
+    });
+
+    const bruxellesCity = await prisma.city.findFirst({
+        where: { cityCode: '1000', countryId: belgique.id }
+    });
+
+    const charleroiCity = await prisma.city.findFirst({
+        where: { cityCode: '6000', countryId: belgique.id }
+    });
+
+
+    // Maroc
+    // const casablancaCity = await prisma.city.findFirst({
+    //     where: { cityCode: '20000', countryId: maroc.id }
+    // });
+    //
+    // const marrakechCity = await prisma.city.findFirst({
+    //     where: { cityCode: '40000', countryId: maroc.id }
+    // });
+
+    const saidiaCity = await prisma .city.findFirst({
+        where: { cityCode: '60600', countryId: maroc.id }
+    });
+
+    const berkaneCity = await prisma .city.findFirst({
+        where: { cityCode: '63600', countryId: maroc.id }
+    });
+
+    const oujdaCity = await prisma .city.findFirst({
+        where: { cityCode: '60000', countryId: maroc.id }
+    });
+
+
     // Insérer des adresses avec latitude et longitude
-    const address1 = await prisma.address.create({
+
+    // Belgium addresses
+    const bruxellesAddress = await prisma.address.create({
         data: {
             street: 'rue de Bruxelles 1',
             number: '1',
-            city: 'Bruxelles',
-            zipCode: '2000',
-            country: 'Belgique',
+            cityId: bruxellesCity.id,
+            countryId: belgique.id,
             latitude: 50.8503,
             longitude: 4.3517,
         },
     });
 
-    const address2 = await prisma.address.create({
+    const frameriesAddress = await prisma.address.create({
         data: {
-            street: 'rue de Anvers 1',
+            street: 'rue de Frameries',
             number: '1',
-            city: 'Anvers',
-            zipCode: '2000',
-            country: 'Belgique',
+            city: frameriesCity.id,
+            country: belgique.id,
             latitude: 51.2194,
             longitude: 4.4025,
         },
     });
 
-    const address3 = await prisma.address.create({
+    const monsAddress = await prisma.address.create({
         data: {
-            street: 'rue de Mons 1',
+            street: 'rue de Mons',
             number: '1',
-            city: 'Mons',
-            zipCode: '7000',
-            country: 'Belgique',
+            city: monsCity.id,
+            country: belgique.id,
             latitude: 50.4542,
             longitude: 3.9567,
         },
     });
 
-    const address4 = await prisma.address.create({
+    // Morocco addresses
+
+    const  oujdaAddress = await prisma.address.create({
         data: {
-            street: 'rue de Casablanca 1',
+            street: 'rue de Oujda',
             number: '1',
-            city: 'Casablanca',
-            zipCode: '20000',
-            country: 'Maroc',
+            city: oujdaCity.id,
+            country: maroc.id,
+            latitude: 31.6328,
+            longitude: 7.3883,
+        },
+    });
+
+    const saidiaAddress = await prisma.address.create({
+        data: {
+            street: 'rue de Saidia',
+            number: '1',
+            city: saidiaCity.id,
+            country: maroc.id,
             latitude: 33.5731,
             longitude: -7.5898,
         },
     });
 
-    const address5 = await prisma.address.create({
+    const berkaneAddress = await prisma.address.create({
         data: {
-            street: 'rue de Marrakech 1',
+            street: 'rue de Berkane',
             number: '1',
-            city: 'Marrakech',
-            zipCode: '40000',
-            country: 'Maroc',
+            city: berkaneCity.id,
+            country: maroc.id,
             latitude: 31.6295,
             longitude: -7.9811,
         },
     });
 
+    console.log('Addresses created');
+
+
     // Insérer des agences avec capacity et availableSlots
-    const agency1 = await prisma.agency.create({
+    // Belgium agencies
+
+    // Frameries
+    await prisma.agency.create({
+        data : {
+            name: 'Agence de Frameries',
+            location : 'Frameries',
+            capacity : 50,
+            availableSlots: 40,
+            addressId : frameriesAddress.id,
+        }
+    })
+
+    // Bruxelles
+   await prisma.agency.create({
         data: {
-            name: 'Agence Bruxelles',
+            name: 'Agence de Bruxelles',
             location: 'Bruxelles',
             capacity: 100, // Capacité maximale de stockage
             availableSlots: 10, // Places disponibles pour les rendez-vous ou dépôts
-            addressId: address1.id,
+            addressId: bruxellesAddress.id,
         },
     });
 
-    const agency2 = await prisma.agency.create({
+    //  Charleroi
+   await prisma.agency.create({
         data: {
-            name: 'Agence Anvers',
-            location: 'Anvers',
+            name: 'Agence de Charleroi',
+            location: 'Charleroi',
             capacity: 80,
             availableSlots: 15,
-            addressId: address2.id,
+            addressId: charleroiCity.id,
         },
     });
 
-    const agency3 = await prisma.agency.create({
+   // Mons
+    await prisma.agency.create({
         data: {
-            name: 'Agence Mons',
+            name: 'Agence de Mons',
             location: 'Mons',
             capacity: 120,
             availableSlots: 20,
-            addressId: address3.id,
+            addressId: monsAddress.id,
+        }
+    });
+
+    // Morocco agencies
+
+    // Oujda
+    await prisma.agency.create({
+        data: {
+            name: 'Agence de Oujda',
+            location: 'Oujda',
+            capacity: 100,
+            availableSlots: 15,
+            addressId: oujdaAddress.id,
         },
     });
 
-    const agency4 = await prisma.agency.create({
+    // Saidia
+    const saidiaAgency = await prisma.agency.create({
         data: {
-            name: 'Agence Casablanca',
-            location: 'Casablanca',
-            capacity: 150,
-            availableSlots: 25,
-            addressId: address4.id,
+            name: 'Agence de Saidia',
+            location: 'Saidia',
+            capacity: 100,
+            availableSlots: 15,
+            addressId: saidiaAddress.id,
         },
     });
 
-    const agency5 = await prisma.agency.create({
+    // Berkane
+    const berkaneAgency = await prisma.agency.create({
         data: {
-            name: 'Agence Marrakech',
-            location: 'Marrakech',
-            capacity: 90,
-            availableSlots: 12,
-            addressId: address5.id,
+            name: 'Agence de Berkane',
+            location: 'Berkane',
+            capacity: 100,
+            availableSlots: 15,
+            addressId: berkaneAddress.id,
         },
     });
 
     // Insérer des transports
-    const transport1 = await prisma.transport.create({
+    await prisma.transport.create({
         data: {
             isAvailable: true,
             number: '1111-111-11',
@@ -136,7 +305,7 @@ async function main() {
     // await prisma.tarifs.deleteMany();
 
     // Insérer des tarifs globaux (sans agence)
-    const tarifs = await prisma.tarifs.create({
+    await prisma.tarifs.create({
         data: {
             agencyId: null, // Pas d'agence spécifique
             weightRate: 1.60, // € par kg pour les poids > 10 kg
@@ -146,16 +315,6 @@ async function main() {
         },
     });
 
-    console.log('Tarifs globaux créés:', tarifs);
-
-    // Insert stuff here
-
-    // Afficher les données insérées
-    console.log({
-        address1, address2, address3, address4, address5,
-        agency1, agency2, agency3, agency4, agency5,
-        transport1, tarifs
-    });
 }
 
 main()

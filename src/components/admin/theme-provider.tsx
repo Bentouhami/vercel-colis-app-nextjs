@@ -1,3 +1,5 @@
+// path: src/components/admin/theme-provider.tsx
+
 "use client"
 
 import * as React from "react"

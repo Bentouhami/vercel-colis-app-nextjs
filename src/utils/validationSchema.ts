@@ -67,16 +67,18 @@ const parcelsList = z.array(
         weight: z.number().positive({message: "Parcel weight must be a positive number"}),
     })
 );
-
 // endregion
 
 // region Address schema
 export const addressSchema = z.object({
-    street: z.string().min(1, {message: "La rue est requise"}),
-    number: z.string().min(1, {message: "Le numéro est requis"}), // Assurez-vous que c'est `string`
-    zipCode: z.string().min(1, {message: "Le code postal est requis"}),
-    city: z.string().min(1, {message: "La ville est requise"}),
-    country: z.string().min(1, {message: "Le pays est requis"}),
+    street: z.string().min(1, { message: "La rue est requise" }),
+    // Optional
+    complement: z.string().optional(),
+    streetNumber: z.string().optional(),
+    boxNumber: z.string().optional(),
+    // If city is mandatory in the DB, keep it required:
+    city: z.string().min(1, { message: "La ville est requise" }),
+    country: z.string().min(1, { message: "Le pays est requis" }),
 });
 
 // endregion
@@ -104,10 +106,11 @@ export const registerUserBackendSchema = z.object({
     birthDate: oldBirthDateValidation,
     phoneNumber: phoneValidation,
     email: emailValidation,
-    roles: z.array(z.string()).nonempty().optional(),
+    role: z.string().nonempty().optional(),
     password: passwordValidation,
     address: addressSchema,
 });
+
 
 
 // Schema pour la connexion
@@ -213,7 +216,6 @@ export const destinataireSchema = z.object({
 
 
 // Types exportés
-export type RegisterUserBackendType = z.infer<typeof registerUserBackendSchema>;
 
 export type DestinataireInput = z.infer<typeof destinataireSchema>;
 
@@ -253,4 +255,8 @@ export const transportSchema = z.object({
         .max(MAX_TRANSPORT_WEIGHT, {message: `Current weight cannot exceed ${MAX_TRANSPORT_WEIGHT} kg`}),
     isAvailable: z.boolean().default(true),
 });
+
+export type RegisterUserFrontendFormType = z.infer<typeof registerUserFrontendSchema>;
+export type RegisterUserBackendType = z.infer<typeof registerUserBackendSchema>;
+
 

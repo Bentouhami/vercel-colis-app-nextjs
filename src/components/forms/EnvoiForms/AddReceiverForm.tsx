@@ -12,7 +12,7 @@ import {toast, ToastContainer} from "react-toastify";
 
 import {DestinataireInput, destinataireSchema} from "@/utils/validationSchema";
 import {addDestinataire} from "@/services/frontend-services/UserService";
-import {Roles} from "@/services/dtos/enums/EnumsDto";
+import {RoleDto} from "@/services/dtos/enums/EnumsDto";
 import {CreateDestinataireDto} from "@/services/dtos/users/UserDto";
 import {
     assignTransportToSimulation,
@@ -83,9 +83,6 @@ export default function AddReceiverForm() {
         }
 
         setErrors({});
-        // ---------------------------------------------
-        //  1) Set isLoading true
-        // ---------------------------------------------
         setIsLoading(true);
 
         try {
@@ -94,7 +91,7 @@ export default function AddReceiverForm() {
                 ...destinataireFormData,
                 name: `${destinataireFormData.firstName} ${destinataireFormData.lastName}`,
                 image: "",
-                roles: [Roles.DESTINATAIRE],
+                role: RoleDto.DESTINATAIRE,
             };
 
             // Add the destinataire to the database

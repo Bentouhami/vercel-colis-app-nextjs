@@ -1,6 +1,6 @@
 // Path: src/services/frontend-services/simulation/SimulationService.ts
 
-import {DOMAIN} from "@/utils/constants";
+import {API_DOMAIN, DOMAIN} from "@/utils/constants";
 import {calculateEnvoiDetails} from "@/services/frontend-services/simulation/SimulationCalculationService";
 import {getTarifs} from "@/services/frontend-services/TarifsService";
 import {
@@ -66,9 +66,11 @@ export async function submitSimulation(simulationData: SimulationDtoRequest) {
         throw new Error("Simulation data not found");
     }
 
+    console.log("log ====> simulationData in submitSimulation function called in path: src/services/frontend-services/simulation/SimulationService.ts is : ", simulationData);
 
     // get agency id by Country and city and agency name
     const departureAgencyId = await getAgencyId(simulationData.departureCountry, simulationData.departureCity, simulationData.departureAgency);
+
     if (!departureAgencyId) {
         throw new Error("Aucun agence trouvée pour cette ville");
     }
@@ -121,7 +123,7 @@ export async function submitSimulation(simulationData: SimulationDtoRequest) {
     }
 
     // 4. Appeler l'API pour enregistrer la simulation return simulationId after saving
-    const response = await axios.post(`${DOMAIN}/api/v1/simulations`, simulationBaseData);
+    const response = await axios.post(`${API_DOMAIN}/simulations`, simulationBaseData);
 
     if (!response.data) {
         throw new Error("Failed to submit simulation");
@@ -141,29 +143,20 @@ export async function getSimulation(): Promise<SimulationResponseDto | null> {
     console.log("log ====> getSimulation function called in src/services/frontend-services/simulation/SimulationService.ts");
 
     try {
-        const response = await fetch(`${DOMAIN}/api/v1/simulations`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            }
-        });
-
-
-        if (!response.ok) {
+        const response = await axios.get(`${API_DOMAIN}/simulations`);
+        if (!response.data) {
             console.log("log ====> not ok response in getSimulation function");
+
             return null;
         }
-
         // Extraire les données JSON
-        const simulationData = await response.json();
+        const simulationData = response.data;
 
         if (!simulationData || !simulationData.data) {
             console.log("log ====> simulationData not found in getSimulation function");
             return null;
         }
-
         return simulationData.data as SimulationResponseDto;
-
     } catch (error) {
         console.error("Erreur lors de la récupération de la simulation:", error);
         throw error;
@@ -296,22 +289,28 @@ export async function updateSimulationEdited(simulationData: PartielUpdateSimula
  * Delete the simulation cookie
  * @returns {Promise<void | null>} A Promise that resolves when the status is updated
  */
-export async function deleteSimulationCookie(): Promise<void | null> {
+export async function deleteSimulationCookie(): Promise<void> {
+    console.log("Starting deleteSimulationCookie");
     try {
-        const response = await fetch(`${DOMAIN}/api/v1/simulations/delete-cookies`, {
-            method: "GET",
+        const response = await axios.get(`${API_DOMAIN}/simulations/delete-cookies`, {
+            withCredentials: true,
             headers: {
-                "Content-Type": "application/json",
-            },
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache'
+            }
         });
+        console.log("Delete cookie API response:", response);
 
-        if (!response.ok) {
-            throw new Error("Failed to delete simulation");
-
+        // Also delete client-side
+        if (typeof document !== 'undefined') {
+            const cookieName = process.env.NEXT_PUBLIC_SIMULATION_COOKIE_NAME;
+            document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${window.location.hostname}`;
+            console.log("Client-side cookie deletion attempted");
         }
 
-        return response.json();
+        return response.data;
     } catch (error) {
+        console.error('Error deleting simulation cookie:', error);
         throw error;
     }
 }
@@ -389,7 +388,6 @@ async function updateSimulationTransportId(simulationId: number,
 
         }
         console.log("log ====> response found in updateSimulationTransportId function after updating transportId in path: src/services/frontend-services/simulation/SimulationService.ts is : ", response.data);
-
         return true;
 
     } catch (error) {

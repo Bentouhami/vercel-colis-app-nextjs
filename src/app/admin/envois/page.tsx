@@ -3,10 +3,10 @@
 /**
  * This page is used to manage the invoices for an agency
  */
-function InvoicesPage() {
+function EnvoisPage() {
     return (
-        <div>InvoicesPage</div>
+        <div>EnvoisPage</div>
     )
 }
 
-export default InvoicesPage
+export default EnvoisPage;

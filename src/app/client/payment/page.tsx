@@ -5,7 +5,7 @@ import {loadStripe} from '@stripe/stripe-js';
 import {Button} from '@/components/ui/button';
 import {toast} from 'react-toastify';
 import {useSearchParams} from "next/navigation";
-import {DOMAIN} from "@/utils/constants";
+import {API_DOMAIN, DOMAIN} from "@/utils/constants";
 import axios from "axios";
 
 // Charger la clé publique Stripe depuis les variables d'environnement
@@ -30,9 +30,13 @@ const PaymentContent = () => {
 
         try {
             // Créer une session de paiement en appelant votre route API
-            const response = await axios.post(`${DOMAIN}/api/v1/payment`, {amount: amount}, {
-                headers: {'Content-Type': 'application/json'},
-            });
+            const response = await axios.post(`${API_DOMAIN}/payment`,
+                {amount: amount},
+                {
+                    headers: {'Content-Type': 'application/json'},
+                    withCredentials: true,
+
+                });
 
             const {id: sessionId} = response.data; // Extract sessionId from response
 

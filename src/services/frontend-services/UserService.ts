@@ -2,14 +2,15 @@
 
 import {JWTPayload} from "@/utils/types";
 import {setCookie} from "@/utils/generateToken";
-import {DOMAIN} from "@/utils/constants";
-import {CreateDestinataireDto, ProfileDto, RegisterClientDto, Roles} from "@/services/dtos";
+import {API_DOMAIN, DOMAIN} from "@/utils/constants";
+import {CreateDestinataireDto, ProfileDto, RegisterClientDto} from "@/services/dtos";
 import axios from "axios";
+import {RegisterUserBackendType} from "@/utils/validationSchema";
 
 /**
  * Generate JWTPayload object and setCookies with JWT token and cookie
  * @param userId
- * @param roles
+ * @param role
  * @param userEmail
  * @param name
  * @param firstName
@@ -25,9 +26,9 @@ export async function generateJWTPayloadAndSetCookie(
     lastName: string,
     name: string,
     phoneNumber: string,
-    roles: Roles[],
+    role: string,
     image: string | null
-) {
+): Promise<string> {
 
     const jwtPayload: JWTPayload = {
         id: userId,
@@ -37,7 +38,7 @@ export async function generateJWTPayloadAndSetCookie(
         name: name,
         phoneNumber: phoneNumber,
         image: image,
-        roles: roles,
+        role: role,
     };
 
     // return cookie
@@ -71,10 +72,9 @@ export async function getConnectedUser() {
 }
 
 export async function getUserProfileById(id: number): Promise<ProfileDto | null> {
-    console.log("log ====> getUserProfileById called in src/services/frontend-services/Bk_UserService.ts")
 
     try {
-        const response = await fetch(`${DOMAIN}/api/v1/users/${id}/profile`, {
+        const response = await fetch(`${API_DOMAIN}/users/${id}/profile`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -94,7 +94,6 @@ export async function getUserProfileById(id: number): Promise<ProfileDto | null>
 }
 
 export async function getUserById(id: number): Promise<CreateDestinataireDto> {
-    console.log("log ====> getUserById called in src/services/frontend-services/Bk_UserService.ts")
 
     try {
         const response = await fetch(`${DOMAIN}/api/v1/users/${id}`, {
@@ -114,7 +113,6 @@ export async function getUserById(id: number): Promise<CreateDestinataireDto> {
             throw new Error("User not found");
         }
 
-        console.log("userData in getUserById function:", userData.data);
         return userData.data as CreateDestinataireDto;
     } catch (error) {
         console.error('Error getting user:', error);
@@ -123,11 +121,10 @@ export async function getUserById(id: number): Promise<CreateDestinataireDto> {
 }
 
 // register new user via API
-
-export async function registerUser(newUser: RegisterClientDto) {
+export async function registerUser(newUser: RegisterUserBackendType) {
     try {
         // 1) POST the data
-        const response = await axios.post(`${DOMAIN}/api/v1/users/register`, newUser, {
+        const response = await axios.post(`${API_DOMAIN}/users/register`, newUser, {
             headers: {"Content-Type": "application/json"},
             // withCredentials: true, // If you need cookies
         })
@@ -150,29 +147,21 @@ export async function registerUser(newUser: RegisterClientDto) {
 
 
 export async function addDestinataire(newUser: CreateDestinataireDto): Promise<number | null> {
-    console.log("log ====> addDestinataire function called");
 
     try {
-        const response = await fetch(`${DOMAIN}/api/v1/users/destinataires`, {
-            method: 'POST',
+        const response = await axios.post(`${API_DOMAIN}/users/destinataires`, {
+            newUser,
             headers: {
                 'Content-Type': 'application/json',
                 'cache': 'no-cache',
             },
-            credentials: 'include',
-            body: JSON.stringify(newUser),
         });
-
-        if (!response.ok) {
-            return null;
-        }
-
         // Si la réponse est OK, log et parse le JSON
-        const data = await response.json();
-        console.log("log ====> data.data in addDestinataire function after parsing JSON: ", data);
+        const data = await response.data;
 
         return data.data.id as number;
     } catch (error) {
+
         console.error('Error in addDestinataire function:', error);
         throw error;
     }

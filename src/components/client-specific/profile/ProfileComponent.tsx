@@ -1,18 +1,18 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { CalendarDays, Mail, MapPin, Phone, Shield } from "lucide-react"
-import { CheckCircleIcon } from "@heroicons/react/24/solid"
+import React, {useEffect, useState} from "react"
+import {useRouter} from "next/navigation"
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
+import {Card, CardContent, CardHeader} from "@/components/ui/card"
+import {Badge} from "@/components/ui/badge"
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar"
+import {CalendarDays, Mail, MapPin, Phone, Shield} from "lucide-react"
+import {CheckCircleIcon} from "@heroicons/react/24/solid"
 
 import RequireAuth from "@/components/auth/RequireAuth"
-import { getCurrentUserId } from "@/lib/auth"
-import { getUserProfileById } from "@/services/frontend-services/UserService"
-import { ProfileDto } from "@/services/dtos/users/UserDto"
+import {getCurrentUserId} from "@/lib/auth"
+import {getUserProfileById} from "@/services/frontend-services/UserService"
+import {ProfileDto} from "@/services/dtos/users/UserDto"
 
 export default function ProfileComponent() {
     const router = useRouter()
@@ -43,20 +43,18 @@ export default function ProfileComponent() {
                     <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-6 rounded-t-lg">
                         <div className="flex flex-col md:flex-row items-center gap-6">
                             <Avatar className="h-24 w-24 border-4 border-white">
-                                <AvatarImage src={userData?.image || ""} alt={userData?.name || "Profile"} />
+                                <AvatarImage src={userData?.image || ""} alt={userData?.name ? userData.name : `${userData?.firstName} ${userData?.lastName}`  || "Profile"}/>
                                 <AvatarFallback className="text-2xl bg-blue-400">
                                     {userData?.name?.charAt(0) || "U"}
                                 </AvatarFallback>
                             </Avatar>
 
                             <div className="text-center md:text-left">
-                                <h1 className="text-3xl font-bold">{userData?.name || "Utilisateur"}</h1>
+                                <h1 className="text-3xl font-bold">{userData?.name ? userData.name : `${userData?.firstName} ${userData?.lastName}` || "Utilisateur"}</h1>
                                 <div className="flex flex-wrap gap-2 justify-center md:justify-start mt-2">
-                                    {userData?.roles.map((role, i) => (
-                                        <Badge key={i} className="bg-white/20 hover:bg-white/30 text-white">
-                                            {role}
-                                        </Badge>
-                                    ))}
+                                    <Badge className="bg-white/20 hover:bg-white/30 text-white">
+                                        {userData?.role}
+                                    </Badge>
                                 </div>
                             </div>
                         </div>
@@ -74,11 +72,13 @@ export default function ProfileComponent() {
                     <TabsContent value="info" className="mt-4">
                         <Card className="shadow-lg">
                             <CardContent className="pt-6 grid gap-6">
-                                <InfoItem icon={<Mail className="h-5 w-5 text-blue-500" />} label="Email" value={userData?.email} />
-                                <InfoItem icon={<Phone className="h-5 w-5 text-blue-500" />} label="Téléphone" value={userData?.phoneNumber || "N/A"} />
+                                <InfoItem icon={<Mail className="h-5 w-5 text-blue-500"/>} label="Email"
+                                          value={userData?.email}/>
+                                <InfoItem icon={<Phone className="h-5 w-5 text-blue-500"/>} label="Téléphone"
+                                          value={userData?.phoneNumber || "N/A"}/>
                                 {userData?.Address && (
                                     <InfoItem
-                                        icon={<MapPin className="h-5 w-5 text-blue-500" />}
+                                        icon={<MapPin className="h-5 w-5 text-blue-500"/>}
                                         label="Adresse"
                                         value={[
                                             userData.Address.number,
@@ -99,21 +99,22 @@ export default function ProfileComponent() {
                         <Card className="shadow-lg">
                             <CardContent className="pt-6 space-y-4">
                                 <InfoItem
-                                    icon={<Shield className="h-5 w-5 text-blue-500" />}
+                                    icon={<Shield className="h-5 w-5 text-blue-500"/>}
                                     label="Statut de vérification"
                                     value={
                                         <div className="flex items-center gap-2">
                                             <Badge className={userData?.isVerified ? "bg-green-500" : "bg-red-500"}>
                                                 {userData?.isVerified ? "Vérifié" : "Non vérifié"}
                                             </Badge>
-                                            {userData?.isVerified && <CheckCircleIcon className="h-5 w-5 text-green-500" />}
+                                            {userData?.isVerified &&
+                                                <CheckCircleIcon className="h-5 w-5 text-green-500"/>}
                                         </div>
                                     }
                                 />
 
                                 {userData?.birthDate && (
                                     <InfoItem
-                                        icon={<CalendarDays className="h-5 w-5 text-blue-500" />}
+                                        icon={<CalendarDays className="h-5 w-5 text-blue-500"/>}
                                         label="Date de naissance"
                                         value={new Date(userData.birthDate).toLocaleDateString("fr-FR", {
                                             year: "numeric",
@@ -131,7 +132,7 @@ export default function ProfileComponent() {
     )
 }
 
-function InfoItem({ icon, label, value }: { icon: React.ReactNode; label: string; value: React.ReactNode }) {
+function InfoItem({icon, label, value}: { icon: React.ReactNode; label: string; value: React.ReactNode }) {
     return (
         <div className="flex items-center gap-3 p-4 border rounded-md">
             {icon}

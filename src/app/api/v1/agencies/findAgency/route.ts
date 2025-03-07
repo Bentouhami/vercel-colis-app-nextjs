@@ -1,43 +1,47 @@
 // path: src/app/api/v1/agencies/findAgency/route.ts
 
-import {NextRequest, NextResponse} from 'next/server';
-import {getAgencyId} from "@/services/backend-services/Bk_AgencyService";
+import { NextRequest, NextResponse } from "next/server";
+import prisma from "@/utils/db";
 
-export const dynamic = 'force-dynamic'
+export async function GET(req: NextRequest) {
+    // Extract query parameters
+    const countryParam = req.nextUrl.searchParams.get("country");
+    const cityParam = req.nextUrl.searchParams.get("city");
+    const agencyName = req.nextUrl.searchParams.get("agency_name");
 
-export async function GET(request: NextRequest) {
-    console.log("GET request received in agencies/find route");
-    if (request.method === "POST") {
-        return NextResponse.json({error: 'Method not allowed'}, {status: 405});
+    if (!countryParam || !cityParam || !agencyName) {
+        return NextResponse.json({ error: "Missing parameters" }, { status: 400 });
     }
+
+    console.log("log ====> countryParam in findAgency route after getting from path: src/app/api/v1/agencies/findAgency/route.ts is : ", countryParam);
+    console.log("log ====> cityParam in findAgency route after getting from path: src/app/api/v1/agencies/findAgency/route.ts is : ", cityParam);
+    console.log("log ====> agencyName in findAgency route after getting from path: src/app/api/v1/agencies/findAgency/route.ts is : ", agencyName);
+
+    const countryId = Number(countryParam);
+    if (isNaN(countryId)) {
+        return NextResponse.json({ error: "Invalid country id" }, { status: 400 });
+    }
+
     try {
-        // get city, country and agency name from url params
-        const searchParams = request.nextUrl.searchParams;
+        const agency = await prisma.agency.findFirst({
+            where: {
+                name: agencyName,
+                address: {
+                    city: {
+                        name: cityParam,
+                        country: { id: countryId },
+                    },
+                },
+            },
+            select: { id: true },
+        });
 
-
-        const country = searchParams.get('country');
-        const city = searchParams.get('city');
-        const agencyName = searchParams.get('agency_name');
-
-        // check if country, city and agency name are present in the request
-        if (!country || !city || !agencyName) {
-            return NextResponse.json({error: 'Invalid request'}, {status: 400});
+        if (!agency) {
+            return NextResponse.json({ error: "Agency not found" }, { status: 404 });
         }
-        // send data to backend-services/Bk_AgencyService.ts to find the agency
-        // based on country, city and agency name
-        const agencyId = await getAgencyId(country, city, agencyName);
-
-        if (!agencyId) {
-            return NextResponse.json({error: 'Agency not found'}, {status: 404});
-        }
-
-        return NextResponse.json(
-            {agencyId: agencyId},
-            {status: 200}
-        );
-
+        return NextResponse.json({ agencyId: agency.id }, { status: 200 });
     } catch (error) {
-        console.error("Error getting agency:", error);
-        return NextResponse.json({error: 'Failed to get agency'}, {status: 500});
+        console.error("Error in findAgency route:", error);
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }

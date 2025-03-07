@@ -6,8 +6,8 @@ import prisma from "@/utils/db";
 import bcrypt from "bcryptjs";
 import GoogleProvider from "@auth/core/providers/google";
 import GitHubProvider from "@auth/core/providers/github";
-import {Roles} from "@/services/dtos/enums/EnumsDto";
-import {AddressResponseDto} from "@/services/dtos";
+import {RoleDto} from "@/services/dtos/enums/EnumsDto";
+import {AddressResponseDto, UserAddressDto} from "@/services/dtos";
 import {getUserByEmail} from "@/services/backend-services/Bk_UserService";
 
 export const {handlers, signIn, signOut, auth} = NextAuth({
@@ -55,18 +55,18 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
 
                     console.log("---------- authorize end ----------");
 
-                    // Map Prisma user object to UserDto, transforming roles to match Roles enum
+                    // Map Prisma user object to UserDto, transforming role to match RoleDto enum
                     return {
                         id: user.id.toString(),
                         firstName: user.firstName ?? undefined,
                         lastName: user.lastName ?? undefined,
-                        name: user.name ?? undefined,
+                        name: user.name ? `${user.lastName} ${user.firstName}` : undefined,
                         email: user.email,
                         phoneNumber: user.phoneNumber ?? undefined,
                         image: user.image ?? undefined,
-                        address: user.Address as AddressResponseDto | null,
-                        roles: user.roles as Roles[],
-                        emailVerified: user.emailVerified ?? null, // Include emailVerified with a fallback
+                        userAddress: user.userAddresses,
+                        role: user.role as RoleDto,
+                        emailVerified: user.emailVerified ?? null,
                     } as User;
                 } catch (error) {
                     console.error("Authorization error:", error);
@@ -95,7 +95,7 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
                     lastName: profile.family_name || lastName,
                     image: profile.picture,
                     phoneNumber: null,
-                    roles: [Roles.CLIENT], // Assign default role using Roles enum
+                    role: RoleDto.CLIENT,
                 };
             },
         }),
@@ -116,7 +116,7 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
                     email: profile.email?.toLowerCase(),
                     image: profile.avatar_url,
                     phoneNumber: null,
-                    roles: [Roles.CLIENT], // Assign default role using Roles enum
+                    role: RoleDto.CLIENT, // Assign default role using RoleDto enum
                 };
             },
         }),
@@ -136,9 +136,9 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
                 token.name = user.name ?? undefined;
                 token.email = user.email ?? undefined;
                 token.phoneNumber = user.phoneNumber ?? undefined;
-                token.address = user.address as AddressResponseDto;
+                token.userAddresses = user.userAddresses as AddressResponseDto;
                 token.image = user.image ?? undefined;
-                token.roles = user.roles || [];
+                token.role = user.role || RoleDto.CLIENT || undefined;
                 token.emailVerified = user.emailVerified ?? null;
             }
             return token;
@@ -152,9 +152,9 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
                     name: token.name ?? undefined,
                     email: token.email ?? '',
                     phoneNumber: token.phoneNumber ?? undefined,
-                    address: token.address as AddressResponseDto,
+                    userAddresses: token.userAddresses as AddressResponseDto,
                     image: token.image ?? undefined,
-                    roles: token.roles ?? [],
+                    role: token.role || RoleDto.CLIENT || undefined,
                     emailVerified: token.emailVerified ?? null
                 };
             }

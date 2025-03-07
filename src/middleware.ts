@@ -2,7 +2,7 @@ import {NextRequest, NextResponse} from "next/server";
 import {getToken} from "next-auth/jwt";
 import {isPublicRoute} from "@/utils/publicRoutesHelper";
 import {setCorsHeaders} from "@/utils/cors";
-import {Roles} from "@/services/dtos";
+import {RoleDto} from "@/services/dtos";
 import { ipAddress } from '@vercel/functions'
 
 
@@ -45,9 +45,11 @@ export async function middleware(req: NextRequest) {
         }
 
         // Role-based access control
-        const userRoles = Array.isArray(token?.roles) ? token.roles : [];
-        const isSuperAdmin = userRoles.includes(Roles.SUPER_ADMIN);
-        const isAgencyAdmin = userRoles.includes(Roles.AGENCY_ADMIN);
+        const userRole = token?.role;
+        const isSuperAdmin = userRole === RoleDto.SUPER_ADMIN;
+        const isAgencyAdmin = userRole === RoleDto.AGENCY_ADMIN;
+        const isAccountant = userRole === RoleDto.ACCOUNTANT;
+        const isClient = userRole === RoleDto.CLIENT;
 
         // Handle redirects for authenticated users
         if (isAuthenticated) {

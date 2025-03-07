@@ -7,9 +7,9 @@ import {
     CreateUserDto,
     DestinataireResponseDto,
     DestinataireResponseWithRoleDto,
-    FullUserResponseDto,
-    Roles,
-    UpdateUserDto,
+    FullUserResponseDto, ProfileDto,
+    RoleDto,
+    UpdateUserDto, UserLoginDto,
     UserLoginResponseDto,
     UserModelDto,
     UserResponseDto
@@ -19,190 +19,14 @@ import {VerificationDataType} from "@/utils/types";
 import {sendVerificationEmail} from "@/lib/mailer";
 import {userRepositories} from "@/services/repositories/users/UserRepository";
 import {capitalizeFirstLetter, toLowerCase} from "@/utils/stringUtils";
+import {transportRepository} from "@/services/repositories/transports/TransportRepository";
 
-/**
- *  Create new user as CLIENT
- *
- * @param newUser
- * @returns new created user data
- */
-
-export async function registerUser(newUser: CreateUserDto): Promise<FullUserResponseDto | null> {
-    console.log("log ====> registerUser called in path: src/services/backend-services/Bk_UserService.ts");
-
-    try {
-        // Ensure address ID exists for connection
-        if (!newUser.address.id) {
-            throw new Error("Address ID is required to connect the user to an existing address.");
-        }
-
-        const formattedUser = {
-            firstName: newUser.firstName,
-            lastName: newUser.lastName,
-            name: newUser.name,
-            birthDate: newUser.birthDate,
-            phoneNumber: newUser.phoneNumber,
-            email: newUser.email,
-            password: newUser.password,
-            verificationToken: newUser.verificationToken,
-            verificationTokenExpires: newUser.verificationTokenExpires,
-            isVerified: false,
-        };
-
-        // Create user and connect existing address
-        const createdUser = await prisma.user.create({
-            data: {
-                ...formattedUser,
-                Address: {
-                    connect: {
-                        id: newUser.address.id,
-                    },
-                },
-            },
-            include: {
-                Address: true, // Include the connected address in the result
-            },
-        });
-
-        console.log(" log ====> createdUser in path src/services/backend-services/Bk_UserService.ts: ", createdUser);
-        if (!createdUser) {
-            console.error("Error: Cannot create user.");
-            return null;
-        }
-
-        // Map result to response DTO
-        return {
-            id: createdUser.id,
-            firstName: createdUser.firstName ?? undefined,
-            lastName: createdUser.lastName ?? undefined,
-            name: createdUser.name ?? undefined,
-            birthDate: createdUser.birthDate ?? undefined,
-            email: createdUser.email ?? undefined,
-            phoneNumber: createdUser.phoneNumber ?? undefined,
-            image: createdUser.image ?? undefined,
-            roles: createdUser.roles as Roles[],
-            address: {
-                id: createdUser.Address?.id,
-                street: createdUser?.Address?.street ?? '',
-                number: createdUser?.Address?.number ?? '',
-                city: createdUser.Address?.city ?? '',
-                zipCode: createdUser.Address?.zipCode ?? '',
-                country: createdUser.Address?.country ?? '',
-                latitude: createdUser.Address?.latitude ?? undefined,
-                longitude: createdUser.Address?.longitude ?? undefined,
-            },
-        };
-    } catch (error) {
-        console.error("Error registering user:", error);
-        throw error;
-    }
-}
-
-
-
-/**
- * Check if user already exists in the database
- * @param email
- * @param phoneNumber
- * @returns {Promise<FullUserDto | null>} user or null
- */
-
-export async function isUserAlreadyExist(email: string, phoneNumber: string): Promise<UserModelDto | null> {
-
-    console.log("log ====> isUserAlreadyExist called in path: src/services/backend-services/Bk_UserService.ts")
-
-    try {
-
-        const existedUser = await prisma.user.findFirst({
-            where: {
-                OR: [
-                    {email: email},
-                    {phoneNumber: phoneNumber},
-                ],
-            }, select: {
-                id: true,
-                firstName: true,
-                lastName: true,
-                name: true,
-                birthDate: true,
-                phoneNumber: true,
-                email: true,
-                roles: true,
-                image: true,
-                isVerified: true,
-                emailVerified: true,
-                verificationToken: true,
-                verificationTokenExpires: true,
-                addressId: true,
-
-            }
-        }) as UserModelDto;
-
-        if (!existedUser) {
-            console.log("user NOT found by email and or phone number in isUserAlreadyExist function in path: src/services/backend-services/Bk_UserService.ts return NULL");
-            return null;
-        }
-        console.log("user found by email and or phone number in isUserAlreadyExist function in path: src/services/backend-services/Bk_UserService.ts: ", existedUser);
-        return existedUser;
-
-    } catch (error) {
-        console.error("Error getting user by email:", error);
-        throw error;
-    }
-}
-
-/**
- * Check if destinataire already exist in the database
- * @param email
- * @param phoneNumber
- * @returns {Promise<DestinataireResponseDto | null>} user or null
- */
-
-export async function isDestinataireAlreadyExist(email: string, phoneNumber: string): Promise<DestinataireResponseWithRoleDto | null> {
-
-    console.log("log ====> isDestinataireAlreadyExist function called in path: src/services/backend-services/Bk_UserService.ts")
-
-    console.log("log ====> email and phoneNumber passed to isDestinataireAlreadyExist function in path: src/services/backend-services/Bk_UserService.ts: ", email, phoneNumber);
-
-    try {
-
-        const user = await prisma.user.findFirst({
-            where: {
-                email: email,
-                phoneNumber: phoneNumber,
-
-            },
-            select: {
-                id: true,
-                firstName: true,
-                lastName: true,
-                name: true,
-                phoneNumber: true,
-                email: true,
-                roles: true,
-                image: true,
-            }
-        });
-
-
-        if (!user) {
-            console.log("log ====> destinataire NOT FOUND in isDestinataireAlreadyExist function in path: src/services/backend-services/Bk_UserService.ts return NULL");
-            return null;
-        }
-        console.log("log ====> user found in isDestinataireAlreadyExist function in path: src/services/backend-services/Bk_UserService.ts: ", user);
-
-        return user as DestinataireResponseWithRoleDto;
-
-    } catch (error) {
-        console.error("Error getting user by email:", error);
-        throw error;
-    }
-}
 
 export async function handleDestinataire(
     userId: number,
     destinataireData: CreateDestinataireDto
 ): Promise<DestinataireResponseWithRoleDto | null> {
+    console.log("log ====> handleDestinataire reached with userid and destinataireData", userId, destinataireData);
 
     if (!userId || !destinataireData) return null;
 
@@ -221,41 +45,24 @@ export async function handleDestinataire(
                 email: true,
                 phoneNumber: true,
                 image: true,
-                roles: true,
+                role: true,
             },
         });
 
         // 2. Si l'utilisateur existe, mais ne possède pas le rôle DESTINATAIRE, on le met à jour
-        if (found) {
-            if (!found.roles.includes(Roles.DESTINATAIRE)) {
-                found = await tx.user.update({
-                    where: { id: found.id },
-                    data: {
-                        roles: { set: [...found.roles, Roles.DESTINATAIRE] },
-                    },
-                    select: {
-                        id: true,
-                        firstName: true,
-                        lastName: true,
-                        name: true,
-                        email: true,
-                        phoneNumber: true,
-                        image: true,
-                        roles: true,
-                    },
-                });
-            }
-        } else {
-            // 3. Sinon, créer un nouvel utilisateur avec le rôle DESTINATAIRE
+        if (!found) {
+            console.log("log ====> handleDestinataire reached with destinataire not found, try to create destinataire: ", destinataireData);
+
+
             found = await tx.user.create({
                 data: {
                     firstName: capitalizeFirstLetter(destinataireData.firstName),
                     lastName: capitalizeFirstLetter(destinataireData.lastName),
-                    name: `${capitalizeFirstLetter(destinataireData.firstName)} ${capitalizeFirstLetter(destinataireData.lastName)}`  || "",
+                    name: `${capitalizeFirstLetter(destinataireData.firstName)} ${capitalizeFirstLetter(destinataireData.lastName)}` || "",
                     email: toLowerCase(destinataireData.email),
                     phoneNumber: destinataireData.phoneNumber,
                     image: destinataireData.image || "",
-                    roles: { set: [Roles.DESTINATAIRE] },
+                    role: RoleDto.DESTINATAIRE,
                 },
                 select: {
                     id: true,
@@ -265,12 +72,11 @@ export async function handleDestinataire(
                     email: true,
                     phoneNumber: true,
                     image: true,
-                    roles: true,
+                    role: true,
                 },
             });
         }
-
-        // 4. Vérifier l'association entre le client et le destinataire
+        // Vérifier l'association entre le client et le destinataire
         const existingAssociation = await tx.clientDestinataire.findUnique({
             where: {
                 clientId_destinataireId: {
@@ -282,6 +88,7 @@ export async function handleDestinataire(
 
         // 5. Si l'association n'existe pas, la créer
         if (!existingAssociation) {
+            console.log("log ====> handleDestinataire reached with association not found, try to create association");
             await tx.clientDestinataire.create({
                 data: {
                     clientId: userId,
@@ -289,6 +96,7 @@ export async function handleDestinataire(
                 },
             });
         }
+
         // Transform the result to ensure non-nullable fields are set
         const safeFound: DestinataireResponseWithRoleDto = {
             id: found.id,
@@ -298,9 +106,10 @@ export async function handleDestinataire(
             email: found.email,
             phoneNumber: found.phoneNumber ?? "",
             image: found.image,
-            roles: found.roles as Roles[],
+            role: found.role as RoleDto,
         };
 
+        console.log("log ====> handleDestinataire reached with found", safeFound);
         return safeFound;
     });
 
@@ -328,7 +137,7 @@ export async function createDestinataire(newDestinataire: CreateDestinataireDto)
                 email: newDestinataire.email,
                 phoneNumber: newDestinataire.phoneNumber,
                 image: newDestinataire.image ?? "", // Default to empty string if null
-                roles: [Roles.DESTINATAIRE],
+                role: RoleDto.DESTINATAIRE,
             },
             select: {
                 id: true,
@@ -338,7 +147,7 @@ export async function createDestinataire(newDestinataire: CreateDestinataireDto)
                 phoneNumber: true,
                 email: true,
                 image: true,
-                roles: true,
+                role: true,
             }
         });
 
@@ -381,7 +190,7 @@ export async function getUserByValidToken(token: string): Promise<UserResponseDt
                 birthDate: true,
                 phoneNumber: true,
                 email: true,
-                roles: true,
+                role: true,
                 image: true,
             }
         }) as UserResponseDto;
@@ -419,7 +228,7 @@ export async function updateUserAndResetTokenVerificationAfterVerification(userI
             where: {id: userId},
             data: {
                 isVerified: true,
-                roles: [Roles.CLIENT],
+                role: RoleDto.CLIENT,
                 emailVerified: new Date(),
                 verificationToken: null,
                 verificationTokenExpires: null,
@@ -432,7 +241,7 @@ export async function updateUserAndResetTokenVerificationAfterVerification(userI
                 phoneNumber: true,
                 email: true,
                 image: true,
-                roles: true
+                role: true
             }
         });
 
@@ -457,7 +266,7 @@ export async function updateVerificationTokenForOldUser(userId: number, verifica
     await prisma.user.update({
         where: {id: userId},
         data: {
-            roles: [Roles.CLIENT],
+            role: RoleDto.CLIENT,
             isVerified: false,
             emailVerified: null,
             verificationToken: verificationData.verificationToken,
@@ -493,89 +302,87 @@ export async function getUserById(id: number): Promise<CreateDestinataireDto | n
         throw error;
     }
 }
-
-/**
- * Update destinataire to client
- * @returns {Promise<DestinataireResponseDto>} user data with updated fields or null if not found
- * @param userData
- */
-
-export async function updateDestinataireToClient(
-    userData: UpdateUserDto,
-): Promise<FullUserResponseDto | null> {
-
-    console.log("log ====> updateDestinataireToClient function called in path: src/services/backend-services/Bk_UserService.ts")
-
-
-    console.log("Updating destinataire to client with ID path: src/services/users/Bk_UserService.ts :", userData.address?.id ?? null);
-
-    try {
-        if (!userData.id || !userData.addressId || !userData.address) {
-            return null;
-        }
-        console.log("log ====> userData.id in path: src/services/backend-services/Bk_UserService.ts: ", userData.id);
-        console.log("log ====> userData.addressId in path: src/services/backend-services/Bk_UserService.ts: ", userData.addressId);
-        console.log("log ====> userData.address in path: src/services/backend-services/Bk_UserService.ts: ", userData.address);
-
-        const user = await prisma.user.update({
-            where: {
-                id: userData.id,
-            },
-            data: {
-                firstName: userData.firstName,
-                lastName: userData.lastName,
-                name: userData.name,
-                birthDate: userData.birthDate,
-                phoneNumber: userData.phoneNumber,
-                email: userData.email,
-                roles: userData.roles,
-                image: userData.image,
-                isVerified: userData.isVerified,
-                emailVerified: userData.emailVerified,
-                verificationToken: userData.verificationToken,
-                verificationTokenExpires: userData.verificationTokenExpires,
-                addressId: userData.address.id,
-
-            },
-
-            include: {
-                Address: true,
-            },
-        });
-
-        if (!user) {
-            return null;
-        }
-
-        // Map the returned user to FullUserResponseDto with null checks
-        const fullUserResponseDto: FullUserResponseDto = {
-            id: user.id,
-            firstName: user.firstName ?? '',
-            lastName: user.lastName ?? '',
-            name: user.name ?? '',
-            birthDate: user.birthDate ?? new Date(),
-            email: user.email,
-            phoneNumber: user.phoneNumber ?? '',
-            roles: (user.roles ?? [Roles.CLIENT]) as Roles[],
-            image: user.image ?? '',
-            isVerified: user.isVerified ?? false,
-            emailVerified: user.emailVerified ?? new Date(),
-            verificationToken: user?.verificationToken || '',
-            verificationTokenExpires: user.verificationTokenExpires ?? new Date(),
-            address: user.Address as AddressDto,
-        };
-        if (!fullUserResponseDto) {
-            return null;
-        }
-
-        await sendVerificationEmail(user.name ?? '', user.email, fullUserResponseDto?.verificationToken!);
-
-        return fullUserResponseDto;
-    } catch (error) {
-        console.error("Error updating destinataire:", error);
-        throw error;
-    }
-}
+//
+// /**
+//  * Update destinataire to client
+//  * @returns {Promise<DestinataireResponseDto>} user data with updated fields or null if not found
+//  * @param userData
+//  */
+//
+// export async function updateDestinataireToClient(
+//     userData: UpdateUserDto,
+// ): Promise<FullUserResponseDto | null> {
+//
+//     console.log("log ====> updateDestinataireToClient function called in path: src/services/backend-services/Bk_UserService.ts")
+//
+//     try {
+//         if (!userData.id || !userData.addressId || !userData.address) {
+//             return null;
+//         }
+//         console.log("log ====> userData.id in path: src/services/backend-services/Bk_UserService.ts: ", userData.id);
+//         console.log("log ====> userData.addressId in path: src/services/backend-services/Bk_UserService.ts: ", userData.addressId);
+//         console.log("log ====> userData.address in path: src/services/backend-services/Bk_UserService.ts: ", userData.address);
+//
+//         const user = await prisma.user.update({
+//             where: {
+//                 id: userData.id,
+//             },
+//             data: {
+//                 firstName: userData.firstName,
+//                 lastName: userData.lastName,
+//                 name: `${userData.lastName} ${userData.firstName}`,
+//                 birthDate: userData.birthDate,
+//                 phoneNumber: userData.phoneNumber,
+//                 email: userData.email,
+//                 password: userData.password,
+//                 role: RoleDto.CLIENT,
+//                 image: userData.image,
+//                 isVerified: userData.isVerified,
+//                 emailVerified: userData.emailVerified,
+//                 verificationToken: userData.verificationToken,
+//                 verificationTokenExpires: userData.verificationTokenExpires,
+//                 addressId: userData.address.id,
+//
+//             },
+//
+//             include: {
+//                 Address: true,
+//             },
+//         });
+//
+//         if (!user) {
+//             return null;
+//         }
+//
+//         // Map the returned user to FullUserResponseDto with null checks
+//         const fullUserResponseDto: FullUserResponseDto = {
+//             id: user.id,
+//             firstName: user.firstName ?? '',
+//             lastName: user.lastName ?? '',
+//             name: user.name ?? '',
+//             birthDate: user.birthDate ?? new Date(),
+//             email: user.email,
+//             phoneNumber: user.phoneNumber ?? '',
+//             role: (user.role ?? RoleDto.CLIENT) as RoleDto,
+//             image: user.image ?? '',
+//             isVerified: user.isVerified ?? false,
+//             emailVerified: user.emailVerified ?? new Date(),
+//             verificationToken: user?.verificationToken || '',
+//             verificationTokenExpires: user.verificationTokenExpires ?? new Date(),
+//             address: user.Address as AddressDto,
+//         };
+//         if (!fullUserResponseDto) {
+//             return null;
+//         }
+//
+//         await sendVerificationEmail(user.name ?? '', user.email, fullUserResponseDto?.verificationToken!);
+//
+//         return fullUserResponseDto;
+//     } catch (error) {
+//         console.error("Error updating destinataire:", error);
+//         throw error;
+//     }
+// }
 
 
 /**
@@ -640,7 +447,7 @@ export async function associateDestinataireToCurrentClient(userId: number, desti
     }
 }
 
-export async function getUserByEmail(email: string): Promise<UserLoginResponseDto | null> {
+export async function getUserByEmail(email: string): Promise<UserLoginDto | null> {
     console.log("log ====> getUserByEmail function called in path: src/services/backend-services/Bk_UserService.ts")
     try {
         const user = await userRepositories.findUserByEmail(email);
@@ -654,4 +461,18 @@ export async function getUserByEmail(email: string): Promise<UserLoginResponseDt
 
     }
 
+}
+
+
+export async function getUserProfileById(userId: number) : Promise<ProfileDto | null> {
+    try {
+        const response = await userRepositories.getUserProfileById(userId);
+        if (!response) {
+            return null;
+        }
+        return response;
+    } catch (error) {
+        console.error("Error getting user profile:", error);
+        throw error;
+    }
 }

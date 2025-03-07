@@ -1,76 +1,100 @@
-// path: src/components/forms/SimulationForm.tsx
 'use client';
 
-import React, {ChangeEvent, useEffect, useState, useTransition} from 'react';
-import {motion} from 'framer-motion';
-import {Button, Pagination} from 'react-bootstrap';
-import PackageForm from './PackageForm';
+import React, { ChangeEvent, useEffect, useState, useTransition } from 'react';
+import { motion } from 'framer-motion';
+import { toast, ToastContainer } from 'react-toastify';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+
+// UI components
 import CountrySelect from "@/components/forms/SimulationForms/CountrySelectForm";
 import CitySelect from "@/components/forms/SimulationForms/CitySelectForm";
 import AgencySelect from "@/components/forms/SimulationForms/AgencySelectForm";
+import PackageForm from './PackageForm';
 import {
-    deleteSimulationCookie,
-    getSimulation,
-    submitSimulation
-} from "@/services/frontend-services/simulation/SimulationService";
-import {toast, ToastContainer} from "react-toastify";
-import {useRouter} from 'next/navigation';
-import {simulationRequestSchema} from "@/utils/validationSchema";
-import {
-    fetchAgencies,
-    fetchCities,
-    fetchCountries,
-    fetchDestinationCountries
-} from "@/services/frontend-services/AddressService";
-import {SimulationDtoRequest} from "@/services/dtos";
-import {ArrowRight, Box, Calculator, MapPin, Truck} from "lucide-react";
-import {COLIS_MAX_PER_ENVOI} from "@/utils/constants";
-import {getSimulationFromCookie} from "@/lib/simulationCookie";
-
-import {updateSimulationUserId} from "@/services/backend-services/Bk_SimulationService";
-import {useSession} from "next-auth/react";
-import {checkAuthStatus} from "@/lib/auth";
-import SimulationSkeleton from "@/app/client/simulation/simulationSkeleton";
-import SimulationConfirmationModal from "@/components/modals/SimulationConfirmationModal";
-import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-
-import {Label} from '@/components/ui/label';
-import {Input} from "@/components/ui/input";
+    Card, CardContent, CardHeader, CardTitle
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import {
     PaginationContent,
     PaginationItem,
     PaginationLink,
     PaginationNext,
-    PaginationPrevious
-} from '@/components/ui/pagination';
+    PaginationPrevious,
+} from "@/components/ui/pagination";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, Box, Calculator, MapPin, Truck } from "lucide-react";
 
+// Services
+import {
+    deleteSimulationCookie,
+    getSimulation,
+    submitSimulation
+} from "@/services/frontend-services/simulation/SimulationService";
+import { simulationRequestSchema } from "@/utils/validationSchema";
+import {
+    fetchAgencies,
+    fetchCities,
+    fetchCountries,
+    fetchDestinationCountries // <--- we'll use this
+} from "@/services/frontend-services/AddressService";
+import { SimulationDtoRequest } from "@/services/dtos";
+import { COLIS_MAX_PER_ENVOI } from "@/utils/constants";
+import { getSimulationFromCookie } from "@/lib/simulationCookie";
+import { updateSimulationUserId } from "@/services/backend-services/Bk_SimulationService";
+import { checkAuthStatus } from "@/lib/auth";
+
+// Others
+import SimulationSkeleton from "@/app/client/simulation/simulationSkeleton";
+import SimulationConfirmationModal from "@/components/modals/SimulationConfirmationModal";
 
 const SimulationForm = () => {
-    const {data: session, status} = useSession();
-    const [loading, setLoading] = useState(true);
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
-    const [departure, setDeparture] = useState({country: '', city: '', agencyName: ''});
-    const [destination, setDestination] = useState({country: '', city: '', agencyName: ''});
-    const [options, setOptions] = useState({
-        countries: [],
-        destinationCountries: [],
-        departureCities: [],
-        departureAgencies: [],
-        destinationCities: [],
-        destinationAgencies: []
+
+    // region: loading states
+    const [loading, setLoading] = useState(true);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    // endregion
+
+    // region: user or simulation state
+    const [userId, setUserId] = useState<string | null>(null);
+    const [simulationConfirmationModal, setSimulationConfirmationModal] = useState(false);
+    // endregion
+
+    // region: form states
+    // Strings hold the IDs (as string) of the selected items
+    const [departure, setDeparture] = useState({
+        country: '',
+        city: '',
+        agencyName: ''
+    });
+    const [destination, setDestination] = useState({
+        country: '',
+        city: '',
+        agencyName: ''
     });
 
+    const [options, setOptions] = useState({
+        countries: [] as { id: number; name: string }[],
+        destinationCountries: [] as { id: number; name: string }[],
+        departureCities: [] as { id: number; name: string }[],
+        departureAgencies: [] as { id: number; name: string }[],
+        destinationCities: [] as { id: number; name: string }[],
+        destinationAgencies: [] as { id: number; name: string }[],
+    });
+
+    // region: parcels
     const [packageCount, setPackageCount] = useState(1);
-    const [parcels, setParcels] = useState([{height: 0, width: 0, length: 0, weight: 0}]);
+    const [parcels, setParcels] = useState([{ height: 0, width: 0, length: 0, weight: 0 }]);
     const [currentPackage, setCurrentPackage] = useState(0);
-    const [userId, setUserId] = useState<string | null>(null);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [simulationConfirmationModal, setSimulationConfirmationModal] = useState(false);
+    // endregion
 
-
+    //==================================
+    //   AUTH + LOADING
+    //==================================
     useEffect(() => {
-        setLoading(true);
         const checkAuth = async () => {
             const authResult = await checkAuthStatus(false);
             setIsAuthenticated(authResult.isAuthenticated);
@@ -79,235 +103,299 @@ const SimulationForm = () => {
         checkAuth();
     }, []);
 
+    //==================================
+    //   LOOK FOR EXISTING SIMULATION
+    //==================================
     useEffect(() => {
-        // Check if all necessary initial data is loaded
-        if (
-            options.countries.length > 0 && // Countries are loaded
-            userId !== undefined && // Auth check is complete (even if user is not logged in)
-            !isPending // No transitions are pending
-        ) {
-            setLoading(false);
-        }
-    }, [options.countries, userId, isPending]);
-
-
-    /**
-     * Find existing previous simulation in cookies and redirect to results page
-     * @returns {Promise<void>}
-     */
-    useEffect(() => {
-        const findExistingSimulation = async () => {
-            startTransition(() => {
-                (async () => {
-                    try {
-                        const simulation = await getSimulationFromCookie();
-
-                        // get Simulation by id
-                        const simulationData = await getSimulation();
-                        if (simulation) {
-                            setSimulationConfirmationModal(true);
-                            if (!simulationData?.userId) {
-                                if (isAuthenticated && userId) {
-                                    // update simulation with sender connected user id
-                                    await updateSimulationUserId(simulation.id, Number(userId));
-                                }
-                                // show modal to confirm in the use wants to keep the simulation or create a new one
-                                setSimulationConfirmationModal(true);
-                            }
-                        }
-                        setLoading(false);
-                    } catch (error) {
-                        console.error('Erreur lors de la recherche de la simulation:', error);
+        (async () => {
+            try {
+                const simulationCookie = await getSimulationFromCookie();
+                const simulationData = await getSimulation();
+                if (simulationCookie) {
+                    // if no user linked => link user if possible
+                    if (simulationData && !simulationData?.userId && isAuthenticated && userId) {
+                        await updateSimulationUserId(simulationCookie.id, Number(userId));
                     }
-                })();
-            });
-        }
+                    // show user a modal: keep or new
+                    setSimulationConfirmationModal(true);
+                }
+                setLoading(false);
+            } catch (error) {
+                console.error('Erreur lors de la recherche de la simulation:', error);
+                setLoading(false);
+            }
+        })();
+    }, [isAuthenticated, userId]);
 
-        findExistingSimulation();
-    }, [isAuthenticated, router, session?.user?.id, userId])
-
-    // fetch countries when component mounts
+    //==================================
+    //   FETCH DEPARTURE COUNTRIES
+    //==================================
     useEffect(() => {
-        fetchCountries().then(data => setOptions(prev => ({...prev, countries: data}))).catch(console.error);
+        (async () => {
+            try {
+                const data = await fetchCountries();
+                setOptions(prev => ({ ...prev, countries: data }));
+                setLoading(false); // when countries are loaded
+            } catch (error) {
+                console.error("Error fetching countries:", error);
+            }
+        })();
     }, []);
 
-    // fetch destination countries when departure country changes
+    //==================================
+    //   FETCH DEPARTURE CITIES
+    //==================================
     useEffect(() => {
-        if (departure.country) {
-            fetchDestinationCountries(departure.country).then(data => setOptions(prev => ({
-                ...prev,
-                destinationCountries: data
-            }))).catch(console.error);
+        if (!departure.country) {
+            setOptions(prev => ({ ...prev, departureCities: [] }));
+            setDeparture(prev => ({ ...prev, city: '', agencyName: '' }));
+            return;
         }
+
+        (async () => {
+            try {
+                const countryId = Number(departure.country);
+                const data = await fetchCities(countryId); // Only cities that actually have an agency
+                setOptions(prev => ({ ...prev, departureCities: data }));
+                // Reset city + agency
+                setDeparture(prev => ({ ...prev, city: '', agencyName: '' }));
+            } catch (error) {
+                console.error("Error fetching departure cities:", error);
+                toast.error("Failed to fetch cities. Please try again.");
+            }
+        })();
     }, [departure.country]);
 
-    // fetch departure cities when departure country changes
+    //==================================
+    //   FETCH DEPARTURE AGENCIES
+    //==================================
     useEffect(() => {
-        if (departure.country) {
-            fetchCities(departure.country).then(data => setOptions(prev => ({
-                ...prev,
-                departureCities: data
-            }))).catch(console.error);
-            setDeparture(prev => ({...prev, city: '', agencyName: ''}));
+        if (!departure.city) {
+            setOptions(prev => ({ ...prev, departureAgencies: [] }));
+            setDeparture(prev => ({ ...prev, agencyName: '' }));
+            return;
         }
-    }, [departure.country]);
 
-    // fetch departure agencies when departure city changes
+        (async () => {
+            try {
+                // cityId from the state
+                const cityObj = options.departureCities.find(c => c.name === departure.city);
+                if (cityObj) {
+                    const data = await fetchAgencies(cityObj.id);
+                    setOptions(prev => ({ ...prev, departureAgencies: data }));
+                    setDeparture(prev => ({ ...prev, agencyName: '' }));
+                }
+            } catch (error) {
+                console.error("Error fetching departure agencies:", error);
+                toast.error("Failed to fetch agencies. Please try again.");
+            }
+        })();
+    }, [departure.city, options.departureCities]);
+
+    //==================================
+    //   FETCH DESTINATION COUNTRIES
+    //   => only after user picks a departure
+    //==================================
     useEffect(() => {
-        if (departure.city && departure.country) {
-            fetchAgencies(departure.city).then(data => setOptions(prev => ({
-                ...prev,
-                departureAgencies: data
-            }))).catch(console.error);
-            setDeparture(prev => ({...prev, agencyName: ''}));
+        if (!departure.agencyName) {
+            // We haven't chosen a valid departure agency yet => clear it
+            setOptions(prev => ({ ...prev, destinationCountries: [] }));
+            setDestination({ country: '', city: '', agencyName: '' });
+            return;
         }
-    }, [departure.city, departure.country]);
 
+        // If the user has fully chosen a valid departure agency,
+        // we fetch all possible other countries that have agencies
+        (async () => {
+            try {
+                const data = await fetchDestinationCountries(departure.country);
+                setOptions(prev => ({ ...prev, destinationCountries: data }));
+                // reset destination
+                setDestination({ country: '', city: '', agencyName: '' });
+            } catch (error) {
+                console.error("Error fetching destination countries:", error);
+            }
+        })();
+    }, [departure.agencyName, departure.country]);
 
-    // fetch destination cities when destination country changes
+    //==================================
+    //   FETCH DESTINATION CITIES
+    //==================================
     useEffect(() => {
-        if (destination.country) {
-            fetchCities(destination.country).then(data => setOptions(prev => ({
-                ...prev,
-                destinationCities: data
-            }))).catch(console.error);
-            setDestination(prev => ({...prev, city: '', agencyName: ''}));
+        if (!destination.country) {
+            setOptions(prev => ({ ...prev, destinationCities: [] }));
+            setDestination(prev => ({ ...prev, city: '', agencyName: '' }));
+            return;
         }
+
+        (async () => {
+            try {
+                const countryId = Number(destination.country);
+                const data = await fetchCities(countryId); // Only cities with agencies
+                setOptions(prev => ({ ...prev, destinationCities: data }));
+                setDestination(prev => ({ ...prev, city: '', agencyName: '' }));
+            } catch (error) {
+                console.error("Error fetching destination cities:", error);
+            }
+        })();
     }, [destination.country]);
 
-    // fetch destination agencies when destination city changes
+    //==================================
+    //   FETCH DESTINATION AGENCIES
+    //==================================
     useEffect(() => {
-        if (destination.city) {
-            fetchAgencies(destination.city).then(data => setOptions(prev => ({
-                ...prev,
-                destinationAgencies: data
-            }))).catch(console.error);
-            setDestination(prev => ({...prev, agencyName: ''}));
+        if (!destination.city) {
+            setOptions(prev => ({ ...prev, destinationAgencies: [] }));
+            setDestination(prev => ({ ...prev, agencyName: '' }));
+            return;
         }
-    }, [destination.city]);
 
+        (async () => {
+            try {
+                const cityObj = options.destinationCities.find(c => c.name === destination.city);
+                if (cityObj) {
+                    const data = await fetchAgencies(cityObj.id);
+                    setOptions(prev => ({ ...prev, destinationAgencies: data }));
+                    setDestination(prev => ({ ...prev, agencyName: '' }));
+                }
+            } catch (error) {
+                console.error("Error fetching destination agencies:", error);
+                toast.error("Failed to fetch destination agencies. Please try again.");
+            }
+        })();
+    }, [destination.city, options.destinationCities]);
+
+    //==================================
+    //   HANDLERS
+    //==================================
     const handleDepartureChange = (field: keyof typeof departure, value: string) => {
-        setDeparture(prev => ({...prev, [field]: value}));
+        setDeparture(prev => ({ ...prev, [field]: value }));
     };
 
     const handleDestinationChange = (field: keyof typeof destination, value: string) => {
-        setDestination(prev => ({...prev, [field]: value}));
-    };
-
-    const handlePackageChange = (index: number, field: string, value: number) => {
-        const updatedPackages = parcels.map((pkg, i) => (i === index ? {...pkg, [field]: value} : pkg));
-        setParcels(updatedPackages);
+        setDestination(prev => ({ ...prev, [field]: value }));
     };
 
     const handlePackageCountChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const count = parseInt(e.target.value, 10);
-        setPackageCount(count);
-        const newPackages = Array.from({length: count}, (_, i) => parcels[i] || {
+        const newCount = parseInt(e.target.value, 10);
+        if (newCount > COLIS_MAX_PER_ENVOI) return; // guard
+        setPackageCount(newCount);
+        const newParcels = Array.from({ length: newCount }, (_, i) => parcels[i] || {
             height: 0,
             width: 0,
             length: 0,
-            weight: 0
+            weight: 0,
         });
-        setParcels(newPackages);
+        setParcels(newParcels);
+        // ensure current package index is valid
+        if (currentPackage >= newCount) {
+            setCurrentPackage(newCount - 1);
+        }
+    };
+
+    const handlePackageChange = (index: number, field: string, value: number) => {
+        const updated = parcels.map((pkg, i) =>
+            i === index ? { ...pkg, [field]: value } : pkg
+        );
+        setParcels(updated);
     };
 
     const handlePageChange = (pageIndex: number) => {
         setCurrentPackage(pageIndex);
-    }
+    };
 
-    const handleSubmit = async (e: ChangeEvent<HTMLFormElement>) => {
+    //==================================
+    //   SUBMIT
+    //==================================
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
 
-        startTransition(() => {
-            (async () => {
-                // data to be validated by zod schema
-                const simulationData: SimulationDtoRequest = {
-                    departureCountry: departure.country,
-                    departureCity: departure.city,
-                    departureAgency: departure.agencyName,
-                    destinationCountry: destination.country,
-                    destinationCity: destination.city,
-                    destinationAgency: destination.agencyName,
-                    parcels,
-                };
+        startTransition( () => {
+            const simulationData: SimulationDtoRequest = {
+                departureCountry: departure.country,
+                departureCity: departure.city,
+                departureAgency: departure.agencyName,
+                destinationCountry: destination.country,
+                destinationCity: destination.city,
+                destinationAgency: destination.agencyName,
+                parcels,
+            };
 
-                console.log("Simulation Data before validation:", simulationData);
-                const validated = simulationRequestSchema.safeParse(simulationData);
-                console.log("Validation Result:", validated);
+            const validated = simulationRequestSchema.safeParse(simulationData);
+            if (!validated.success) {
+                validated.error.errors.forEach((err) => {
+                    toast.error(err.message);
+                });
+                console.log("Validation Errors:", validated.error.errors);
+                setLoading(false);
+                return;
+            }
 
-                if (!validated.success) {
-                    validated.error.errors.forEach((err) => {
-                        toast.error(err.message);
-                    });
-                    console.log("Validation Errors:", validated.error.errors);
-                    return;
-                }
-
-
-                try {
-                    // Submit simulation to the backend
-                    const response = await submitSimulation(simulationData);
-                    if (!response) {
-                        toast.error("Une erreur est survenue lors de la soumission de la simulation.");
-                        return;
-                    }
-
-                    toast.success("Simulation envoyée avec succès !");
-                    router.push(`/client/simulation/results`);
-                } catch (error) {
-                    console.error("Erreur lors de la soumission de la simulation:", error);
+            try {
+                const response = submitSimulation(simulationData);
+                if (!response) {
                     toast.error("Une erreur est survenue lors de la soumission de la simulation.");
                     setLoading(false);
+                    return;
                 }
-            })();
+                toast.success("Simulation envoyée avec succès !");
+                router.push("/client/simulation/results");
+            } catch (error) {
+                console.error("Erreur lors de la soumission de la simulation:", error);
+                toast.error("Une erreur est survenue lors de la soumission de la simulation.");
+            }
+            setLoading(false);
         });
-
     };
 
+    //==================================
+    //   SIMULATION MODAL (KEEP / NEW)
+    //==================================
     const handleKeepSimulation = () => {
         setSimulationConfirmationModal(false);
-
         toast.success("Continuant avec la simulation...");
         setTimeout(() => {
-            router.push(`/client/simulation/results`);
-        }, 2000);
-
+            router.push("/client/simulation/results");
+        }, 1500);
     };
 
     const handleCreateNewSimulation = async () => {
         setSimulationConfirmationModal(false);
-        setTimeout(async () => {
-            toast.success("La suppression de la simulation est en cours...");
-            await deleteSimulationCookie(); // Clear simulation cookies
-            router.refresh(); // Refresh the page
-        }, 2000);
+        toast.success("La suppression de la simulation est en cours...");
+        await deleteSimulationCookie();
+        router.refresh();
     };
 
-    if (loading) {
-        return (<SimulationSkeleton/>);
+    //==================================
+    //   RENDER
+    //==================================
+    if (loading || isPending) {
+        return <SimulationSkeleton />;
     }
 
     return (
         <motion.div
-            initial={{opacity: 0}}
-            animate={{opacity: 1}}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             className="max-w-4xl mx-auto p-8 mt-10 space-y-8"
         >
             <motion.h2
-                initial={{opacity: 0, y: -20}}
-                animate={{opacity: 1, y: 0}}
-                transition={{delay: 0.1}}
-                className="text-center text-3xl font-bold text-blue-600"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="text-center mt-3 text-6xl"
             >
-                Simulation Form
+                Système de Simulation d&#39;Envoi
             </motion.h2>
 
+            {/* Main form */}
             <form onSubmit={handleSubmit} className="space-y-8">
-                {/* Departure Information */}
+
+                {/* ====== DEPARTURE ====== */}
                 <Card>
                     <CardHeader className="flex items-center gap-2">
-                        <MapPin className="text-blue-500"/>
+                        <MapPin />
                         <CardTitle>Informations de Départ</CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -317,8 +405,7 @@ const SimulationForm = () => {
                                 value={departure.country}
                                 onChange={(e) => handleDepartureChange('country', e.target.value)}
                                 countries={options.countries}
-                                disabled={isPending}
-                                placeholder="Sélectionnez un pays avant de continuer"
+                                placeholder="Sélectionnez un pays"
                             />
                             <CitySelect
                                 label="Ville de départ"
@@ -332,16 +419,16 @@ const SimulationForm = () => {
                                 value={departure.agencyName}
                                 onChange={(e) => handleDepartureChange('agencyName', e.target.value)}
                                 agencies={options.departureAgencies}
-                                disabled={!departure.city || isPending}
+                                disabled={!departure.city}
                             />
                         </div>
                     </CardContent>
                 </Card>
 
-                {/* Destination Information */}
+                {/* ====== DESTINATION ====== */}
                 <Card>
                     <CardHeader className="flex items-center gap-2">
-                        <Truck className="text-blue-500"/>
+                        <Truck />
                         <CardTitle>Informations de Destination</CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -351,8 +438,8 @@ const SimulationForm = () => {
                                 value={destination.country}
                                 onChange={(e) => handleDestinationChange('country', e.target.value)}
                                 countries={options.destinationCountries}
-                                disabled={!departure.country || isPending}
-                                placeholder="Sélectionnez un pays de départ avant de continuer"
+                                disabled={!departure.agencyName}
+                                placeholder="Sélectionnez d’abord une agence de départ"
                             />
                             <CitySelect
                                 label="Ville de destination"
@@ -366,20 +453,21 @@ const SimulationForm = () => {
                                 value={destination.agencyName}
                                 onChange={(e) => handleDestinationChange('agencyName', e.target.value)}
                                 agencies={options.destinationAgencies}
-                                disabled={!destination.city || isPending}
+                                disabled={!destination.city}
                             />
                         </div>
                     </CardContent>
                 </Card>
 
-                {/* Parcel Information */}
+                {/* ====== PARCELS ====== */}
                 <Card>
                     <CardHeader className="flex items-center gap-2">
-                        <Box className="text-blue-500"/>
+                        <Box />
                         <CardTitle>Informations des Colis</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
+                            {/* Number of parcels */}
                             <div>
                                 <Label htmlFor="packageCount" className="block text-gray-600 font-medium">
                                     Nombre de colis
@@ -388,15 +476,14 @@ const SimulationForm = () => {
                                     id="packageCount"
                                     type="number"
                                     max={COLIS_MAX_PER_ENVOI}
-                                    min="1"
+                                    min={1}
                                     value={packageCount}
                                     onChange={handlePackageCountChange}
-                                    disabled={isPending}
                                     className="mt-1"
                                 />
                             </div>
 
-                            {/* Display the current package form */}
+                            {/* Show only the currently focused package in the form */}
                             {parcels.map((pkg, index) =>
                                     index === currentPackage && (
                                         <PackageForm
@@ -404,57 +491,56 @@ const SimulationForm = () => {
                                             index={index}
                                             pkg={pkg}
                                             onChange={handlePackageChange}
-                                            disabled={isPending}
                                         />
                                     )
                             )}
 
-                            {/* Pagination Controls */}
+                            {/* If multiple parcels, show pagination to move between them */}
                             {parcels.length > 1 && (
-                                <Pagination>
+                                <div className="flex justify-center mt-4">
                                     <PaginationContent>
                                         <PaginationItem>
                                             <PaginationPrevious
-                                                isDisabled={currentPackage === 0}
-                                                onClick={() => setCurrentPackage((prev) => Math.max(prev - 1, 0))}
+                                                isActive={currentPackage === 0}
+                                                onClick={() => setCurrentPackage((p) => Math.max(p - 1, 0))}
                                             />
                                         </PaginationItem>
-
-                                        {parcels.map((_, index) => (
-                                            <PaginationItem key={index}>
+                                        {parcels.map((_, idx) => (
+                                            <PaginationItem key={idx}>
                                                 <PaginationLink
-                                                    isActive={index === currentPackage}
-                                                    onClick={() => handlePageChange(index)}
+                                                    isActive={idx === currentPackage}
+                                                    onClick={() => handlePageChange(idx)}
                                                 >
-                                                    {index + 1}
+                                                    {idx + 1}
                                                 </PaginationLink>
                                             </PaginationItem>
                                         ))}
-
                                         <PaginationItem>
                                             <PaginationNext
-                                                isDisabled={currentPackage === parcels.length - 1}
-                                                onClick={() => setCurrentPackage((prev) => Math.min(prev + 1, parcels.length - 1))}
+                                                isActive={currentPackage === parcels.length - 1}
+                                                onClick={() =>
+                                                    setCurrentPackage((p) => Math.min(p + 1, parcels.length - 1))
+                                                }
                                             />
                                         </PaginationItem>
                                     </PaginationContent>
-                                </Pagination>
-
+                                </div>
                             )}
                         </div>
                     </CardContent>
                 </Card>
 
+                {/* ====== SUBMIT ====== */}
                 <div className="text-center">
-                    <Button type="submit" disabled={isPending} className="flex items-center gap-2">
+                    <Button type="submit" className="flex items-center gap-2">
                         {isPending ? (
                             <>
-                                <Calculator className="h-4 w-4"/>
+                                <Calculator className="h-4 w-4" />
                                 Calculation...
                             </>
                         ) : (
                             <>
-                                <ArrowRight className="h-4 w-4"/>
+                                <ArrowRight className="h-4 w-4" />
                                 Soumettre la simulation
                             </>
                         )}
@@ -462,23 +548,18 @@ const SimulationForm = () => {
                 </div>
             </form>
 
-            <ToastContainer
-                position="bottom-right"
-                autoClose={5000}
-                hideProgressBar={false}
-                theme="colored"
-                closeOnClick
-                pauseOnHover
-                draggable
-                pauseOnFocusLoss
-            />
+            {/* Toast notifications */}
+            <ToastContainer position="bottom-right" autoClose={5000} theme="colored" />
 
-            <SimulationConfirmationModal
-                show={simulationConfirmationModal}
-                handleClose={() => setSimulationConfirmationModal(false)}
-                handleConfirm={handleKeepSimulation}
-                handleCreateNew={handleCreateNewSimulation}
-            />
+            {/* If existing simulation was found: show confirmation modal */}
+            {simulationConfirmationModal && (
+                <SimulationConfirmationModal
+                    show={simulationConfirmationModal}
+                    handleClose={() => setSimulationConfirmationModal(false)}
+                    handleConfirm={handleKeepSimulation}
+                    handleCreateNew={handleCreateNewSimulation}
+                />
+            )}
         </motion.div>
     );
 };

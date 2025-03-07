@@ -5,7 +5,7 @@
 // import bcrypt from "bcryptjs";
 // import GoogleProvider from "@auth/core/providers/google";
 // import GitHubProvider from "@auth/core/providers/github";
-// import {UserDto, Roles} from "@/services/dtos"; // Import Roles enum
+// import {UserDto, RoleDto} from "@/services/dtos"; // Import RoleDto enum
 //
 // export const { handlers, signIn, signOut, auth } = NextAuth({
 //     adapter: PrismaAdapter(prisma),
@@ -58,7 +58,7 @@
 //
 //                     console.log("---------- authorize end ----------");
 //
-//                     // Map Prisma user object to UserDto, transforming roles to match Roles enum
+//                     // Map Prisma user object to UserDto, transforming role to match RoleDto enum
 //                     return {
 //                         id: user.id,
 //                         firstName: user.firstName,
@@ -67,7 +67,7 @@
 //                         email: user.email,
 //                         phoneNumber: user.phoneNumber,
 //                         image: user.image,
-//                         roles: user.roles as Roles[], // Transform Prisma roles to Roles enum
+//                         role: user.role as RoleDto[], // Transform Prisma role to RoleDto enum
 //                         address: user.Address,
 //                     };
 //                 } catch (error) {
@@ -97,7 +97,7 @@
 //                     lastName: profile.family_name || lastName,
 //                     image: profile.picture,
 //                     phoneNumber: null,
-//                     roles: [Roles.CLIENT], // Assign default role using Roles enum
+//                     role: [RoleDto.CLIENT], // Assign default role using RoleDto enum
 //                 };
 //             },
 //         }),
@@ -118,7 +118,7 @@
 //                     email: profile.email?.toLowerCase(),
 //                     image: profile.avatar_url,
 //                     phoneNumber: null,
-//                     roles: [Roles.CLIENT], // Assign default role using Roles enum
+//                     role: [RoleDto.CLIENT], // Assign default role using RoleDto enum
 //                 };
 //             },
 //         }),
@@ -141,7 +141,7 @@
 //                 token.email = user.email;
 //                 token.phoneNumber = user.phoneNumber;
 //                 token.image = user.image;
-//                 token.roles = user.roles;
+//                 token.role = user.role;
 //                 token.address = user.address || null;
 //             }
 //
@@ -163,7 +163,7 @@
 //                     email: token.email,
 //                     phoneNumber: token.phoneNumber,
 //                     image: token.image,
-//                     roles: token.roles,
+//                     role: token.role,
 //                     address: token.address,
 //
 //                 };

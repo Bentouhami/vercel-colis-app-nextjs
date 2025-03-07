@@ -7,10 +7,8 @@ import {simulationRepository} from "@/services/repositories/simulations/Simulati
 import {generateAndUploadQRCode} from "@/utils/qrUtils";
 import {QR_CODES_FOLDER} from "@/utils/constants";
 import {envoiRepository} from "@/services/repositories/envois/EnvoiRepository";
-import {ParcelMapper} from "@/services/mappers/ParcelMapper";
-import {EnvoiStatusMapper, SimulationStatusMapper} from "@/services/mappers/enums";
-import {UserMapper} from "@/services/mappers/UserMapper";
-import {AgencyMapper} from "@/services/mappers/AgencyMapper";
+import {cookies} from "next/headers";
+import {PaymentSuccessDto} from "@/services/dtos/envois/PaymentSuccessDto";
 
 /**
  * Cancel a simulation
@@ -121,6 +119,8 @@ export async function updateEnvoi(envoiId: number): Promise<boolean> {
         if (envoi.paid &&
             (envoi.simulationStatus === SimulationStatus.COMPLETED) &&
             envoi.qrCodeUrl) {
+            cookies().delete(process.env.SIMULATION_COOKIE_NAME!);
+
             return false;
         }
         // Step 1: verify and generate a tracking number
@@ -161,15 +161,37 @@ export async function updateEnvoi(envoiId: number): Promise<boolean> {
 
         console.log("log ====> qrCodeUrl generated in backend updateEnvoi function called in path: src/services/backend-services/Bk_EnvoiService.ts is : ", qrCodeUrl);
 
+        // remove parcels from envoi
+        const {
+            parcels,
+            id,
+            departureAgency,
+            arrivalAgency,
+            totalWeight,
+            totalVolume,
+            totalPrice,
+            departureDate,
+            arrivalDate,
+            userId,
+            client,
+            destinataireId,
+            transportId,
+            departureAgencyId,
+            arrivalAgencyId,
+            destinataire,
+            ...restEnvoi
+        } = envoi;
+
         // Step 5: Prepare updated envoi data
         const updatedEnvoiData = {
-            ...envoi,
+            ...restEnvoi,
             trackingNumber,
             qrCodeUrl,
             envoiStatus: EnvoiStatus.PENDING,
             simulationStatus: SimulationStatus.COMPLETED,
             paid: true
         };
+
 
         console.log("log ====> updatedEnvoiData generated in backend updateEnvoi function called in path: src/services/backend-services/Bk_EnvoiService.ts is : ", updatedEnvoiData);
 
@@ -210,90 +232,48 @@ export async function getEnvoiById(envoiId: number): Promise<EnvoiDto | null> {
     if (!envoiId) {
         throw new Error("Invalid envoi ID");
     }
+    console.log("log ====> envoiId in getEnvoiById function called in path: src/services/backend-services/envoi/Bk_envoiService.ts is : ", envoiId);
 
-    try {
-        console.log("log ====> envoiId in getEnvoiById function called in path: src/services/backend-services/Bk_EnvoiService.ts is : ", envoiId);
-
-        const envoi = await prisma.envoi.findUnique({
-            where: {id: envoiId},
-            include: {
-                parcels: true,
-                client: true,
-                destinataire: true,
-                arrivalAgency: {
-                    include: {
-                        address: true
-                    }
-                },
-                departureAgency: {
-                    include: {
-                        address: true
-                    }
-                },
-                transport: true,
-                envoiCoupon: true,
-                notification: true,
-            }
-        });
-
-        if (!envoi) {
-            console.log("log ====> envoi not found in envoiRepository.getEnvoiById function in path: src/services/backend-services/Bk_EnvoiService.ts is : ", envoi);
-            return null;
-        }
-        console.log("log ====> envoi returned from envoiRepository.getEnvoiById function in path: src/services/backend-services/Bk_EnvoiService.ts is : ", envoi);
-        // map the envoi to a DTO with safer null handling
-        const envoiDto = {
-            id: envoi.id,
-            trackingNumber: envoi.trackingNumber ?? undefined,
-            qrCodeUrl: envoi.qrCodeUrl ?? undefined,
-            envoiStatus: EnvoiStatusMapper.toDtoStatus(envoi.envoiStatus),
-            simulationStatus: SimulationStatusMapper.toDtoStatus(envoi.simulationStatus),
-            paid: envoi.paid,
-            userId: envoi.userId ?? undefined,
-            client: envoi.client ? UserMapper.toDto(envoi.client) : undefined,
-            destinataire: envoi.destinataire ? UserMapper.toDto(envoi.destinataire) : undefined,
-            arrivalAgency: envoi.arrivalAgency ? AgencyMapper.toDto(envoi.arrivalAgency) : null,
-            departureAgency: envoi.departureAgency ? AgencyMapper.toDto(envoi.departureAgency) : null,
-            destinataireId: envoi.destinataireId ?? undefined,
-            transportId: envoi.transportId ?? undefined,
-            departureAgencyId: envoi.departureAgencyId,
-            arrivalAgencyId: envoi.arrivalAgencyId,
-            totalWeight: envoi.totalWeight,
-            totalVolume: envoi.totalVolume,
-            totalPrice: envoi.totalPrice,
-            departureDate: envoi.departureDate,
-            arrivalDate: envoi.arrivalDate,
-            verificationToken: envoi.verificationToken,
-            comment: envoi.comment ?? undefined,
-            parcels: ParcelMapper.toDtos(envoi.parcels),
-        };
-        if (!envoiDto) {
-            return null;
-        }
-
-        console.log("log ====> envoiDto mapped and returned from envoiRepository.getEnvoiById function in path: src/services/backend-services/Bk_EnvoiService.ts is : ", envoiDto);
-
-        return envoiDto;
-    } catch (error) {
-        console.error("Error getting envoi:", error);
-        throw error;
+    const envoi = await envoiRepository.getEnvoiById(envoiId);
+    if (!envoi) {
+        return null;
     }
+
+    console.log("log ====> envoi in getEnvoiById function called in path: src/services/backend-services/envoi/Bk_envoiService.ts is : ", envoi);
+
+    return envoi;
 }
 
 /**
- *  get all envois by user id
- *  @return EnvoiDto[]
- *  @param userId
+ * Get paginated envois by user ID
+ * @param userId - The user ID
+ * @param limit - Number of results per page
+ * @param offset - Offset for pagination
+ * @returns { envois: EnvoisListDto[], total: number }
  */
-
-export async function getAllEnvoisByUserId(userId: number): Promise<EnvoisListDto[]> {
+export async function getAllEnvoisByUserId(userId: number, limit: number, offset: number): Promise<{
+    envois: EnvoisListDto[],
+    total: number
+}> {
     try {
-        console.log("log ====> userId in getAllEnvoisByUserId function called in path: src/services/backend-services/Bk_EnvoiService.ts is : ", userId);
+        console.log("Fetching envois for userId:", userId, "with limit:", limit, "and offset:", offset);
+
+        const total = await prisma.envoi.count({
+            where: {
+                userId,
+                simulationStatus: "COMPLETED",
+            },
+        });
 
         const envois = await prisma.envoi.findMany({
             where: {
                 userId,
-                simulationStatus: SimulationStatus.COMPLETED
+                simulationStatus: "COMPLETED",
+            },
+            take: limit,
+            skip: offset,
+            orderBy: {
+                createdAt: "desc",
             },
             select: {
                 id: true,
@@ -304,25 +284,38 @@ export async function getAllEnvoisByUserId(userId: number): Promise<EnvoisListDt
                 envoiStatus: true,
                 paid: true,
                 trackingNumber: true,
-                createdAt : true,
+                createdAt: true,
                 destinataire: {
                     select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
                         name: true,
                         email: true,
                         phoneNumber: true,
-                    }
+                    },
                 },
                 arrivalAgency: {
                     select: {
                         name: true,
                         address: {
                             select: {
-                                number: true,
+                                streetNumber: true,
                                 street: true,
-                                city: true,
-                                country: true,
-                            }
-                        }
+                                city: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        country: {
+                                            select: {
+                                                id: true,
+                                                name: true,
+                                            }
+                                        }
+                                    }
+                                },
+                            },
+                        },
                     }
                 },
                 departureAgency: {
@@ -330,50 +323,58 @@ export async function getAllEnvoisByUserId(userId: number): Promise<EnvoisListDt
                         name: true,
                         address: {
                             select: {
-                                number: true,
+                                streetNumber: true,
                                 street: true,
-                                city: true,
-                                country: true,
-                            }
-                        }
-                    }
-                }
+                                city: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        country: {
+                                            select: {
+                                                id: true,
+                                                name: true,
+                                            }
+                                        }
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
             },
-            orderBy: {
-                createdAt: "desc",
-            }
         });
 
-        if (!envois || envois.length === 0) {
-            console.log("log ====> envois not found in envoiRepository.getAllEnvoisByUserId function in path: src/services/backend-services/Bk_EnvoiService.ts is : ", envois);
-            return [];
-        }
+        const formattedEnvois = envois.map((envoi) => ({
+            id: envoi.id,
+            departureAgency: envoi.departureAgency?.name,
+            arrivalAgency: envoi.arrivalAgency?.name,
+            totalWeight: envoi.totalWeight,
+            totalPrice: envoi.totalPrice,
+            arrivalDate: envoi.arrivalDate,
+            departureDate: envoi.departureDate,
+            envoiStatus: envoi.envoiStatus,
+            paid: envoi.paid,
+            destinataire: envoi.destinataire?.name ? `${envoi.destinataire?.lastName} ${envoi.destinataire?.firstName}` : "",
+            trackingNumber: envoi.trackingNumber || "",
+            createdAt: envoi.createdAt,
+        }));
 
-
-        console.log("log ====> envois returned from envoiRepository.getAllEnvoisByUserId function in path: src/services/backend-services/Bk_EnvoiService.ts is : ", envois);
-
-        const formattedEnvois = envois.map((envoi) => {
-            return {
-                id: envoi.id,
-                departureAgency: envoi.departureAgency?.name,
-                arrivalAgency: envoi.arrivalAgency?.name,
-                totalWeight: envoi.totalWeight,
-                totalPrice: envoi.totalPrice,
-                arrivalDate: envoi.arrivalDate,
-                departureDate: envoi.departureDate,
-                envoiStatus: envoi.envoiStatus,
-                paid: envoi.paid,
-                destinataire: envoi.destinataire?.name || "",
-                trackingNumber: envoi.trackingNumber || "",
-                createdAt: envoi.createdAt,
-            }
-        });
-        console.log("log ====> formattedEnvois returned from envoiRepository.getAllEnvoisByUserId function in path: src/services/backend-services/Bk_EnvoiService.ts is : ", formattedEnvois);
-        return formattedEnvois;
-
-
+        return {envois: formattedEnvois, total};
     } catch (error) {
-        console.error("Error getting envois:", error);
+        console.error("Error fetching envois:", error);
         throw error;
     }
+}
+
+/**
+ * get payment success data by id
+ * @return PaymentSuccessDto if exits or null otherwise
+ * @param envoiId
+ */
+export async function getPaymentSuccessDataById(envoiId: number): Promise<PaymentSuccessDto | null> {
+    if (!envoiId) {
+        throw new Error("Invalid envoi ID");
+    }
+
+    return await envoiRepository.getPaymentSuccessDataById(envoiId);
 }

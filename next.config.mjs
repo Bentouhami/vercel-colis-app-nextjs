@@ -7,7 +7,7 @@ const nextConfig = {
             {
                 protocol: 'https',
                 hostname: 'placehold.co',
-                pathname: '/**', // Allow all images from this domain
+                pathname: '/**',
             },
         ],
     },

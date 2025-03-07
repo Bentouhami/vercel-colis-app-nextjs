@@ -15,10 +15,10 @@ export function Footer() {
                     <div>
                         <h3 className="text-lg font-semibold mb-4">Liens rapides</h3>
                         <ul className="space-y-2">
-                            <li><Link href="/dashboard" className="text-muted-foreground hover:text-primary">Tableau de bord</Link></li>
-                            <li><Link href="/dashboard/users" className="text-muted-foreground hover:text-primary">Clients</Link></li>
-                            <li><Link href="/dashboard/items" className="text-muted-foreground hover:text-primary">Articles</Link></li>
-                            <li><Link href="/dashboard/invoices" className="text-muted-foreground hover:text-primary">Factures</Link></li>
+                            <li><Link href="/admin" className="text-muted-foreground hover:text-primary">Tableau de bord</Link></li>
+                            <li><Link href="/admin/users" className="text-muted-foreground hover:text-primary">Utilisateurs</Link></li>
+                            <li><Link href="/admin/envois" className="text-muted-foreground hover:text-primary">Envois</Link></li>
+
                         </ul>
                     </div>
                     <div>

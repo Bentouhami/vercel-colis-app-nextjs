@@ -1,6 +1,6 @@
 // path: src/app/api/v1/countries/route.ts
 
-import {NextRequest, NextResponse} from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/utils/db";
 
 /**
@@ -11,24 +11,38 @@ import prisma from "@/utils/db";
  */
 export async function GET(req: NextRequest) {
     try {
-        // Extraire le paramètre de la query string
-        const departureCountry = req.nextUrl.searchParams.get('departureCountry');
+        // Extract the departureCountry query parameter
+        let departureCountry = req.nextUrl.searchParams.get("departureCountry");
 
-        // Construire la requête Prisma
-        const countries = await prisma.address.findMany({
+        console.log("log ====> departureCountry in path: src/app/api/v1/countries/route.ts is : ", departureCountry);
+
+        // Ensure departureCountry is a valid integer or null
+        const departureCountryId = departureCountry && !isNaN(Number(departureCountry))
+            ? Number(departureCountry)
+            : null;
+
+        // Build the Prisma query
+        const countries = await prisma.city.findMany({
             where: {
-                Agency: {isNot: null},
-                ...(departureCountry && {country: {not: departureCountry}}),
+                addresses: { some: { agency: { isNot: null } } }, // Ensures the city has an agency
+                ...(departureCountryId !== null ? { countryId: { not: departureCountryId } } : {}), // ✅ Correct condition
             },
             select: {
-                id: true,
-                country: true,
+                country: {
+                    select: {
+                        id: true,
+                        name: true,
+                    },
+                },
             },
-            distinct: ["country"],
+            distinct: ["countryId"], // Ensures unique countries
         });
 
-        return NextResponse.json(countries, {status: 200});
+        console.log("log ====> countries in path: src/app/api/v1/countries/route.ts is : ", countries);
+
+        return NextResponse.json(countries, { status: 200 });
     } catch (error) {
-        return NextResponse.json({error: "Internal server error"}, {status: 500});
+        console.error("Erreur API countries:", error);
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }

@@ -5,6 +5,7 @@ import prisma from "@/utils/db";
 import {Envoi as EnvoiPrisma} from "@prisma/client";
 import {CreateSimulationRequestDto} from "@/services/dtos";
 import {ISimulationDAO} from "@/services/dal/DAO/simulations/ISimulationDAO";
+import {cookies} from "next/headers";
 
 
 /**
@@ -22,17 +23,10 @@ class SimulationDAO implements ISimulationDAO {
      * @returns EnvoiPrisma if found or null if not
      */
     async getSimulationResponseById(id: number): Promise<EnvoiPrisma | null> {
-
-        if (!id) {
-            return null;
-        }
-
+        if (!id) return null;
         try {
-            // Get the simulation from the database
             const simulation = await prisma.envoi.findUnique({
-                where: {
-                    id,
-                },
+                where: { id },
                 include: {
                     departureAgency: {
                         select: {
@@ -40,11 +34,25 @@ class SimulationDAO implements ISimulationDAO {
                             name: true,
                             address: {
                                 select: {
-                                    country: true,
-                                    city: true,
-                                }
-                            }
-                        }
+                                    street: true,
+                                    streetNumber: true,
+                                    boxNumber: true,
+                                    // Include the city and, within it, the related country
+                                    city: {
+                                        select: {
+                                            id: true,
+                                            name: true,
+                                            country: {
+                                                select: {
+                                                    id: true,
+                                                    name: true,
+                                                },
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
                     },
                     arrivalAgency: {
                         select: {
@@ -52,11 +60,24 @@ class SimulationDAO implements ISimulationDAO {
                             name: true,
                             address: {
                                 select: {
-                                    country: true,
-                                    city: true,
-                                }
-                            }
-                        }
+                                    street: true,
+                                    streetNumber: true,
+                                    boxNumber: true,
+                                    city: {
+                                        select: {
+                                            id: true,
+                                            name: true,
+                                            country: {
+                                                select: {
+                                                    id: true,
+                                                    name: true,
+                                                },
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
                     },
                     parcels: {
                         select: {
@@ -64,21 +85,20 @@ class SimulationDAO implements ISimulationDAO {
                             length: true,
                             width: true,
                             height: true,
-                        }
-                    }
-                }
-
+                        },
+                    },
+                },
             });
 
-            // Check if the simulation exists
-            if (!simulation) {
-                return null;
-            }
+            // Optionally delete the simulation cookie after a delay
+            // const cookieName = process.env.SIMULATION_COOKIE_NAME;
+            // setTimeout(async () => {
+            //     if (cookies().has(cookieName!)) {
+            //         cookies().delete(cookieName!);
+            //     }
+            // }, 2000);
 
-            // return simulation;
             return simulation;
-
-            // Handle any errors that may occur during the database query
         } catch (error) {
             console.error("Error getting simulation:", error);
             throw error;

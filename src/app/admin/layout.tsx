@@ -1,23 +1,42 @@
 // path: src/app/admin/layout.tsx
-
-'use client';
-
 import React from "react";
-import DashboardNavbar from "@/components/admin/agency-admin/dashboard/DashboardNavbar";
-import "./dashboard.css"; // Fichier CSS pour les styles propres au dashboard
+import {Footer} from "@/components/admin/menu/Footer";
+import {ThemeProvider} from "@/components/admin/theme-provider";
+import {ToastContainer} from "react-toastify";
+import {Inter} from "next/font/google";
+import Sidebar from "@/components/admin/menu/Sidebar";
+import {SessionProvider} from "next-auth/react";
+import RequireAuth from "@/components/auth/RequireAuth";
 
-
+export const metadata = {
+    title: 'Dashboard',
+    description: 'Dashboard de ColisApp',
+};
+const inter = Inter({subsets: ['latin']})
 export default function DashboardLayout({
                                             children,
                                         }: {
     children: React.ReactNode;
 }) {
     return (
-        <div className="dashboard-body" data-theme="light">
-            <DashboardNavbar/>
-            <main className="dashboard-main">
-                {children}
-            </main>
-        </div>
+        <SessionProvider>
+            <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+            >
+                <div className={`${inter.className} flex min-h-screen`}>
+                    <Sidebar/>
+                    <div className="flex flex-col flex-1">
+                        <main className="flex-1 overflow-auto m-5">
+                            <RequireAuth>{children}</RequireAuth>
+                            <ToastContainer position="top-right" autoClose={3000}/>
+                        </main>
+                        <Footer/>
+                    </div>
+                </div>
+            </ThemeProvider>
+        </SessionProvider>
     );
 }

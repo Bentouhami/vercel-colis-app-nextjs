@@ -1,7 +1,7 @@
 /*
   Warnings:
 
-  - The values [ADMIN] on the enum `roles` will be removed. If these variants are still used in the database, this will fail.
+  - The values [ADMIN] on the enum `role` will be removed. If these variants are still used in the database, this will fail.
 
 */
 -- AlterEnum

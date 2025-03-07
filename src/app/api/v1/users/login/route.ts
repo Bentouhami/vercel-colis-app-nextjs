@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
             user.lastName,
             user.name,
             user.phoneNumber,
-            user.roles,
+            user.role,
             user.image,
         );
 

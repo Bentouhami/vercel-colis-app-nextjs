@@ -2,8 +2,8 @@
 
 import {ITarifRepository} from "@/services/repositories/tarifs/ITarifRepositories";
 import {tarifsDAO} from "@/services/dal/DAO/tarifs/TarifDAO";
-import {TarifMapper} from "@/services/mappers/TarifMapper";
 import {TarifsDto} from "@/services/dtos";
+import prisma from "@/utils/db";
 
 /**
  * This class provides methods for interacting with the tarifs table in the database.
@@ -21,16 +21,26 @@ export class TarifsRepository implements ITarifRepository {
     async getTarifs(): Promise<TarifsDto | null> {
         // Call the DAO to get the tarifs
         try {
-            const tarifs = await tarifsDAO.getTarifs();
+            const tarifs = await prisma.tarifs.findFirst();
 
             // Check if the tarifs exist
             if (!tarifs) {
                 return null;
             }
 
-            // Map the tarifs to a TarifsResponseDto and return it
-            return TarifMapper.toDto(tarifs);
+           // Prepare the tarifs object to return as TarifsDto and return it
+            const tarifsObj: TarifsDto = {
+                id: tarifs.id,
+                weightRate: tarifs.weightRate.toNumber(),
+                volumeRate: tarifs.volumeRate.toNumber(),
+                baseRate: tarifs.baseRate.toNumber(),
+                fixedRate: tarifs.fixedRate.toNumber(),
+            };
 
+            if (!tarifsObj) {
+                return null;
+            }
+            return tarifsObj;
             // Handle any errors that may occur during the mapping process
         } catch (error) {
             console.error("Error getting tarifs:", error);

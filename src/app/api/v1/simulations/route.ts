@@ -39,6 +39,7 @@ export async function POST(request: NextRequest) {
         }
         simulationDataToCreate.userId = userId;
 
+        console.log("log ====> simulationDataToCreate in POST request received in simulations route before createSimulation function saving path: src/app/api/v1/simulations/route.ts: ", simulationDataToCreate);
 
         const simulationIdAndVerificationToken = await createSimulation(simulationDataToCreate);
 
@@ -79,6 +80,9 @@ export async function POST(request: NextRequest) {
  */
 export async function GET(request: NextRequest) {
     console.log("GET request received in simulations route");
+    if (request.method !== 'GET') {
+        return NextResponse.json({error: 'Method not allowed'}, {status: 405});
+    }
 
     try {
 
@@ -92,6 +96,9 @@ export async function GET(request: NextRequest) {
                 {status: 200}
             );
         }
+
+        console.log("log ====> simulationIdAndToken in GET request received in simulations route after verifying token in path: src/app/api/v1/simulations/route.ts is : ", simulationIdAndToken);
+
 
         // Get the simulation data from the database using the simulation ID and token
         const simulation = await getSimulationById(

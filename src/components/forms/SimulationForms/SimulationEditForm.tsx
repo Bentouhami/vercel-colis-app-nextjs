@@ -1,60 +1,132 @@
-// path: src/components/forms/SimulationForms/SimulationEditForm.tsx
 'use client';
 
-import React, {ChangeEvent, useEffect, useState, useTransition} from 'react';
-import {motion} from 'framer-motion';
-import {useRouter} from 'next/navigation';
-import {CreateParcelDto, PartielUpdateSimulationDto, SimulationResponseDto,} from '@/services/dtos';
-import {Button} from '@/components/ui/button';
-import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from '@/components/ui/dialog';
-import {Input} from '@/components/ui/input';
-import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
-import {Edit, MapPin, Package, PlusCircle, Trash2, Truck} from 'lucide-react';
-import {toast, ToastContainer} from 'react-toastify';
+import React, {
+    ChangeEvent,
+    useEffect,
+    useState,
+    useTransition,
+} from 'react';
+import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+import { toast, ToastContainer } from 'react-toastify';
+
+import {
+    PartielUpdateSimulationDto,
+    SimulationResponseDto,
+    CreateParcelDto,
+} from '@/services/dtos';
+
+import {
+    getSimulation,
+    updateSimulationEdited,
+} from '@/services/frontend-services/simulation/SimulationService';
 import {
     fetchAgencies,
     fetchCities,
     fetchCountries,
-    fetchDestinationCountries
-} from "@/services/frontend-services/AddressService";
-import {getSimulation, updateSimulationEdited} from "@/services/frontend-services/simulation/SimulationService";
-import AgencySelect from "@/components/forms/SimulationForms/AgencySelectForm";
-import CitySelect from "@/components/forms/SimulationForms/CitySelectForm";
-import CountrySelect from "@/components/forms/SimulationForms/CountrySelectForm";
-import {CardBody} from "react-bootstrap";
-import {parcelsSchema, simulationEnvoisSchema} from "@/utils/validationSchema";
-import {z} from "zod";
-import {useSession} from "next-auth/react";
-import {updateSimulationUserId} from "@/services/backend-services/Bk_SimulationService";
-import {checkAuthStatus} from "@/lib/auth";
+    fetchDestinationCountries,
+} from '@/services/frontend-services/AddressService';
 
+import { updateSimulationUserId } from '@/services/backend-services/Bk_SimulationService';
+import { checkAuthStatus } from '@/lib/auth';
+
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import {
+    ArrowRight,
+    Calculator,
+    Edit,
+    MapPin,
+    Package,
+    PlusCircle,
+    Trash2,
+    Truck,
+} from 'lucide-react';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+
+// Custom form components
+import CountrySelect from '@/components/forms/SimulationForms/CountrySelectForm';
+import CitySelect from '@/components/forms/SimulationForms/CitySelectForm';
+import AgencySelect from '@/components/forms/SimulationForms/AgencySelectForm';
+
+// Zod schema for parcel validation (if you want to keep it)
+import { parcelsSchema } from '@/utils/validationSchema';
+import { z } from 'zod';
+
+/**
+ * Simulation Edit Form
+ */
 const SimulationEditForm = () => {
-
-    const [userId, setUserId] = useState<string | null>(null);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
 
-    // States
-    const [departure, setDeparture] = useState({country: '', city: '', agencyName: ''});
-    const [destination, setDestination] = useState({country: '', city: '', agencyName: ''});
-    const [options, setOptions] = useState({
+    // Authentication
+    const [userId, setUserId] = useState<string | null>(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    // The entire simulation object from the backend
+    const [simulation, setSimulation] = useState<SimulationResponseDto | null>(null);
+
+    // Loading indicator while fetching
+    const [isLoading, setIsLoading] = useState(true);
+
+    // Depart / Destination states
+    // We'll store the "id" or "name" depending on how your API or selects are structured.
+    // In your code, you used the country name as a string ID, but typically you'd store numeric IDs.
+    // Adjust as needed.
+    const [departure, setDeparture] = useState({
+        country: '',
+        city: '',
+        agencyName: '',
+    });
+    const [destination, setDestination] = useState({
+        country: '',
+        city: '',
+        agencyName: '',
+    });
+
+    // For the dropdown options
+    const [options, setOptions] = useState<{
+        departureCountries: { id: number; name: string }[];
+        destinationCountries: { id: number; name: string }[];
+        departureCities: { id: number; name: string }[];
+        departureAgencies: { id: number; name: string }[];
+        destinationCities: { id: number; name: string }[];
+        destinationAgencies: { id: number; name: string }[];
+    }>({
         departureCountries: [],
         destinationCountries: [],
         departureCities: [],
         departureAgencies: [],
         destinationCities: [],
-        destinationAgencies: []
+        destinationAgencies: [],
     });
-    const [simulation, setSimulation] = useState<SimulationResponseDto | null>(null);
 
+    // Parcels
+    const [parcels, setParcels] = useState<CreateParcelDto[]>([
+        { height: 0, width: 0, length: 0, weight: 0 },
+    ]);
+    // Track which parcel is being edited
+    const [editingParcel, setEditingParcel] = useState<{
+        index: number;
+        parcel: CreateParcelDto;
+    } | null>(null);
 
-    const [parcels, setParcels] = useState<CreateParcelDto[]>([{height: 0, width: 0, length: 0, weight: 0}]);
-    const [isLoading, setIsLoading] = useState(true);
-
-    const [editingParcel, setEditingParcel] = useState<{ index: number, parcel: CreateParcelDto } | null>(null);
-
+    /**
+     * Check user auth
+     */
     useEffect(() => {
         const checkAuth = async () => {
             const authResult = await checkAuthStatus(false);
@@ -63,309 +135,342 @@ const SimulationEditForm = () => {
         };
         checkAuth();
     }, []);
-    
-    /**
-     * Fetch departureCountries and set them in the state
-     */
-    useEffect(() => {
-        fetchCountries().then(data => setOptions(prev => ({...prev, departureCountries: data}))).catch(console.error);
-    }, []);
 
     /**
-     * Fetch destination departureCountries when departure country changes
+     * Fetch initial departure countries
      */
     useEffect(() => {
-        if (departure.country) {
-            fetchDestinationCountries(departure.country).then(data => setOptions(prev => ({
-                ...prev,
-                destinationCountries: data
-            }))).catch(console.error);
-        }
-    }, [departure.country]);
-
-    /**
-     * Fetch departure cities when departure country changes
-     */
-    useEffect(() => {
-        if (departure.country) {
-            fetchCities(departure.country).then(data => setOptions(prev => ({
-                ...prev,
-                departureCities: data
-            }))).catch(console.error);
-            setDeparture(prev => ({...prev, city: '', agencyName: ''}));
-        }
-    }, [departure.country]);
-
-    /**
-     * Fetch departure agencies when departure city changes
-     */
-    useEffect(() => {
-        if (departure.city && departure.country) {
-            fetchAgencies(departure.city).then(data => setOptions(prev => ({
-                ...prev,
-                departureAgencies: data
-            }))).catch(console.error);
-            setDeparture(prev => ({...prev, agencyName: ''}));
-        }
-    }, [departure.city, departure.country]);
-
-    /**
-     * Fetch destination cities when destination country changes
-     */
-    useEffect(() => {
-        if (destination.country) {
-            fetchCities(destination.country).then(data => setOptions(prev => ({
-                ...prev,
-                destinationCities: data
-            }))).catch(console.error);
-            setDestination(prev => ({...prev, city: '', agencyName: ''}));
-        }
-    }, [destination.country]);
-
-    /**
-     * Fetch destination agencies when destination city changes
-     */
-    useEffect(() => {
-        if (destination.city) {
-            fetchAgencies(destination.city).then(data => setOptions(prev => ({
-                ...prev,
-                destinationAgencies: data
-            }))).catch(console.error);
-            setDestination(prev => ({...prev, agencyName: ''}));
-        }
-    }, [destination.city]);
-
-    /**
-     * Fetch initial data when the component mounts
-     */
-    useEffect(() => {
-        const fetchInitialData = async () => {
-            try {
-                const departureCountries = await fetchCountries();
-
-                if (!departureCountries) {
-                    toast.error("Error while fetching departureCountries");
-                    return;
-                }
+        fetchCountries()
+            .then((data) => {
                 setOptions((prev) => ({
                     ...prev,
-                    departureCountries,
-                    filteredDestinationCountries: departureCountries,
+                    departureCountries: data,
                 }));
-            } catch (error) {
-                // Handle errors
-                console.error("Error fetching departureCountries:", error);
-                toast.error("Error while fetching departureCountries");
-            }
-        };
-
-        fetchInitialData();
+            })
+            .catch((err) => {
+                console.error('Error fetching departure countries:', err);
+                toast.error('Error fetching departure countries');
+            });
     }, []);
-// get existing simulation data from the backend
+
+    /**
+     * On mount, retrieve the existing simulation and fill states
+     */
     useEffect(() => {
-        const fetchSimulationData = async () => {
+        const fetchSimulation = async () => {
+            setIsLoading(true);
             try {
-                setIsLoading(true);
-                const simulationData = await getSimulation();
-                if (!simulationData) {
+                const simData = await getSimulation();
+                if (!simData) {
+                    toast.error('No simulation to edit. Redirecting...');
                     router.push('/client/simulation');
                     return;
                 }
-              
-                if (isAuthenticated && userId) {
-                    if (!simulationData.userId) {
-                        simulationData.userId = Number(userId) ;
-                        // update simulation with sender connected user id
-                        await updateSimulationUserId(simulationData.id, Number(userId));
-                    }
+
+                // If no user is linked and we are authenticated, link the user ID
+                if (isAuthenticated && userId && !simData.userId) {
+                    await updateSimulationUserId(simData.id, Number(userId));
+                    simData.userId = Number(userId);
                 }
-                setSimulation(simulationData);
+
+                // Store full simulation
+                setSimulation(simData);
+
+                // Populate departure/destination from existing simulation
+                // (Adjust if you store IDs vs. names in your DB)
+                setDeparture({
+                    country: simData.departureCountry || '',
+                    city: simData.departureCity || '',
+                    agencyName: simData.departureAgency || '',
+                });
+                setDestination({
+                    country: simData.destinationCountry || '',
+                    city: simData.destinationCity || '',
+                    agencyName: simData.destinationAgency || '',
+                });
+
+                // Parcels
+                if (simData.parcels && simData.parcels.length > 0) {
+                    setParcels(simData.parcels);
+                }
+
             } catch (error) {
-                console.error("Error fetching simulation data:", error);
-                toast.error("Error while fetching simulation data.");
+                console.error('Error fetching simulation:', error);
+                toast.error('Error fetching simulation. Redirecting...');
                 router.push('/client/simulation');
             }
             setIsLoading(false);
-        }
-        fetchSimulationData();
-    }, [isAuthenticated, router, userId]);
-
-
-    // Fetch simulation data on mount
-    useEffect(() => {
-        const fetchSimulationData = async () => {
-            try {
-
-                if (!simulation) {
-                    toast.error("Simulation not found");
-                    return;
-                }
-                const departureCountries = await fetchCountries();
-
-                const destinationCountries = await fetchDestinationCountries(simulation.departureCountry!);
-                const departureCities = simulation.departureCountry
-                    ? await fetchCities(simulation.departureCountry)
-                    : [];
-                const destinationCities = simulation.destinationCountry
-                    ? await fetchCities(simulation.destinationCountry)
-                    : [];
-                const departureAgencies = simulation.departureCity
-                    ? await fetchAgencies(simulation.departureCity)
-                    : [];
-                const destinationAgencies = simulation.destinationCity
-                    ? await fetchAgencies(simulation.destinationCity)
-                    : [];
-
-
-                setOptions({
-                    departureCountries,
-                    destinationCountries,
-                    departureCities,
-                    destinationCities,
-                    departureAgencies,
-                    destinationAgencies,
-                });
-
-                setDeparture({
-                    country: simulation.departureCountry || '',
-                    city: simulation.departureCity || '',
-                    agencyName: simulation.departureAgency || '',
-                });
-
-                setDestination({
-                    country: destinationCountries.country || simulation.destinationCountry || '',
-                    city: simulation.destinationCity || '',
-                    agencyName: simulation.destinationAgency || '',
-                });
-
-                setParcels(simulation.parcels || []);
-                setIsLoading(false);
-            } catch (error) {
-                console.error(error);
-                toast.error("Error while fetching simulation data.");
-                router.push('/client/simulation');
-            }
         };
 
-        fetchSimulationData();
-    }, [router, simulation]);
+        fetchSimulation();
+    }, [isAuthenticated, userId, router]);
 
+
+    //==================================
+    //   FETCH DEPARTURE COUNTRIES
+    //==================================
+    useEffect(() => {
+        (async () => {
+            try {
+                const data = await fetchCountries();
+                setOptions(prev => ({ ...prev, countries: data }));
+                setIsLoading(false); // when countries are loaded
+            } catch (error) {
+                console.error("Error fetching countries:", error);
+            }
+        })();
+    }, []);
+
+    //==================================
+    //   FETCH DEPARTURE CITIES
+    //==================================
+    useEffect(() => {
+        if (!departure.country) {
+            setOptions(prev => ({ ...prev, departureCities: [] }));
+            setDeparture(prev => ({ ...prev, city: '', agencyName: '' }));
+            return;
+        }
+
+        (async () => {
+            try {
+                const countryId = Number(departure.country);
+                const data = await fetchCities(countryId); // Only cities that actually have an agency
+                setOptions(prev => ({ ...prev, departureCities: data }));
+                // Reset city + agency
+                setDeparture(prev => ({ ...prev, city: '', agencyName: '' }));
+            } catch (error) {
+                console.error("Error fetching departure cities:", error);
+                toast.error("Failed to fetch cities. Please try again.");
+            }
+        })();
+    }, [departure.country]);
+
+    //==================================
+    //   FETCH DEPARTURE AGENCIES
+    //==================================
+    useEffect(() => {
+        if (!departure.city) {
+            setOptions(prev => ({ ...prev, departureAgencies: [] }));
+            setDeparture(prev => ({ ...prev, agencyName: '' }));
+            return;
+        }
+
+        (async () => {
+            try {
+                // cityId from the state
+                const cityObj = options.departureCities.find(c => c.name === departure.city);
+                if (cityObj) {
+                    const data = await fetchAgencies(cityObj.id);
+                    setOptions(prev => ({ ...prev, departureAgencies: data }));
+                    setDeparture(prev => ({ ...prev, agencyName: '' }));
+                }
+            } catch (error) {
+                console.error("Error fetching departure agencies:", error);
+                toast.error("Failed to fetch agencies. Please try again.");
+            }
+        })();
+    }, [departure.city, options.departureCities]);
+
+    //==================================
+    //   FETCH DESTINATION COUNTRIES
+    //   => only after user picks a departure
+    //==================================
+    useEffect(() => {
+        if (!departure.agencyName) {
+            // We haven't chosen a valid departure agency yet => clear it
+            setOptions(prev => ({ ...prev, destinationCountries: [] }));
+            setDestination({ country: '', city: '', agencyName: '' });
+            return;
+        }
+
+        // If the user has fully chosen a valid departure agency,
+        // we fetch all possible other countries that have agencies
+        (async () => {
+            try {
+                const data = await fetchDestinationCountries(departure.country);
+                setOptions(prev => ({ ...prev, destinationCountries: data }));
+                // reset destination
+                setDestination({ country: '', city: '', agencyName: '' });
+            } catch (error) {
+                console.error("Error fetching destination countries:", error);
+            }
+        })();
+    }, [departure.agencyName, departure.country]);
+
+    //==================================
+    //   FETCH DESTINATION CITIES
+    //==================================
+    useEffect(() => {
+        if (!destination.country) {
+            setOptions(prev => ({ ...prev, destinationCities: [] }));
+            setDestination(prev => ({ ...prev, city: '', agencyName: '' }));
+            return;
+        }
+
+        (async () => {
+            try {
+                const countryId = Number(destination.country);
+                const data = await fetchCities(countryId); // Only cities with agencies
+                setOptions(prev => ({ ...prev, destinationCities: data }));
+                setDestination(prev => ({ ...prev, city: '', agencyName: '' }));
+            } catch (error) {
+                console.error("Error fetching destination cities:", error);
+            }
+        })();
+    }, [destination.country]);
+
+    //==================================
+    //   FETCH DESTINATION AGENCIES
+    //==================================
+    useEffect(() => {
+        if (!destination.city) {
+            setOptions(prev => ({ ...prev, destinationAgencies: [] }));
+            setDestination(prev => ({ ...prev, agencyName: '' }));
+            return;
+        }
+
+        (async () => {
+            try {
+                const cityObj = options.destinationCities.find(c => c.name === destination.city);
+                if (cityObj) {
+                    const data = await fetchAgencies(cityObj.id);
+                    setOptions(prev => ({ ...prev, destinationAgencies: data }));
+                    setDestination(prev => ({ ...prev, agencyName: '' }));
+                }
+            } catch (error) {
+                console.error("Error fetching destination agencies:", error);
+                toast.error("Failed to fetch destination agencies. Please try again.");
+            }
+        })();
+    }, [destination.city, options.destinationCities]);
+
+    /**
+     * Handlers for departure/destination changes
+     */
     const handleDepartureChange = (field: keyof typeof departure, value: string) => {
-        setDeparture(prev => ({...prev, [field]: value}));
+        setDeparture((prev) => ({ ...prev, [field]: value }));
+    };
+    const handleDestinationChange = (
+        field: keyof typeof destination,
+        value: string
+    ) => {
+        setDestination((prev) => ({ ...prev, [field]: value }));
     };
 
-    const handleDestinationChange = (field: keyof typeof destination, value: string) => {
-        setDestination(prev => ({...prev, [field]: value}));
+    /**
+     * Add a new parcel
+     */
+    const handleAddParcel = () => {
+        setParcels((prev) => [
+            ...prev,
+            { height: 0, width: 0, length: 0, weight: 0 },
+        ]);
     };
 
-    const handleParcelEdit = (index: number) => {
+    /**
+     * Remove a parcel
+     */
+    const handleRemoveParcel = (index: number) => {
+        if (parcels.length <= 1) {
+            toast.error('You must have at least one parcel');
+            return;
+        }
+        setParcels(parcels.filter((_, i) => i !== index));
+        toast.success('Parcel removed successfully');
+    };
+
+    /**
+     * Start editing a parcel
+     */
+    const handleEditParcel = (index: number) => {
         setEditingParcel({
             index,
-            parcel: {...parcels[index]}
+            parcel: { ...parcels[index] },
         });
     };
 
-    const handleParcelRemove = (index: number) => {
-        // Prevent removing the last parcel
-        if (parcels.length > 1) {
-            setParcels(parcels.filter((_, i) => i !== index));
-            toast.success("Parcel removed successfully");
-        } else {
-            toast.error("You must have at least one parcel");
-        }
-    };
-
+    /**
+     * Save changes to the currently editing parcel
+     */
     const handleParcelUpdate = () => {
-        if (editingParcel) {
-            const parcelsArraySchema = z.array(parcelsSchema);
+        if (!editingParcel) return;
+        const updatedParcels = [...parcels];
+        updatedParcels[editingParcel.index] = editingParcel.parcel;
 
-            const updatedParcels = [...parcels];
-            updatedParcels[editingParcel.index] = editingParcel.parcel;
-
-            // validate data with zod schema
-            const validated = parcelsArraySchema.safeParse(updatedParcels);
-
-            if (!validated.success) {
-                toast.error(validated.error.errors[0].message);
-                return;
-            }
-
-            setParcels(updatedParcels);
-            setEditingParcel(null);
-            toast.success("Parcels updated successfully");
+        // Optional: if you want to validate with zod
+        const parcelsArraySchema = z.array(parcelsSchema);
+        const validated = parcelsArraySchema.safeParse(updatedParcels);
+        if (!validated.success) {
+            toast.error(validated.error.errors[0].message);
+            return;
         }
+
+        setParcels(updatedParcels);
+        setEditingParcel(null);
+        toast.success('Parcel updated successfully');
     };
 
-    const handleSubmit = async (e: ChangeEvent<HTMLFormElement>) => {
+    /**
+     * Submit the edited simulation
+     */
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
-        console.log("log ====> handleSubmit function called in path: src/components/forms/SimulationForms/SimulationEditForm.tsx with simulationData: ", simulation);
+        if (!simulation) {
+            toast.error('No simulation found to update.');
+            return;
+        }
+        setIsLoading(true);
 
         startTransition(() => {
             (async () => {
-
-                setIsLoading(true);
-                if (!simulation) {
-                    toast.error("Simulation not found");
-                    return;
-                }
-
-                const simulationData: PartielUpdateSimulationDto = {
-                    id: simulation.id,
-                    userId: simulation.userId,
-                    destinataireId: simulation.destinataireId,
-                    departureCountry: departure.country,
-                    departureCity: departure.city,
-                    departureAgency: departure.agencyName,
-                    destinationCountry: destination.country,
-                    destinationCity: destination.city,
-                    destinationAgency: destination.agencyName,
-                    parcels: parcels,
-                    simulationStatus: simulation.simulationStatus,
-                    envoiStatus: simulation.envoiStatus
-                };
-                console.log("log ====> simulationData in handleSubmit function before calling submitSimulation function: ", simulationData);
-
-                // validate data with zod schema
-                // const validated = simulationEnvoisSchema.safeParse(simulationData);
-                //
-                // if (!validated.success) {
-                //     console.log("log ====> validated.error.errors in handleSubmit function after calling submitSimulation function: ", validated.error.errors);
-                //
-                //     toast.error(validated.error.errors[0].message);
-                //     return;
-                // }
-                //
-                // console.log("log ====> validated.data in handleSubmit function after calling submitSimulation function: ", validated.data);
-
                 try {
-                    // Submit simulation to the backend
+                    const simulationData: PartielUpdateSimulationDto = {
+                        id: simulation.id,
+                        userId: simulation.userId,
+                        destinataireId: simulation.destinataireId,
+                        departureCountry: departure.country,
+                        departureCity: departure.city,
+                        departureAgency: departure.agencyName,
+                        destinationCountry: destination.country,
+                        destinationCity: destination.city,
+                        destinationAgency: destination.agencyName,
+                        parcels: parcels,
+                        simulationStatus: simulation.simulationStatus,
+                        envoiStatus: simulation.envoiStatus,
+                    };
+
+                    // (Optional) Validate with zod if you have a schema
+
+                    // Actually call the update service
                     const response = await updateSimulationEdited(simulationData);
                     if (!response) {
-                        toast.error("An error occurred while submitting the simulation.");
+                        toast.error('Error while updating simulation.');
+                        setIsLoading(false);
                         return;
                     }
 
-                    toast.success("Simulation submitted successfully!");
-                    setTimeout(() => {
-                        router.push(`/client/simulation/results`);
-                    }, 3000);
-
+                    toast.success('Simulation updated successfully!');
+                    router.push('/client/simulation/results');
                 } catch (error) {
-                    console.error("Error submitting simulation:", error);
-                    toast.error("An error occurred while submitting the simulation.");
-                    return;
+                    console.error('Error updating simulation:', error);
+                    toast.error('An error occurred while updating the simulation.');
+                } finally {
+                    setIsLoading(false);
                 }
-                setIsLoading(false);
             })();
         });
     };
 
+    /**
+     * Render the Parcel-Edit modal if editingParcel is set
+     */
     const renderParcelEditDialog = () => {
         if (!editingParcel) return null;
-
         return (
-            <Dialog open={!!editingParcel} onOpenChange={() => setEditingParcel(null)}>
+            <Dialog
+                open={!!editingParcel}
+                onOpenChange={() => setEditingParcel(null)}
+            >
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>Modifier le colis</DialogTitle>
@@ -375,60 +480,106 @@ const SimulationEditForm = () => {
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
                         <div className="grid grid-cols-4 items-center gap-4">
-                            <label htmlFor="height" className="text-right">Hauteur (cm)</label>
+                            <label htmlFor="height" className="text-right">
+                                Hauteur (cm)
+                            </label>
                             <Input
                                 id="height"
                                 type="number"
                                 value={editingParcel.parcel.height}
-                                onChange={(e) => setEditingParcel(prev => prev ? {
-                                    ...prev,
-                                    parcel: {...prev.parcel, height: Number(e.target.value)}
-                                } : null)}
+                                onChange={(e) =>
+                                    setEditingParcel((prev) =>
+                                        prev
+                                            ? {
+                                                ...prev,
+                                                parcel: {
+                                                    ...prev.parcel,
+                                                    height: Number(e.target.value),
+                                                },
+                                            }
+                                            : null
+                                    )
+                                }
                                 className="col-span-3"
                             />
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
-                            <label htmlFor="width" className="text-right">Largeur (cm)</label>
+                            <label htmlFor="width" className="text-right">
+                                Largeur (cm)
+                            </label>
                             <Input
                                 id="width"
                                 type="number"
                                 value={editingParcel.parcel.width}
-                                onChange={(e) => setEditingParcel(prev => prev ? {
-                                    ...prev,
-                                    parcel: {...prev.parcel, width: Number(e.target.value)}
-                                } : null)}
+                                onChange={(e) =>
+                                    setEditingParcel((prev) =>
+                                        prev
+                                            ? {
+                                                ...prev,
+                                                parcel: {
+                                                    ...prev.parcel,
+                                                    width: Number(e.target.value),
+                                                },
+                                            }
+                                            : null
+                                    )
+                                }
                                 className="col-span-3"
                             />
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
-                            <label htmlFor="length" className="text-right">Longueur (cm)</label>
+                            <label htmlFor="length" className="text-right">
+                                Longueur (cm)
+                            </label>
                             <Input
                                 id="length"
                                 type="number"
                                 value={editingParcel.parcel.length}
-                                onChange={(e) => setEditingParcel(prev => prev ? {
-                                    ...prev,
-                                    parcel: {...prev.parcel, length: Number(e.target.value)}
-                                } : null)}
+                                onChange={(e) =>
+                                    setEditingParcel((prev) =>
+                                        prev
+                                            ? {
+                                                ...prev,
+                                                parcel: {
+                                                    ...prev.parcel,
+                                                    length: Number(e.target.value),
+                                                },
+                                            }
+                                            : null
+                                    )
+                                }
                                 className="col-span-3"
                             />
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
-                            <label htmlFor="weight" className="text-right">Poids (kg)</label>
+                            <label htmlFor="weight" className="text-right">
+                                Poids (kg)
+                            </label>
                             <Input
                                 id="weight"
                                 type="number"
                                 value={editingParcel.parcel.weight}
-                                onChange={(e) => setEditingParcel(prev => prev ? {
-                                    ...prev,
-                                    parcel: {...prev.parcel, weight: Number(e.target.value)}
-                                } : null)}
+                                onChange={(e) =>
+                                    setEditingParcel((prev) =>
+                                        prev
+                                            ? {
+                                                ...prev,
+                                                parcel: {
+                                                    ...prev.parcel,
+                                                    weight: Number(e.target.value),
+                                                },
+                                            }
+                                            : null
+                                    )
+                                }
                                 className="col-span-3"
                             />
                         </div>
                     </div>
                     <div className="flex justify-end gap-2">
-                        <Button variant="outline" onClick={() => setEditingParcel(null)}>Annuler</Button>
+                        <Button variant="outline" onClick={() => setEditingParcel(null)}>
+                            Annuler
+                        </Button>
                         <Button onClick={handleParcelUpdate}>Enregistrer</Button>
                     </div>
                 </DialogContent>
@@ -436,49 +587,56 @@ const SimulationEditForm = () => {
         );
     };
 
+    /**
+     * If loading, show a spinner or skeleton
+     */
     if (isLoading) {
         return (
             <motion.div
-                initial={{opacity: 0}}
-                animate={{opacity: 1}}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
                 className="flex items-center justify-center min-h-screen"
             >
                 <motion.div
-                    animate={{rotate: 360}}
-                    transition={{repeat: Infinity, duration: 1, ease: 'linear'}}
+                    animate={{ rotate: 360 }}
+                    transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
                     className="rounded-full h-16 w-16 border-4 border-transparent border-b-blue-500"
                 />
             </motion.div>
         );
     }
 
-
+    /**
+     * Render
+     */
     return (
         <motion.div
-            initial={{opacity: 0, y: 20}}
-            animate={{opacity: 1, y: 0}}
-            transition={{delay: 0.2}}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
             className="p-6 bg-white rounded-md shadow-md"
         >
             <motion.h2
-                initial={{opacity: 0, y: -20}}
-                animate={{opacity: 1, y: 0}}
-                transition={{delay: 0.1}}
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
                 className="text-center text-3xl font-bold text-blue-600"
             >
                 Modifier la Simulation
             </motion.h2>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Departure Section */}
+                {/* Departure */}
                 <div className="p-6 bg-white rounded-md shadow-md">
                     <h3 className="text-lg font-semibold text-blue-700 mb-4 flex items-center gap-2">
-                        <MapPin className="text-blue-500"/> Informations de Départ
+                        <MapPin className="text-blue-500" />
+                        Informations de Départ
                     </h3>
                     <CountrySelect
                         label="Pays de départ"
                         value={departure.country}
                         onChange={(e) => handleDepartureChange('country', e.target.value)}
+                        // We pass in the entire array of departureCountries from state
                         countries={options.departureCountries}
                         disabled={isPending}
                         placeholder="Sélectionnez un pays de départ"
@@ -499,75 +657,79 @@ const SimulationEditForm = () => {
                     />
                 </div>
 
-                {/* Destination Section */}
+                {/* Destination */}
                 <div className="p-6 bg-white rounded-md shadow-md">
                     <h3 className="text-lg font-semibold text-blue-700 mb-4 flex items-center gap-2">
-                        <Truck className="text-blue-500"/> Informations de Destination
+                        <Truck className="text-blue-500" />
+                        Informations de Destination
                     </h3>
-
                     <CountrySelect
                         label="Pays de destination"
                         value={destination.country}
-                        onChange={(e) => handleDestinationChange('country', e.target.value)}
+                        onChange={(e) =>
+                            handleDestinationChange('country', e.target.value)
+                        }
                         countries={options.destinationCountries}
-                        disabled={isPending}
-                        placeholder="Sélectionnez un pays de destination avant de continuer"
+                        disabled={!departure.agencyName || isPending}
+                        placeholder="Sélectionnez d’abord un pays de départ"
                     />
                     <CitySelect
                         label="Ville de destination"
                         value={destination.city}
-                        onChange={(e) => handleDestinationChange('city', e.target.value)}
+                        onChange={(e) =>
+                            handleDestinationChange('city', e.target.value)
+                        }
                         cities={options.destinationCities}
                         disabled={!destination.country}
                     />
                     <AgencySelect
                         label="Agence d'arrivée"
                         value={destination.agencyName}
-                        onChange={(e) => handleDestinationChange('agencyName', e.target.value)}
+                        onChange={(e) =>
+                            handleDestinationChange('agencyName', e.target.value)
+                        }
                         agencies={options.destinationAgencies}
                         disabled={!destination.city || isPending}
                     />
                 </div>
 
-                {/* Parcels Section */}
+                {/* Parcels */}
                 <Card>
                     <CardHeader className="flex items-center justify-between">
-                        <CardTitle>
-                            <Package className="h-5 w-5 text-blue-500"/> Colis
+                        <CardTitle className="flex items-center gap-2">
+                            <Package className="text-blue-500" />
+                            Colis
                         </CardTitle>
-                        <Button
-                            type="button"
-                            onClick={() => setParcels([
-                                ...parcels,
-                                {height: 0, width: 0, length: 0, weight: 0}
-                            ])}
-                        >
-                            <PlusCircle className="h-4 w-4 mr-2"/> Ajouter un Colis
+                        <Button type="button" onClick={handleAddParcel}>
+                            <PlusCircle className="h-4 w-4 mr-2" />
+                            Ajouter un Colis
                         </Button>
                     </CardHeader>
                     <CardContent>
-                        <CardBody className="grid md:grid-cols-2 gap-4">
+                        <div className="grid md:grid-cols-2 gap-4">
                             {parcels.map((parcel, index) => (
                                 <div
                                     key={index}
                                     className="relative p-4 bg-white border border-gray-200 rounded-md shadow-sm"
                                 >
+                                    {/* Edit / Remove buttons */}
                                     <div className="absolute top-2 right-2 flex gap-2">
                                         <Button
                                             type="button"
                                             className="p-1 bg-blue-500 text-white rounded-full"
-                                            onClick={() => handleParcelEdit(index)}
+                                            onClick={() => handleEditParcel(index)}
                                         >
-                                            <Edit className="h-4 w-4"/>
+                                            <Edit className="h-4 w-4" />
                                         </Button>
                                         <Button
                                             type="button"
                                             className="p-1 bg-red-500 text-white rounded-full"
-                                            onClick={() => handleParcelRemove(index)}
+                                            onClick={() => handleRemoveParcel(index)}
                                         >
-                                            <Trash2 className="h-4 w-4"/>
+                                            <Trash2 className="h-4 w-4" />
                                         </Button>
                                     </div>
+
                                     <p className="text-sm font-medium">Colis {index + 1}</p>
                                     <p>Hauteur: {parcel.height} cm</p>
                                     <p>Largeur: {parcel.width} cm</p>
@@ -575,25 +737,29 @@ const SimulationEditForm = () => {
                                     <p>Poids: {parcel.weight} kg</p>
                                 </div>
                             ))}
-                        </CardBody>
+                        </div>
                     </CardContent>
                 </Card>
 
-                <div className="flex justify-end gap-4">
-                    <Button type="submit" variant="default">
-                        Enregistrer
-                    </Button>
-                    <Button
-                        type="button"
-                        variant="destructive"
-                        onClick={() => router.back()}
-                    >
-                        Annuler
+                {/* Submit */}
+                <div className="text-center">
+                    <Button type="submit" disabled={isPending} className="flex items-center gap-2">
+                        {isPending ? (
+                            <>
+                                <Calculator className="h-4 w-4" />
+                                Mise à jour...
+                            </>
+                        ) : (
+                            <>
+                                <ArrowRight className="h-4 w-4" />
+                                Mettre à jour la simulation
+                            </>
+                        )}
                     </Button>
                 </div>
             </form>
 
-            {/* Render the Parcel Edit Dialog */}
+            {/* Parcel edit modal */}
             {renderParcelEditDialog()}
 
             <ToastContainer

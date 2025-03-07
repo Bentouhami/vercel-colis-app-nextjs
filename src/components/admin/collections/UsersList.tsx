@@ -1,6 +1,6 @@
 // path: src/components/lists/UsersList.tsx
 
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {useRouter} from 'next/navigation';
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {Button} from "@/components/ui/button";
@@ -18,7 +18,7 @@ import {ListSkeleton} from "@/components/skeletons/ListSkeleton";
 import axios from "axios";
 import {format} from 'date-fns';
 import {DOMAIN, API_DOMAIN} from "@/utils/constants";
-import {Roles} from "@/services/dtos";
+import {RoleDto} from "@/services/dtos";
 
 type User = {
     id?: string;
@@ -51,10 +51,10 @@ type SortConfig = {
 };
 
 interface UsersListProps {
-    roles?: Roles[];
+    role?: string;
 }
 
-export default function UsersList({roles}: UsersListProps) {
+export default function UsersList({role}: UsersListProps) {
     const [users, setUsers] = useState<User[]>([]);
     const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -72,7 +72,7 @@ export default function UsersList({roles}: UsersListProps) {
         firstName: '',
         lastName: '',
         name: '',
-        roles: '',
+        role: '',
         email: '',
         phone: '',
         isEnterprise: '',
@@ -103,50 +103,38 @@ export default function UsersList({roles}: UsersListProps) {
         lastLogin: false,
         createdAt: false,
     });
-
-    // Fetch users from the API
-    const fetchUsers = async () => {
-        if (!roles) {
-            console.warn('Role is undefined, skipping fetchUsers');
-            return;
-        }
-
+// Fetch users from the API using useCallback
+    const fetchUsers = useCallback(async () => {
+        if (!role) return;
         setLoading(true);
         setError(null);
 
         try {
-
-            const response = await axios.get(`${API_DOMAIN}/users/role/${roles}`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
+            const response = await axios.get(`${API_DOMAIN}/users/role/${role}`);
             if (response.status === 200) {
-                const data = response.data;
-                setUsers(data);
-                setFilteredUsers(data);
-            } else {
-                throw new Error('Failed to fetch users');
-            }
+                setUsers(response.data);
+                setFilteredUsers(response.data);
+            } else throw new Error('Failed to fetch users');
         } catch (error) {
-            console.error('Error fetching users:', error);
             setError('Failed to fetch users. Please try again later.');
             toast.error('Failed to fetch users');
         } finally {
             setLoading(false);
         }
-    };
+    }, [role]);
 
-    // Apply filters to the users list
-    const applyFilters = (users: User[]) => {
+    useEffect(() => {
+        fetchUsers();
+    }, [fetchUsers]);
+
+    const applyFilters = useCallback((users: User[]) => {
         return users.filter((user) => {
             return (
                 (!filters.userNumber || user.userNumber?.includes(filters.userNumber)) &&
                 (!filters.firstName || user.firstName?.toLowerCase().includes(filters.firstName.toLowerCase())) &&
                 (!filters.lastName || user.lastName?.toLowerCase().includes(filters.lastName.toLowerCase())) &&
                 (!filters.name || user.name?.toLowerCase().includes(filters.name.toLowerCase())) &&
-                (!filters.roles || user.role?.toLowerCase().includes(filters.roles.toLowerCase())) &&
+                (!filters.role || user.role?.toLowerCase().includes(filters.role.toLowerCase())) &&
                 (!filters.email || user.email?.toLowerCase().includes(filters.email.toLowerCase())) &&
                 (!filters.phone || user.phone?.includes(filters.phone)) &&
                 (!filters.isEnterprise || user.isEnterprise?.toString() === filters.isEnterprise) &&
@@ -158,11 +146,13 @@ export default function UsersList({roles}: UsersListProps) {
                 (!filters.vatNumber || user.vatNumber?.includes(filters.vatNumber))
             );
         });
-    };
+    }, [filters]);
 
     useEffect(() => {
-        setFilteredUsers(applyFilters(users));
-    }, [users, filters, applyFilters]);
+        const filtered = applyFilters(users);
+        setFilteredUsers(filtered);
+        setCurrentPage(1);
+    }, [searchTerm, users, selectedRole, applyFilters]);
 
     // Handle filter changes
     const handleFilterChange = (key: string, value: string) => {
@@ -198,7 +188,7 @@ export default function UsersList({roles}: UsersListProps) {
 
     // Handle edit action
     const handleEdit = (userId: string) => {
-        router.push(`${DOMAIN}/dashboard/users/${userId}/edit`);
+        router.push(`${DOMAIN}/admin/users/${userId}/edit`);
     };
 
     // Handle delete action
@@ -231,7 +221,7 @@ export default function UsersList({roles}: UsersListProps) {
     // Fetch users on component mount
     useEffect(() => {
         fetchUsers();
-    }, [roles]);
+    }, [fetchUsers, role]);
 
     // Apply filters and search term whenever filters or search term change
     useEffect(() => {

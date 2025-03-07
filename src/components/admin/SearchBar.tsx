@@ -1,4 +1,4 @@
-// path: src/components/SearchBar.tsx
+// path: src/components/admin/SearchBar.tsx
 'use client'
 
 import React, { useState } from 'react'

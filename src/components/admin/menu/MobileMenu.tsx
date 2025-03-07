@@ -41,7 +41,7 @@ export function MobileMenu({ onClose }: MobileMenuProps) {
                         Se Connecter
                     </Button>
                     <Button className="w-full" onClick={onClose}>
-                        S'Inscrire
+                        S&#39;Inscrire
                     </Button>
                 </div>
             </div>

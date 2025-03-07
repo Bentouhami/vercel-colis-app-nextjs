@@ -38,8 +38,8 @@ export function setSimulationResponseCookie(simulationResponseData: CreatedSimul
         {
             httpOnly: true,  // cookie non accessible par le client
             secure: process.env.NODE_ENV === "production",  // cookie uniquement en HTTP pour le développement ou en HTTPS pour la production
-            sameSite: 'strict', // pour les sous domaines (ex: www.example.com)
+            sameSite: 'lax', // pour les sous domaines (ex: www.example.com)
             path: '/',  // cookie utilisé uniquement sur le domaine courant
-            maxAge: 60 * 60 * 2 // 2 heures en secondes
+            maxAge: 60 * 60 * 2, // 2 heures en secondes
         });
 }

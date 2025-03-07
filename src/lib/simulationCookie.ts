@@ -25,3 +25,4 @@ export async function getSimulationFromCookie() : Promise<CreatedSimulationRespo
         return null;
     }
 }
+

@@ -1,4 +1,4 @@
-// src/utils/dateUtils.ts
+// path: src/utils/dateUtils.ts
 import { parseISO, format, startOfWeek, endOfWeek, addWeeks } from 'date-fns';
 
 export const formatDateRange = (start: Date, end: Date): string => {

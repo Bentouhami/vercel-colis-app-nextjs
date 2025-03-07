@@ -1,7 +1,7 @@
 // path: src/services/dtos/agencies/AgencyDto.ts
 
 // -------------------- Agency DTOs --------------------
-import {AddressDto, AddressResponseDto, UpdateAddressDto} from "@/services/dtos/addresses/AddressDto";
+import {AddressDto, AgencyAddressDto, UpdateAddressDto} from "@/services/dtos/addresses/AddressDto";
 
 export interface AgencyDto {
     id?: number;
@@ -11,6 +11,8 @@ export interface AgencyDto {
     address?: AddressDto;
     capacity: number;
     availableSlots: number;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 // DTO for creating a new agency
@@ -38,8 +40,8 @@ export interface AgencyResponseDto {
     id: number;
     name: string;
     location: string | null;
-    address: AddressResponseDto;
-    capacity: number;
-    availableSlots: number;
+    address: AgencyAddressDto;
+    capacity: number | null;
+    availableSlots: number | null;
 }
 

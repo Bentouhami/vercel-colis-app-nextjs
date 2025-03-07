@@ -1,29 +1,33 @@
-import {Form} from 'react-bootstrap';
-import {ChangeEvent, useMemo} from 'react';
+import React, { ChangeEvent } from "react";
+import { Label } from "@/components/ui/label";
 
 interface AgencySelectProps {
     label: string;
     value: string;
     onChange: (e: ChangeEvent<HTMLSelectElement>) => void;
-    agencies: { id: string; name: string }[];
-    disabled?: boolean; // Optional prop to disable the select input
+    agencies: { id: number; name: string }[];
+    disabled?: boolean;
 }
 
-const AgencySelect = ({label, value, onChange, agencies, disabled = false}: AgencySelectProps) => {
-    // Dynamically setting placeholder text
-    const placeholder = useMemo(() => disabled ? "Sélection non disponible" : "Sélectionner une agence", [disabled]);
-
+const AgencySelect = ({ label, value, onChange, agencies, disabled = false }: AgencySelectProps) => {
     return (
-        <Form.Group className="mb-4">
-            <Form.Label className="text-gray-700 font-semibold">{label}</Form.Label>
-            <Form.Select
+        <div className="mb-4">
+            <Label className="text-gray-700 font-semibold">{label}</Label>
+            <select
                 value={value}
                 onChange={onChange}
                 disabled={disabled}
-                aria-label={label} // for accessibility
-                className="border-2 border-gray-300 rounded-lg focus:border-blue-600 transition duration-200 ease-in-out"
+                className="
+                  mt-1 w-full
+                  border-2 border-gray-300
+                  rounded-lg
+                  p-2
+                  focus:outline-none
+                  focus:border-blue-600
+                  transition duration-200
+                "
             >
-                <option value="">{placeholder}</option>
+                <option value="">{disabled ? "Sélection non disponible" : "Sélectionner une agence"}</option>
                 {agencies.length > 0 ? (
                     agencies.map((agency) => (
                         <option key={agency.id} value={agency.name}>
@@ -33,8 +37,8 @@ const AgencySelect = ({label, value, onChange, agencies, disabled = false}: Agen
                 ) : (
                     <option disabled>Aucune agence disponible</option>
                 )}
-            </Form.Select>
-        </Form.Group>
+            </select>
+        </div>
     );
 };
 

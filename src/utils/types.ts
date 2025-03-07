@@ -1,19 +1,4 @@
 // path: src/utils/types.ts
-// import { DefaultSession } from "next-auth";
-// declare module "next-auth" {
-//     interface Session {
-//         user: {
-//             id: string; // S'assurer que ce type est cohérent
-//             roles: string[];
-//         } & DefaultSession["user"];
-//     }
-//
-//     interface User {
-//         id: string; // Synchroniser ici également
-//         roles: string[];
-//     }
-// }
-
 export type JWTPayload = {
     id: number;
     firstName: string;
@@ -22,7 +7,7 @@ export type JWTPayload = {
     userEmail: string;
     phoneNumber: string;
     image?: string | null;
-    roles: string[];
+    role: string;
 };
 
 export type Country = {
@@ -52,19 +37,3 @@ export type VerificationDataType = {
     verificationToken: string;
     verificationTokenExpires: Date;
 }
-
-
-// export interface SimulationResults {
-//     departureCountry: string;
-//     departureCity: string;
-//     departureAgency: string;
-//     destinationCountry: string;
-//     destinationCity: string;
-//     destinationAgency: string;
-//     packages: CreateParcelDto[];
-//     totalWeight: number;
-//     totalVolume: number;
-//     totalPrice: number;
-//     departureDate: string;
-//     arrivalDate: string;
-// }

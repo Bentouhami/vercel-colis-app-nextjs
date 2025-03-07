@@ -46,16 +46,3 @@ export async function updateTransport(transport: UpdateTransportRequestDto): Pro
         throw error;
     }
 }
-
-export async function getUserProfileById(userId: number) : Promise<ProfileDto | null> {
-    try {
-        const response = await transportRepository.getUserProfileById(userId);
-        if (!response) {
-            return null;
-        }
-        return response;
-    } catch (error) {
-        console.error("Error getting user profile:", error);
-        throw error;
-    }
-}

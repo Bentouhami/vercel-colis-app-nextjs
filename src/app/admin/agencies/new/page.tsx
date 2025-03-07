@@ -1,12 +1,13 @@
 // path: src/app/dashboard/invoices/new/page.tsx
-export const dynamic = 'force-dynamic'
-import InvoiceForm from '@/components/dashboard/forms/InvoiceForm'
+import AgencyForm from "@/components/forms/admins/AgencyForm";
 
-export default function NewInvoicePage() {
+export const dynamic = 'force-dynamic'
+
+export default function AgencyNewPage() {
     return (
         <div className="container mx-auto py-10">
-            <h1 className="text-2xl font-bold mb-5">Create New Invoice</h1>
-            <InvoiceForm />
+            <h1 className="text-2xl font-bold mb-5">Ajouter un agence</h1>
+            <AgencyForm />
         </div>
     )
 }

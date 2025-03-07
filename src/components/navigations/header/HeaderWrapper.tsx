@@ -3,33 +3,20 @@
 
 import {useSession} from "next-auth/react";
 import HeaderNavbar from "@/components/navigations/header/HeaderNavbar";
-import {Roles} from "@/services/dtos/enums/EnumsDto";
+import {RoleDto} from "@/services/dtos/enums/EnumsDto";
 
 const HeaderWrapper = () => {
     const {data: session, status} = useSession();
 
-    // Extract user details from the session
-    const isLoggedIn = status === "authenticated";
-    const isSuperAdmin = session?.user?.roles?.includes(Roles.SUPER_ADMIN) || false;
-    const isAgencyAdmin = session?.user?.roles?.includes(Roles.AGENCY_ADMIN) || false;
-    const email = session?.user?.email || null;
-    // console.log("session in HeaderWrapper.tsx: ", session);
-
-    const firstName = session?.user?.firstName || "";
-    const lastName = session?.user?.lastName || "";
-    const name = session?.user?.name || "";
-    const image = session?.user?.image || "https://placehold.co/400.png";
-
     return (
         <HeaderNavbar
-            isLoggedIn={isLoggedIn}
-            isSuperAdmin={isSuperAdmin}
-            isAgencyAdmin={isAgencyAdmin}
-            firstName={firstName}
-            lastName={lastName}
-            name={name}
-            email={email}
-            image={image}
+            role={session?.user?.role}
+            isLoggedIn={status === "authenticated"}
+            firstName={session?.user?.firstName || ""}
+            lastName={session?.user?.lastName || ""}
+            name={session?.user?.name || ""}
+            email={session?.user?.email || ""}
+            image={session?.user?.image || "https://placehold.co/400.png"}
         />
     );
 };
