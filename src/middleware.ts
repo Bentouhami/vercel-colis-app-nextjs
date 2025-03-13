@@ -10,6 +10,14 @@ import {RoleDto} from "@/services/dtos";
 export async function middleware(req: NextRequest) {
     const origin = req.headers.get("origin") || "";
     const corsHeaders = setCorsHeaders(origin);
+    console.log("Middleware Debug -> Request cookies:", req.cookies);
+    console.log("Middleware Debug -> Auth header:", req.headers.get("authorization"));
+
+    const token = req.cookies.get('next-auth.session-token') ||
+        req.cookies.get('__Secure-next-auth.session-token'); // This one is used in production with HTTPS
+
+
+    console.log("Middleware Debug -> Cookie token found:", !!token);
 
 
     // Handle OPTIONS requests (CORS preflight)
