@@ -32,7 +32,6 @@ export async function isCountryAlreadyExist(countryName: string): Promise<Countr
 }
 
 export async function getAllCountries(): Promise<CountryDto[] | null> {
-    console.log("getAllCountries function called in path: src/services/backend-services/Bk_CountryService.ts");
     try {
 
         const countries = await prisma.country.findMany({
@@ -48,7 +47,6 @@ export async function getAllCountries(): Promise<CountryDto[] | null> {
                 longitude: true
             }
         });
-        console.log("countries:", countries);
 
         return countries || [];
     } catch (error) {

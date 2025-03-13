@@ -67,6 +67,7 @@ interface DestinataireDto {
 export interface EnvoiResponseDto {
     id: number;
     destinataire: DestinataireDto;
+    client: UserDto;
     trackingNumber: string;
     qrCodeUrl: string;
     arrivalAgencyId: number;

@@ -13,10 +13,6 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ error: "Missing parameters" }, { status: 400 });
     }
 
-    console.log("log ====> countryParam in findAgency route after getting from path: src/app/api/v1/agencies/findAgency/route.ts is : ", countryParam);
-    console.log("log ====> cityParam in findAgency route after getting from path: src/app/api/v1/agencies/findAgency/route.ts is : ", cityParam);
-    console.log("log ====> agencyName in findAgency route after getting from path: src/app/api/v1/agencies/findAgency/route.ts is : ", agencyName);
-
     const countryId = Number(countryParam);
     if (isNaN(countryId)) {
         return NextResponse.json({ error: "Invalid country id" }, { status: 400 });

@@ -1,7 +1,7 @@
 // path: src/services/frontend-services/transport/TransportService.ts
 
 import {CreateTransportRequestDto, TransportResponseDto, UpdateTransportRequestDto} from "@/services/dtos";
-import {DOMAIN} from "@/utils/constants";
+import {API_DOMAIN, DOMAIN} from "@/utils/constants";
 import axios from "axios";
 
 
@@ -12,16 +12,13 @@ import axios from "axios";
  */
 export async function getTransports(): Promise<TransportResponseDto[] | null> {
 
-    console.log("log ====> getTransports function called in src/services/frontend-services/transport/TransportService.ts");
 
     try {
         // using axios to make the request
         const response = await axios.get(`${DOMAIN}/api/v1/transports`);
         if (!response.data) {
-            console.log("log ====> response not found in getTransports function");
             return null
         }
-        console.log("log ====> response found in getTransports function after getting transports in path: src/services/frontend-services/transport/TransportService.ts is : ", response.data);
         return response.data.data;
     } catch (error) {
         throw error;
@@ -35,7 +32,7 @@ export async function getTransports(): Promise<TransportResponseDto[] | null> {
  */
 export async function getTransportById(transportId: number): Promise<TransportResponseDto> {
     try {
-        const response = await fetch(`${DOMAIN}/api/v1/transports/${transportId}`, {
+        const response = await fetch(`${API_DOMAIN}/transports/${transportId}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -65,7 +62,7 @@ export async function getTransportById(transportId: number): Promise<TransportRe
  */
 export async function createTransport(transport: CreateTransportRequestDto): Promise<TransportResponseDto> {
     try {
-        const response = await fetch(`${DOMAIN}/api/v1/transports`, {
+        const response = await fetch(`${API_DOMAIN}/transports`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -99,19 +96,15 @@ export async function updateTransport(transport: UpdateTransportRequestDto): Pro
     if (!transport) {
         throw new Error("Invalid transport data");
     }
-    console.log("log ====> updateTransport function called in src/services/frontend-services/transport/TransportService.ts with transport: ", transport);
     try {
-        console.log("log ====> transport in updateTransport function called in path: src/services/frontend-services/transport/TransportService.ts is : ", transport);
         // Use axios.put to send the PUT request
-        const response = await axios.put(`${DOMAIN}/api/v1/transports`, transport);
+        const response = await axios.put(`${API_DOMAIN}/transports`, transport);
 
         if (!response.data || !response.data.data) {
-            console.log("log ====> response not found in updateTransport function");
             throw new Error("Unexpected response format");
         }
 
 
-        console.log("log ====> response found in updateTransport function after updating transport in path: src/services/frontend-services/transport/TransportService.ts is : ", response.data.data);
         return response.data.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -130,7 +123,7 @@ export async function updateTransport(transport: UpdateTransportRequestDto): Pro
  */
 export async function deleteTransport(id: number): Promise<void> {
     try {
-        const response = await fetch(`${DOMAIN}/api/v1/transports/${id}`, {
+        const response = await fetch(`${API_DOMAIN}/transports/${id}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",

@@ -6,14 +6,11 @@ import Decimal from "decimal.js";
 // import Decimal from 'decimal.js';
 
 function calculateTotalWeight(parcels: CreateParcelDto[]): number {
-    // this function is to calculate the total weight of the parcels by summing up the weights of each parcel
-    console.log("log ====> calculateTotalWeight function called");
     return parcels.reduce((acc, pkg) => acc + pkg.weight, 0) as number;
 }
 
 
 function calculateTotalVolume(parcels: CreateParcelDto[]): number {
-    console.log("log ====> calculateTotalVolume function called");
     const totalVolume = parcels.reduce((acc, pkg) => {
         const volume = new Decimal(pkg.height)
             .times(pkg.width)
@@ -35,8 +32,6 @@ function calculateTotalPrice(totalWeight: number, tarifs: TarifsDto): number {
 
     // Using Decimal.js for precision and keeping result as a number
     const total = new Decimal(totalWeight).times(tarifs.weightRate).toDecimalPlaces(2);
-    console.log("log ====> total in calculateTotalPrice is : ", total);
-
     return total.toNumber(); // Convert Decimal back to number
 }
 
@@ -48,8 +43,6 @@ export function calculateEnvoiDetails(parcels: CreateParcelDto[], tarifs: Tarifs
     if (!tarifs) {
         throw new Error("Tarifs not found");
     }
-    console.log("log ====> calculateEnvoiDetails function called");
-
 
     const totalWeight: number = calculateTotalWeight(parcels);
     const totalVolume: number = calculateTotalVolume(parcels);

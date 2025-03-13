@@ -15,7 +15,6 @@ import {
  */
 
 export async function POST(req: NextRequest) {
-    console.log("log ====> Verification email api route called")
 
 
     if (req.method !== "POST") {
@@ -26,22 +25,18 @@ export async function POST(req: NextRequest) {
     const {token} = await req.json(); // Utiliser req.json() pour extraire le body correctement
 
     if (!token) {
-        console.log(" log ====> token not found !")
 
         return NextResponse.json({message: "Token is missing"}, {status: 400});
     }
 
-    console.log("log=> Verify token: ", token);
 
     try {
         // Rechercher l'utilisateur avec le token et vérifier si le token n'a pas expiré
 
         const user = await getUserByValidToken(token);
 
-        console.log("log => path: src/app/api/v1/users/verify/route.ts : user", user);
 
         if (!user) {
-            console.log("Token invalide");
             return NextResponse.json({message: "Invalid token"}, {status: 400});
         }
 
@@ -59,9 +54,6 @@ export async function POST(req: NextRequest) {
             image: user.image,
             role: RoleDto.CLIENT,
         };
-
-        console.log("log => userResponse retourné après vérification du token: ", userResponse);
-
         return NextResponse.json(
             {
                 user: userResponse,

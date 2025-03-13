@@ -36,8 +36,6 @@ const VerifyEmailContent = () => {
 
         const verifyEmail = async () => {
             try {
-                console.log('verify email function called and will send api request with token : ', token);
-
                 const response = await fetch('/api/v1/users/verify', {
                     method: 'POST',
                     headers: {
@@ -47,8 +45,6 @@ const VerifyEmailContent = () => {
                 });
 
                 const data = await response.json();
-                console.log("data returned after the request")
-
                 if (response.ok) {
                     setStatus('success');
                     setMessage("Votre adresse email a été vérifiée avec succès !");

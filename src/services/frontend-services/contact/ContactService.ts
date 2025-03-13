@@ -1,15 +1,13 @@
 // path : src/services/frontend-services/contact/ContactService.ts
 
-import {DOMAIN} from "@/utils/constants";
+import {API_DOMAIN} from "@/utils/constants";
 
 import {MessageBodyDto} from "@/services/dtos/emails/EmailDto";
 
 export async function sendContactEmail(messageBody: MessageBodyDto): Promise<number> {
 
-    console.log("log ====> sendContactEmail function called in path: src/services/frontend-services/contact/ContactService.ts with messageBody: ", messageBody);
-
     try {
-        const response = await fetch(`${DOMAIN}/api/v1/contact`, {
+        const response = await fetch(`${API_DOMAIN}/contact`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

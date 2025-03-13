@@ -63,6 +63,7 @@ export async function POST(req: NextRequest) {
                 where: {name: address.city, countryId: country.id},
                 select: {id: true},
             });
+
             if (!city) throw new Error("La ville spécifiée est introuvable.");
 
             // Find/Create Address

@@ -29,7 +29,6 @@ export async function POST(request: NextRequest) {
         // Retrieve the connected user's token
         const token = await getToken({req: request, secret: process.env.AUTH_SECRET as string});
 
-        console.log("loq ====> token in GET methode path: simulations/route.ts is : ", token);
 
         let userId;
         if (!token) {
@@ -39,7 +38,6 @@ export async function POST(request: NextRequest) {
         }
         simulationDataToCreate.userId = userId;
 
-        console.log("log ====> simulationDataToCreate in POST request received in simulations route before createSimulation function saving path: src/app/api/v1/simulations/route.ts: ", simulationDataToCreate);
 
         const simulationIdAndVerificationToken = await createSimulation(simulationDataToCreate);
 
@@ -47,7 +45,6 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({success: false, error: 'Failed to create simulation'}, {status: 500});
         }
 
-        console.log("log ====> simulationIdAndVerificationToken in POST request received in simulations route after saving path: src/app/api/v1/simulations/route.ts: ", simulationIdAndVerificationToken);
 
         const simulationCookie = setSimulationResponseCookie(simulationIdAndVerificationToken);
 
@@ -60,11 +57,9 @@ export async function POST(request: NextRequest) {
             {status: 201}
         );
 
-        console.log("log ====> simulationCookie in POST request before setting cookie in path: src/app/api/v1/simulations/route.ts: ", simulationCookie);
 
         response.headers.set('Set-Cookie', simulationCookie);
 
-        console.log("log ====> response in POST request received in simulations route after saving path: src/app/api/v1/simulations/route.ts: ", response);
 
         return response;
 
@@ -79,7 +74,6 @@ export async function POST(request: NextRequest) {
  * @constructor
  */
 export async function GET(request: NextRequest) {
-    console.log("GET request received in simulations route");
     if (request.method !== 'GET') {
         return NextResponse.json({error: 'Method not allowed'}, {status: 405});
     }
@@ -97,8 +91,7 @@ export async function GET(request: NextRequest) {
             );
         }
 
-        console.log("log ====> simulationIdAndToken in GET request received in simulations route after verifying token in path: src/app/api/v1/simulations/route.ts is : ", simulationIdAndToken);
-
+        console.log("log ====> simulationIdAndToken found in GET route in SimulationRoute.ts in path : src/app/api/v1/simulations/route.ts: ", simulationIdAndToken);
 
         // Get the simulation data from the database using the simulation ID and token
         const simulation = await getSimulationById(
@@ -106,12 +99,10 @@ export async function GET(request: NextRequest) {
         );
 
         if (!simulation) {
-            console.log("Simulation introuvable.");
             return NextResponse.json({error: 'Simulation not found'}, {status: 404});
         }
 
-        console.log("log ====> simulation in GET request received in simulations route after calling getSimulationByIdAndToken function with id and verificationToken: ", simulation);
-
+        console.log("log ====> simulation found in GET route in SimulationRoute.ts in path : src/app/api/v1/simulations/route.ts: ", simulation);
 
         return NextResponse.json({data: simulation}, {status: 200});
 
@@ -128,14 +119,11 @@ export async function GET(request: NextRequest) {
  * @constructor
  */
 export async function PUT(request: NextRequest) {
-    console.log("PUT request received with body:", request.body);
 
     try {
         const body = (await request.json()) as SimulationResponseDto;
-        console.log("Parsed body in PUT request:", body);
 
         if (!body) {
-            console.error("Error: Missing required fields in the request body.");
             return NextResponse.json({error: 'Missing required fields'}, {status: 400});
         }
 
@@ -155,7 +143,6 @@ export async function PUT(request: NextRequest) {
         const simulationIdAndToken = verifySimulationToken(request);
 
         if (!simulationIdAndToken) {
-            console.log("Aucun token ou ID de simulation valide.");
             return NextResponse.json({data: null}, {status: 200});
         }
 

@@ -1,27 +1,26 @@
-// path: src/components/forms/admins/AgencyForm.tsx
-"use client"
+"use client";
+
 import {toast} from "sonner";
 import {useForm} from "react-hook-form";
-import * as z from "zod"
-
-import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form"
-import {Button} from "@/components/ui/button"
-import {Input} from "@/components/ui/input"
+import * as z from "zod";
+import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {PhoneInput} from "@/components/phone-input";
-import React, {useEffect, useState, useTransition} from "react";
+import React, {useEffect, useState} from "react";
 import {getAgencyById} from "@/services/frontend-services/AgencyService";
-import {AgencyDto} from "@/services/dtos";
+import {AgencyResponseDto} from "@/services/dtos";
 import CountrySelect from "@/components/forms/SimulationForms/CountrySelectForm";
 import CitySelect from "@/components/forms/SimulationForms/CitySelectForm";
-import {useSession} from "next-auth/react";
 import {fetchCities, fetchCountries} from "@/services/frontend-services/AddressService";
-import {checkAuthStatus} from "@/lib/auth";
-// import NewLocationSelector from "@/components/address/NewLocationSelector";
 
+//
+// Zod validation schema
+//
 const formSchema = z.object({
-    agencyName: z.string().min(1).min(1).max(50),
-    location: z.string().min(1).optional(),
+    agencyName: z.string().min(1).max(50),
+    location: z.string().optional(),
     phoneNumber: z.string(),
     email: z.string(),
     vatNumber: z.string().min(1),
@@ -29,117 +28,133 @@ const formSchema = z.object({
     availableSlots: z.number().min(0)
 });
 
-const countrySchema = z.string().min(1);
-const citySchema = z.string().min(1);
-
-type Country = z.infer<typeof countrySchema>;
-type City = z.infer<typeof citySchema>;
-
 interface AgencyFormProps {
     agencyId?: number;
 }
 
-const AgencyForm = ({agencyId}: AgencyFormProps) => {
+export default function AgencyForm({agencyId}: AgencyFormProps) {
+    const [countries, setCountries] = useState([]);
+    const [cities, setCities] = useState([]);
+    const [country, setCountry] = useState<number | null>(null);
+    const [city, setCity] = useState<string>("");
+    const [agency, setAgency] = useState<AgencyResponseDto | null>(null);
 
-    const [country, setCountry] = useState<Country>('');
-    const [city, setCity] = useState<City>('');
-    const [cities, setCities] = useState<City[]>([]);
-    const [countries, setCountries] = useState<Country[]>([]);
-    const [isPending, startTransition] = useTransition();
-    const [isLoading, setIsLoading] = useState(true);
-    const {data: session, status} = useSession();
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [userId, setUserId] = useState<string | null>(null);
-
-    const [agency, setAgency] = useState<AgencyDto>();
+    //
+    // Create a single `form` object from `useForm`
+    //
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-
+        defaultValues: {
+            agencyName: "",
+            location: "",
+            phoneNumber: "",
+            email: "",
+            vatNumber: "",
+            capacity: 0,
+            availableSlots: 0
+        }
     });
 
-    useEffect(() => {
-        setIsLoading(true);
-        const checkAuth = async () => {
-            const authResult = await checkAuthStatus(false);
-            setIsAuthenticated(authResult.isAuthenticated);
-            setUserId(authResult.userId || null);
-        };
-        checkAuth();
-    }, []);
+    const {
+        control,     // needed for <FormField control={control} .../>
+        handleSubmit,
+        reset
+    } = form;
 
-    /**
-     * Fetch countries and set them in the state
-     *
-     */
+    //
+    // 1. Fetch Agency by ID
+    //
     useEffect(() => {
-        fetchCountries().then(data => setCountries(data)).catch(console.error);
-    }, []);
+        if (!agencyId) return;
 
-    /**
-     * Fetch cities when country changes
-     */
-    useEffect(() => {
-        if (country) {
-            fetchCities(country).then(data => setCities(data)).catch(console.error);
-            setCity('');
-        }
-    }, [country]);
-
-    useEffect(() => {
         (async () => {
-            if (agencyId) {
+            try {
                 const agencyResponse = await getAgencyById(agencyId);
+                console.log("✅ Agency fetched successfully:", agencyResponse);
+
                 if (agencyResponse instanceof Error) {
-                    toast("Error fetching agency by id: " + agencyResponse.message);
+                    toast.error("Error fetching agency: " + agencyResponse.message);
                 } else {
                     setAgency(agencyResponse);
                 }
+            } catch (error) {
+                console.error("Error fetching agency:", error);
+                toast.error("Failed to fetch agency data.");
             }
         })();
     }, [agencyId]);
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        try {
-            console.log(values);
-            toast(
-                <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
-        </pre>
-            );
-        } catch (error) {
-            console.error("Form submission error", error);
-            toast.error("Failed to submit the form. Please try again.");
+    //
+    // 2. Update form inputs when the agency data arrives
+    //
+    useEffect(() => {
+        if (agency) {
+            reset({
+                agencyName: agency.name || "",
+                location: agency.location || "",
+                phoneNumber: agency.phoneNumber || "",
+                email: agency.email || "",
+                vatNumber: "", // If you have a real VAT field in DB, set it here
+                capacity: agency.capacity || 0,
+                availableSlots: agency.availableSlots || 0
+            });
+
+            // Prefill the country & city from the agency address
+            if (agency.address) {
+                setCountry(agency.address.city.country.id);
+                setCity(agency.address.city.name);
+            }
         }
+    }, [agency, reset]);
+
+    //
+    // 3. Fetch Countries once
+    //
+    useEffect(() => {
+        fetchCountries()
+            .then(setCountries)
+            .catch(console.error);
+    }, []);
+
+    //
+    // 4. Fetch Cities when country changes
+    //
+    useEffect(() => {
+        if (country !== null) {
+            fetchCities(country)
+                .then(setCities)
+                .catch(console.error);
+            setCity("");
+        }
+    }, [country]);
+
+    //
+    // 5. Submit Handler
+    //
+    function onSubmit(values: z.infer<typeof formSchema>) {
+        console.log("🚀 Submitting form with values:", values);
+        toast.success("Agency updated successfully!");
+        // TODO: Actually send the updated data to your server (PUT or PATCH request)
     }
 
-    function onChangeCountry(e: React.ChangeEvent<HTMLSelectElement>) {
-        setCountry(e.target.value);
-    }
-
-    function onChangeCity(e: React.ChangeEvent<HTMLSelectElement>) {
-        setCity(e.target.value);
-    }
-
+    //
+    // 6. Render the form
+    //
     return (
+        // Pass entire `form` object to <Form> to fix TS2740
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-3xl mx-auto py-10">
-
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 max-w-3xl mx-auto py-10">
+                {/* Agency Name & Location */}
                 <div className="grid grid-cols-12 gap-4">
-
                     <div className="col-span-6">
-
                         <FormField
-                            control={form.control}
+                            control={control}
                             name="agencyName"
                             render={({field}) => (
                                 <FormItem>
                                     <FormLabel>Agence</FormLabel>
                                     <FormControl>
-                                        <Input
-                                            placeholder="Agence de Mons"
-
-                                            type="text"
-                                            {...field} />
+                                        <Input placeholder="Agence de Mons" {...field} />
                                     </FormControl>
                                     <FormDescription>Nom de l&#39;agence.</FormDescription>
                                     <FormMessage/>
@@ -149,19 +164,14 @@ const AgencyForm = ({agencyId}: AgencyFormProps) => {
                     </div>
 
                     <div className="col-span-6">
-
                         <FormField
-                            control={form.control}
+                            control={control}
                             name="location"
                             render={({field}) => (
                                 <FormItem>
                                     <FormLabel>Location</FormLabel>
                                     <FormControl>
-                                        <Input
-                                            placeholder="Prés la gare de Mons..."
-
-                                            type="text"
-                                            {...field} />
+                                        <Input placeholder="Près de la gare de Mons..." {...field} />
                                     </FormControl>
                                     <FormDescription>La localisation de l&#39;agence.</FormDescription>
                                     <FormMessage/>
@@ -169,144 +179,110 @@ const AgencyForm = ({agencyId}: AgencyFormProps) => {
                             )}
                         />
                     </div>
-
                 </div>
-                {/* Phone section */}
+
+                {/* Phone & Email */}
                 <FormField
-                    control={form.control}
+                    control={control}
                     name="phoneNumber"
                     render={({field}) => (
-                        <FormItem className="flex flex-col items-start">
-                            <FormLabel>Numéro de téléphone de l&#39;agence</FormLabel>
-                            <FormControl className="w-full">
-                                <PhoneInput
-                                    placeholder="+32456565656"
-                                    {...field}
-                                    defaultCountry="BE"
-                                />
+                        <FormItem>
+                            <FormLabel>Numéro de téléphone</FormLabel>
+                            <FormControl>
+                                <PhoneInput placeholder="+32456565656" {...field} />
                             </FormControl>
-                            <FormDescription>Enter le numéro de téléphone de l&#39;agence.</FormDescription>
-                            <FormMessage/>
                         </FormItem>
                     )}
                 />
-
-                {/* Email section */}
                 <FormField
-                    control={form.control}
+                    control={control}
                     name="email"
                     render={({field}) => (
                         <FormItem>
-                            <FormLabel>Email de l&#39;agence</FormLabel>
+                            <FormLabel>Email</FormLabel>
                             <FormControl>
-                                <Input
-                                    placeholder="agnecy.mons@mail.be"
-
-                                    type="email"
-                                    {...field} />
+                                <Input placeholder="agency.mons@mail.be" type="email" {...field} />
                             </FormControl>
-                            <FormDescription>Enter l&#39;email de l&#39;agence.</FormDescription>
-                            <FormMessage/>
                         </FormItem>
                     )}
                 />
 
-                {/* VAT section */}
-                <FormField
-                    control={form.control}
-                    name="vatNumber"
-                    render={({field}) => (
-                        <FormItem>
-                            <FormLabel>Numéro de TVA</FormLabel>
-                            <FormControl>
-                                <Input
-                                    placeholder=""
-
-                                    type="text"
-                                    {...field} />
-                            </FormControl>
-                            <FormDescription>Numéro de TVA de l&#39;agence.</FormDescription>
-                            <FormMessage/>
-                        </FormItem>
-                    )}
-                />
-
-                {/* Stock section */}
+                {/* VAT Number, Capacity, Available Slots */}
                 <div className="grid grid-cols-12 gap-4">
                     <div className="col-span-6">
                         <FormField
-                            control={form.control}
+                            control={control}
+                            name="vatNumber"
+                            render={({field}) => (
+                                <FormItem>
+                                    <FormLabel>Numéro de TVA</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="BE0123456789" {...field} />
+                                    </FormControl>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+                    <div className="col-span-3">
+                        <FormField
+                            control={control}
                             name="capacity"
                             render={({field}) => (
                                 <FormItem>
-                                    <FormLabel>Capacity</FormLabel>
+                                    <FormLabel>Capacité</FormLabel>
                                     <FormControl>
-                                        <Input
-                                            placeholder=""
-
-                                            type="number"
-                                            {...field} />
+                                        <Input type="number" {...field} />
                                     </FormControl>
-                                    <FormDescription>Capacité de stock pour l&#39;agence.</FormDescription>
                                     <FormMessage/>
                                 </FormItem>
                             )}
                         />
                     </div>
-
-                    <div className="col-span-6">
-
+                    <div className="col-span-3">
                         <FormField
-                            control={form.control}
+                            control={control}
                             name="availableSlots"
                             render={({field}) => (
                                 <FormItem>
-                                    <FormLabel>Disponibilité </FormLabel>
+                                    <FormLabel>Places disponibles</FormLabel>
                                     <FormControl>
-                                        <Input
-                                            placeholder=""
-
-                                            type="number"
-                                            {...field} />
+                                        <Input type="number" {...field} />
                                     </FormControl>
-                                    <FormDescription>Nombre de places disponibles pour l&#39;agence.</FormDescription>
                                     <FormMessage/>
                                 </FormItem>
                             )}
                         />
                     </div>
+                </div>
 
-                    {/* Country section */}
-
+                {/* Country & City */}
+                <div className="grid grid-cols-12 gap-4">
                     <div className="col-span-6">
                         <CountrySelect
                             label="Pays"
-                            value={country}
-                            onChange={onChangeCountry}
+                            value={country?.toString() || ""}
+                            onChange={(e) => {
+                                const val = parseInt(e.target.value, 10);
+                                setCountry(isNaN(val) ? null : val);
+                            }}
                             countries={countries}
-                            disabled={isPending}
-                            placeholder="Sélectionnez un pays avant de continuer"
                         />
                     </div>
                     <div className="col-span-6">
-
                         <CitySelect
                             label="Ville"
                             value={city}
-                            onChange={onChangeCity}
+                            onChange={(e) => setCity(e.target.value)}
                             cities={cities}
-                            disabled={!country}
-                            placeholder="Sélectionnez une ville avant de continuer"
                         />
                     </div>
-                    {/*<CountryDropdown />*/}
-                    {/*<NewLocationSelector />*/}
-
                 </div>
-                <Button type="submit">Submit</Button>
+
+                <Button type="submit" className="mt-4">
+                    Mettre à jour
+                </Button>
             </form>
         </Form>
-    )
-};
-
-export default AgencyForm;
+    );
+}

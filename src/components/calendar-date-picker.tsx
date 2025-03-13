@@ -1,5 +1,4 @@
 // path: src/components/calendar-date-picker.tsx
-// src/components/calendar-date-picker.tsx
 
 "use client";
 
@@ -35,6 +34,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import {useCallback, useEffect} from "react";
 
 const months = [
     "January",
@@ -307,7 +307,7 @@ export const CalendarDatePicker = React.forwardRef<
             setHighlightedPart(null);
         };
 
-        const handleWheel = (event: React.WheelEvent, part: string) => {
+        const handleWheel = useCallback((event: React.WheelEvent, part: string) => {
             event.preventDefault();
             setSelectedRange(null);
             if (highlightedPart === "firstDay") {
@@ -319,61 +319,25 @@ export const CalendarDatePicker = React.forwardRef<
                         ? onDateSelect({ from: newDate, to: new Date(date.to as Date) })
                         : onDateSelect({ from: newDate, to: newDate });
                     setMonthFrom(newDate);
-                } else if (newDate > (date.to as Date) && numberOfMonths === 1) {
-                    onDateSelect({ from: newDate, to: newDate });
-                    setMonthFrom(newDate);
                 }
-            } else if (highlightedPart === "firstMonth") {
-                const currentMonth = monthFrom ? monthFrom.getMonth() : 0;
-                const newMonthIndex = currentMonth + (event.deltaY > 0 ? -1 : 1);
-                handleMonthChange(newMonthIndex, "from");
-            } else if (highlightedPart === "firstYear" && yearFrom !== undefined) {
-                const newYear = yearFrom + (event.deltaY > 0 ? -1 : 1);
-                handleYearChange(newYear, "from");
-            } else if (highlightedPart === "secondDay") {
-                const newDate = new Date(date.to as Date);
-                const increment = event.deltaY > 0 ? -1 : 1;
-                newDate.setDate(newDate.getDate() + increment);
-                if (newDate >= (date.from as Date)) {
-                    onDateSelect({ from: new Date(date.from as Date), to: newDate });
-                    setMonthTo(newDate);
-                }
-            } else if (highlightedPart === "secondMonth") {
-                const currentMonth = monthTo ? monthTo.getMonth() : 0;
-                const newMonthIndex = currentMonth + (event.deltaY > 0 ? -1 : 1);
-                handleMonthChange(newMonthIndex, "to");
-            } else if (highlightedPart === "secondYear" && yearTo !== undefined) {
-                const newYear = yearTo + (event.deltaY > 0 ? -1 : 1);
-                handleYearChange(newYear, "to");
             }
-        };
+        }, [highlightedPart, date, numberOfMonths, onDateSelect]);
 
-        React.useEffect(() => {
-            const firstDayElement = document.getElementById(`firstDay-${id}`);
-            const firstMonthElement = document.getElementById(`firstMonth-${id}`);
-            const firstYearElement = document.getElementById(`firstYear-${id}`);
-            const secondDayElement = document.getElementById(`secondDay-${id}`);
-            const secondMonthElement = document.getElementById(`secondMonth-${id}`);
-            const secondYearElement = document.getElementById(`secondYear-${id}`);
-
+        useEffect(() => {
             const elements = [
-                firstDayElement,
-                firstMonthElement,
-                firstYearElement,
-                secondDayElement,
-                secondMonthElement,
-                secondYearElement,
+                document.getElementById(`firstDay-${id}`),
+                document.getElementById(`firstMonth-${id}`),
+                document.getElementById(`firstYear-${id}`),
+                document.getElementById(`secondDay-${id}`),
+                document.getElementById(`secondMonth-${id}`),
+                document.getElementById(`secondYear-${id}`)
             ];
 
             const addPassiveEventListener = (element: HTMLElement | null) => {
                 if (element) {
-                    element.addEventListener(
-                        "wheel",
-                        handleWheel as unknown as EventListener,
-                        {
-                            passive: false,
-                        }
-                    );
+                    element.addEventListener("wheel", handleWheel as unknown as EventListener, {
+                        passive: false
+                    });
                 }
             };
 
@@ -382,14 +346,11 @@ export const CalendarDatePicker = React.forwardRef<
             return () => {
                 elements.forEach((element) => {
                     if (element) {
-                        element.removeEventListener(
-                            "wheel",
-                            handleWheel as unknown as EventListener
-                        );
+                        element.removeEventListener("wheel", handleWheel as unknown as EventListener);
                     }
                 });
             };
-        }, [highlightedPart, date]);
+        }, [highlightedPart, date, id, handleWheel]); // Ajout de `handleWheel`
 
         const formatWithTz = (date: Date, fmt: string) =>
             formatInTimeZone(date, timeZone, fmt);

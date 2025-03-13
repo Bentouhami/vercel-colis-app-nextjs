@@ -15,7 +15,6 @@ export const accessControlHelper = {
         return isSuperAdmin || isAgencyAdmin;
     },
     canManageEnvoi: (session: Session) => {
-        console.log("log ====> canManageEnvoi function called in path: src/utils/accessControlHelper.ts")
         const isSuperAdmin = session?.user?.role === RoleDto.SUPER_ADMIN;
         const isAgencyAdmin = session?.user?.role === RoleDto.AGENCY_ADMIN;
 

@@ -30,9 +30,6 @@ export async function POST(req: Request) {
             success_url: successUrl,
             cancel_url: cancelUrl,
         });
-        console.log("session is: ", session);
-        console.log("successUrl is : ", successUrl);
-        console.log("cancelUrl is : ", cancelUrl);
         return NextResponse.json({id: session.id});
     } catch (error) {
         console.error('Erreur lors de la création de la session Stripe:', error);

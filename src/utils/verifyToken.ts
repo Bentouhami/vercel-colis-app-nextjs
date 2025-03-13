@@ -13,10 +13,8 @@ export function verifyToken(request: NextRequest): JWTPayload | null {
         const jwtToken = request.cookies.get(process.env.COOKIE_NAME as string);
         const token = jwtToken?.value as string;
 
-        console.log("Token from cookie:", token);
 
         if (!token) {
-            console.log("No token found in cookies");
             return null;
         }
 
@@ -30,7 +28,6 @@ export function verifyToken(request: NextRequest): JWTPayload | null {
 
         // Vérification du token
         const userPayload = jwt.verify(token, privateKey) as JWTPayload;
-        console.log("Verified token payload:", userPayload);
 
         return userPayload;
     } catch (error) {

@@ -6,7 +6,9 @@ import {getSimulationById, updateSimulationTransportId} from "@/services/backend
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest, {params}: { params: { id: string } }) {
-    console.log("GET request received in simulations/[id] route");
+    if (request.method !== 'GET') {
+        return NextResponse.json({error: 'Method not allowed'}, {status: 405});
+    }
 
     try {
         // Extract the dynamic route parameter `id`
@@ -32,7 +34,7 @@ export async function GET(request: NextRequest, {params}: { params: { id: string
 
 // Update simulation with the suitable transport id
 export async function PUT(request: NextRequest, {params}: { params: { id: string } }) {
-    console.log("PUT request received in simulations/[id] route");
+
 
     if (request.method !== "PUT") {
         return NextResponse.json({error: "Method not allowed"}, {status: 405});
@@ -45,12 +47,7 @@ export async function PUT(request: NextRequest, {params}: { params: { id: string
         const {transportId} = await request.json();
 
 
-        console.log("log ====> transportId in PUT request received in simulations/[id] route after saving path: src/app/api/v1/simulations/[id]/route.ts is : ", transportId);
-
-        console.log("log ====> simulationId in PUT request received in simulations/[id] route after saving path: src/app/api/v1/simulations/[id]/route.ts is : ", simulationId);
-
         if (!simulationId || !transportId) {
-            console.log("log ====> simulationId or transportId not found in PUT request received in simulations/[id] route after saving path: src/app/api/v1/simulations/[id]/route.ts");
             return NextResponse.json({error: "Invalid request"}, {status: 400});
         }
 
@@ -58,10 +55,8 @@ export async function PUT(request: NextRequest, {params}: { params: { id: string
         const updatedSimulation = await updateSimulationTransportId(simulationId, transportId);
 
         if (!updatedSimulation) {
-            console.log("log ====> updatedSimulation not found in PUT request received in simulations/[id] route after saving path: src/app/api/v1/simulations/[id]/route.ts");
             return NextResponse.json({error: "Failed to update simulation"}, {status: 500});
         }
-        console.log("log ====> updatedSimulation found in PUT request received in simulations/[id] route after saving path: src/app/api/v1/simulations/[id]/route.ts is : ", updatedSimulation);
         return NextResponse.json(
             {
                 data: updatedSimulation,

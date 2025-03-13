@@ -1,16 +1,18 @@
 // path: src/services/dtos/agencies/AgencyDto.ts
 
 // -------------------- Agency DTOs --------------------
-import {AddressDto, AgencyAddressDto, UpdateAddressDto} from "@/services/dtos/addresses/AddressDto";
+import {AddressDto, AgencyAddressDto} from "@/services/dtos/addresses/AddressDto";
 
 export interface AgencyDto {
     id?: number;
     name: string;
     location?: string;
+    email?: string;
+    phoneNumber?: string;
     addressId: number;
     address?: AddressDto;
-    capacity: number;
-    availableSlots: number;
+    capacity?: number | null;
+    availableSlots?: number | null;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -27,7 +29,7 @@ export interface UpdateAgencyDto extends Partial<CreateAgencyDto> {
 export interface BaseAgencyDto {
     name: string;
     location: string | null;
-    address: UpdateAddressDto;
+    address: AgencyAddressDto;
     capacity: number;
     availableSlots: number;
 }
@@ -40,6 +42,8 @@ export interface AgencyResponseDto {
     id: number;
     name: string;
     location: string | null;
+    email: string | null;
+    phoneNumber: string | null;
     address: AgencyAddressDto;
     capacity: number | null;
     availableSlots: number | null;

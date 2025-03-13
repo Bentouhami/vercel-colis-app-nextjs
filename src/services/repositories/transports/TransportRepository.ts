@@ -50,7 +50,6 @@ class TransportRepository implements ITransportRepository {
         if (!response) {
             return null;
         }
-        console.log("log ====> response found in updateTransport function after updating transport in path: src/services/repositories/transports/TransportRepository.ts is : ", response);
 
         // Map the updated transport to a TransportResponseDto and return it
         const updatedTransport : TransportResponseDto = {
@@ -63,11 +62,9 @@ class TransportRepository implements ITransportRepository {
             isAvailable: response.isAvailable,
         }
         if (!updatedTransport) {
-            console.log("log ====> updatedTransport not found in updateTransport function");
             return null;
         }
 
-        console.log("log ====> updatedTransport in updateTransport after mapping to TransportResponseDto in path: src/services/repositories/transports/TransportRepository.ts is : ", updatedTransport);
 
 
         return updatedTransport;

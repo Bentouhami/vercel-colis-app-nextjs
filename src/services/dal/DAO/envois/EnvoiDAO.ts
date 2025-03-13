@@ -40,22 +40,15 @@ export class EnvoiDAO implements IEnvoiDAO {
         }
 
         try {
-            console.log(
-                "log ====> data in updateEnvoi function in path: src/services/dal/DAO/envois/EnvoiDAO.ts is : ",
-                data
-            );
-
             // Update only the fields directly on the Envoi model
             const updatedEnvoi = await prisma.envoi.update({
                 where: { id },
                 data, // Use only the direct fields
             });
 
-            console.log(
-                "log ====> updatedEnvoi in updateEnvoi function in path: src/services/dal/DAO/envois/EnvoiDAO.ts is : ",
-                updatedEnvoi
-            );
-
+            if (!updatedEnvoi) {
+                return null;
+            }
             return updatedEnvoi;
         } catch (error) {
             console.error("Error updating envoi:", error);
@@ -96,7 +89,6 @@ export class EnvoiDAO implements IEnvoiDAO {
                 }),
             ]);
 
-            console.log(`Simulation ${envoiId} annulée et parcels supprimés.`);
         } catch (error) {
             console.error("Erreur lors de l'annulation de la simulation :", error);
             throw error;

@@ -1,8 +1,9 @@
 // Path: src/services/frontend-services/envoi/EnvoiService.ts
 
 import {API_DOMAIN} from "@/utils/constants";
-import {EnvoiDto, EnvoisListDto} from "@/services/dtos";
+import {EnvoiDto, EnvoisListDto, ProfileDto} from "@/services/dtos";
 import axios from "axios";
+import {PaymentSuccessDto} from "@/services/dtos/envois/PaymentSuccessDto";
 
 /**
  * get envoi by id
@@ -13,25 +14,12 @@ export async function updateEnvoiDatas(envoiId: number): Promise<boolean> {
     if (!envoiId) {
         throw new Error("Invalid envoi ID");
     }
-
     try {
-        console.log("log ====> envoiId in updateEnvoiDatas function called in path: src/services/frontend-services/envoi/EnvoiService.ts is : ", envoiId);
+        const response = await axios.put(`${API_DOMAIN}/envois/${envoiId}`);
 
-        const response = await axios.put(`${API_DOMAIN}/envois/${envoiId}`, {}, {
-            headers: {
-                'Content-Type': 'application/json',
-                cache: "no-cache",
-                pragma: "no-cache",
-            }
-        });
+        return response.data;
 
-        if (!response.data) {
-            console.log("log ====> response.data not found in updateEnvoiDatas function");
-            return false;
-        }
 
-        console.log("log ====> updateEnvoiDatas successful response.data in path: src/services/frontend-services/envoi/EnvoiService.ts is : ", response.data);
-        return true;
     } catch (error) {
         console.error("Error updating envoi:", error);
         throw error;
@@ -43,13 +31,12 @@ export async function updateEnvoiDatas(envoiId: number): Promise<boolean> {
  *  @return EnvoiDto if exits or null otherwise
  * @param envoiId
  */
-export async function getEnvoiById(envoiId: number): Promise<EnvoiDto | null> {
+export async function getEnvoiById(envoiId: number): Promise<PaymentSuccessDto | null> {
     if (!envoiId) {
         throw new Error("Invalid envoi ID");
     }
 
     try {
-        console.log("log ====> envoiId in getEnvoiById function called in path: src/services/frontend-services/envoi/EnvoiService.ts is : ", envoiId);
 
         const response = await axios.get(`${API_DOMAIN}/envois/${envoiId}`, {
             headers: {
@@ -63,7 +50,6 @@ export async function getEnvoiById(envoiId: number): Promise<EnvoiDto | null> {
         if (!response.data) {
             return null;
         }
-        console.log("log ====> getEnvoiById successful response.data in path: src/services/frontend-services/envoi/EnvoiService.ts is : ", response.data);
         return response.data;
     } catch (error) {
         console.error("Error getting envoi:", error);

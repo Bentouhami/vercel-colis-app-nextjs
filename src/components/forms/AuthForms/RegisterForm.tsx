@@ -1,23 +1,22 @@
 "use client";
 
-import React, { useTransition } from "react";
-import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import { useForm } from "react-hook-form";
-import { toast } from "react-toastify";
+import React, {useTransition} from "react";
+import {useRouter} from "next/navigation";
+import {motion} from "framer-motion";
+import {useForm} from "react-hook-form";
+import {toast} from "react-toastify";
 import Image from "next/image";
-import { zodResolver } from "@hookform/resolvers/zod";
-
+import {zodResolver} from "@hookform/resolvers/zod";
 import {
     RegisterUserBackendType,
     RegisterUserFrontendFormType,
     registerUserFrontendSchema
 } from "@/utils/validationSchema";
-import { registerUser } from "@/services/frontend-services/UserService";
+import {registerUser} from "@/services/frontend-services/UserService";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Form } from "@/components/ui/form";
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
+import {Button} from "@/components/ui/button";
+import {Form} from "@/components/ui/form";
 import PersonalInformationForm from "@/components/auth/PersonalInformationForm";
 import AddressForm from "@/components/address/AddressForm";
 import LoginInformationForm from "@/components/auth/LoginInformationForm";
@@ -52,9 +51,7 @@ export default function RegisterForm() {
     });
 
     async function handleSubmit(formValues: RegisterUserFrontendFormType) {
-        console.log("Données du formulaire:", formValues); // Debug
-
-        const dto : RegisterUserBackendType = {
+        const dto: RegisterUserBackendType = {
             firstName: formValues.firstName,
             lastName: formValues.lastName,
             birthDate: formValues.birthDate,
@@ -64,14 +61,10 @@ export default function RegisterForm() {
             address: formValues.address,
         };
 
-        console.log("Données envoyées:", dto); // Debug
-
         startTransition(() => {
             (async () => {
                 try {
                     const result = await registerUser(dto);
-
-                    console.log("Réponse du serveur:", result); // Debug
 
                     if (!result) {
                         toast.error("Réponse inattendue du serveur. Veuillez réessayer.");
@@ -99,16 +92,16 @@ export default function RegisterForm() {
     return (
         <div className="min-h-screen flex items-center justify-center px-2 py-5">
             <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6 }}
+                initial={{opacity: 0, scale: 0.95}}
+                animate={{opacity: 1, scale: 1}}
+                transition={{duration: 0.6}}
                 className="w-full max-w-3xl space-y-6"
             >
                 {/* Image Section */}
                 <motion.div
-                    initial={{ opacity: 0, x: -50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.7 }}
+                    initial={{opacity: 0, x: -50}}
+                    animate={{opacity: 1, x: 0}}
+                    transition={{duration: 0.7}}
                 >
                     <Image
                         priority

@@ -19,7 +19,7 @@ const createPrismaClient = () => {
 
 // Global declaration to prevent multiple instances
 declare global {
-    // eslint-disable-next-line no-var
+    //eslint-disable-next-line no-var
     var prisma: PrismaClient | undefined;
 }
 

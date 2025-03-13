@@ -1,6 +1,6 @@
 // Path: src/services/frontend-services/simulation/SimulationService.ts
 
-import {API_DOMAIN, DOMAIN} from "@/utils/constants";
+import {API_DOMAIN} from "@/utils/constants";
 import {calculateEnvoiDetails} from "@/services/frontend-services/simulation/SimulationCalculationService";
 import {getTarifs} from "@/services/frontend-services/TarifsService";
 import {
@@ -17,6 +17,7 @@ import axios from "axios";
 import {getSimulationSummary, updateSimulationDestinataireId} from "@/services/backend-services/Bk_SimulationService";
 import {findSuitableTransport} from "@/services/frontend-services/transport/TransportServiceCalc";
 import {updateTransport} from "@/services/frontend-services/transport/TransportService";
+import apiClient from "@/utils/axiosInstance";
 
 
 /**
@@ -31,7 +32,7 @@ export async function getSimulationById(id: number): Promise<SimulationResponseD
 
     try {
         // Use axios to make the request
-        const response = await axios.get(`${DOMAIN}/api/v1/simulations/${id}`, {
+        const response = await axios.get(`${API_DOMAIN}/simulations/${id}`, {
             headers: {
                 "Content-Type": "application/json",
             },
@@ -39,7 +40,6 @@ export async function getSimulationById(id: number): Promise<SimulationResponseD
 
         // Check if the response contains data
         if (!response.data || !response.data.data) {
-            console.log("log ====> simulationData not found in getSimulationById function");
             return null;
         }
 
@@ -66,7 +66,6 @@ export async function submitSimulation(simulationData: SimulationDtoRequest) {
         throw new Error("Simulation data not found");
     }
 
-    console.log("log ====> simulationData in submitSimulation function called in path: src/services/frontend-services/simulation/SimulationService.ts is : ", simulationData);
 
     // get agency id by Country and city and agency name
     const departureAgencyId = await getAgencyId(simulationData.departureCountry, simulationData.departureCity, simulationData.departureAgency);
@@ -140,20 +139,15 @@ export async function submitSimulation(simulationData: SimulationDtoRequest) {
  */
 export async function getSimulation(): Promise<SimulationResponseDto | null> {
 
-    console.log("log ====> getSimulation function called in src/services/frontend-services/simulation/SimulationService.ts");
-
     try {
-        const response = await axios.get(`${API_DOMAIN}/simulations`);
+        const response = await apiClient.get(`/simulations`);
         if (!response.data) {
-            console.log("log ====> not ok response in getSimulation function");
-
             return null;
         }
         // Extraire les données JSON
         const simulationData = response.data;
 
         if (!simulationData || !simulationData.data) {
-            console.log("log ====> simulationData not found in getSimulation function");
             return null;
         }
         return simulationData.data as SimulationResponseDto;
@@ -179,15 +173,12 @@ export async function updateSimulationDestinataire(simulationId: number, destina
     if (!simulationId || !destinataireId) {
         throw new Error("Invalid simulation or destinataire ID");
     }
-    console.log("log ====> updateSimulationDestinataire function called in src/services/backend-services/Bk_SimulationService.ts");
     try {
         const response = await updateSimulationDestinataireId(simulationId, destinataireId);
 
         if (!response) {
-            console.log("log ====> response not found in updateSimulationDestinataire function");
             return false;
         }
-        console.log("log ====> response found in updateSimulationDestinataire function after updating destinataireId in path: src/services/backend-services/Bk_SimulationService.ts is : ", response);
         return true;
 
     } catch (error) {
@@ -206,7 +197,6 @@ export async function updateSimulationEdited(simulationData: PartielUpdateSimula
     if (!simulationData) {
         throw new Error("Simulation data not found");
     }
-    console.log("log ====> simulationData of type PartielUpdateSimulationDto in updateSimulationEdited function called in path: src/services/frontend-services/simulation/SimulationService.ts: ", simulationData);
 
     // get agency id by Country and city and agency name
     const departureAgencyId = await getAgencyId(simulationData.departureCountry!, simulationData.departureCity!, simulationData.departureAgency!);
@@ -264,14 +254,13 @@ export async function updateSimulationEdited(simulationData: PartielUpdateSimula
         departureDate: calculationResults.departureDate,
         arrivalDate: calculationResults.arrivalDate,
     }
-    console.log("log ====> simulationBaseData of type UpdateEditedSimulationDto in updateSimulationEdited function called in path: src/services/frontend-services/simulation/SimulationService.ts: ", simulationBaseData);
     if (!simulationBaseData) {
         throw new Error("Simulation base data not found");
     }
 
     try {
         // 4. Appeler l'API pour enregistrer la simulation return simulationId after saving
-        const response = await axios.put(`${DOMAIN}/api/v1/simulations/edit`, simulationBaseData);
+        const response = await axios.put(`${API_DOMAIN}/simulations/edit`, simulationBaseData);
 
         if (!response.data) {
             throw new Error("Failed to update simulation");
@@ -290,7 +279,6 @@ export async function updateSimulationEdited(simulationData: PartielUpdateSimula
  * @returns {Promise<void | null>} A Promise that resolves when the status is updated
  */
 export async function deleteSimulationCookie(): Promise<void> {
-    console.log("Starting deleteSimulationCookie");
     try {
         const response = await axios.get(`${API_DOMAIN}/simulations/delete-cookies`, {
             withCredentials: true,
@@ -299,13 +287,11 @@ export async function deleteSimulationCookie(): Promise<void> {
                 'Pragma': 'no-cache'
             }
         });
-        console.log("Delete cookie API response:", response);
 
         // Also delete client-side
         if (typeof document !== 'undefined') {
             const cookieName = process.env.NEXT_PUBLIC_SIMULATION_COOKIE_NAME;
             document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${window.location.hostname}`;
-            console.log("Client-side cookie deletion attempted");
         }
 
         return response.data;
@@ -321,7 +307,6 @@ export async function deleteSimulationCookie(): Promise<void> {
  * @returns {Promise<void | null>} A Promise that resolves when the transportId is updated
  */
 export async function assignTransportToSimulation(simulationId: number): Promise<boolean> {
-    console.log("log ====> assignTransportToSimulation function called in src/services/frontend-services/simulation/SimulationService.ts")
 
     try {
 
@@ -368,30 +353,24 @@ export async function assignTransportToSimulation(simulationId: number): Promise
 async function updateSimulationTransportId(simulationId: number,
                                            transportId: number): Promise<boolean> {
 
-    console.log("log ====> updateSimulationTransportId function called in src/services/frontend-services/simulation/SimulationService.ts");
 
     if (!simulationId || !transportId) {
         throw new Error("Invalid simulation or transport ID");
     }
 
-    console.log("log ====> simulationId in updateSimulationTransportId function called in path: src/services/frontend-services/simulation/SimulationService.ts is : ", simulationId);
-    console.log("log ====> transportId in updateSimulationTransportId function called in path: src/services/frontend-services/simulation/SimulationService.ts is : ", transportId);
     try {
         // using axios to make the request
-        const response = await axios.put(`${DOMAIN}/api/v1/simulations/${simulationId}`, {
+        const response = await axios.put(`${API_DOMAIN}/simulations/${simulationId}`, {
             transportId
         });
 
         if (!response.data) {
-            console.log("log ====> response not found in updateSimulationTransportId function");
             return false;
 
         }
-        console.log("log ====> response found in updateSimulationTransportId function after updating transportId in path: src/services/frontend-services/simulation/SimulationService.ts is : ", response.data);
         return true;
 
     } catch (error) {
-        console.log("log ====> error in updateSimulationTransportId function after updating transportId in path: src/services/frontend-services/simulation/SimulationService.ts is : ", error);
         return false;
     }
 

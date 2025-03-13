@@ -66,7 +66,7 @@ export function SimpleTimePicker({
 
     useEffect(() => {
         onChange(buildTime({ use12HourFormat, value, formatStr, hour, minute, second, ampm }));
-    }, [hour, minute, second, ampm, formatStr, use12HourFormat]);
+    }, [hour, minute, second, ampm, formatStr, use12HourFormat, onChange, value]);
 
     const _hourIn24h = useMemo(() => {
         return use12HourFormat ? (hour % 12) + ampm * 12 : hour;
@@ -173,7 +173,7 @@ export function SimpleTimePicker({
             }
             setHour(v.value);
         },
-        [setHour, use12HourFormat, value, formatStr, minute, second, ampm]
+        [min, max, use12HourFormat, value, formatStr, minute, second, ampm]
     );
 
     const onMinuteChange = useCallback(
@@ -192,7 +192,7 @@ export function SimpleTimePicker({
             }
             setMinute(v.value);
         },
-        [setMinute, use12HourFormat, value, formatStr, hour, second, ampm]
+        [min, max, use12HourFormat, value, formatStr, minute, second, ampm]
     );
 
     const onAmpmChange = useCallback(
@@ -229,6 +229,7 @@ export function SimpleTimePicker({
             <PopoverTrigger asChild>
                 <div
                     role="combobox"
+                    aria-controls="time-picker-options"
                     aria-expanded={open}
                     className={cn(
                         'flex h-9 px-3 items-center justify-between cursor-pointer font-normal border border-input rounded-md text-sm shadow-sm',
@@ -236,10 +237,11 @@ export function SimpleTimePicker({
                     )}
                     tabIndex={0}
                 >
-                    <Clock className="mr-2 size-4" />
+                    <Clock className="mr-2 size-4"/>
                     {display}
-                    <ChevronDownIcon className="ml-2 size-4 shrink-0 opacity-50" />
+                    <ChevronDownIcon className="ml-2 size-4 shrink-0 opacity-50"/>
                 </div>
+
             </PopoverTrigger>
             <PopoverContent className="p-0" side="top">
                 <div className="flex-col gap-2 p-2">

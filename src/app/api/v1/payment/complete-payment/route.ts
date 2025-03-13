@@ -15,7 +15,6 @@ export async function GET(req: NextRequest) {
 
 
         if (!simulationFromCookie) {
-            console.log("Aucun simulation trouvée dans le cookie");
 
             return NextResponse.json({data: null}, {status: 200});
         }
@@ -25,7 +24,6 @@ export async function GET(req: NextRequest) {
 
 
         if (!simulation) {
-            console.log("Simulation introuvable.");
             return NextResponse.json({data: null}, {status: 200});
         }
         // 2. Update Simulation Status to COMPLETED and STATUS to PENDING and PAID to TRUE
@@ -36,11 +34,9 @@ export async function GET(req: NextRequest) {
         } : simulation;
 
         if (!simulation) {
-            console.log("Simulation introuvable.");
             return NextResponse.json({data: null}, {status: 200});
         }
 
-        console.log("log ====> simulation before updateSimulationWithSenderAndDestinataireIds function called in src/app/api/v1/payment/complete-payment/route.ts: ", simulation);
 
 
         // Update Simulation envoi status and simulationStatus
@@ -73,3 +69,5 @@ export async function GET(req: NextRequest) {
         return new NextResponse('Erreur de paiement', {status: 500});
     }
 }
+
+export const dynamic = "force-dynamic";

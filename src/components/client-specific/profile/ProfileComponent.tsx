@@ -76,15 +76,15 @@ export default function ProfileComponent() {
                                           value={userData?.email}/>
                                 <InfoItem icon={<Phone className="h-5 w-5 text-blue-500"/>} label="Téléphone"
                                           value={userData?.phoneNumber || "N/A"}/>
-                                {userData?.Address && (
+                                {userData?.userAddresses && (
                                     <InfoItem
                                         icon={<MapPin className="h-5 w-5 text-blue-500"/>}
                                         label="Adresse"
                                         value={[
-                                            userData.Address.number,
-                                            userData.Address.street,
-                                            userData.Address.city,
-                                            userData.Address.country,
+                                            userData.userAddresses.streetNumber,
+                                            userData.userAddresses.street,
+                                            userData.userAddresses.city.name,
+                                            userData.userAddresses.city.country.name,
                                         ]
                                             .filter(Boolean)
                                             .join(", ")}

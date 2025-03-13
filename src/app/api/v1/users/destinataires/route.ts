@@ -12,7 +12,6 @@ import {
 import {auth} from "@/auth/auth";
 
 export async function POST(req: NextRequest) {
-    console.log("POST request reached at: /api/v1/users/destinataires");
 
     if (req.method !== "POST") {
         return NextResponse.json({error: "Method not allowed"}, {status: 405});
@@ -26,12 +25,10 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({error: "Missing required fields"}, {status: 400});
         }
 
-        console.log("log ====> body in destinataire route: ", newUser);
 
 
         const validationResult = destinataireSchema.safeParse(newUser);
         if (!validationResult.success) {
-            console.log("log ====> error validation : ", validationResult.error.errors)
 
             return NextResponse.json({error: validationResult.error.errors[0].message}, {status: 400});
         }
@@ -44,9 +41,7 @@ export async function POST(req: NextRequest) {
         const userId = Number(sess?.user?.id);
         const userRole = sess?.user?.role;
 
-        console.log("User's session:", {userId, userRole});
 
-        console.log("Authenticated user:", {userId, userRole});
 
         // Check if destinataire already exists
         let destinataireData: DestinataireResponseWithRoleDto | null = await handleDestinataire (userId , newUser)
@@ -58,10 +53,8 @@ export async function POST(req: NextRequest) {
                 return NextResponse.json({data: destinataireData}, {status: 200});
             }
 
-            console.log("Associating existing destinataire with current user...");
             const association = await associateDestinataireToCurrentClient(userId, destinataireData.id);
             if (!association) {
-                console.log("Failed to associate destinataire with current user.");
                 return NextResponse.json({data: null}, {status: 200});
             }
 
@@ -79,7 +72,6 @@ export async function POST(req: NextRequest) {
             role: RoleDto.DESTINATAIRE,
         };
 
-        console.log("Creating new destinataire:", newDestinataireData);
         if (!newDestinataireData) {
             return NextResponse.json({data: null}, {status: 200});
         }

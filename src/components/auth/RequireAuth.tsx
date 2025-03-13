@@ -21,7 +21,6 @@ export default function RequireAuth({
 
     // When status is "unauthenticated", display message and spinner, then redirect.
     useEffect(() => {
-        console.log("session in RequireAuth.tsx is : ", session);
 
         if (status === "unauthenticated") {
             toast.error(customMessage);

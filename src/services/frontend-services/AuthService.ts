@@ -10,10 +10,6 @@
 export async function login(email: string, password: string) {
     try {
 
-        // log email and password
-        console.log("email", email);
-        console.log("password", password);
-        // envoyer l'email et le mot de passe au serveur via l'API /api/v1/users/login : route pour la connexion d'un utilisateur
         const response = await fetch('/api/v1/users/login', {
             method: 'POST',
             headers: {

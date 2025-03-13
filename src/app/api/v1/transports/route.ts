@@ -13,8 +13,9 @@ export const dynamic = 'force-dynamic';
  * @constructor
  */
 export async function GET(request: NextRequest) {
-    console.log("GET request received in transports route");
-
+    if (request.method !== 'GET') {
+        return NextResponse.json({error: 'Method not allowed'}, {status: 405});
+    }
     try {
         // Get transports
         const transports = await getTransports();
@@ -38,7 +39,6 @@ export async function GET(request: NextRequest) {
  * @param request - The incoming HTTP request.
  */
 export async function PUT(request: NextRequest) {
-    console.log("PUT request received in transports route");
 
     if (request.method !== "PUT") {
         return NextResponse.json({error: "Method not allowed"}, {status: 405});
@@ -72,10 +72,6 @@ export async function PUT(request: NextRequest) {
             );
         }
 
-        console.log(
-            "Updated transport found in PUT request: ",
-            updatedTransport
-        );
 
         return NextResponse.json(
             {data: updatedTransport, message: "Transport updated successfully"},

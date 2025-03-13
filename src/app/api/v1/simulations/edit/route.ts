@@ -13,11 +13,12 @@ import {getToken} from "next-auth/jwt";
  * @constructor
  */
 export async function PUT(request: NextRequest) {
-    console.log("PUT request received with body:", request.body);
+    if (request.method !== 'PUT') {
+        return NextResponse.json({error: 'Method not allowed'}, {status: 405});
+    }
 
     try {
         const body = (await request.json()) as UpdateEditedSimulationDto;
-        console.log("Parsed body in PUT request:", body);
 
         if (!body) {
             console.error("Error: Missing required fields in the request body.");

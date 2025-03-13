@@ -7,13 +7,11 @@ import {CityDto} from "@/services/dtos/cities/CityDto";
 export interface AddressDto {
     id?: number;
     street: string;
-    complement?: string;
-    streetNumber?: string;
-    boxNumber?: string;
+    complement?: string | null;
+    streetNumber?: string | null;
+    boxNumber?: string | null;
     cityId?: number;
     city:  CityDto;
-    latitude?: number;
-    longitude?: number;
 }
 
 // DTO for creating a new address
@@ -26,12 +24,10 @@ export interface UpdateAddressDto extends Partial<AddressResponseDto> {
 export interface AddressResponseDto  {
     id?: number;
     street?: string;
-    complement?: string;
-    streetNumber?: string;
-    boxNumber?: string;
+    complement?: string | null;
+    streetNumber?: string | null;
+    boxNumber?: string | null;
     cityId: number;
-    latitude?: number;
-    longitude?: number;
 }
 
 // dto for user address same as agency address juste to make this clear
@@ -44,7 +40,12 @@ export interface AgencyAddressDto extends AddressDto {
   city: CityDto;
 }
 
-export interface CreateAddressDto extends UpdateAddressDto {
+export interface CreateAddressDto {
+    street?: string;
+    complement?: string | null;
+    streetNumber?: string | null;
+    boxNumber?: string | null;
+    cityId: number;
     city: CityDto;
 }
 

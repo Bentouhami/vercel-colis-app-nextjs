@@ -1,12 +1,12 @@
 // path: src/services/repositories/addresses/IAddressRepository.ts
 
-import {AgencyAddressDto, UserAddressDto} from "@/services/dtos";
+import {AddressDto, AgencyAddressDto, CreateAddressDto, UpdateAddressDto, UserAddressDto} from "@/services/dtos";
+import {FrontendAddressType} from "@/utils/validationSchema";
 
 export interface IAddressRepository {
-    getAllUsersAddresses(): Promise<UserAddressDto | null>;
-    getAllAgenciesAddresses(): Promise<AgencyAddressDto | null>;
-    getUserAddressByUserId(userId : number) : Promise<UserAddressDto | null>;
-    getAgencyAddressByAgencyId(agencyId : number) : Promise<AgencyAddressDto | null>;
-    getAddressByStreetAndCityId (street: string, cityId: number) : Promise <void>;
+    createAddress (addressData : FrontendAddressType) : Promise <AddressDto | null>;
+    updateAddress (addressData : UpdateAddressDto) : Promise <AddressDto | null>;
+    getAddressByStreetAndCityId (street: string, cityId: number) : Promise <AddressDto | null>;
+    deleteAddress (addressId : number) : Promise <void>;
 
 }

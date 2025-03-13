@@ -1,4 +1,5 @@
 // path: src/app/api/v1/countries/route.ts
+export const dynamic = "force-dynamic";
 
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/utils/db";
@@ -14,7 +15,6 @@ export async function GET(req: NextRequest) {
         // Extract the departureCountry query parameter
         let departureCountry = req.nextUrl.searchParams.get("departureCountry");
 
-        console.log("log ====> departureCountry in path: src/app/api/v1/countries/route.ts is : ", departureCountry);
 
         // Ensure departureCountry is a valid integer or null
         const departureCountryId = departureCountry && !isNaN(Number(departureCountry))
@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
         const countries = await prisma.city.findMany({
             where: {
                 addresses: { some: { agency: { isNot: null } } }, // Ensures the city has an agency
-                ...(departureCountryId !== null ? { countryId: { not: departureCountryId } } : {}), // ✅ Correct condition
+                ...(departureCountryId !== null ? { countryId: { not: departureCountryId } } : {}),
             },
             select: {
                 country: {
@@ -38,7 +38,6 @@ export async function GET(req: NextRequest) {
             distinct: ["countryId"], // Ensures unique countries
         });
 
-        console.log("log ====> countries in path: src/app/api/v1/countries/route.ts is : ", countries);
 
         return NextResponse.json(countries, { status: 200 });
     } catch (error) {

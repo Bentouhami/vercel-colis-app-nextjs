@@ -1,9 +1,8 @@
 import {NextRequest, NextResponse} from 'next/server';
 import {addressSchema} from "@/utils/validationSchema";
 import {errorHandler} from "@/utils/handelErrors";
-import {Address} from "@prisma/client";
 import prisma from "@/utils/db";
-import {capitalizeFirstLetter, toLowerCase} from "@/utils/stringUtils";
+import {addressRepository} from "@/services/repositories/addresses/AddressRepository";
 
 
 /**
@@ -50,37 +49,11 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({error: validated.error.errors[0].message}, {status: 400});
         }
 
-        // formatted address data
-        const formattedAddress = {
-            street: toLowerCase(body.street),
-            number: body.number,
-            city: capitalizeFirstLetter(body.city),
-            zipCode: body.zipCode,
-            country: capitalizeFirstLetter(body.country)
-        }
-        // Vérifier si l'adresse existe déjà dans la base de données
-
-        const existingAddress = await prisma.address.findFirst({
-            where: {
-                street: formattedAddress.street,
-                number: formattedAddress.number,
-                city: formattedAddress.city,
-                zipCode: formattedAddress.zipCode,
-                country: formattedAddress.country
-            },
-        });
+        const createdAddress = await addressRepository.createAddress(body);
 
 
-        // Si l'adresse existe, renvoyer une erreur 400 avec l'adresse existante comme donnée et renvoyer une erreur 400
-        if (existingAddress) {
-            return NextResponse.json({error: "Address already exists", address: existingAddress}, {status: 400});
-        }
-
-        const newAddress = await prisma.address.create({
-            data: formattedAddress
-        })
         // on renvoie la liste des adresses
-        return NextResponse.json({message: "Address created successfully", address: newAddress}, {status: 201});
+        return NextResponse.json({message: "Address created successfully", address: createdAddress}, {status: 201});
 
     } catch (error) {
         // si une erreur survient, on renvoie une erreur

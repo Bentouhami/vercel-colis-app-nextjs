@@ -44,7 +44,6 @@ class TransportDAO implements ITransportDAO {
             return null;
         }
 
-        console.log("log ====> response found in updateTransport function after updating transport in path: src/services/dal/DAO/transports/TransportDAO.ts is : ", response);
         return response;
 
     }

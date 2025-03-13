@@ -23,9 +23,6 @@ import RequireAuth from "@/components/auth/RequireAuth";
 
 export default function AddReceiverForm() {
     const router = useRouter();
-    // ---------------------------------------------
-    // Remove useTransition and rely on isLoading:
-    // ---------------------------------------------
     const [isLoading, setIsLoading] = useState(false);
 
     const [destinataireFormData, setDestinataireFormData] = useState<DestinataireInput>({
@@ -66,7 +63,6 @@ export default function AddReceiverForm() {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        console.log("log ====> handleSubmit function is called...");
 
         const validated = destinataireSchema.safeParse(destinataireFormData);
 
@@ -122,17 +118,13 @@ export default function AddReceiverForm() {
             }
 
             toast.success("Destinataire ajouté avec succès à votre simulation.");
-            // Attendre 3 secondes avant la redirection
             setTimeout(() => {
                 router.push("/client/envois/recapitulatif");
             }, 3000);
         } catch (error) {
-            console.log("Error updating simulation:", error);
             toast.error("Une erreur est survenue lors de l'ajout du destinataire.");
         } finally {
-            // ---------------------------------------------
-            //  2) Set isLoading false
-            // ---------------------------------------------
+
             setIsLoading(false);
         }
     };

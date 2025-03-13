@@ -33,9 +33,12 @@ export function verifySimulationToken(request: NextRequest): CreatedSimulationRe
 
         return simulationPayload;
     } catch (error) {
-        // Gérer les erreurs JWT spécifiques
         if (error instanceof jwt.TokenExpiredError) {
+            console.error("Token expired");
         } else if (error instanceof jwt.JsonWebTokenError) {
+            console.error("Invalid token");
+        } else {
+            console.error("Error verifying token", error);
         }
         return null;
     }

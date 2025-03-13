@@ -1,8 +1,8 @@
 // path: src/services/dal/DAO/agencies/AgencyDAO.ts
 
 import prisma from "@/utils/db";
-import { IAgencyDAO } from "@/services/dal/DAO/agencies/IAgencyDAO";
-import { Agency as AgencyPrisma } from "@prisma/client";
+import {IAgencyDAO} from "@/services/dal/DAO/agencies/IAgencyDAO";
+import {Agency as AgencyPrisma} from "@prisma/client";
 
 class AgencyDAO implements IAgencyDAO {
     async getAgencyById(id: number): Promise<AgencyPrisma | null> {
@@ -13,7 +13,7 @@ class AgencyDAO implements IAgencyDAO {
         try {
             // Get the agency from the database with the correct fields
             const agency = await prisma.agency.findUnique({
-                where: { id },
+                where: {id},
                 include: {
                     address: true,
                 },
@@ -22,7 +22,6 @@ class AgencyDAO implements IAgencyDAO {
             if (!agency) {
                 return null;
             }
-            console.log("log ====> DAO: agency in getAgencyById:", agency);
             return agency;
         } catch (error) {
             throw new Error("Error getting agency by ID: " + error);
@@ -50,7 +49,7 @@ class AgencyDAO implements IAgencyDAO {
                         },
                     },
                 },
-                select: { id: true },
+                select: {id: true},
             });
 
             if (!agency) {

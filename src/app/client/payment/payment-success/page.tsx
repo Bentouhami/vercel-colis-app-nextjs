@@ -1,22 +1,20 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import RequireAuth from '@/components/auth/RequireAuth';
-import { toast } from 'react-toastify';
-import { getSimulationFromCookie } from '@/lib/simulationCookie';
-import { getEnvoiById, updateEnvoiDatas } from '@/services/frontend-services/envoi/EnvoiService';
-import { checkAuthStatus } from '@/lib/auth';
-import { useRouter } from 'next/navigation';
-import { deleteSimulationCookie } from '@/services/frontend-services/simulation/SimulationService';
-import { DOMAIN } from '@/utils/constants';
-import { SimulationStatus } from '@prisma/client';
+import {toast} from 'react-toastify';
+import {getSimulationFromCookie} from '@/lib/simulationCookie';
+import {getEnvoiById, updateEnvoiDatas} from '@/services/frontend-services/envoi/EnvoiService';
+import {useRouter} from 'next/navigation';
+import {deleteSimulationCookie} from '@/services/frontend-services/simulation/SimulationService';
+import {SimulationStatus} from '@prisma/client';
+import {useSession} from "next-auth/react";
 
 export default function PaymentSuccessPage() {
     const router = useRouter();
-
     const [isLoading, setIsLoading] = useState(false);
-    const [didUpdate, setDidUpdate] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const {status} = useSession();
 
     /**
      * Check auth on mount
@@ -24,15 +22,13 @@ export default function PaymentSuccessPage() {
     useEffect(() => {
         const checkAuth = async () => {
             setIsLoading(true);
-            try {
-                const authResult = await checkAuthStatus(false);
-                setIsAuthenticated(authResult.isAuthenticated);
-            } finally {
+            if (status === "authenticated") {
+                setIsAuthenticated(true);
                 setIsLoading(false);
             }
         };
         checkAuth();
-    }, [router]);
+    }, [router, status]);
 
     /**
      * Finalize the payment process and delete the simulation cookie if conditions are met
@@ -49,61 +45,73 @@ export default function PaymentSuccessPage() {
             }
 
             // 2) Fetch the envoi
-            const envoiResponse = await getEnvoiById(Number(simulation.id));
-            if (!envoiResponse) {
+            let envoi = await getEnvoiById(Number(simulation.id));
+            if (!envoi) {
                 toast.error("Erreur lors de la récupération de l'envoi.");
                 return;
             }
 
-            const envoi = envoiResponse;
 
-            // 3) If envoi is fully completed (paid + trackingNumber + qrCodeUrl + COMPLETED)
+            // 3) If envoi is fully completed
             if (
                 envoi?.paid &&
                 envoi?.trackingNumber &&
                 envoi?.qrCodeUrl &&
                 envoi?.simulationStatus === SimulationStatus.COMPLETED
             ) {
+
+
                 await deleteSimulationCookie();
-                router.push(`${DOMAIN}/client/profile`);
+                router.replace("/client/profile");
                 return;
             }
 
-            console.log("log ====> envoi before updateEnvoisDatas call function in path: src/app/client/payment/payment-success/page.tsx is : ", envoi);
-            // 4) Otherwise, update the envoi
-            const updatedEnvoiResponse = await updateEnvoiDatas(Number(simulation.id));
-            if (!updatedEnvoiResponse) {
+            // 4) Update the envoi
+            const updateSuccess = await updateEnvoiDatas(Number(simulation.id));
+
+            console.log("log ====> updateSuccess: ", updateSuccess);
+
+            if (!updateSuccess) {
                 toast.error("Erreur lors de la mise à jour de l'envoi.");
                 return;
             }
 
-            // 5) Check if we have enough data to proceed
-            if (!envoi?.arrivalAgency?.id || !envoi?.userId) {
-                toast.error("Erreur lors de la mise à jour de l'agence.");
+            // 5) Wait briefly to allow the update to propagate
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+
+            // 6) Re-fetch the envoi
+            envoi = await getEnvoiById(envoi.id!);
+            // 7) Delete cookie and redirect
+            if (
+                envoi?.paid &&
+                envoi?.trackingNumber &&
+                envoi?.qrCodeUrl &&
+                envoi?.simulationStatus === SimulationStatus.COMPLETED
+            ) {
+                setTimeout(() => {
+                    deleteSimulationCookie();
+                    router.push("/client/profile");
+                }, 2000);
+                router.replace("/client/profile");
                 return;
             }
-
-            // 6) Delete the cookie, then redirect
-            await deleteSimulationCookie();
-            toast.success('Envoi mis à jour avec succès.');
-            router.push(`${DOMAIN}/client/profile`);
         } catch (error) {
             console.error('Error in finalizePayment:', error);
             toast.error('Une erreur est survenue lors de la finalisation du paiement.');
         } finally {
             setIsLoading(false);
-            setDidUpdate(true);
         }
     }, [router]);
 
+
     /**
-     * Kick off finalizePayment once user is authenticated (and not already done)
+     * Kick off finalizePayment once a user is authenticated (and not already done)
      */
     useEffect(() => {
-        if (isAuthenticated && !isLoading && !didUpdate) {
+        if (isAuthenticated && !isLoading) {
             finalizePayment();
         }
-    }, [isAuthenticated, isLoading, didUpdate, finalizePayment]);
+    }, [isAuthenticated, isLoading, finalizePayment]);
 
     return (
         <RequireAuth>
@@ -114,7 +122,7 @@ export default function PaymentSuccessPage() {
                 {/* Show a simple spinner while loading */}
                 {isLoading && (
                     <div className="mt-8 flex items-center space-x-2">
-                        <div className="animate-spin rounded-full h-8 w-8 border-t-4 border-b-4 border-green-600" />
+                        <div className="animate-spin rounded-full h-8 w-8 border-t-4 border-b-4 border-green-600"/>
                         <span className="text-sm text-gray-600">Redirection en cours...</span>
                     </div>
                 )}

@@ -15,7 +15,6 @@ const transporter = nodemailer.createTransport({
 
 export async function POST(req: NextRequest) {
 
-    console.log("log ====> POST function called in path: src/app/api/v1/contact/route.ts with req.body: ", req.body);
     const origin = req.headers.get('origin') || '';
     const headers = setCorsHeaders(origin);
 
@@ -26,7 +25,6 @@ export async function POST(req: NextRequest) {
 
     const {name, email, phone, subject, message} = await req.json();
 
-    console.log("log ====> name, email, phone, subject, message in path: src/app/api/v1/contact/route.ts: ", name, email, phone, subject, message);
 
     const currentDate = new Date().toLocaleDateString('fr-FR', {
         year: 'numeric',

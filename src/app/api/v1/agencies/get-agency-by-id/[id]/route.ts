@@ -1,8 +1,7 @@
-// path: src/app/api/v1/agencies/admin-agencies/[id]/route.ts
+// path: src/app/api/v1/agencies/get-agency-by-id/[id]/route.ts
 
-import {NextRequest, NextResponse} from 'next/server'
-import {getAgenciesByAdminId} from "@/services/backend-services/Bk_AgencyService";
-
+import {NextRequest, NextResponse} from 'next/server';
+import {getAgencyById} from "@/services/backend-services/Bk_AgencyService";
 
 export async function GET(request: NextRequest, {params}: { params: { id: string } }) {
     if (request.method !== 'GET') {
@@ -11,23 +10,23 @@ export async function GET(request: NextRequest, {params}: { params: { id: string
         })
     }
 
-    // get the user admin id from params
-    const userAdminId = Number(params.id);
-    if (!userAdminId) {
-        return new NextResponse('Invalid user admin id', {
+    // get the agency id from params
+    const agencyId = parseInt(params.id, 10);
+    if (!agencyId) {
+        return new NextResponse('Invalid agency id', {
             status: 400,
         })
     }
 
     try {
-        const agencies = await getAgenciesByAdminId(userAdminId);
-        if (!agencies) {
+        const agency = await getAgencyById(agencyId);
+        if (!agency) {
             return new NextResponse('Agency not found', {
                 status: 404,
             })
         }
 
-        return NextResponse.json(agencies, {
+        return NextResponse.json(agency, {
             status: 200,
             headers: {
                 'Content-Type': 'application/json',
@@ -41,9 +40,4 @@ export async function GET(request: NextRequest, {params}: { params: { id: string
             status: 500,
         })
     }
-
-
 }
-export const dynamic = 'force-dynamic'
-
-

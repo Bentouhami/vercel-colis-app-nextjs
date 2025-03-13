@@ -66,8 +66,6 @@ function ContactComponent() {
         const messageBody = {name, email, phone, subject, message};
 
         try {
-
-            console.log("log ====> messageBody in path: components/contact-us/ContactComponent.tsx: ", messageBody);
             const mailSent = await sendContactEmail(messageBody);
             toast.success("Votre message a été envoyé !");
             setName('');

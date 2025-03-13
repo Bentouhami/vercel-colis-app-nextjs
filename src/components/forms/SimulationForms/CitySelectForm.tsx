@@ -7,6 +7,7 @@ interface CitySelectProps {
     value: string;
     onChange: (e: ChangeEvent<HTMLSelectElement>) => void;
     cities: { id: number; name: string }[]; // ✅ Fix type (id as `number`, name as `string`)
+    placeholder?: string;
     disabled?: boolean;
 }
 

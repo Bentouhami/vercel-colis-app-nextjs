@@ -1,6 +1,6 @@
 // path: src/backend-services/Bk_AgencyService.ts
 
-import {FullAgencyDto, BaseAgencyDto, AgencyResponseDto, AgencyDto} from "@/services/dtos";
+import {AgencyDto, AgencyResponseDto, FullAgencyDto} from "@/services/dtos";
 import prisma from "@/utils/db";
 import {agencyRepository} from "@/services/repositories/agencies/AgencyRepository";
 
@@ -41,30 +41,9 @@ export async function getAgencyId(country: string, city: string, agencyName: str
     }
 }
 
-export async function getAgencyById(id: number): Promise<BaseAgencyDto | null> {
-    console.log("log ====> getAgencyById function called in src/services/backend-services/Bk_AgencyService.ts with id: ", id);
+export async function getAgencyById(id: number): Promise<AgencyResponseDto | null> {
     try {
-        const agency = await prisma.agency.findUnique({
-            where: {
-                id: id,
-            },
-            select: {
-                id: true,
-                name: true,
-                location: true,
-                address: {
-                    select: {
-                        id: true,
-                        city: true,
-                        country: true
-                    },
-                },
-                capacity: true,
-                availableSlots: true,
-            },
-        });
-
-        console.log("log ====> agency in getAgencyById function called in src/services/backend-services/Bk_AgencyService.ts: ", agency);
+        const agency = await agencyRepository.getAgencyById(id);
 
         if (!agency) {
             throw new Error("Agency not found");
@@ -81,7 +60,6 @@ export async function getAgencyById(id: number): Promise<BaseAgencyDto | null> {
 // region agency admin functions
 export async function getAgenciesByAdminId(adminId: number): Promise<AgencyDto[] | null> {
     if (!adminId) {
-        console.log("log ====> Invalid admin id in src/services/backend-services/Bk_AgencyService.ts");
         throw new Error("Invalid admin id");
     }
 
@@ -101,6 +79,27 @@ export async function getAgenciesByAdminId(adminId: number): Promise<AgencyDto[]
                         availableSlots: true,
                         createdAt: true,
                         updatedAt: true,
+                        address: {
+                            select: {
+                                id: true,
+                                street: true,
+                                complement: true,
+                                streetNumber: true,
+                                boxNumber: true,
+                                city: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        country: {
+                                            select: {
+                                                id: true,
+                                                name: true,
+                                            }
+                                        }
+                                    }
+                                },
+                            },
+                        },
                     },
                 },
 
@@ -116,8 +115,23 @@ export async function getAgenciesByAdminId(adminId: number): Promise<AgencyDto[]
             name: agency.agency.name,
             location: agency.agency.location || '',
             addressId: agency.agency.addressId,
-            capacity: agency.agency.capacity,
+            capacity: agency.agency.capacity || 0,
             availableSlots: agency.agency.availableSlots,
+            address: {
+                id: agency.agency.address.id,
+                street: agency.agency.address.street,
+                complement: agency.agency.address.complement,
+                streetNumber: agency.agency.address.streetNumber,
+                boxNumber: agency.agency.address.boxNumber,
+                city: {
+                    id: agency.agency.address.city.id,
+                    name: agency.agency.address.city.name,
+                    country: {
+                        id: agency.agency.address.city.country.id,
+                        name: agency.agency.address.city.country.name,
+                    }
+                }
+            },
             createdAt: agency.agency.createdAt,
             updatedAt: agency.agency.updatedAt,
         }));

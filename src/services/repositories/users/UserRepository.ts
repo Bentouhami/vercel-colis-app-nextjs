@@ -18,8 +18,6 @@ export class UserRepository implements IUserRepository {
             return null;
         }
 
-        console.log("log ====> email in path: src/services/repositories/users/UserRepository.ts: ", email);
-
         // Call the DAO to get the user
         try {
             const user = await prisma.user.findFirst({
@@ -84,7 +82,6 @@ export class UserRepository implements IUserRepository {
                 verificationTokenExpires: user.verificationTokenExpires,
             };
 
-            console.log("log ====> user in path: src/services/repositories/users/UserRepository.ts: ", user);
 
             // Map the user to a UserResponseDto and return it
             return userObj;
@@ -157,9 +154,6 @@ export class UserRepository implements IUserRepository {
                 role: user.role as RoleDto,
                 isVerified: user.isVerified || false,
             };
-
-
-            console.log("log ====> user in path: src/services/repositories/users/UserRepository.ts: ", user);
 
             // Map the user to a UserResponseDto and return it
             return userObj;

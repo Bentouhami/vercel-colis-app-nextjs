@@ -39,12 +39,10 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
                         throw new Error("Incorrect credentials");
                     }
 
-                    // console.log("Credentials password:", credentials.password);
-                    // console.log("User password:", user.password);
 
                     const passwordValid = await bcrypt.compare(
-                        String(credentials.password), // Explicitly convert to string
-                        String(user.password) // Explicitly convert to string
+                        String(credentials.password),
+                        String(user.password)
 
                     );
 
@@ -55,7 +53,6 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
 
                     console.log("---------- authorize end ----------");
 
-                    // Map Prisma user object to UserDto, transforming role to match RoleDto enum
                     return {
                         id: user.id.toString(),
                         firstName: user.firstName ?? undefined,

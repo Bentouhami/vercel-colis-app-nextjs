@@ -59,10 +59,7 @@ class EnvoiRepository implements IEnvoiRepository {
         }
 
         try {
-            console.log(
-                "log ====> envoi in updateEnvoi in EnvoiRepository.ts in path: src/services/repositories/envois/EnvoiRepository.ts is : ",
-                data
-            );
+
 
             // Pass the updated data to the DAO
             const envoi = await prisma.envoi.update({
@@ -238,16 +235,6 @@ class EnvoiRepository implements IEnvoiRepository {
             if (!envoi) {
                 return null;
             }
-
-            console.log(
-                "log ====> response found in updateEnvoi function after updating envoi in path: src/services/repositories/envois/EnvoiRepository.ts is : ",
-                envoi
-            );
-
-            // Map the updated response back to DTO
-
-            console.log("log ====> envoi in getSimulationWithParcelsById function called in src/services/frontend-services/envoi/SimulationService.ts is : ", envoi);
-
             // prepare the parcels object to return as ParcelDto[]
             const parcels = envoi.parcels.map(parcel => ({
 
@@ -270,7 +257,7 @@ class EnvoiRepository implements IEnvoiRepository {
 
             const clientAddresses: UserAddressDto = {
                 id: clientUserAddress?.id,
-                street: clientUserAddress?.street,
+                street: clientUserAddress?.street!,
                 complement: clientUserAddress?.complement!,
                 streetNumber: clientUserAddress?.streetNumber!,
                 boxNumber: clientUserAddress?.boxNumber!,

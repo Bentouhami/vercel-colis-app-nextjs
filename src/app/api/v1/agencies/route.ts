@@ -17,18 +17,17 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ error: "City ID is required" }, { status: 400 });
         }
 
-        console.log(`📡 Fetching agencies for city ID: ${cityId}`);
 
         // Fetch agencies for the selected city
         const agencies = await prisma.agency.findMany({
             where: {
                 address: {
-                    cityId: Number(cityId), // ✅ Ensure filtering by `cityId`
+                    cityId: Number(cityId),
                 },
             },
             select: {
                 id: true,
-                name: true, // ✅ Only return necessary fields
+                name: true,
             },
             orderBy: {
                 name: 'asc',
@@ -39,12 +38,11 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ error: 'No agencies found' }, { status: 404 });
         }
 
-        console.log(`✅ Agencies found for city ID ${cityId}:`, agencies);
 
         return NextResponse.json(agencies, { status: 200 });
 
     } catch (error) {
-        console.error('❌ Error fetching agencies:', error);
+        console.error(' Error fetching agencies:', error);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }

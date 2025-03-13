@@ -1,3 +1,5 @@
+// path: src/app/api/v1/agencies/[agency]/route.ts
+
 import {NextRequest, NextResponse} from 'next/server';
 import {findAgencyByName} from "@/services/backend-services/Bk_AgencyService";
 
@@ -9,11 +11,9 @@ interface Props {
 }
 
 export async function GET(req: NextRequest, {params}: Props) {
-    console.log("GET request received in agencies/departure route");
 
     try {
         const body = await req.json();
-        console.log("body: ", body);
 
         if (!body) {
             return NextResponse.json({error: 'Invalid request'}, {status: 400});
@@ -22,7 +22,6 @@ export async function GET(req: NextRequest, {params}: Props) {
         const agencyName = body as string;
 
         const agency = await findAgencyByName(agencyName);
-        console.log("agencyId: ", agency);
 
         if (!agency) {
             return NextResponse.json({error: 'Agency not found'}, {status: 404});

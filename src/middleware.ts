@@ -3,17 +3,12 @@ import {getToken} from "next-auth/jwt";
 import {isPublicRoute} from "@/utils/publicRoutesHelper";
 import {setCorsHeaders} from "@/utils/cors";
 import {RoleDto} from "@/services/dtos";
-import { ipAddress } from '@vercel/functions'
 
 
 export async function middleware(req: NextRequest) {
-    const ip = ipAddress(req);
-    console.log("IP address:", ip);
-
     const origin = req.headers.get("origin") || "";
     const corsHeaders = setCorsHeaders(origin);
 
-    console.log("--------------------------------");
 
     // Handle OPTIONS requests (CORS preflight)
     if (req.method === "OPTIONS") {
@@ -32,6 +27,8 @@ export async function middleware(req: NextRequest) {
     }
 
     try {
+        console.log("--------------Start Middleware-------------");
+
         // Retrieve JWT token
         const token = await getToken({req, secret: process.env.AUTH_SECRET});
 
@@ -74,12 +71,11 @@ export async function middleware(req: NextRequest) {
             }
         }
 
-        console.log("Access granted to protected route.");
         return response;
     } catch (error) {
         return NextResponse.redirect(new URL("/client/auth/login", req.nextUrl.origin));
     } finally {
-        console.log("--------------------------------");
+        console.log("---------------End Middleware-------------");
     }
 }
 

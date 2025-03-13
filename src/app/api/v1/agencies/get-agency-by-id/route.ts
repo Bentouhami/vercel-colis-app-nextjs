@@ -1,4 +1,4 @@
-// path: src/app/api/v1/agencies/get-agency-by-id/route.ts
+// path: src/app/api/v1/agencies/[id]/route.ts
 
 import {getAgencyById} from "@/services/backend-services/Bk_AgencyService";
 
@@ -14,7 +14,7 @@ import {auth} from "@/auth/auth";
  * @desc Get agency by id
  * @access public
  */
-export async function GET(req: NextRequest) {
+export async function GET(req: NextRequest , {params} : {params: {agencyId: string}}) {
     if (req.method !== 'GET') {
         return NextResponse.json({error: 'Method not allowed'}, {status: 405});
     }
@@ -25,18 +25,19 @@ export async function GET(req: NextRequest) {
     if (!user) {
         return NextResponse.json({error: "You must be connected to get your agency"}, {status: 401});
     }
+
     if (user.role !== RoleDto.AGENCY_ADMIN && user.role !== RoleDto.SUPER_ADMIN) {
         return NextResponse.json({error: "You don't have the right to get your agency"}, {status: 403});
     }
 
     try {
-        const id = req.nextUrl.searchParams.get('id');
+        const id = parseInt(params.agencyId, 10);
         if (!id) {
             return NextResponse.json({error: "Agency ID is required"}, {status: 400});
         }
 
         // Récupérer l'agence avec l'ID spécifié
-        const agency = await getAgencyById(Number(id));
+        const agency = await getAgencyById(id);
 
         if (!agency) {
             return NextResponse.json({error: 'Agency not found'}, {status: 404});

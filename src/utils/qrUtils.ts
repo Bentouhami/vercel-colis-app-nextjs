@@ -46,7 +46,6 @@ export async function uploadToCloudinary(
 }
 
 export async function generateAndUploadQRCode(data: object, trackingNumber: string, folder: string): Promise<string> {
-    console.log("log ====> data in generateAndUploadQRCode function called in path: src/utils/qrUtils.ts is : ", data);
 
     const qrCodeDataUrl = await generateQrCode(data);
     const base64Image = qrCodeDataUrl.split(',')[1];

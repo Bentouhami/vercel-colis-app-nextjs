@@ -47,6 +47,8 @@ export default function SimulationResults() {
             try {
                 setLoading(true);
                 const simulationData = await getSimulation();
+
+
                 if (!simulationData) {
                     toast.error("Something went wrong, please try again.");
                     setTimeout(() => {
@@ -55,8 +57,8 @@ export default function SimulationResults() {
                     return;
                 }
                 toast.success("Simulation results loaded successfully.");
-                console.log("log ====> simulationData in SimulationResults.tsx after getting simulation data in path: src/app/client/simulation/results/page.tsx is : ", simulationData);
                 setResults(simulationData);
+
             } catch (error) {
                 toast.error("Erreur de chargement des résultats.");
             } finally {

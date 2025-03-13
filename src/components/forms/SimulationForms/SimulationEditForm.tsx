@@ -1,7 +1,8 @@
+// path: src/components/forms/SimulationForms/SimulationEditForm.tsx
+
 'use client';
 
 import React, {
-    ChangeEvent,
     useEffect,
     useState,
     useTransition,
@@ -82,10 +83,6 @@ const SimulationEditForm = () => {
     // Loading indicator while fetching
     const [isLoading, setIsLoading] = useState(true);
 
-    // Depart / Destination states
-    // We'll store the "id" or "name" depending on how your API or selects are structured.
-    // In your code, you used the country name as a string ID, but typically you'd store numeric IDs.
-    // Adjust as needed.
     const [departure, setDeparture] = useState({
         country: '',
         city: '',
@@ -167,29 +164,66 @@ const SimulationEditForm = () => {
                     return;
                 }
 
-                // If no user is linked and we are authenticated, link the user ID
                 if (isAuthenticated && userId && !simData.userId) {
                     await updateSimulationUserId(simData.id, Number(userId));
                     simData.userId = Number(userId);
                 }
 
-                // Store full simulation
                 setSimulation(simData);
 
-                // Populate departure/destination from existing simulation
-                // (Adjust if you store IDs vs. names in your DB)
-                setDeparture({
-                    country: simData.departureCountry || '',
-                    city: simData.departureCity || '',
-                    agencyName: simData.departureAgency || '',
-                });
-                setDestination({
-                    country: simData.destinationCountry || '',
-                    city: simData.destinationCity || '',
-                    agencyName: simData.destinationAgency || '',
-                });
+                // Fetch countries first (ensures country exists before setting cities)
+                const countries = await fetchCountries();
+                setOptions((prev) => ({ ...prev, departureCountries: countries }));
 
-                // Parcels
+                // Find the correct country object
+                const departureCountry = countries.find((c: { name: string | null; }) => c.name === simData.departureCountry);
+                if (departureCountry) {
+                    setDeparture((prev) => ({ ...prev, country: departureCountry.id.toString() }));
+
+                    // Fetch cities for the selected country
+                    const cities = await fetchCities(departureCountry.id);
+                    setOptions((prev) => ({ ...prev, departureCities: cities }));
+
+                    // Find and set the correct city
+                    const departureCity = cities.find((c: { name: string | null; }) => c.name === simData.departureCity);
+                    if (departureCity) {
+                        setDeparture((prev) => ({ ...prev, city: departureCity.id.toString() }));
+
+                        // Fetch agencies for the selected city
+                        const agencies = await fetchAgencies(departureCity.id);
+                        setOptions((prev) => ({ ...prev, departureAgencies: agencies }));
+
+                        // Find and set the correct agency
+                        const departureAgency = agencies.find((a: { name: string | null; }) => a.name === simData.departureAgency);
+                        if (departureAgency) {
+                            setDeparture((prev) => ({ ...prev, agencyName: departureAgency.id.toString() }));
+                        }
+                    }
+                }
+
+                // Repeat the same logic for destination
+                const destinationCountry = countries.find((c: { name: string | null; }) => c.name === simData.destinationCountry);
+                if (destinationCountry) {
+                    setDestination((prev) => ({ ...prev, country: destinationCountry.id.toString() }));
+
+                    const destCities = await fetchCities(destinationCountry.id);
+                    setOptions((prev) => ({ ...prev, destinationCities: destCities }));
+
+                    const destinationCity = destCities.find((c: { name: string | null; }) => c.name === simData.destinationCity);
+                    if (destinationCity) {
+                        setDestination((prev) => ({ ...prev, city: destinationCity.id.toString() }));
+
+                        const destAgencies = await fetchAgencies(destinationCity.id);
+                        setOptions((prev) => ({ ...prev, destinationAgencies: destAgencies }));
+
+                        const destinationAgency = destAgencies.find((a: { name: string | null; }) => a.name === simData.destinationAgency);
+                        if (destinationAgency) {
+                            setDestination((prev) => ({ ...prev, agencyName: destinationAgency.id.toString() }));
+                        }
+                    }
+                }
+
+                // Set parcels
                 if (simData.parcels && simData.parcels.length > 0) {
                     setParcels(simData.parcels);
                 }
@@ -204,6 +238,7 @@ const SimulationEditForm = () => {
 
         fetchSimulation();
     }, [isAuthenticated, userId, router]);
+
 
 
     //==================================
@@ -225,6 +260,7 @@ const SimulationEditForm = () => {
     //   FETCH DEPARTURE CITIES
     //==================================
     useEffect(() => {
+
         if (!departure.country) {
             setOptions(prev => ({ ...prev, departureCities: [] }));
             setDeparture(prev => ({ ...prev, city: '', agencyName: '' }));

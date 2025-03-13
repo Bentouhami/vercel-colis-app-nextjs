@@ -72,16 +72,14 @@ const parcelsList = z.array(
 // region Address schema
 export const addressSchema = z.object({
     street: z.string().min(1, { message: "La rue est requise" }),
-    // Optional
+    // Optional fields for the address object
     complement: z.string().optional(),
     streetNumber: z.string().optional(),
     boxNumber: z.string().optional(),
-    // If city is mandatory in the DB, keep it required:
     city: z.string().min(1, { message: "La ville est requise" }),
     country: z.string().min(1, { message: "Le pays est requis" }),
 });
-
-// endregion
+// endregion Address schema
 
 
 // region User Schemas
@@ -258,5 +256,6 @@ export const transportSchema = z.object({
 
 export type RegisterUserFrontendFormType = z.infer<typeof registerUserFrontendSchema>;
 export type RegisterUserBackendType = z.infer<typeof registerUserBackendSchema>;
+export type FrontendAddressType = z.infer<typeof addressSchema>;
 
 

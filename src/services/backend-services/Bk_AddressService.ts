@@ -1,18 +1,19 @@
 // path: src/backend-services/Bk_AddressService.ts
 'use server';
-import {AddressDto, AddressResponseDto, UpdateAddressDto, UserAddressDto} from "@/services/dtos";
+import {AddressDto, UpdateAddressDto} from "@/services/dtos";
 import prisma from "@/utils/db";
+import {FrontendAddressType} from "@/utils/validationSchema";
 
 /**
- * Check if address already exists in the database by street, streetNumbe, city, zipCode and country fields
+ * Check if address already exists in the database by street, streetNumber, city, zipCode and country fields
  * @param address - address object
  * @returns {Promise<UpdateAddressDto | null>} address or null
  */
-export async function getAddressByStreetAndCityId(address: UserAddressDto): Promise<AddressDto | null> {
+export async function getAddressByStreetAndCityId(address: FrontendAddressType): Promise<AddressDto | null> {
     try {
         // Vérifier si le pays existe
         const country = await prisma.country.findFirst({
-            where: {name: address.city.country.name},
+            where: {name: address.country},
             select: {
                 id: true,
                 name: true
@@ -21,14 +22,14 @@ export async function getAddressByStreetAndCityId(address: UserAddressDto): Prom
         });
 
         if (!country) {
-            console.error(`Le pays '${address.city.country.name}' n'existe pas.`);
+            console.error(`Le pays '${address.city}' n'existe pas.`);
             return null;
         }
 
         // Vérifier si la ville existe dans ce pays
         const city = await prisma.city.findFirst({
             where: {
-                name: address.city.name,
+                name: address.city,
                 countryId: country.id
             },
             select: {
@@ -45,7 +46,7 @@ export async function getAddressByStreetAndCityId(address: UserAddressDto): Prom
         });
 
         if (!city) {
-            console.error(`La ville '${address.city}' n'existe pas dans '${address.city.country.name}'.`);
+            console.error(`La ville '${address.city}' n'existe pas dans '${address.city}'.`);
             return null;
         }
 
@@ -61,6 +62,8 @@ export async function getAddressByStreetAndCityId(address: UserAddressDto): Prom
                 street: true,
                 streetNumber: true,
                 cityId: true,
+                boxNumber: true,
+                complement: true,
                 city: {
                     select: {
                         id: true,
@@ -76,7 +79,34 @@ export async function getAddressByStreetAndCityId(address: UserAddressDto): Prom
             }
         });
 
-        return addressFound || null;
+        if (!addressFound) {
+            console.error("Error getting address:");
+            return null;
+        }
+        // prepare address obj to be returned
+
+        const addressObj = function () {
+            return {
+                id: addressFound.id,
+                street: addressFound.street,
+                complement: addressFound.complement,
+                streetNumber: addressFound.streetNumber,
+                boxNumber: addressFound.boxNumber,
+                cityId: addressFound.cityId,
+
+                city: {
+                    id: addressFound.city.id,
+                    name: addressFound.city.name,
+
+                    country: {
+                        id: addressFound.city.country.id,
+                        name: addressFound.city.country.name,
+                    }
+                }
+            };
+        }()
+
+        return addressObj || null;
     } catch (error) {
         console.error("Erreur lors de la vérification de l'adresse :", error);
         throw error;
@@ -90,25 +120,83 @@ export async function getAddressByStreetAndCityId(address: UserAddressDto): Prom
  * @param address
  * @returns {Promise<UpdateAddressDto | null>} address or null
  */
-export async function createAddress(address: AddressResponseDto): Promise<AddressDto | null> {
+export async function createAddress(address: FrontendAddressType): Promise<AddressDto | null> {
     try {
-        const addressCreated = await prisma.address.create({
-            data: {
-                street: address.street,
-                streetNumbe: address.streetNumbe,
-                city: address.city,
-                zipCode: address.zipCode,
-                country: address.country,
-            },
-            select: {
-                id: true,
-                street: true,
-                streetNumbe: true,
-                city: true,
-                zipCode: true,
-                country: true,
+
+        const addressCreated = await prisma.$transaction(async (tx) => {
+            // Find Country
+            const country = await tx.country.findFirst({
+                where: {name: address.city},
+                select: {id: true},
+            });
+            if (!country) throw new Error("Le pays spécifié est introuvable.");
+
+            //  Find City
+            const city = await tx.city.findFirst({
+                where: {name: address.city, countryId: country.id},
+                select: {id: true},
+            });
+            if (!city) throw new Error("La ville spécifiée est introuvable.");
+
+            // Find/Create Address
+            let existingAddress = await tx.address.findFirst({
+                where: {street: address.street, streetNumber: address.streetNumber, cityId: city.id},
+                select: {
+                    id: true,
+                    street: true,
+                    streetNumber: true,
+                    cityId: true,
+                    boxNumber: true,
+                    complement: true,
+                    city: {
+                        select: {
+                            id: true,
+                            name: true,
+                            country: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                }
+                            }
+                        }
+                    },
+                },
+            });
+
+            if (!existingAddress) {
+                existingAddress = await tx.address.create({
+                    data: {
+                        street: address.street!,
+                        complement: address.complement ? address.complement : null,
+                        streetNumber: address.streetNumber,
+                        boxNumber: address.boxNumber || null,
+                        cityId: city.id,
+                    },
+                    select: {
+                        id: true,
+                        street: true,
+                        streetNumber: true,
+                        cityId: true,
+                        boxNumber: true,
+                        complement: true,
+                        city: {
+                            select: {
+                                id: true,
+                                name: true,
+                                country: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                    }
+                                }
+                            }
+                        },
+                    }
+                });
             }
-        }) as AddressDto;
+
+            return existingAddress;
+        });
 
         if (!addressCreated) {
             return null;
@@ -120,11 +208,3 @@ export async function createAddress(address: AddressResponseDto): Promise<Addres
     }
 }
 
-export async function getAllAddresses(): Promise<AddressDto | null> {
-
-    const addresses = await addressRepository.getAllAddresses();
-
-
-    return null;
-
-}

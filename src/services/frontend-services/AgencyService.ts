@@ -2,8 +2,8 @@
 'use server';
 
 import axios from 'axios';
-import {API_DOMAIN, DOMAIN} from "@/utils/constants";
-import {AgencyDto} from "@/services/dtos";
+import {API_DOMAIN} from "@/utils/constants";
+import {AgencyResponseDto} from "@/services/dtos";
 
 
 /**
@@ -58,7 +58,7 @@ export async function linkClientToAgency(agencyId: number, clientId: number): Pr
     }
 
     try {
-        const response = await axios.post(`${DOMAIN}/api/v1/agencies/link-client`, {
+        const response = await axios.post(`${API_DOMAIN}/agencies/link-client`, {
             agencyId: agencyId,
             clientId: clientId
         }, {
@@ -81,7 +81,7 @@ export async function unlinkClientFromAgency(agencyId: number, clientId: number)
     }
 
     try {
-        const response = await axios.delete(`${DOMAIN}/api/v1/agencies/unlink-client`, {
+        const response = await axios.delete(`${API_DOMAIN}/agencies/unlink-client`, {
             params: {
                 agencyId: agencyId,
                 clientId: clientId
@@ -104,19 +104,12 @@ export async function unlinkClientFromAgency(agencyId: number, clientId: number)
  * @param id
  * @returns AgencyDto | Error : AgencyDto if successful, Error if not
  */
-export async function getAgencyById(id: number): Promise<AgencyDto | Error> {
+export async function getAgencyById(id: number): Promise<AgencyResponseDto | Error> {
     if (!id) {
         return new Error("Missing Agency ID");
     }
     try {
-        const response = await axios.get(`${API_DOMAIN}/agencies/get-agency-by-id`, {
-            params: {
-                id: id
-            },
-            headers: {
-                "Content-Type": "application/json",
-            }
-        });
+        const response = await axios.get(`${API_DOMAIN}/agencies/get-agency-by-id/${id}`);
 
         if (response.status !== 200) {
             throw new Error("Failed to get agency by id");

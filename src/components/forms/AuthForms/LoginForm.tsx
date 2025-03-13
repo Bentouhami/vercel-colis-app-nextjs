@@ -1,3 +1,5 @@
+// path: src/components/forms/AuthForms/LoginForm.tsx
+
 "use client";
 
 import React, {useState, useTransition} from "react";
@@ -7,16 +9,10 @@ import {motion} from "framer-motion";
 import Image from "next/image";
 import {useRouter, useSearchParams} from "next/navigation";
 import {toast, ToastContainer} from "react-toastify";
-
-// --- shadcn UI imports (adjust paths as needed)
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
-
-// --- Icons (lucide or whichever icon set you prefer)
 import {Eye, EyeOff, Lock, Mail} from "lucide-react";
-
-// --- Your existing utilities & actions
 import {loginUserSchema} from "@/utils/validationSchema";
 import {login} from "@/actions/UserActions";
 
@@ -41,7 +37,6 @@ export default function LoginForm() {
 
     async function onSubmit(data: LoginUserDto) {
 
-        console.log("log ====> data in onSubmit function called in path: src/components/forms/AuthForms/LoginForm.tsx: ", data);
         startTransition(() => {
             (async () => {
                 try {

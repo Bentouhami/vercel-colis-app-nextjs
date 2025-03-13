@@ -42,7 +42,6 @@ export async function cancelSimulation(envoiId: number): Promise<void> {
             }),
         ]);
 
-        console.log(`Simulation ${envoiId} annulée et parcels supprimés.`);
     } catch (error) {
         console.error("Erreur lors de l'annulation de la simulation :", error);
         throw error;
@@ -55,25 +54,31 @@ export async function cancelSimulation(envoiId: number): Promise<void> {
  * @param agencyId
  */
 async function linkClientToAgency(clientId: number, agencyId: number): Promise<void> {
-    const existingLink = await prisma.agencyClients.findUnique({
-        where: {
-            clientId_agencyId: {
-                clientId,
-                agencyId,
-            },
-        },
-    });
 
-    if (!existingLink) {
-        await prisma.agencyClients.create({
-            data: {
+    if (!clientId || !agencyId) return;
+    try {
+        const existingLink = await prisma.agencyClients.findUnique({
+            where: {
+                clientId_agencyId: {
+                    clientId,
+                    agencyId,
+                },
                 clientId,
                 agencyId,
-            },
+            }
         });
-        console.log(`✅ Client ${clientId} linked to Agency ${agencyId}`);
-    } else {
-        console.log(`ℹ️ Client ${clientId} is already linked to Agency ${agencyId}`);
+
+        if (!existingLink) {
+            await prisma.agencyClients.create({
+                data: {
+                    clientId,
+                    agencyId,
+                },
+            });
+        }
+    } catch (error) {
+        console.error("Error linking client to agency:", error);
+        throw error;
     }
 }
 
@@ -89,15 +94,12 @@ export async function updateEnvoi(envoiId: number): Promise<boolean> {
     }
 
     try {
-        console.log("log ====> envoiId in backend updateEnvoi function called in path: src/services/backend-services/Bk_EnvoiService.ts is : ", envoiId);
 
         // Step 1: Retrieve the envoi details
         const envoiResponse = await simulationRepository.getSimulationResponseById(envoiId);
         if (!envoiResponse) {
-            console.log("log ====> envoiResponse not found in backend updateEnvoi function in path: src/services/backend-services/Bk_EnvoiService.ts is : ", envoiResponse);
             return false;
         }
-        console.log("log ====> envoiResponse returned from simulationRepository.getSimulationResponseById function in path: src/services/backend-services/Bk_EnvoiService.ts is : ", envoiResponse);
 
 
         // get the envoi by id
@@ -113,7 +115,6 @@ export async function updateEnvoi(envoiId: number): Promise<boolean> {
             return true;
         }
 
-        console.log("log ====> envoi returned from envoiRepository.getEnvoiById function in path: src/services/backend-services/Bk_EnvoiService.ts is : ", envoi);
 
         // check if the envoi has already been paid
         if (envoi.paid &&
@@ -131,7 +132,6 @@ export async function updateEnvoi(envoiId: number): Promise<boolean> {
             envoiResponse.destinationCity!
         );
 
-        console.log("log ====> trackingNumber generated in backend updateEnvoi function called in path: src/services/backend-services/Bk_EnvoiService.ts is : ", trackingNumber);
 
         // Step 2: Prepare QR code data
         const qrData = {
@@ -159,7 +159,6 @@ export async function updateEnvoi(envoiId: number): Promise<boolean> {
         // Step 4: Generate and upload QR Code
         const qrCodeUrl = envoi.qrCodeUrl || await generateAndUploadQRCode(qrData, trackingNumber, QR_CODES_FOLDER);
 
-        console.log("log ====> qrCodeUrl generated in backend updateEnvoi function called in path: src/services/backend-services/Bk_EnvoiService.ts is : ", qrCodeUrl);
 
         // remove parcels from envoi
         const {
@@ -192,29 +191,15 @@ export async function updateEnvoi(envoiId: number): Promise<boolean> {
             paid: true
         };
 
-
-        console.log("log ====> updatedEnvoiData generated in backend updateEnvoi function called in path: src/services/backend-services/Bk_EnvoiService.ts is : ", updatedEnvoiData);
-
-        // Step 6: Update the envoi using a Prisma transaction
-        // const updatedEnvoi = await prisma.$transaction([
-        //     prisma.envoi.update({
-        //         where: {id: envoiId},
-        //         data: updatedEnvoiData,
-        //     }),
-        // ]);
-
         const updatedEnvoi = await envoiRepository.updateEnvoi(envoi.id!, updatedEnvoiData);
 
         if (!updatedEnvoi) {
-            console.log("log ====> updatedEnvoi not found in backend updateEnvoi function in path: src/services/backend-services/Bk_EnvoiService.ts is : ", updatedEnvoi);
             return false;
         }
         if (envoi.userId && envoi.departureAgencyId) {
             await linkClientToAgency(envoi.userId, envoi.departureAgencyId);
         }
 
-        console.log("log ====> updatedEnvoi in backend updateEnvoi function called in path: src/services/backend-services/Bk_EnvoiService.ts is : ", updatedEnvoi);
-        console.log('Envoi updated successfully:', updatedEnvoi);
 
         return true;
     } catch (error) {
@@ -232,14 +217,12 @@ export async function getEnvoiById(envoiId: number): Promise<EnvoiDto | null> {
     if (!envoiId) {
         throw new Error("Invalid envoi ID");
     }
-    console.log("log ====> envoiId in getEnvoiById function called in path: src/services/backend-services/envoi/Bk_envoiService.ts is : ", envoiId);
 
     const envoi = await envoiRepository.getEnvoiById(envoiId);
     if (!envoi) {
         return null;
     }
 
-    console.log("log ====> envoi in getEnvoiById function called in path: src/services/backend-services/envoi/Bk_envoiService.ts is : ", envoi);
 
     return envoi;
 }
@@ -256,7 +239,6 @@ export async function getAllEnvoisByUserId(userId: number, limit: number, offset
     total: number
 }> {
     try {
-        console.log("Fetching envois for userId:", userId, "with limit:", limit, "and offset:", offset);
 
         const total = await prisma.envoi.count({
             where: {

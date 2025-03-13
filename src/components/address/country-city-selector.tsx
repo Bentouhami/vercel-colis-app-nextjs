@@ -9,9 +9,9 @@ import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Label} from "@/components/ui/label";
 import {UseFormReturn} from "react-hook-form";
 import {RegisterUserFrontendFormType} from "@/utils/validationSchema";
-import {CityDTO} from "@/services/dtos/countries/CountryDto";
 import {getCitiesPerCountry} from "@/services/frontend-services/city/CityService";
 import {getAllCountries} from "@/services/frontend-services/country/CountryService";
+import {CityDto} from "@/services/dtos/cities/CityDto";
 
 interface CountryCitySelectorProps {
     form: UseFormReturn<RegisterUserFrontendFormType>;
@@ -20,7 +20,7 @@ interface CountryCitySelectorProps {
 export default function CountryCitySelector({form}: CountryCitySelectorProps) {
     const {setValue, watch} = form;
     const [countries, setCountries] = useState<any[]>([]);
-    const [cities, setCities] = useState<CityDTO[]>([]);
+    const [cities, setCities] = useState<CityDto[]>([]);
     const [openCountry, setOpenCountry] = useState(false);
     const [openCity, setOpenCity] = useState(false);
 

@@ -14,21 +14,15 @@ import {parcelRepository} from "@/services/repositories/parcels/ParcelRepository
 
 /**
  * get simulation by id
- * @return found simulation as type of SimulationResponseDto or null if not found
+ * @return found simulation as a type of SimulationResponseDto or null if not found
  * @param simulationId
  */
 export async function getSimulationById(simulationId: number): Promise<SimulationResponseDto | null> {
-
-    console.log("log ====> simulationId in getSimulationById function called in src/services/backend-services/Bk_SimulationService.ts is : ", simulationId);
-
     try {
         // 1. Get simulation by using repository
         const simulation = await simulationRepository.getSimulationResponseById(simulationId);
 
-        if (!simulation) {
-            return null;
-        }
-        return simulation;
+        return simulation ? simulation : null;
     } catch (error) {
         console.error('Error getting simulation:', error);
         throw error;
@@ -41,7 +35,6 @@ export async function getSimulationById(simulationId: number): Promise<Simulatio
  * @return the created simulation as type or CreatedSimulationResponseDto
  */
 export async function createSimulation(simulationData: CreateSimulationRequestDto): Promise<CreatedSimulationResponseDto | null> {
-    console.log("log ====> simulationData in saveSimulation function:", simulationData);
 
     if (!simulationData.departureAgencyId) {
         return null;
@@ -71,14 +64,9 @@ export async function createSimulation(simulationData: CreateSimulationRequestDt
             throw new Error("Arrival agency country or city is missing.");
         }
 
-        console.log("log ====> departureAgency in saveSimulation:", departureAgency);
-        console.log("log ====> arrivalAgency in saveSimulation:", arrivalAgency);
-
-        console.log("log ====> simulationData after getting agency ids:", simulationData);
 
         const createdSimulationResponse = await simulationRepository.createSimulation(simulationData);
 
-        console.log("log ====> createdSimulationResponse after saving:", createdSimulationResponse);
 
         if (!createdSimulationResponse) {
             return null;
@@ -127,18 +115,10 @@ export async function updateSimulationDestinataireId(simulationId: number, desti
         throw new Error("Invalid simulation or destinataire ID");
     }
 
-    console.log("updateSimulationDestinataireId function called in src/services/backend-services/Bk_SimulationService.ts");
     try {
         const response = await simulationRepository.updateSimulationDestinataireId(simulationId, destinataireId);
 
-        if (!response) {
-            console.log("log ====> response not found in updateSimulationDestinataireId function");
-            return false;
-
-        }
-
-        console.log("log ====> response found in updateSimulationDestinataireId function after updating destinataireId in path: src/services/backend-services/Bk_SimulationService.ts is : ", response);
-        return true;
+        return response ? response : false;
 
     } catch (error) {
         console.error('Error updating destinataire id in simulation:', error);
@@ -152,7 +132,6 @@ export async function updateSimulationDestinataireId(simulationId: number, desti
  * @param simulationIdAndToken as type of CreatedSimulationResponseDto
  */
 export async function updatePaidEnvoi(simulation: SimulationResponseDto, simulationIdAndToken: CreatedSimulationResponseDto) {
-    console.log("log ====> updateSimulation function called in src/services/backend-services/Bk_SimulationService.ts", simulation);
     try {
 
         if (!simulationIdAndToken) {
@@ -192,8 +171,6 @@ export async function updatePaidEnvoi(simulation: SimulationResponseDto, simulat
  */
 export async function updateSimulationAndParcels(simulationData: UpdateEditedSimulationDto): Promise<void | null> {
 
-    console.log("log ====> simulationData in updateSimulationAndParcels function called in path: src/services/backend-services/Bk_SimulationService.ts: ", simulationData);
-
 
     if (!simulationData || !simulationData.id) {
         throw new Error("Invalid simulation data");
@@ -222,17 +199,12 @@ export async function updateSimulationAndParcels(simulationData: UpdateEditedSim
 
         // 3. Update simulation fields
         await simulationRepository.updateSimulation(simulationData.id, simulationFields);
-
-
-        console.log("Simulation and parcels replaced successfully");
     } catch (error) {
         console.error("Error updating simulation and replacing parcels:", error);
         throw new Error("Failed to update simulation and replace parcels");
     }
 
-
 }
-
 
 /**
  * get simulation summary
@@ -257,22 +229,13 @@ export async function getSimulationSummary(simulationId: number): Promise<Simula
 export async function updateSimulationTransportId(simulationId: number, transportId: number): Promise<boolean> {
 
     if (!simulationId || !transportId) {
-        console.log("log ====> simulationId or transportId not found in updateSimulationTransportId function");
 
         throw new Error("Invalid simulation or transport ID");
     }
-    console.log("log ====> updateSimulationTransportId function called in src/services/backend-services/Bk_SimulationService.ts");
 
     try {
-        const response = await simulationRepository.updateSimulationTransportId(simulationId, transportId);
-        if (!response) {
-            console.log("log ====> response not found in updateSimulationTransportId function");
-            return false;
-        }
+        return await simulationRepository.updateSimulationTransportId(simulationId, transportId);
 
-        console.log("log ====> response found in updateSimulationTransportId function after updating transportId in path: src/services/backend-services/Bk_SimulationService.ts is : ", response);
-
-        return true;
     } catch (error) {
 
         console.error("Error updating simulation transportId:", error);

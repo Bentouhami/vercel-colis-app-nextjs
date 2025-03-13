@@ -4,7 +4,101 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c07cd60d-099f-4318-a2a3-b5d03932da3f" name="Changes" comment="" />
+    <list default="true" id="c07cd60d-099f-4318-a2a3-b5d03932da3f" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/app/api/v1/agencies/get-agency-by-id/[id]/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/prisma/schema.prisma" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/schema.prisma" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/prisma/seed.js" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/seed.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/admin/agencies/[id]/edit/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/agencies/[id]/edit/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/v1/addresses/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/v1/addresses/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/v1/agencies/[agency]/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/v1/agencies/[agency]/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/v1/agencies/admin-agencies/[id]/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/v1/agencies/admin-agencies/[id]/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/v1/agencies/findAgency/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/v1/agencies/findAgency/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/v1/agencies/get-agency-by-id/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/v1/agencies/get-agency-by-id/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/v1/agencies/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/v1/agencies/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/v1/cities/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/v1/cities/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/v1/contact/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/v1/contact/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/v1/countries/all/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/v1/countries/all/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/v1/countries/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/v1/countries/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/v1/envois/[id]/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/v1/envois/[id]/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/v1/payment/complete-payment/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/v1/payment/complete-payment/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/v1/payment/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/v1/payment/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/v1/simulations/[id]/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/v1/simulations/[id]/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/v1/simulations/edit/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/v1/simulations/edit/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/v1/simulations/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/v1/simulations/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/v1/transports/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/v1/transports/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/v1/users/[id]/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/v1/users/[id]/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/v1/users/destinataires/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/v1/users/destinataires/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/v1/users/login/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/v1/users/login/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/v1/users/register/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/v1/users/register/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/v1/users/verify/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/v1/users/verify/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/client/auth/verify-email/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/client/auth/verify-email/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/client/envois/recapitulatif/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/client/envois/recapitulatif/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/client/payment/payment-success/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/client/payment/payment-success/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/client/simulation/results/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/client/simulation/results/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/auth/auth.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/auth/auth.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/auth/authConfig.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/address/country-city-selector.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/address/country-city-selector.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/admin/collections/AgenciesList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/admin/collections/AgenciesList.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/auth/RequireAuth.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/auth/RequireAuth.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/calendar-date-picker.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/calendar-date-picker.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/client-specific/profile/DeliveriesList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/client-specific/profile/DeliveriesList.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/client-specific/profile/ProfileComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/client-specific/profile/ProfileComponent.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/client-specific/simulation/SimulationResults.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/client-specific/simulation/SimulationResults.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/client-specific/simulation/simulation-country-city-selector.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/client-specific/simulation/simulation-country-city-selector.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/conatct-us/ContactComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/conatct-us/ContactComponent.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/forms/AuthForms/LoginForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/forms/AuthForms/LoginForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/forms/AuthForms/RegisterForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/forms/AuthForms/RegisterForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/forms/EnvoiForms/AddReceiverForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/forms/EnvoiForms/AddReceiverForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/forms/SimulationForms/CitySelectForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/forms/SimulationForms/CitySelectForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/forms/SimulationForms/SimulationEditForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/forms/SimulationForms/SimulationEditForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/forms/SimulationForms/SimulationForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/forms/SimulationForms/SimulationForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/forms/admins/AgencyForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/forms/admins/AgencyForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/simple-time-picker.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/simple-time-picker.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ui/button.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/button.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/mailer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/mailer.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/middleware.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/middleware.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/backend-services/Bk_AddressService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/backend-services/Bk_AddressService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/backend-services/Bk_AgencyService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/backend-services/Bk_AgencyService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/backend-services/Bk_CityService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/backend-services/Bk_CityService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/backend-services/Bk_CountryService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/backend-services/Bk_CountryService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/backend-services/Bk_EnvoiService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/backend-services/Bk_EnvoiService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/backend-services/Bk_SimulationService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/backend-services/Bk_SimulationService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/backend-services/Bk_TransportService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/backend-services/Bk_TransportService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/backend-services/Bk_UserService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/backend-services/Bk_UserService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/dal/DAO/agencies/AgencyDAO.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/dal/DAO/agencies/AgencyDAO.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/dal/DAO/envois/EnvoiDAO.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/dal/DAO/envois/EnvoiDAO.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/dal/DAO/simulations/SimulationDAO.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/dal/DAO/simulations/SimulationDAO.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/dal/DAO/transports/TransportDAO.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/dal/DAO/transports/TransportDAO.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/dtos/addresses/AddressDto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/dtos/addresses/AddressDto.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/dtos/agencies/AgencyDto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/dtos/agencies/AgencyDto.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/dtos/envois/EnvoiDto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/dtos/envois/EnvoiDto.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/frontend-services/AddressService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/frontend-services/AddressService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/frontend-services/AgencyService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/frontend-services/AgencyService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/frontend-services/AuthService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/frontend-services/AuthService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/frontend-services/city/CityService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/frontend-services/city/CityService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/frontend-services/contact/ContactService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/frontend-services/contact/ContactService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/frontend-services/envoi/EnvoiService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/frontend-services/envoi/EnvoiService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/frontend-services/payment/paymentService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/frontend-services/payment/paymentService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/frontend-services/simulation/SimulationCalculationService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/frontend-services/simulation/SimulationCalculationService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/frontend-services/simulation/SimulationService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/frontend-services/simulation/SimulationService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/frontend-services/transport/TransportService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/frontend-services/transport/TransportService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/repositories/addresses/AddressRepository.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/repositories/addresses/AddressRepository.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/repositories/addresses/IAddressRepository.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/repositories/addresses/IAddressRepository.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/repositories/agencies/AgencyRepository.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/repositories/agencies/AgencyRepository.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/repositories/envois/EnvoiRepository.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/repositories/envois/EnvoiRepository.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/repositories/simulations/SimulationRepository.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/repositories/simulations/SimulationRepository.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/repositories/transports/TransportRepository.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/repositories/transports/TransportRepository.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/repositories/users/UserRepository.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/repositories/users/UserRepository.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/accessControlHelper.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/accessControlHelper.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/db.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/db.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/qrUtils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/qrUtils.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/validationSchema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/validationSchema.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/verifySimulationToken.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/verifySimulationToken.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/verifyToken.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/verifyToken.ts" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -28,25 +122,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Node.js.Bk_EnvoiService.ts.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "E:/fullstack_project/NextJs_Projects/colisapp/src/services/repositories/addresses",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "project.propVCSSupport.Mappings",
-    "ts.external.directory.path": "E:\\fullstack_project\\NextJs_Projects\\colisapp\\node_modules\\typescript\\lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Node.js.Bk_EnvoiService.ts.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/fullstack_project/NextJs_Projects/colisapp/src/services/repositories/addresses&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.Mappings&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;E:\\fullstack_project\\NextJs_Projects\\colisapp\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;postgresql&quot;
+    ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="E:\fullstack_project\NextJs_Projects\colisapp\src\services\repositories\addresses" />
@@ -82,7 +181,25 @@
       <workItem from="1741304880528" duration="3095000" />
       <workItem from="1741308538375" duration="60000" />
       <workItem from="1741308623312" duration="4371000" />
-      <workItem from="1741341372108" duration="4889000" />
+      <workItem from="1741341372108" duration="13372000" />
+      <workItem from="1741391627376" duration="4022000" />
+      <workItem from="1741451961730" duration="974000" />
+      <workItem from="1741531422977" duration="8139000" />
+      <workItem from="1741556391420" duration="215000" />
+      <workItem from="1741556934486" duration="721000" />
+      <workItem from="1741564842094" duration="6563000" />
+      <workItem from="1741609896944" duration="480000" />
+      <workItem from="1741625819649" duration="216000" />
+      <workItem from="1741642101563" duration="3896000" />
+      <workItem from="1741646149923" duration="4005000" />
+      <workItem from="1741650322034" duration="4010000" />
+      <workItem from="1741689168656" duration="1816000" />
+      <workItem from="1741709860794" duration="3726000" />
+      <workItem from="1741733242487" duration="174000" />
+      <workItem from="1741735283828" duration="1000" />
+      <workItem from="1741777072917" duration="11541000" />
+      <workItem from="1741815428576" duration="1223000" />
+      <workItem from="1741816672980" duration="6702000" />
     </task>
     <servers />
   </component>

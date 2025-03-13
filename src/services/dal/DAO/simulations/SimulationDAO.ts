@@ -5,12 +5,11 @@ import prisma from "@/utils/db";
 import {Envoi as EnvoiPrisma} from "@prisma/client";
 import {CreateSimulationRequestDto} from "@/services/dtos";
 import {ISimulationDAO} from "@/services/dal/DAO/simulations/ISimulationDAO";
-import {cookies} from "next/headers";
 
 
 /**
  * @class SimulationDAO
- * @description This class provides methods for interacting with the simulations table in the database.
+ * @description This class provides methods for interacting with the simulation table in the database.
  * @classdesc This class is responsible for handling database operations related to simulations. It provides methods for creating, updating, and retrieving simulations from the database. It also includes methods for updating the destinataireId of a simulation.
  * @implements {ISimulationDAO}
  *
@@ -26,7 +25,7 @@ class SimulationDAO implements ISimulationDAO {
         if (!id) return null;
         try {
             const simulation = await prisma.envoi.findUnique({
-                where: { id },
+                where: {id},
                 include: {
                     departureAgency: {
                         select: {
@@ -89,15 +88,6 @@ class SimulationDAO implements ISimulationDAO {
                     },
                 },
             });
-
-            // Optionally delete the simulation cookie after a delay
-            // const cookieName = process.env.SIMULATION_COOKIE_NAME;
-            // setTimeout(async () => {
-            //     if (cookies().has(cookieName!)) {
-            //         cookies().delete(cookieName!);
-            //     }
-            // }, 2000);
-
             return simulation;
         } catch (error) {
             console.error("Error getting simulation:", error);
@@ -145,9 +135,6 @@ class SimulationDAO implements ISimulationDAO {
             if (!simulation) {
                 return null;
             }
-
-            console.log("log ====> simulation after saving in DAO in path: src/services/dal/DAO/simulations/SimulationDAO.ts is : ", simulation);
-
             return simulation;
 
         } catch (error) {
@@ -188,7 +175,6 @@ class SimulationDAO implements ISimulationDAO {
             throw new Error("Invalid simulation or destinataire ID");
         }
 
-        console.log("updateSimulationDestinataireId function called in src/services/dal/DAO/simulations/SimulationDAO.ts");
         try {
             const response = await prisma.envoi.update({
                 where: {id: simulationId},
@@ -197,11 +183,9 @@ class SimulationDAO implements ISimulationDAO {
                 }
             });
             if (!response) {
-                console.log("log ====> response not found in updateSimulationDestinataireId function");
                 return false;
             }
 
-            console.log("log ====> response found in updateSimulationDestinataireId function after updating destinataireId in path: src/services/dal/DAO/simulations/SimulationDAO.ts is : ", response);
             return true;
         } catch (error) {
             console.error("Error updating destinataireId:", error);
@@ -260,10 +244,8 @@ class SimulationDAO implements ISimulationDAO {
 
 
         if (!simulationId || !transportId) {
-            console.log("log ====> simulationId or transportId not found in updateSimulationTransportId function");
             return false;
         }
-        console.log("log ====> updateSimulationTransportId function called in src/services/dal/DAO/simulations/SimulationDAO.ts");
 
         try {
             const response = await prisma.envoi.update({
@@ -274,10 +256,8 @@ class SimulationDAO implements ISimulationDAO {
             });
 
             if (!response) {
-                console.log("log ====> response not found in updateSimulationTransportId function");
                 return false;
             }
-            console.log("log ====> response found in updateSimulationTransportId function after updating transportId in path: src/services/dal/DAO/simulations/SimulationDAO.ts is : ", response);
             return true;
 
         } catch (error) {

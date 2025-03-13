@@ -38,13 +38,11 @@ export class SimulationRepository implements ISimulationRepository {
      * @param envoiId
      */
     async getSimulationResponseById(envoiId: number): Promise<SimulationResponseDto | null> {
+
         if (!envoiId) {
             return null;
         }
-
-        // Call the DAO to get the simulation
         try {
-            console.log("log ====> envoiId in getSimulationResponseById function called in path: src/services/frontend-services/simulation/SimulationService.ts is : ", envoiId);
 
             const simulation = await prisma.envoi.findUnique({
                 where: {id: envoiId},
@@ -58,7 +56,6 @@ export class SimulationRepository implements ISimulationRepository {
                                     street: true,
                                     streetNumber: true,
                                     boxNumber: true,
-                                    // Include the city and, within it, the related country
                                     city: {
                                         select: {
                                             id: true,
@@ -116,8 +113,8 @@ export class SimulationRepository implements ISimulationRepository {
                 return null;
             }
 
-            // Prepare the simulation object to return as SimulationResponseDto
 
+            // Prepare the simulation object to return as SimulationResponseDto
             const simulationObj: SimulationResponseDto = {
                 id: simulation.id,
                 userId: simulation.userId,
@@ -143,15 +140,7 @@ export class SimulationRepository implements ISimulationRepository {
                 })),
             };
 
-            if (!simulationObj) {
-                return null;
-            }
-
-            console.log("log ====> simulation in getSimulationResponseById function called in path: src/services/frontend-services/simulation/SimulationService.ts returned from simulationDAO.getSimulationResponseById function is : ", simulation);
-
-            // Map the simulation to a SimulationRequestDto and return it
-            return simulationObj;
-
+            return simulationObj ? simulationObj : null;
             // Handle any errors that may occur during the mapping process
         } catch (error) {
             console.error("Error getting simulation:", error);
@@ -269,14 +258,11 @@ export class SimulationRepository implements ISimulationRepository {
         if (!simulationId || !destinataireId) {
             throw new Error("Invalid simulation or destinataire ID");
         }
-        console.log("updateSimulationDestinataireId function called in src/services/repositories/simulations/SimulationRepository.ts");
 
         const response = await simulationDAO.updateSimulationDestinataireId(simulationId, destinataireId);
         if (!response) {
-            console.log("log ====> response not found in updateSimulationDestinataireId function");
             return false;
         }
-        console.log("log ====> response found in updateSimulationDestinataireId function after updating destinataireId in path: src/services/repositories/simulations/SimulationRepository.ts is : ", response);
         return true;
 
     }
@@ -489,7 +475,6 @@ export class SimulationRepository implements ISimulationRepository {
             if (!simulation) {
                 return null;
             }
-            console.log("log ====> simulation in getSimulationWithParcelsById function called in src/services/frontend-services/simulation/SimulationService.ts is : ", simulation);
 
             // prepare the parcels object to return as ParcelDto[]
             const parcels = simulation.parcels.map(parcel => ({
@@ -512,9 +497,9 @@ export class SimulationRepository implements ISimulationRepository {
 
             const clientAddresses: UserAddressDto = {
                 id: clientUserAddress?.id,
-                street: clientUserAddress?.street,
-                complement: clientUserAddress?.complement!,
+                street: clientUserAddress?.street!,
                 streetNumber: clientUserAddress?.streetNumber!,
+                complement: clientUserAddress?.complement!,
                 boxNumber: clientUserAddress?.boxNumber!,
                 cityId: clientUserAddress?.cityId!,
                 city: {
@@ -729,20 +714,13 @@ export class SimulationRepository implements ISimulationRepository {
     async updateSimulationTransportId(simulationId: number, transportId: number): Promise<boolean> {
 
         if (!simulationId || !transportId) {
-            console.log("log ====> simulationId or transportId not found in updateSimulationTransportId function");
             return false;
         }
-        console.log("log ====> updateSimulationTransportId function called in src/services/repositories/simulations/SimulationRepository.ts");
 
         const response = await simulationDAO.updateSimulationTransportId(simulationId, transportId);
 
-        if (!response) {
+        return response;
 
-            console.log("log ====> response not found in updateSimulationTransportId function");
-            return false;
-        }
-        console.log("log ====> response found in updateSimulationTransportId function after updating transportId in path: src/services/repositories/simulations/SimulationRepository.ts is : ", response);
-        return true;
 
     }
 }

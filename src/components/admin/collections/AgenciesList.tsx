@@ -16,7 +16,6 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { Button } from 'react-bootstrap';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -27,6 +26,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import {Button} from "@/components/ui/button";
 
 enum SortDirection {
     ASC = 'asc',

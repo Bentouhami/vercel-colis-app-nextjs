@@ -46,8 +46,6 @@ export async function POST(request: NextRequest) {
 
         const user = await getUserByEmail(formatedEmail);
 
-        console.log("log ====> user in login route: ", user);
-
         if (!user) {
             return NextResponse.json(
                 {error: "Invalid email or password"},

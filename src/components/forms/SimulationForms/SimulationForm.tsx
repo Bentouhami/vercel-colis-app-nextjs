@@ -311,43 +311,46 @@ const SimulationForm = () => {
         e.preventDefault();
         setLoading(true);
 
-        startTransition( () => {
-            const simulationData: SimulationDtoRequest = {
-                departureCountry: departure.country,
-                departureCity: departure.city,
-                departureAgency: departure.agencyName,
-                destinationCountry: destination.country,
-                destinationCity: destination.city,
-                destinationAgency: destination.agencyName,
-                parcels,
-            };
+        const simulationData: SimulationDtoRequest = {
+            departureCountry: departure.country,
+            departureCity: departure.city,
+            departureAgency: departure.agencyName,
+            destinationCountry: destination.country,
+            destinationCity: destination.city,
+            destinationAgency: destination.agencyName,
+            parcels,
+        };
 
-            const validated = simulationRequestSchema.safeParse(simulationData);
-            if (!validated.success) {
-                validated.error.errors.forEach((err) => {
-                    toast.error(err.message);
-                });
-                console.log("Validation Errors:", validated.error.errors);
+        const validated = simulationRequestSchema.safeParse(simulationData);
+        if (!validated.success) {
+            validated.error.errors.forEach((err) => {
+                toast.error(err.message);
+            });
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const response = await submitSimulation(simulationData);
+            if (!response) {
+                toast.error("Une erreur est survenue lors de la soumission de la simulation.");
                 setLoading(false);
                 return;
             }
 
-            try {
-                const response = submitSimulation(simulationData);
-                if (!response) {
-                    toast.error("Une erreur est survenue lors de la soumission de la simulation.");
-                    setLoading(false);
-                    return;
-                }
+            startTransition(() => {
                 toast.success("Simulation envoyée avec succès !");
                 router.push("/client/simulation/results");
-            } catch (error) {
-                console.error("Erreur lors de la soumission de la simulation:", error);
-                toast.error("Une erreur est survenue lors de la soumission de la simulation.");
-            }
+            });
+
+        } catch (error) {
+            console.error("Erreur lors de la soumission de la simulation:", error);
+            toast.error("Une erreur est survenue lors de la soumission de la simulation.");
+        } finally {
             setLoading(false);
-        });
+        }
     };
+
 
     //==================================
     //   SIMULATION MODAL (KEEP / NEW)

@@ -3,7 +3,6 @@ import {API_DOMAIN} from "@/utils/constants";
 
 export async function completePaymentService() {
 
-    console.log("log ====> paymentService function called in src/services/frontend-services/payment/paymentService.ts");
 
     try {
         const response = await fetch(`${API_DOMAIN}/payment/complete-payment`, {

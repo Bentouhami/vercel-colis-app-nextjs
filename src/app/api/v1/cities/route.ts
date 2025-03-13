@@ -1,4 +1,6 @@
 // path: src/app/api/v1/cities/route.ts
+
+export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from "@/utils/db";
 
@@ -21,7 +23,6 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ error: "Country ID is required" }, { status: 400 });
         }
 
-        console.log(`📡 Fetching cities in method GET in path: src/app/api/v1/cities/route.ts for country ID:  ${countryId}`);
 
         const cities = await prisma.city.findMany({
             where: {
@@ -39,7 +40,6 @@ export async function GET(req: NextRequest) {
             }
         });
 
-        console.log(`Cities found for country ID ${countryId}:`, cities);
 
         return NextResponse.json(cities, { status: 200 });
     } catch (error) {

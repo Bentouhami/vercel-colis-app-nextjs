@@ -33,8 +33,6 @@ export default function RecapitulatifPage() {
                     try {
 
                         const simulation = await getSimulation();
-                        console.log("log ====> data in RecapitulatifPage.tsx: ", simulation);
-
                         if (!simulation) {
                             toast.error("Impossible de trouver les données de simulation. Réessayez ou contactez le support.");
                             setLoading(false);

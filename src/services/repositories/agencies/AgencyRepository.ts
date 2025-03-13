@@ -1,8 +1,8 @@
 // path: src/services/repositories/agencies/AgencyRepository.ts
 
-import { IAgencyRepository } from "@/services/repositories/agencies/IAgencyRepository";
-import {AddressResponseDto, AgencyAddressDto, AgencyResponseDto} from "@/services/dtos";
-import { agencyDAO } from "@/services/dal/DAO/agencies/AgencyDAO";
+import {IAgencyRepository} from "@/services/repositories/agencies/IAgencyRepository";
+import {AgencyAddressDto, AgencyResponseDto} from "@/services/dtos";
+import {agencyDAO} from "@/services/dal/DAO/agencies/AgencyDAO";
 import prisma from "@/utils/db";
 
 export class AgencyRepository implements IAgencyRepository {
@@ -12,7 +12,7 @@ export class AgencyRepository implements IAgencyRepository {
         }
         try {
             const agency = await prisma.agency.findUnique({
-                where: { id },
+                where: {id},
                 include: {
                     address: {
                         include: {
@@ -52,6 +52,8 @@ export class AgencyRepository implements IAgencyRepository {
                 id: agency.id,
                 name: agency.name,
                 location: agency.location,
+                email: agency.email,
+                phoneNumber: agency.phoneNumber,
                 address: address,
                 capacity: agency.capacity || null,
                 availableSlots: agency.availableSlots || null,

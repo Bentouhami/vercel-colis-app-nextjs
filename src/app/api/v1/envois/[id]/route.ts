@@ -36,7 +36,7 @@ export async function PUT(
             );
         }
 
-        return NextResponse.json({envoi: updatedEnvoi}, {status: 200});
+        return NextResponse.json(updatedEnvoi, {status: 200});
     } catch (error) {
         console.error('Error updating envoi:', error);
         return NextResponse.json(
@@ -57,8 +57,6 @@ export async function GET(req: NextRequest, {params}: { params: { id: string } }
         return NextResponse.json("Not allowed method!")
     }
     try {
-        console.log("log ====> params.id in GET function called in path: src/app/api/v1/envois/[id]/route.ts is : ", params.id);
-
         const envoiId = parseInt(params.id, 10);
 
         if (!envoiId || isNaN(envoiId)) {
