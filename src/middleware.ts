@@ -15,10 +15,9 @@ export async function middleware(req: NextRequest) {
 
     const token = await getToken({
         req,
-        secret: process.env.AUTH_SECRET, // Ensure correct secret is used
-        raw: true, // Forces retrieval of raw JWT
+        secret: process.env.AUTH_SECRET,
+        secureCookie: process.env.NODE_ENV === 'production',
     });
-
 
     console.log("Middleware Debug -> Cookie token found:", !!token);
 
