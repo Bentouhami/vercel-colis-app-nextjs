@@ -6,14 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="c07cd60d-099f-4318-a2a3-b5d03932da3f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/admin/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/admin/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/page.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/auth/auth.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/auth/auth.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/admin/menu/Sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/admin/menu/Sidebar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/auth/RequireAuth.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/auth/RequireAuth.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/forms/admins/AgencyForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/forms/admins/AgencyForm.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/middleware.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/middleware.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/types/next-auth.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/next-auth.d.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -118,7 +112,8 @@
       <workItem from="1741816672980" duration="9808000" />
       <workItem from="1741862592861" duration="726000" />
       <workItem from="1741863705255" duration="170000" />
-      <workItem from="1741863954175" duration="11443000" />
+      <workItem from="1741863954175" duration="12819000" />
+      <workItem from="1741887883501" duration="2442000" />
     </task>
     <servers />
   </component>

@@ -32,63 +32,39 @@ export async function middleware(req: NextRequest) {
         console.log("--------------Start Middleware-------------");
 
         // Retrieve JWT token
-        const token = await getToken({req, secret: process.env.AUTH_SECRET});
+        const token = await getToken({ req, secret: process.env.AUTH_SECRET });
 
+        console.log("Middleware Debug -> Retrieved Token:", token); // 🔍 Log the token in production
 
         // Check if the user is authenticated
         const isAuthenticated = !!token;
 
-        // Handle public routes
-        if (isPublicRoute(req.nextUrl.pathname)) {
-            return response;
+        if (!token) {
+            console.warn("Middleware Debug -> No token found. Redirecting to login.");
+            return NextResponse.redirect(new URL("/client/auth/login", req.url));
         }
 
         // Role-based access control
         const userRole = token?.role;
+        console.log("Middleware Debug -> User Role:", userRole); // 🔍 Log role in production
 
-        const allowedAdminRoles = [
-            RoleDto.SUPER_ADMIN,
-            RoleDto.AGENCY_ADMIN,
-            RoleDto.ACCOUNTANT
-        ];
+        const allowedAdminRoles = [RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN, RoleDto.ACCOUNTANT];
+
         if (req.nextUrl.pathname.startsWith("/admin")) {
             if (!userRole || !allowedAdminRoles.includes(userRole)) {
-                return NextResponse.redirect(
-                    new URL("/client/unauthorized", req.url)
-                );
+                console.warn("Middleware Debug -> Unauthorized access attempt to /admin, redirecting.");
+                return NextResponse.redirect(new URL("/client/unauthorized", req.url));
             }
         }
 
-        // Handle redirects for authenticated users
-        if (isAuthenticated) {
-            if (req.nextUrl.pathname === "/client/auth/login" ||
-                req.nextUrl.pathname === "/client/auth/register"
-            ) {
-                return NextResponse.redirect(new URL("/client", req.nextUrl.origin));
-            }
-            if (req.nextUrl.pathname === "/") {
-                if (allowedAdminRoles.includes(userRole!)) {
-                    return NextResponse.redirect(new URL("/admin", req.nextUrl.origin));
-                } else {
-                    return NextResponse.redirect(new URL("/client", req.nextUrl.origin));
-                }
-            }
-        }
-
-        if (req.nextUrl.pathname.startsWith("/admin")) {
-            // Allow access only if user is a SUPER_ADMIN, AGENCY_ADMIN, or ACCOUNTANT
-            if (!allowedAdminRoles.includes(userRole!)) {
-                return NextResponse.redirect(new URL("/client/unauthorized", req.nextUrl.origin));
-            }
-        }
-
-
-        return response;
+        return NextResponse.next();
     } catch (error) {
-        return NextResponse.redirect(new URL("/client/auth/login", req.nextUrl.origin));
+        console.error("Middleware Debug -> ERROR:", error);
+        return NextResponse.redirect(new URL("/client/auth/login", req.url));
     } finally {
         console.log("---------------End Middleware-------------");
     }
+
 }
 
 // Configuration to apply middleware only to specific routes

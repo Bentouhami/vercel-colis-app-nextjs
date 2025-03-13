@@ -118,7 +118,6 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
 
     session: {
         strategy: "jwt",
-        // csrf: true,
     },
 
     callbacks: {
@@ -138,6 +137,8 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
             return token;
         },
         async session({session, token}): Promise<Session> {
+            console.log("NextAuth Debug -> Generating session with token:", token); // Log session details
+
             if (session.user) {
                 session.user = {
                     id: token.id ? token.id.toString() : '',
@@ -153,9 +154,11 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
                 };
             }
             return session;
-        }
+        },
     },
+
     secret: process.env.NEXTAUTH_SECRET,
     debug: process.env.NODE_ENV !== "production", // Enable debug only in development
+
 });
 
