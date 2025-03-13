@@ -13,8 +13,11 @@ export async function middleware(req: NextRequest) {
     console.log("Middleware Debug -> Request cookies:", req.cookies);
     console.log("Middleware Debug -> Auth header:", req.headers.get("authorization"));
 
-    const token = req.cookies.get('next-auth.session-token') ||
-        req.cookies.get('__Secure-next-auth.session-token'); // This one is used in production with HTTPS
+    const token = await getToken({
+        req,
+        secret: process.env.AUTH_SECRET, // Ensure correct secret is used
+        raw: true, // Forces retrieval of raw JWT
+    });
 
 
     console.log("Middleware Debug -> Cookie token found:", !!token);
