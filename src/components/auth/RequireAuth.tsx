@@ -22,10 +22,13 @@ export default function RequireAuth({
     // When status is "unauthenticated", display message and spinner, then redirect.
     useEffect(() => {
 
-        if (status === "unauthenticated") {
-            toast.error(customMessage);
-            router.push(redirectTo);
-        }
+        setTimeout(() => {
+            if (status === "unauthenticated") {
+                toast.error(customMessage);
+                router.push(redirectTo);
+            }
+        }, 2000);
+
     }, [status, router, redirectTo, customMessage, session]);
 
     if (status === "loading") {

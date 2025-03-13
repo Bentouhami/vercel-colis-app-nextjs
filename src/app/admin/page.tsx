@@ -1,19 +1,16 @@
-// path: src/app/page.tsx
+// path: src/app/admin/page.tsx
 'use client';
 
 import RequireAuth from "@/components/auth/RequireAuth";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import { Euro, FileText, Package, Users} from 'lucide-react';
+import {FileText, Package, Users} from 'lucide-react';
 import React, {useEffect, useState} from "react";
 import {useSession} from "next-auth/react";
 import {useRouter} from "next/navigation";
 import axios from "axios";
 
 import {API_DOMAIN} from "@/utils/constants";
-import DashboardCharts from "@/components/admin/charts/DashboardCharts";
 import {RoleDto} from "@/services/dtos";
-import UsersList from "@/components/admin/collections/UsersList";
-import AgenciesList from "@/components/admin/collections/AgenciesList";
 
 
 export default function Dashboard() {
@@ -24,41 +21,42 @@ export default function Dashboard() {
         totalClients: '',
         totalRevenue: ''
     });
-    const [role, setRole] = useState<RoleDto>();
+    const [role, setRole] = useState<RoleDto>(session?.user?.role!);
 
     // useEffect(() => {
-    //     console.log("session in dashboard.tsx is : ", session);
-    //     if (status === 'unauthenticated') {
-    //         router.push('/auth');
-    //         return;
-    //     }
-    //
-    //     if (session?.user?.role) {
-    //         setRole(session.user.role);
-    //     }
-    //
-    //     const fetchSummaryData = async () => {
-    //         try {
-    //             const response = await axios.get(`${API_DOMAIN}/dashboard/summary`);
-    //             if (response.status === 200 && response.data) {
-    //                 setSummary({
-    //                     totalAgencies: response.data.totalAgencies,
-    //                     totalClients: response.data.totalClients,
-    //                     totalRevenue: response.data.totalAmountSum
-    //                 });
-    //
-    //             }
-    //         } catch (error) {
-    //             console.error('Error fetching summary data:', error);
+    //         if (status === 'loading') {
+    //             return;
     //         }
-    //     };
+    //         if (status === 'authenticated') {
+    //             if (session?.user?.role) {
+    //                 setRole(session.user.role);
+    //             }
     //
-    //     fetchSummaryData();
+    //             const fetchSummaryData = async () => {
+    //                 try {
+    //                     const response = await axios.get(`${API_DOMAIN}/dashboard/summary`);
+    //                     if (response.status === 200 && response.data) {
+    //                         setSummary({
+    //                             totalAgencies: response.data.totalAgencies,
+    //                             totalClients: response.data.totalClients,
+    //                             totalRevenue: response.data.totalAmountSum
+    //                         });
     //
-    // }, [status, router, session, role]);
+    //                     }
+    //                 } catch (error) {
+    //                     console.error('Error fetching summary data:', error);
+    //                 }
+    //             };
+    //
+    //             fetchSummaryData();
+    //
+    //         }
+    //     },
+    //     [status, router, session, role]
+    // )
+    // ;
 
     return (
-        <RequireAuth>
             <div className="flex flex-col items-center justify-center min-h-screen">
                 <div className="flex flex-col items-center justify-center">
                     <div className="text-center">
@@ -119,6 +117,5 @@ export default function Dashboard() {
                     </div>
                 </div>
             </div>
-        </RequireAuth>
     );
 }

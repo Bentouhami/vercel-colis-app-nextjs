@@ -24,8 +24,8 @@ const formSchema = z.object({
     phoneNumber: z.string(),
     email: z.string(),
     vatNumber: z.string().min(1),
-    capacity: z.number().min(1),
-    availableSlots: z.number().min(0)
+    capacity: z.coerce.number().min(1),
+    availableSlots: z.coerce.number().min(0),
 });
 
 interface AgencyFormProps {
@@ -280,7 +280,7 @@ export default function AgencyForm({agencyId}: AgencyFormProps) {
                 </div>
 
                 <Button type="submit" className="mt-4">
-                    Mettre à jour
+                    {agencyId ? "Mettre à jour l'agence" : "Créer une agence"}
                 </Button>
             </form>
         </Form>

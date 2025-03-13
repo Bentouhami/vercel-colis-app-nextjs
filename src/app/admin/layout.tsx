@@ -7,6 +7,7 @@ import {Inter} from "next/font/google";
 import Sidebar from "@/components/admin/menu/Sidebar";
 import {SessionProvider} from "next-auth/react";
 import RequireAuth from "@/components/auth/RequireAuth";
+import {RoleDto} from "@/services/dtos";
 
 export const metadata = {
     title: 'Dashboard',
@@ -26,16 +27,18 @@ export default function DashboardLayout({
                 enableSystem
                 disableTransitionOnChange
             >
-                <div className={`${inter.className} flex min-h-screen`}>
-                    <Sidebar/>
-                    <div className="flex flex-col flex-1">
-                        <main className="flex-1 overflow-auto m-5">
-                            <RequireAuth>{children}</RequireAuth>
-                            <ToastContainer position="top-right" autoClose={3000}/>
-                        </main>
-                        <Footer/>
+                {/*<RequireAuth>*/}
+                    <div className="flex min-h-screen">
+                        <Sidebar/>
+                        <div className="flex flex-col flex-1">
+                            <main className="flex-1 overflow-auto m-5">
+                                {children}
+                                <ToastContainer position="top-right" autoClose={3000}/>
+                            </main>
+                            <Footer/>
+                        </div>
                     </div>
-                </div>
+                {/*</RequireAuth>*/}
             </ThemeProvider>
         </SessionProvider>
     );

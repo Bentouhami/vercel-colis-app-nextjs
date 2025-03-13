@@ -1,3 +1,5 @@
+// path: src/types/next-auth.d.ts
+
 import {DefaultSession} from "next-auth";
 import {AddressResponseDto, RoleDto} from "@/services/dtos";
 
@@ -37,21 +39,21 @@ declare module "next-auth/jwt" {
     }
 }
 
-// declare module "next-auth/Session" {
-//     interface Session {
-//         user: User;
-//     }
-//
-//     interface User {
-//         id: number | string | null;
-//         firstName?: string | null;
-//         lastName?: string | null;
-//         name?: string | null;
-//         email?: string;
-//         phoneNumber?: string | null;
-//         image?: string | null;
-//         role?: RoleDto;
-//         address?: AddressResponseDto | null;
-//         emailVerified?: Date | null;
-//     }
-// }
+declare module "next-auth/Session" {
+    interface Session {
+        user: User;
+    }
+
+    interface User {
+        id: number | string | null;
+        firstName?: string | null;
+        lastName?: string | null;
+        name?: string | null;
+        email?: string;
+        phoneNumber?: string | null;
+        image?: string | null;
+        role?: RoleDto;
+        address?: AddressResponseDto | null;
+        emailVerified?: Date | null;
+    }
+}

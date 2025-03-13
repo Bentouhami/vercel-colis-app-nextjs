@@ -1,3 +1,5 @@
+// path: middleware.ts
+
 import {NextRequest, NextResponse} from "next/server";
 import {getToken} from "next-auth/jwt";
 import {isPublicRoute} from "@/utils/publicRoutesHelper";
@@ -43,10 +45,19 @@ export async function middleware(req: NextRequest) {
 
         // Role-based access control
         const userRole = token?.role;
-        const isSuperAdmin = userRole === RoleDto.SUPER_ADMIN;
-        const isAgencyAdmin = userRole === RoleDto.AGENCY_ADMIN;
-        const isAccountant = userRole === RoleDto.ACCOUNTANT;
-        const isClient = userRole === RoleDto.CLIENT;
+
+        const allowedAdminRoles = [
+            RoleDto.SUPER_ADMIN,
+            RoleDto.AGENCY_ADMIN,
+            RoleDto.ACCOUNTANT
+        ];
+        if (req.nextUrl.pathname.startsWith("/admin")) {
+            if (!userRole || !allowedAdminRoles.includes(userRole)) {
+                return NextResponse.redirect(
+                    new URL("/client/unauthorized", req.url)
+                );
+            }
+        }
 
         // Handle redirects for authenticated users
         if (isAuthenticated) {
@@ -56,7 +67,7 @@ export async function middleware(req: NextRequest) {
                 return NextResponse.redirect(new URL("/client", req.nextUrl.origin));
             }
             if (req.nextUrl.pathname === "/") {
-                if (isSuperAdmin || isAgencyAdmin) {
+                if (allowedAdminRoles.includes(userRole!)) {
                     return NextResponse.redirect(new URL("/admin", req.nextUrl.origin));
                 } else {
                     return NextResponse.redirect(new URL("/client", req.nextUrl.origin));
@@ -65,11 +76,12 @@ export async function middleware(req: NextRequest) {
         }
 
         if (req.nextUrl.pathname.startsWith("/admin")) {
-            // Il faut être super-admin ou agency-admin
-            if (!isSuperAdmin && !isAgencyAdmin) {
+            // Allow access only if user is a SUPER_ADMIN, AGENCY_ADMIN, or ACCOUNTANT
+            if (!allowedAdminRoles.includes(userRole!)) {
                 return NextResponse.redirect(new URL("/client/unauthorized", req.nextUrl.origin));
             }
         }
+
 
         return response;
     } catch (error) {

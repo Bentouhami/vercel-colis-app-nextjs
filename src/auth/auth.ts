@@ -7,7 +7,7 @@ import bcrypt from "bcryptjs";
 import GoogleProvider from "@auth/core/providers/google";
 import GitHubProvider from "@auth/core/providers/github";
 import {RoleDto} from "@/services/dtos/enums/EnumsDto";
-import {AddressResponseDto, UserAddressDto} from "@/services/dtos";
+import {AddressResponseDto} from "@/services/dtos";
 import {getUserByEmail} from "@/services/backend-services/Bk_UserService";
 
 export const {handlers, signIn, signOut, auth} = NextAuth({
@@ -27,8 +27,6 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
                 if (!credentials?.email || !credentials?.password) {
                     throw new Error("Please enter a valid email and password");
                 }
-
-
                 try {
 
                     // find user in a database
@@ -43,7 +41,6 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
                     const passwordValid = await bcrypt.compare(
                         String(credentials.password),
                         String(user.password)
-
                     );
 
                     if (!passwordValid) {
@@ -62,7 +59,7 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
                         phoneNumber: user.phoneNumber ?? undefined,
                         image: user.image ?? undefined,
                         userAddress: user.userAddresses,
-                        role: user.role as RoleDto,
+                        role: user.role,
                         emailVerified: user.emailVerified ?? null,
                     } as User;
                 } catch (error) {
@@ -135,7 +132,7 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
                 token.phoneNumber = user.phoneNumber ?? undefined;
                 token.userAddresses = user.userAddresses as AddressResponseDto;
                 token.image = user.image ?? undefined;
-                token.role = user.role || RoleDto.CLIENT || undefined;
+                token.role = user.role;
                 token.emailVerified = user.emailVerified ?? null;
             }
             return token;
@@ -151,7 +148,7 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
                     phoneNumber: token.phoneNumber ?? undefined,
                     userAddresses: token.userAddresses as AddressResponseDto,
                     image: token.image ?? undefined,
-                    role: token.role || RoleDto.CLIENT || undefined,
+                    role: token.role,
                     emailVerified: token.emailVerified ?? null
                 };
             }
