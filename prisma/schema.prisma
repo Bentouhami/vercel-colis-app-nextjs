@@ -161,11 +161,13 @@ model User {
   destinataireLinks ClientDestinataire[] @relation("Destinataire")
 
   // Agency admin relations
-  clientAgencies  agencyClients[]
-  managedAgencies agencyAdmins[]
+  clientAgencies AgencyClients[]
+  agencyStaffs   AgencyStaff[]
 
   // UserAddress relations
-  userAddresses UserAddress[]
+  userAddresses      UserAddress[]
+  createdAgencies    Agency[]
+  staffsActivityLogs ActivityLog[]
 
   @@map("users")
 }
@@ -205,7 +207,7 @@ model Session {
   @@map("sessions")
 }
 
-model agencyClients {
+model AgencyClients {
   client   User   @relation(fields: [clientId], references: [id])
   clientId Int
   agency   Agency @relation(fields: [agencyId], references: [id])
@@ -215,14 +217,75 @@ model agencyClients {
   @@map("agency_clients")
 }
 
-model agencyAdmins {
-  admin    User   @relation(fields: [adminId], references: [id])
-  adminId  Int
-  agency   Agency @relation(fields: [agencyId], references: [id])
-  agencyId Int
+enum ActivityType {
+  AGENCY_CREATED
+  AGENCY_UPDATED
+  AGENCY_DELETED
+  CLIENT_LINKED
+  CLIENT_UNLINKED
+  CLIENT_UPDATED
+  CLIENT_DELETED
+  CLIENT_CREATED
+  ENVOI_CREATED
+  ENVOI_UPDATED
+  ENVOI_DELETED
+  PAYMENT_CREATED
+  PAYMENT_UPDATED
+  PAYMENT_DELETED
+  TRACKING_EVENT_CREATED
+  TRACKING_EVENT_UPDATED
+  TRACKING_EVENT_DELETED
+  APPOINTMENT_CREATED
+  APPOINTMENT_UPDATED
+  APPOINTMENT_DELETED
+  NOTIFICATION_CREATED
+  NOTIFICATION_UPDATED
+  NOTIFICATION_DELETED
+  AGENCY_ADMIN_ADDED
+  AGENCY_ADMIN_REMOVED
+  ACCOUNTANT_ADDED
+  ACCOUNTANT_REMOVED
+  SUPER_ADMIN_ADDED
+  SUPER_ADMIN_REMOVED
+  TRANSPORT_CREATED
+  TRANSPORT_UPDATED
+  TRANSPORT_DELETED
+  TARIF_CREATED
+  TARIF_UPDATED
+  TARIF_DELETED
+  PDF_EXPORTED
+  CSV_EXPORTED
 
-  @@id([adminId, agencyId])
-  @@map("agency_admins")
+  @@map("activity_types")
+}
+
+model AgencyStaff {
+  id        Int  @id @default(autoincrement())
+  staffId   Int
+  agencyId  Int
+  staffRole Role
+
+  staff  User   @relation(fields: [staffId], references: [id])
+  agency Agency @relation(fields: [agencyId], references: [id])
+
+  @@unique([staffId, agencyId, staffRole])
+  @@map("agency_staff")
+}
+
+model ActivityLog {
+  id           Int          @id @default(autoincrement())
+  activityType ActivityType
+  staffId      Int?
+  agencyId     Int?
+  details      String?
+  staffRole    Role
+  createdAt    DateTime     @default(now())
+
+  // Relations
+  staff  User?   @relation(fields: [staffId], references: [id])
+  agency Agency? @relation(fields: [agencyId], references: [id])
+
+  @@map("activity_logs")
 }
 
 model Authenticator {
@@ -339,7 +402,7 @@ model UserAddress {
 
   // Relations
   address Address @relation(fields: [addressId], references: [id])
-  usere   User    @relation(fields: [userId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
 
   @@map("user_addresses")
 }
@@ -374,6 +437,8 @@ model Agency {
   createdAt      DateTime @default(now())
 
   // Relations
+  createdById    Int? // Nullable in case user gets deleted
+  createdBy      User?   @relation(fields: [createdById], references: [id])
   arrivalEnvoi   Envoi[] @relation("ArrivalAgency")
   departureEnvoi Envoi[] @relation("DepartureAgency")
 
@@ -383,8 +448,9 @@ model Agency {
   tarifs        Tarifs[]
   address       Address        @relation(fields: [addressId], references: [id])
 
-  agencyClients agencyClients[]
-  agencyAdmins  agencyAdmins[]
+  agencyClients AgencyClients[]
+  agencyStaff   AgencyStaff[]
+  ActivityLog   ActivityLog[]
 
   @@map("agencies")
 }

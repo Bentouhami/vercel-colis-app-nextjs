@@ -3,7 +3,7 @@
 
 import axios from 'axios';
 import {API_DOMAIN} from "@/utils/constants";
-import {AgencyResponseDto} from "@/services/dtos";
+import {AgencyResponseDto, CreateAgencyDto} from "@/services/dtos";
 
 
 /**
@@ -123,6 +123,65 @@ export async function getAgencyById(id: number): Promise<AgencyResponseDto | Err
 
         return data;
 
+    } catch (error) {
+        throw error;
+    }
+}
+
+
+/**
+ * Create agency
+ * @param agencyData
+ * @returns AgencyResponseDto | Error : AgencyResponseDto if successful, Error if not   */
+export async function createAgency(agencyData: CreateAgencyDto): Promise<AgencyResponseDto | Error> {
+    if (!agencyData) {
+        return new Error("Missing Agency Data");
+    }
+
+    try {
+        const response = await axios.post(`${API_DOMAIN}/agencies/create-agency`, agencyData, {
+            headers: {
+                "Content-Type": "application/json",
+            }
+        });
+
+        if (response.status !== 200) {
+            throw new Error("Failed to create agency");
+        }
+
+        const data = response.data;
+        if (!data) {
+            throw new Error("Failed to create agency");
+        }
+
+        return data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+
+/**
+ * Update agency
+ * @param agencyData
+ * @returns AgencyResponseDto | Error: AgencyResponseDto if successful, Error if not   */
+export async function updateAgency(agencyData: CreateAgencyDto): Promise<AgencyResponseDto | Error> {
+    if (!agencyData) {
+        return new Error("Missing Agency Data");
+    }    try {
+        const response = await axios.put(`${API_DOMAIN}/agencies/update-agency`, agencyData, {
+            headers: {
+                "Content-Type": "application/json",
+            }
+        });
+        if (response.status !== 200) {
+            throw new Error("Failed to update agency");
+        }
+        const data = response.data;
+        if (!data) {
+            throw new Error("Failed to update agency");
+        }
+        return data;
     } catch (error) {
         throw error;
     }

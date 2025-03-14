@@ -1,6 +1,6 @@
 // path: src/services/interfaces/IAgencyRepository.ts
 
-import {AgencyResponseDto} from "@/services/dtos";
+import {AgencyDto, AgencyResponseDto} from "@/services/dtos";
 
 export interface IAgencyRepository {
     /**
@@ -10,5 +10,6 @@ export interface IAgencyRepository {
      */
     getAgencyById(id: number): Promise<AgencyResponseDto | null>;
     getAgencyId(country: string, city: string, agencyName: string): Promise<number | null>;
+    createAgency(agencyData: AgencyDto, staffId: number): Promise<AgencyResponseDto | null>;
 
 }

@@ -7,6 +7,7 @@ import ProfileSideMenu from "@/components/client-specific/profile/ProfileSideMen
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {RoleDto} from "@/services/dtos";
 
 export default function ProfileLayout({
                                           children,
@@ -17,7 +18,7 @@ export default function ProfileLayout({
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     return (
-        <RequireAuth>
+        <RequireAuth allowedRoles={[RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN, RoleDto.ACCOUNTANT, RoleDto.CLIENT]}>
             <SidebarProvider>
                 <div className="w-full flex justify-center items-start min-h-screen bg-gray-100 pt-16 relative">
                     <div className="flex w-full max-w-5xl min-h-[80vh] bg-white shadow-lg rounded-lg overflow-hidden">

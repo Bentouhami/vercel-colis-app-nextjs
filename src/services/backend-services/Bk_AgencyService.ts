@@ -58,15 +58,15 @@ export async function getAgencyById(id: number): Promise<AgencyResponseDto | nul
 
 
 // region agency admin functions
-export async function getAgenciesByAdminId(adminId: number): Promise<AgencyDto[] | null> {
-    if (!adminId) {
+export async function getAgenciesByAdminId(staffId: number): Promise<AgencyDto[] | null> {
+    if (!staffId) {
         throw new Error("Invalid admin id");
     }
 
     try {
-        const agencies = await prisma.agencyAdmins.findMany({
+        const agencies = await prisma.agencyStaff.findMany({
             where: {
-                adminId,
+                staffId,
             },
             include: {
                 agency: {
@@ -109,6 +109,10 @@ export async function getAgenciesByAdminId(adminId: number): Promise<AgencyDto[]
         if (!agencies) {
             throw new Error("Agencies not found");
         }
+
+        console.log("agencies found function getAgenciesByAdminId in Bk_AgencyService.ts", agencies);
+
+
         // format the response to match the AgencyResponseDto interface
         const formattedAgencies = agencies.map((agency) => ({
             id: agency.agency.id,
@@ -135,10 +139,39 @@ export async function getAgenciesByAdminId(adminId: number): Promise<AgencyDto[]
             createdAt: agency.agency.createdAt,
             updatedAt: agency.agency.updatedAt,
         }));
+
+        console.log("formattedAgencies found function getAgenciesByAdminId in Bk_AgencyService.ts", formattedAgencies);
+
         return formattedAgencies;
 
     } catch (error) {
         console.error("Error getting agencies by admin id:", error);
+        throw error;
+    }
+}
+
+export async function createAgency(agencyData: AgencyDto, staffId: number): Promise<AgencyResponseDto | null> {
+    try {
+        const agency = await agencyRepository.createAgency(agencyData , staffId);
+        if (!agency) {
+            throw new Error("Agency not created");
+        }
+        return agency;
+    } catch (error) {
+        console.error("Error creating agency:", error);
+        throw error;
+    }
+}
+
+export async function updateAgency(agencyData: AgencyDto): Promise<AgencyResponseDto | null> {
+    try {
+        const agency = await agencyRepository.updateAgency(agencyData);
+        if (!agency) {
+            throw new Error("Agency not updated");
+        }
+        return agency;
+    } catch (error) {
+        console.error("Error updating agency:", error);
         throw error;
     }
 }

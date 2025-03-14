@@ -1,11 +1,12 @@
 // path: src/app/dashboard/users/[id]/edit/page.tsx
 'use client'
-import React, {useEffect, useState} from 'react'
+import React, {useEffect} from 'react'
 import RequireAuth from '@/components/auth/RequireAuth';
 import {useSession} from "next-auth/react";
 import {useRouter} from "next/navigation";
 import {accessControlHelper} from "@/utils/accessControlHelper";
 import UsersForm from "@/components/forms/admins/UsersForm";
+import {RoleDto} from "@/services/dtos";
 
 const EditUserPage = ({params}: { params: { id: string } }) => {
     const {data: session, status} = useSession();
@@ -33,7 +34,7 @@ const EditUserPage = ({params}: { params: { id: string } }) => {
 
 
     return (
-        <RequireAuth>
+        <RequireAuth allowedRoles={[RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN]}>
             <div className="container mx-auto py-10 px-4">
                 <h1 className="text-3xl font-bold mb-8">Edit User</h1>
                 <UsersForm userId={params.id}/>

@@ -5,6 +5,7 @@
 import React from 'react';
 import {useRouter} from 'next/navigation';
 import RequireAuth from "@/components/auth/RequireAuth";
+import {RoleDto} from "@/services/dtos";
 
 const PaymentCancelPage = () => {
     const router = useRouter();
@@ -15,7 +16,7 @@ const PaymentCancelPage = () => {
     };
 
     return (
-        <RequireAuth>
+        <RequireAuth allowedRoles={[RoleDto.CLIENT, RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN, RoleDto.ACCOUNTANT]}>
             <div className="flex flex-col items-center justify-center min-h-screen px-4">
                 <h1 className="text-3xl font-bold text-red-600">Paiement Annulé</h1>
                 <p className="mt-4 text-center">

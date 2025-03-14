@@ -4,7 +4,7 @@
 
 import React, {useEffect, useState} from "react";
 import {useSession} from "next-auth/react";
-import RequireAuth from "@/components/auth/RequireAuth";
+import  RequireAuth from "@/components/auth/RequireAuth";
 import {useRouter} from "next/navigation";
 import {Button} from "@/components/ui/button";
 import {Plus} from "lucide-react";
@@ -41,7 +41,7 @@ export default function UsersPage() {
     }
 
     return (
-        <RequireAuth>
+        <RequireAuth allowedRoles={[RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN, RoleDto.ACCOUNTANT]}>
             <div className="container mx-auto py-10">
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-3xl font-bold">Users Management</h1>

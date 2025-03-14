@@ -9,6 +9,7 @@ export interface AgencyDto {
     location?: string;
     email?: string;
     phoneNumber?: string;
+    vatNumber?: string;
     addressId: number;
     address?: AddressDto;
     capacity?: number | null;
@@ -18,7 +19,7 @@ export interface AgencyDto {
 }
 
 // DTO for creating a new agency
-export interface CreateAgencyDto extends Omit<AgencyDto, "id" | "address"> {
+export interface CreateAgencyDto extends Partial<AgencyDto> {
 }
 
 // DTO for updating an existing agency
@@ -42,6 +43,7 @@ export interface AgencyResponseDto {
     id: number;
     name: string;
     location: string | null;
+    vatNumber: string | null;
     email: string | null;
     phoneNumber: string | null;
     address: AgencyAddressDto;

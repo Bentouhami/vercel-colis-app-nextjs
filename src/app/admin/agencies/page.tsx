@@ -1,10 +1,6 @@
 // path: src/app/admin/agencies/page.tsx
 
 import React from 'react'
-import RequireAuth from "@/components/auth/RequireAuth";
-import AgencyForm from "@/components/forms/admins/AgencyForm";
-import AgencyList from "@/components/forms/admins/AgencyList";
-import {useSession} from "next-auth/react";
 import AgenciesList from "@/components/admin/collections/AgenciesList";
 
 /**

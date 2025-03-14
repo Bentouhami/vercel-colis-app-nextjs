@@ -14,11 +14,19 @@ export const metadata = {
     description: 'Dashboard de ColisApp',
 };
 const inter = Inter({subsets: ['latin']})
+
 export default function DashboardLayout({
                                             children,
                                         }: {
     children: React.ReactNode;
 }) {
+    // Define allowed admin roles
+    const allowedAdminRoles = [
+        RoleDto.SUPER_ADMIN,
+        RoleDto.AGENCY_ADMIN,
+        RoleDto.ACCOUNTANT
+    ];
+
     return (
         <SessionProvider>
             <ThemeProvider
@@ -27,7 +35,6 @@ export default function DashboardLayout({
                 enableSystem
                 disableTransitionOnChange
             >
-                {/*<RequireAuth>*/}
                     <div className="flex min-h-screen">
                         <Sidebar/>
                         <div className="flex flex-col flex-1">
@@ -38,7 +45,6 @@ export default function DashboardLayout({
                             <Footer/>
                         </div>
                     </div>
-                {/*</RequireAuth>*/}
             </ThemeProvider>
         </SessionProvider>
     );

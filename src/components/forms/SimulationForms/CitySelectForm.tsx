@@ -1,17 +1,16 @@
-import { Form } from 'react-bootstrap';
-import React, { ChangeEvent, useMemo } from "react";
-import { Label } from "@/components/ui/label";
+import React, {ChangeEvent, useMemo} from "react";
+import {Label} from "@/components/ui/label";
 
 interface CitySelectProps {
     label: string;
     value: string;
     onChange: (e: ChangeEvent<HTMLSelectElement>) => void;
-    cities: { id: number; name: string }[]; // ✅ Fix type (id as `number`, name as `string`)
+    cities: { id: number; name: string }[];
     placeholder?: string;
     disabled?: boolean;
 }
 
-const CitySelect = ({ label, value, onChange, cities, disabled = false }: CitySelectProps) => {
+const CitySelect = ({label, value, onChange, cities, disabled = false}: CitySelectProps) => {
     const placeholder = useMemo(() => disabled ? "Sélection non disponible" : "Sélectionner une ville", [disabled]);
 
     return (

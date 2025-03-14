@@ -47,10 +47,9 @@ export class UserRepository implements IUserRepository {
             });
 
             // Check if the user exists
-            if (!user || !(user.userAddresses.length > 0)) {
+            if (!user || !user.password) {
                 return null;
             }
-
             const pivot = user.userAddresses[0];
 
             // prepare an AddressResponseDto from that pivot

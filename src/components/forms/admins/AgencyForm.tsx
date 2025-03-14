@@ -1,22 +1,22 @@
 "use client";
 
 import {toast} from "sonner";
-import {useForm} from "react-hook-form";
+import {Controller, useForm} from "react-hook-form";
 import * as z from "zod";
-import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
+import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {PhoneInput} from "@/components/phone-input";
 import React, {useEffect, useState} from "react";
-import {getAgencyById} from "@/services/frontend-services/AgencyService";
-import {AgencyResponseDto} from "@/services/dtos";
+import {createAgency, getAgencyById, updateAgency} from "@/services/frontend-services/AgencyService"; // Assurez-vous d'avoir cette fonction
+import {AgencyResponseDto, CreateAgencyDto} from "@/services/dtos";
 import CountrySelect from "@/components/forms/SimulationForms/CountrySelectForm";
 import CitySelect from "@/components/forms/SimulationForms/CitySelectForm";
 import {fetchCities, fetchCountries} from "@/services/frontend-services/AddressService";
 
 //
-// Zod validation schema
+// Schéma de validation avec les champs d'adresse imbriqués
 //
 const formSchema = z.object({
     agencyName: z.string().min(1).max(50),
@@ -26,6 +26,21 @@ const formSchema = z.object({
     vatNumber: z.string().min(1),
     capacity: z.coerce.number().min(1),
     availableSlots: z.coerce.number().min(0),
+    address: z.object({
+        street: z.string().optional(),
+        complement: z.string().optional(),
+        streetNumber: z.string().optional(),
+        boxNumber: z.string().optional(),
+        city: z.object({
+            id: z.number(),
+            name: z.string(),
+            country: z.object({
+                id: z.number(),
+                name: z.string(),
+            }),
+        }),
+
+    }),
 });
 
 interface AgencyFormProps {
@@ -33,15 +48,11 @@ interface AgencyFormProps {
 }
 
 export default function AgencyForm({agencyId}: AgencyFormProps) {
-    const [countries, setCountries] = useState([]);
-    const [cities, setCities] = useState([]);
-    const [country, setCountry] = useState<number | null>(null);
-    const [city, setCity] = useState<string>("");
+    const [countries, setCountries] = useState<{ id: number; name: string }[]>([]);
+    const [cities, setCities] = useState<{ id: number; name: string }[]>([]);
+
     const [agency, setAgency] = useState<AgencyResponseDto | null>(null);
 
-    //
-    // Create a single `form` object from `useForm`
-    //
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -51,19 +62,31 @@ export default function AgencyForm({agencyId}: AgencyFormProps) {
             email: "",
             vatNumber: "",
             capacity: 0,
-            availableSlots: 0
-        }
+            availableSlots: 0,
+            address: {
+                street: "",
+                complement: "",
+                streetNumber: "",
+                boxNumber: "",
+                city: {id: 0, name: "", country: {id: 0, name: ""}},
+
+            },
+        },
     });
+    const selectedCountryId = form.watch("address.city.country.id");
 
-    const {
-        control,     // needed for <FormField control={control} .../>
-        handleSubmit,
-        reset
-    } = form;
+    useEffect(() => {
+        if (selectedCountryId && selectedCountryId !== 0) {
+            fetchCities(selectedCountryId).then(setCities).catch(console.error);
+            // Only reset city if you really want to clear it out each time
+            form.setValue("address.city.id", 0);
+            form.setValue("address.city.name", "");
+            // Keep the country ID + name from the user’s selection
+        }
+    }, [selectedCountryId, form]);
 
-    //
-    // 1. Fetch Agency by ID
-    //
+
+    // 1. Récupérer l'agence par ID (si mise à jour)
     useEffect(() => {
         if (!agencyId) return;
 
@@ -84,71 +107,105 @@ export default function AgencyForm({agencyId}: AgencyFormProps) {
         })();
     }, [agencyId]);
 
-    //
-    // 2. Update form inputs when the agency data arrives
-    //
+    // 2. Mettre à jour le formulaire quand les données de l'agence arrivent
     useEffect(() => {
         if (agency) {
-            reset({
+            form.reset({
                 agencyName: agency.name || "",
                 location: agency.location || "",
                 phoneNumber: agency.phoneNumber || "",
                 email: agency.email || "",
-                vatNumber: "", // If you have a real VAT field in DB, set it here
+                vatNumber: "", // Mettez ici la valeur réelle si disponible
                 capacity: agency.capacity || 0,
-                availableSlots: agency.availableSlots || 0
+                availableSlots: agency.availableSlots || 0,
+                address: {
+                    street: agency.address?.street || "",
+                    complement: agency.address?.complement || "",
+                    streetNumber: agency.address?.streetNumber || "",
+                    boxNumber: agency.address?.boxNumber || "",
+                    city: {
+                        id: agency.address?.city.id || 0,
+                        name: agency.address?.city.name || "",
+                        country: {
+                            id: agency.address?.city.country.id || 0,
+                            name: agency.address?.city.country.name || "",
+                        },
+                    },
+
+                },
             });
-
-            // Prefill the country & city from the agency address
-            if (agency.address) {
-                setCountry(agency.address.city.country.id);
-                setCity(agency.address.city.name);
-            }
         }
-    }, [agency, reset]);
+    }, [agency, form]);
 
-    //
-    // 3. Fetch Countries once
-    //
+    // 3. Récupérer la liste des pays
     useEffect(() => {
         fetchCountries()
             .then(setCountries)
             .catch(console.error);
     }, []);
 
-    //
-    // 4. Fetch Cities when country changes
-    //
+    // 4. Récupérer la liste des villes quand le pays change
     useEffect(() => {
-        if (country !== null) {
-            fetchCities(country)
+        // Nous utilisons setValue pour récupérer l'ID du pays dans address.country.id
+        const countryId = (form.getValues("address.city.country") as { id: number }).id;
+        if (countryId !== 0) {
+            fetchCities(countryId)
                 .then(setCities)
                 .catch(console.error);
-            setCity("");
+            // Réinitialiser la ville sélectionnée
+            form.setValue("address.city", {id: 0, name: "", country: {id: 0, name: ""}});
         }
-    }, [country]);
+    }, [form]);
 
-    //
-    // 5. Submit Handler
-    //
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log("🚀 Submitting form with values:", values);
-        toast.success("Agency updated successfully!");
-        // TODO: Actually send the updated data to your server (PUT or PATCH request)
+    // 5. Handler de soumission
+    async function onSubmit(values: z.infer<typeof formSchema>) {
+        // Transformation du formulaire pour correspondre au type AgencyResponseDto
+        const newAgency: CreateAgencyDto = {
+            id: agency?.id || 0, // ou ne pas inclure 'id' si c'est une création
+            name: values.agencyName,
+            location: values.location || "",
+            phoneNumber: values.phoneNumber,
+            email: values.email,
+            vatNumber: values.vatNumber,
+            capacity: values.capacity,
+            availableSlots: values.availableSlots,
+            address: {
+                street: values.address.street!,
+                complement: values.address.complement,
+                streetNumber: values.address.streetNumber,
+                boxNumber: values.address.boxNumber,
+                city: values.address.city,
+            },
+        };
+
+        console.log("🚀 Submitting form with values:", newAgency);
+        try {
+            if (agencyId) {
+                // Call update function if agencyId exists
+                const agencyResponse = await updateAgency(newAgency); // Assuming you have updateAgency defined
+                toast.success("Agence mise à jour avec succès !");
+                console.log("Agency updated:", agencyResponse);
+            } else {
+                // Call create function if no agencyId
+                const agencyResponse = await createAgency(newAgency);
+                toast.success("Agence créée avec succès !");
+                console.log("Agency created:", agencyResponse);
+            }
+        } catch (error) {
+            toast.error("Erreur lors de la création de l'agence");
+            console.error("Creation error:", error);
+        }
     }
 
-    //
-    // 6. Render the form
-    //
+
     return (
-        // Pass entire `form` object to <Form> to fix TS2740
         <Form {...form}>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 max-w-3xl mx-auto py-10">
-                {/* Agency Name & Location */}
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-3xl mx-auto py-10">
+                {/* Informations de base de l'agence */}
                 <div className="grid grid-cols-12 gap-4">
                     <div className="col-span-6">
                         <FormField
-                            control={control}
+                            control={form.control}
                             name="agencyName"
                             render={({field}) => (
                                 <FormItem>
@@ -162,10 +219,9 @@ export default function AgencyForm({agencyId}: AgencyFormProps) {
                             )}
                         />
                     </div>
-
                     <div className="col-span-6">
                         <FormField
-                            control={control}
+                            control={form.control}
                             name="location"
                             render={({field}) => (
                                 <FormItem>
@@ -173,7 +229,7 @@ export default function AgencyForm({agencyId}: AgencyFormProps) {
                                     <FormControl>
                                         <Input placeholder="Près de la gare de Mons..." {...field} />
                                     </FormControl>
-                                    <FormDescription>La localisation de l&#39;agence.</FormDescription>
+                                    <FormDescription>Localisation de l&#39;agence.</FormDescription>
                                     <FormMessage/>
                                 </FormItem>
                             )}
@@ -181,9 +237,9 @@ export default function AgencyForm({agencyId}: AgencyFormProps) {
                     </div>
                 </div>
 
-                {/* Phone & Email */}
+                {/* Téléphone & Email */}
                 <FormField
-                    control={control}
+                    control={form.control}
                     name="phoneNumber"
                     render={({field}) => (
                         <FormItem>
@@ -194,8 +250,9 @@ export default function AgencyForm({agencyId}: AgencyFormProps) {
                         </FormItem>
                     )}
                 />
+
                 <FormField
-                    control={control}
+                    control={form.control}
                     name="email"
                     render={({field}) => (
                         <FormItem>
@@ -207,11 +264,11 @@ export default function AgencyForm({agencyId}: AgencyFormProps) {
                     )}
                 />
 
-                {/* VAT Number, Capacity, Available Slots */}
+                {/* TVA, Capacité et Places disponibles */}
                 <div className="grid grid-cols-12 gap-4">
                     <div className="col-span-6">
                         <FormField
-                            control={control}
+                            control={form.control}
                             name="vatNumber"
                             render={({field}) => (
                                 <FormItem>
@@ -226,7 +283,7 @@ export default function AgencyForm({agencyId}: AgencyFormProps) {
                     </div>
                     <div className="col-span-3">
                         <FormField
-                            control={control}
+                            control={form.control}
                             name="capacity"
                             render={({field}) => (
                                 <FormItem>
@@ -241,7 +298,7 @@ export default function AgencyForm({agencyId}: AgencyFormProps) {
                     </div>
                     <div className="col-span-3">
                         <FormField
-                            control={control}
+                            control={form.control}
                             name="availableSlots"
                             render={({field}) => (
                                 <FormItem>
@@ -256,26 +313,139 @@ export default function AgencyForm({agencyId}: AgencyFormProps) {
                     </div>
                 </div>
 
-                {/* Country & City */}
-                <div className="grid grid-cols-12 gap-4">
-                    <div className="col-span-6">
-                        <CountrySelect
-                            label="Pays"
-                            value={country?.toString() || ""}
-                            onChange={(e) => {
-                                const val = parseInt(e.target.value, 10);
-                                setCountry(isNaN(val) ? null : val);
-                            }}
-                            countries={countries}
+                {/* Champs d'adresse */}
+                <div className="space-y-4">
+                    <FormField
+                        control={form.control}
+                        name="address.street"
+                        render={({field}) => (
+                            <FormItem>
+                                <FormLabel>Rue</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Nom de la rue" {...field} />
+                                </FormControl>
+                                <FormDescription>Indiquez la rue de l&#39;agence.</FormDescription>
+                                <FormMessage/>
+                            </FormItem>
+                        )}
+                    />
+                    <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                            control={form.control}
+                            name="address.streetNumber"
+                            render={({field}) => (
+                                <FormItem>
+                                    <FormLabel>Numéro</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Numéro de rue" {...field} />
+                                    </FormControl>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="address.boxNumber"
+                            render={({field}) => (
+                                <FormItem>
+                                    <FormLabel>Boîte</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Boîte" {...field} />
+                                    </FormControl>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}
                         />
                     </div>
+                    <FormField
+                        control={form.control}
+                        name="address.complement"
+                        render={({field}) => (
+                            <FormItem>
+                                <FormLabel>Complément</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Complément d'adresse" {...field} />
+                                </FormControl>
+                                <FormMessage/>
+                            </FormItem>
+                        )}
+                    />
+                </div>
+
+                {/* Sélection du Pays et de la Ville */}
+                <div className="grid grid-cols-12 gap-4">
                     <div className="col-span-6">
-                        <CitySelect
-                            label="Ville"
-                            value={city}
-                            onChange={(e) => setCity(e.target.value)}
-                            cities={cities}
+                        <Controller
+                            name="address.city.country.id"
+                            control={form.control}
+                            render={({ field }) => {
+                                // This ensures the correct item is shown as selected.
+                                // If your CountrySelect uses country.name as the option value, you'd do the same approach
+                                // as the city solution (ID <-> name transformation).
+                                // But if your CountrySelect returns an ID, you can parse it directly as shown below.
+
+                                return (
+                                    <CountrySelect
+                                        label="Pays"
+                                        value={field.value ? field.value.toString() : ""}
+                                        onChange={(e) => {
+                                            const id = parseInt(e.target.value, 10);
+                                            field.onChange(id);
+
+                                            // Find the country object by ID to get its name
+                                            const selectedCountry = countries.find((c) => c.id === id);
+
+                                            // Manually set the country.name so the final object is not empty
+                                            if (selectedCountry) {
+                                                form.setValue("address.city.country.name", selectedCountry.name);
+                                            } else {
+                                                // If user selects nothing or an invalid ID
+                                                form.setValue("address.city.country.name", "");
+                                            }
+                                        }}
+                                        countries={countries}
+                                    />
+                                );
+                            }}
                         />
+
+                    </div>
+                    <div className="col-span-6">
+                        <Controller
+                            name="address.city.id"
+                            control={form.control}
+                            render={({ field }) => {
+                                // 1. Convert current city ID → city name
+                                const selectedCity = cities.find((c) => c.id === field.value);
+                                const selectedCityName = selectedCity ? selectedCity.name : "";
+
+                                return (
+                                    <CitySelect
+                                        label="Ville"
+                                        // The <select> value is the city name, not the ID
+                                        value={selectedCityName}
+                                        onChange={(e) => {
+                                            const cityName = e.target.value;
+                                            // 2. Convert chosen city name → ID
+                                            const matchedCity = cities.find((c) => c.name === cityName);
+                                            if (matchedCity) {
+                                                // Update the form's city ID
+                                                field.onChange(matchedCity.id);
+                                                // Optionally also update city.name if you store that separately
+                                                form.setValue("address.city.name", matchedCity.name);
+                                            } else {
+                                                // Reset if no match or empty selection
+                                                field.onChange(0);
+                                                form.setValue("address.city.name", "");
+                                            }
+                                        }}
+                                        cities={cities}
+                                    />
+                                );
+                            }}
+                        />
+
+
                     </div>
                 </div>
 

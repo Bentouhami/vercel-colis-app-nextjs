@@ -6,6 +6,8 @@ import Link from 'next/link';
 import {usePathname, useRouter} from 'next/navigation';
 import {
     Bell,
+    Building,
+    ChartPie,
     ChevronLeft,
     ChevronRight,
     FileText,
@@ -15,6 +17,8 @@ import {
     LogOut,
     Menu,
     Moon,
+    Package,
+    SaveAllIcon,
     Settings,
     Sun,
     Users,
@@ -26,6 +30,7 @@ import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
 import {signOut, useSession} from 'next-auth/react';
 import {RoleDto} from '@/services/dtos';
+import {FaUsers} from "react-icons/fa6";
 
 type MenuItem = {
     name: string;
@@ -51,14 +56,14 @@ const Sidebar = () => {
             roleAllowed: [RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN, RoleDto.ACCOUNTANT, RoleDto.CLIENT],
         },
         {
-            name: 'Agencies',
-            icon: FileText,
+            name: 'Agences',
+            icon: Building,
             path: '/admin/agencies',
             roleAllowed: [RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN],
         },
         {
             name: 'Envois',
-            icon: FileText,
+            icon: Package,
             path: '/admin/envois',
             roleAllowed: [RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN, RoleDto.ACCOUNTANT],
         },
@@ -66,7 +71,7 @@ const Sidebar = () => {
             name: 'Utilisateurs',
             icon: Users,
             path: '/admin/users',
-            roleAllowed: [RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN], // ✅ ACCOUNTANT CAN'T SEE IT
+            roleAllowed: [RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN],
         },
         {
             name: 'Paramètres',
@@ -74,14 +79,39 @@ const Sidebar = () => {
             path: '/admin/settings',
             roleAllowed: [RoleDto.SUPER_ADMIN],
         },
+        {
+            name: 'Statistiques',
+            icon: ChartPie,
+            path: '/admin/stats',
+            roleAllowed: [RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN, RoleDto.ACCOUNTANT],
+        },
+        {
+            name: 'Rapports',
+            icon: FileText,
+            path: '/admin/reports',
+            roleAllowed: [RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN, RoleDto.ACCOUNTANT],
+        },
+
+        {
+            name: 'Exporter',
+            icon: SaveAllIcon,
+            path: '/admin/export',
+            roleAllowed: [RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN, RoleDto.ACCOUNTANT],
+        },
+
+        {
+            name: 'Administrateurs des Agences',
+            icon: FaUsers,
+            path: '/admin/agency-admins',
+            roleAllowed: [RoleDto.SUPER_ADMIN],
+        }
     ];
 
-// Properly filter menu items based on user role
+    // Properly filter menu items based on a user role
     const finalMenuItems = menuItems.filter((item) => {
         if (!item.roleAllowed) return true;
         return item.roleAllowed.includes(session?.user?.role!);
     });
-
 
 
     // Set mounted to true once on mount

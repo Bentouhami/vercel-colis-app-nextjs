@@ -13,6 +13,7 @@ import RequireAuth from "@/components/auth/RequireAuth"
 import {getCurrentUserId} from "@/lib/auth"
 import {getUserProfileById} from "@/services/frontend-services/UserService"
 import {ProfileDto} from "@/services/dtos/users/UserDto"
+import {RoleDto} from "@/services/dtos";
 
 export default function ProfileComponent() {
     const router = useRouter()
@@ -36,14 +37,15 @@ export default function ProfileComponent() {
     }, [router])
 
     return (
-        <RequireAuth>
+        <RequireAuth allowedRoles={[RoleDto.CLIENT, RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN, RoleDto.ACCOUNTANT]}>
             <div className="container mx-auto max-w-3xl py-8">
                 {/* Profile Header */}
                 <Card className="mb-6 shadow-lg">
                     <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-6 rounded-t-lg">
                         <div className="flex flex-col md:flex-row items-center gap-6">
                             <Avatar className="h-24 w-24 border-4 border-white">
-                                <AvatarImage src={userData?.image || ""} alt={userData?.name ? userData.name : `${userData?.firstName} ${userData?.lastName}`  || "Profile"}/>
+                                <AvatarImage src={userData?.image || ""}
+                                             alt={userData?.name ? userData.name : `${userData?.firstName} ${userData?.lastName}` || "Profile"}/>
                                 <AvatarFallback className="text-2xl bg-blue-400">
                                     {userData?.name?.charAt(0) || "U"}
                                 </AvatarFallback>

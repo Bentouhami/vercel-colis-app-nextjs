@@ -130,7 +130,7 @@ export default function AddReceiverForm() {
     };
 
     return (
-        <RequireAuth>
+        <RequireAuth allowedRoles={[RoleDto.CLIENT, RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN, RoleDto.ACCOUNTANT]}>
             <div className="container mx-auto px-4 py-8 max-w-lg">
                 <Card className="w-full">
                     <CardHeader className="text-center space-y-2">

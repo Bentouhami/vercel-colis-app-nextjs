@@ -1,4 +1,6 @@
 // path: src/utils/types.ts
+import {RoleDto} from "@/services/dtos";
+
 export type JWTPayload = {
     id: number;
     firstName: string;
@@ -7,7 +9,7 @@ export type JWTPayload = {
     userEmail: string;
     phoneNumber: string;
     image?: string | null;
-    role: string;
+    role: RoleDto;
 };
 
 export type Country = {

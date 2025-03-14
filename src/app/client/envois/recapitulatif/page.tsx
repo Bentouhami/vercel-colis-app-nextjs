@@ -9,7 +9,7 @@ import {toast} from "react-toastify";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Calendar, CreditCard, DollarSign, MapPin, Package, Truck, User, Weight, XCircle} from "lucide-react";
 import {Button} from "@/components/ui/button";
-import {CreateDestinataireDto, SimulationResponseDto} from "@/services/dtos";
+import {CreateDestinataireDto, RoleDto, SimulationResponseDto} from "@/services/dtos";
 import RequireAuth from "@/components/auth/RequireAuth";
 import RecapSkeleton from "@/app/client/envois/recapitulatif/recapSkeleton";
 
@@ -70,7 +70,7 @@ export default function RecapitulatifPage() {
                     } finally {
                         setLoading(false);
                     }
-                    
+
                 })();
             })
         };
@@ -95,7 +95,7 @@ export default function RecapitulatifPage() {
     };
 
     return (
-        <RequireAuth>
+        <RequireAuth allowedRoles={[RoleDto.CLIENT, RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN, RoleDto.ACCOUNTANT]}>
             <div className="max-w-4xl mx-auto p-6 space-y-6 mb-52 bg-gray-50 rounded-lg shadow-lg">
                 <h1 className="text-3xl font-bold text-center mb-8 text-blue-700">Récapitulatif de votre envoi</h1>
 

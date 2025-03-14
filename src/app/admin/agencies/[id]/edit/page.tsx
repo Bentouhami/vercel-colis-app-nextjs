@@ -4,7 +4,6 @@ import AgencyForm from "@/components/forms/admins/AgencyForm";
 export const dynamic = 'force-dynamic';
 
 export default function EditAgencyPage({ params }: { params: { id: string } }) {
-    console.log("🔍 Full params object:", params);
 
     return (
         <div className="container mx-auto py-10">

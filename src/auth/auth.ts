@@ -37,7 +37,6 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
                         throw new Error("Incorrect credentials");
                     }
 
-
                     const passwordValid = await bcrypt.compare(
                         String(credentials.password),
                         String(user.password)
@@ -47,8 +46,6 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
                         throw new Error("Incorrect credentials");
 
                     }
-
-                    console.log("---------- authorize end ----------");
 
                     return {
                         id: user.id.toString(),

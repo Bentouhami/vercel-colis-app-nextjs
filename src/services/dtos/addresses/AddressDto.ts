@@ -45,7 +45,6 @@ export interface CreateAddressDto {
     complement?: string | null;
     streetNumber?: string | null;
     boxNumber?: string | null;
-    cityId: number;
     city: CityDto;
 }
 

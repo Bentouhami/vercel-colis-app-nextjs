@@ -3,7 +3,7 @@
 import {JWTPayload} from "@/utils/types";
 import {setCookie} from "@/utils/generateToken";
 import {API_DOMAIN, DOMAIN} from "@/utils/constants";
-import {CreateDestinataireDto, ProfileDto, RegisterClientDto} from "@/services/dtos";
+import {CreateDestinataireDto, ProfileDto, RegisterClientDto, RoleDto} from "@/services/dtos";
 import axios from "axios";
 import {RegisterUserBackendType} from "@/utils/validationSchema";
 
@@ -26,7 +26,7 @@ export async function generateJWTPayloadAndSetCookie(
     lastName: string,
     name: string,
     phoneNumber: string,
-    role: string,
+    role: RoleDto,
     image: string | null
 ): Promise<string> {
 
@@ -47,7 +47,7 @@ export async function generateJWTPayloadAndSetCookie(
 
 export async function getConnectedUser() {
     try {
-        const response = await fetch(`${DOMAIN}/api/v1/auth/status`, {
+        const response = await fetch(`${API_DOMAIN}/auth/status`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

@@ -2,7 +2,7 @@
 'use client'
 
 import React, {useState} from 'react';
-import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
+import {Tabs, TabsList, TabsTrigger} from "@/components/ui/tabs";
 
 import RequireAuth from "@/components/auth/RequireAuth";
 import {useSession} from "next-auth/react";
@@ -42,7 +42,7 @@ export default function UsersPage() {
     const gridCols = isSuperAdmin ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3';
 
     return (
-        <RequireAuth>
+        <RequireAuth allowedRoles={[RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN]}>
             <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
                 <div className="container mx-auto p-4 space-y-8">
                     {/* Header Section */}

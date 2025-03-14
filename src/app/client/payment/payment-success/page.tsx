@@ -9,6 +9,7 @@ import {useRouter} from 'next/navigation';
 import {deleteSimulationCookie} from '@/services/frontend-services/simulation/SimulationService';
 import {SimulationStatus} from '@prisma/client';
 import {useSession} from "next-auth/react";
+import {RoleDto} from "@/services/dtos";
 
 export default function PaymentSuccessPage() {
     const router = useRouter();
@@ -114,7 +115,7 @@ export default function PaymentSuccessPage() {
     }, [isAuthenticated, isLoading, finalizePayment]);
 
     return (
-        <RequireAuth>
+        <RequireAuth allowedRoles={[RoleDto.CLIENT, RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN, RoleDto.ACCOUNTANT]}>
             <div className="flex flex-col items-center justify-center min-h-screen">
                 <h1 className="text-3xl font-bold text-green-600">Paiement Réussi !</h1>
                 <p className="mt-4">Merci pour votre paiement. Votre transaction a été complétée avec succès.</p>
