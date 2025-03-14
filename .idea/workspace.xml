@@ -5,46 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c07cd60d-099f-4318-a2a3-b5d03932da3f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.dockerignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/nginx.conf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/api/v1/agencies/create-agency/route.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/api/v1/agencies/update-agency/route.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/services/dtos/agencyStaffs/AgencyStaffDto.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/services/repositories/AgencyStaffs/IAgencyStaffRepository.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/services/repositories/AgencyStaffs/agencyStaffRepository.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/prisma/schema.prisma" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/schema.prisma" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/admin/agencies/[id]/edit/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/agencies/[id]/edit/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/admin/agencies/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/agencies/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/admin/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/admin/users/[id]/edit/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/users/[id]/edit/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/admin/users/new/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/users/new/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/admin/users/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/users/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/client/envois/recapitulatif/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/client/envois/recapitulatif/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/client/payment/payment-cancel/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/client/payment/payment-cancel/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/client/payment/payment-success/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/client/payment/payment-success/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/client/profile/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/client/profile/layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/auth/auth.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/auth/auth.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/admin/collections/AgenciesList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/admin/collections/AgenciesList.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/admin/menu/Sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/admin/menu/Sidebar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/auth/RequireAuth.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/auth/RequireAuth.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/client-specific/profile/ProfileComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/client-specific/profile/ProfileComponent.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/forms/EnvoiForms/AddReceiverForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/forms/EnvoiForms/AddReceiverForm.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/forms/SimulationForms/CitySelectForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/forms/SimulationForms/CitySelectForm.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/forms/admins/AgencyForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/forms/admins/AgencyForm.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/middleware.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/middleware.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/backend-services/Bk_AgencyService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/backend-services/Bk_AgencyService.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/dtos/addresses/AddressDto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/dtos/addresses/AddressDto.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/dtos/agencies/AgencyDto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/dtos/agencies/AgencyDto.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/frontend-services/AgencyService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/frontend-services/AgencyService.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/frontend-services/UserService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/frontend-services/UserService.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/repositories/agencies/AgencyRepository.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/repositories/agencies/AgencyRepository.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/repositories/agencies/IAgencyRepository.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/repositories/agencies/IAgencyRepository.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/repositories/users/UserRepository.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/repositories/users/UserRepository.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/types.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -154,7 +116,7 @@
       <workItem from="1741953332672" duration="7512000" />
       <workItem from="1741969765788" duration="842000" />
       <workItem from="1741979582709" duration="3885000" />
-      <workItem from="1741994442600" duration="250000" />
+      <workItem from="1741994442600" duration="2093000" />
     </task>
     <servers />
   </component>
