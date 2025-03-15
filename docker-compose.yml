@@ -1,7 +1,11 @@
 version: '3'
 services:
   colisapp:
-    build: .
+    build:
+      context: .
+      args:
+        STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+        NEXT_PUBLIC_STRIPE_PUBLIC_KEY: ${NEXT_PUBLIC_STRIPE_PUBLIC_KEY}
     ports:
       - "3000:3000"
     volumes:

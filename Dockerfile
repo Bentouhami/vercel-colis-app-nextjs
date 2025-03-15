@@ -1,22 +1,15 @@
 FROM node:20-alpine
-
-# Set working directory
 WORKDIR /app
 
-# Copy package files
+# Declare build arguments
+ARG STRIPE_SECRET_KEY
+ARG NEXT_PUBLIC_STRIPE_PUBLIC_KEY
+
+# Set environment variables for build
+ENV STRIPE_SECRET_KEY=$STRIPE_SECRET_KEY
+ENV NEXT_PUBLIC_STRIPE_PUBLIC_KEY=$NEXT_PUBLIC_STRIPE_PUBLIC_KEY
+
 COPY package*.json ./
-
-# Install dependencies
 RUN npm install
-
-# Copy all project files
 COPY . .
-
-# Build the Next.js application
 RUN npm run build
-
-# Expose port 3000
-EXPOSE 3000
-
-# Start the application
-CMD ["npm", "start"]
