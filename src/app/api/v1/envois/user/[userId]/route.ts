@@ -5,7 +5,8 @@ import { getAllEnvoisByUserId } from "@/services/backend-services/Bk_EnvoiServic
 /**
  * Get All Envois by User ID with Pagination
  */
-export async function GET(req: NextRequest, { params }: { params: { userId: string } }) {
+export async function GET(req: NextRequest, props: { params: Promise<{ userId: string }> }) {
+    const params = await props.params;
     if (req.method !== "GET") {
         return NextResponse.json("Not allowed method!", { status: 405 });
     }

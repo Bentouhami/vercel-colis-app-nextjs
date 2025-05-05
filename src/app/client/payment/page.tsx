@@ -3,7 +3,7 @@
 import React, {Suspense, useEffect, useState} from 'react';
 import {loadStripe} from '@stripe/stripe-js';
 import {Button} from '@/components/ui/button';
-import {toast} from 'react-toastify';
+import {toast} from 'sonner';
 import {useSearchParams} from "next/navigation";
 import {API_DOMAIN, DOMAIN} from "@/utils/constants";
 import axios from "axios";

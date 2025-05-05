@@ -91,7 +91,6 @@ export async function GET(request: NextRequest) {
             );
         }
 
-        console.log("log ====> simulationIdAndToken found in GET route in SimulationRoute.ts in path : src/app/api/v1/simulations/route.ts: ", simulationIdAndToken);
 
         // Get the simulation data from the database using the simulation ID and token
         const simulation = await getSimulationById(
@@ -102,12 +101,10 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({error: 'Simulation not found'}, {status: 404});
         }
 
-        console.log("log ====> simulation found in GET route in SimulationRoute.ts in path : src/app/api/v1/simulations/route.ts: ", simulation);
 
         return NextResponse.json({data: simulation}, {status: 200});
 
     } catch (error) {
-        console.error("Erreur lors de la récupération de la simulation:", error);
         return NextResponse.json({error: 'Erreur serveur, impossible de récupérer la simulation'}, {status: 500});
     }
 }
@@ -133,7 +130,6 @@ export async function PUT(request: NextRequest) {
 
         if (!body.userId) {
             if (!token) {
-                console.error("Unauthorized: User token not found.");
                 return NextResponse.json({error: "Unauthorized"}, {status: 401});
             }
             body.userId = Number(token.id);
@@ -157,7 +153,6 @@ export async function PUT(request: NextRequest) {
         body.envoiStatus = body.envoiStatus || EnvoiStatus.PENDING;
         body.id = Number(simulationIdAndToken.id);
         if (!body.id) {
-            console.error("Error: Simulation ID not found in request body.");
             return NextResponse.json({error: 'Simulation ID not found'}, {status: 400});
         }
 
@@ -167,7 +162,6 @@ export async function PUT(request: NextRequest) {
         return NextResponse.json({message: "Simulation updated successfully"}, {status: 200});
 
     } catch (error) {
-        console.error("Error in PUT route during simulation update:", error);
         return NextResponse.json({error: 'Internal server error in simulation update'}, {status: 500});
     }
 }

@@ -1,15 +1,12 @@
 // path: src/app/admin/page.tsx
 'use client';
 
-import RequireAuth from "@/components/auth/RequireAuth";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {FileText, Package, Users} from 'lucide-react';
 import React, {useEffect, useState} from "react";
 import {useSession} from "next-auth/react";
 import {useRouter} from "next/navigation";
-import axios from "axios";
 
-import {API_DOMAIN} from "@/utils/constants";
 import {RoleDto} from "@/services/dtos";
 
 

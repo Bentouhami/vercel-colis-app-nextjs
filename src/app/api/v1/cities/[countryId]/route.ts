@@ -8,7 +8,8 @@ import { getCitiesPerCountry } from "@/services/backend-services/Bk_CityService"
  * @desc Get cities for a given country
  * @access public
  */
-export async function GET(req: NextRequest, { params }: { params: { countryId: string } }) {
+export async function GET(req: NextRequest, props: { params: Promise<{ countryId: string }> }) {
+    const params = await props.params;
     try {
         // Vérification et conversion de `countryId`
         const countryId = parseInt(params.countryId, 10);
@@ -16,8 +17,6 @@ export async function GET(req: NextRequest, { params }: { params: { countryId: s
         if (isNaN(countryId)) {
             return NextResponse.json({ error: "Invalid country ID" }, { status: 400 });
         }
-
-        console.log("✅ countryId received:", countryId);
 
         const cities = await getCitiesPerCountry(countryId);
 

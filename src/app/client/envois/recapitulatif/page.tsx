@@ -5,7 +5,7 @@ import React, {useEffect, useState, useTransition} from 'react';
 import {useRouter} from 'next/navigation';
 import {getSimulation} from "@/services/frontend-services/simulation/SimulationService";
 import {getUserById} from "@/services/frontend-services/UserService";
-import {toast} from "react-toastify";
+import {toast} from "sonner";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Calendar, CreditCard, DollarSign, MapPin, Package, Truck, User, Weight, XCircle} from "lucide-react";
 import {Button} from "@/components/ui/button";
@@ -18,7 +18,7 @@ interface SimulationDataType extends SimulationResponseDto {
     destinataire: CreateDestinataireDto;
 }
 
-export default function RecapitulatifPage() {
+export default function EnvoiRecapPage() {
     const [simulationData, setSimulationData] = useState<SimulationDataType | null>(null);
     const [loading, setLoading] = useState(true);
 

@@ -4,7 +4,7 @@ import {NotificationDto} from "@/services/dtos/notifications/NotificationDto";
 import {getCurrentUserId} from "@/lib/auth";
 import apiClient from "@/utils/axiosInstance";
 
-export async function fetchUserNotifications(userId: string): Promise<NotificationDto[]> {
+export async function fetchUserNotifications(userId: string | number | null): Promise<NotificationDto[]> {
     const response = await apiClient.get(`/notifications/user/${userId}`);
     return response.data;
 }

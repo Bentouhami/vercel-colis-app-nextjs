@@ -34,6 +34,7 @@ const API_VERSION = "v1";
 // api url
 export const API_BASE_URL = `/api/${API_VERSION}`;
 export const API_DOMAIN = `${DOMAIN}${API_BASE_URL}`;
+export const CLIENT_DOMAIN = `${DOMAIN}/client`;
 //endregion
 
 
@@ -42,6 +43,17 @@ export const successUrl =
     `${DOMAIN}/client/payment/payment-success`;
 export const cancelUrl =
     `${DOMAIN}/client/payment/payment-cancel`;
+
+// Fonction pour normaliser les sous-paths (enlève les slashs inutiles)
+const normalizeSubPath = (subPath: string) => {
+    return subPath ? `/${subPath.replace(/^\/+/, '')}` : '';
+};
+
+// Utilitaires pour générer des chemins dynamiques
+export const clientPath = (subPath: string = "") => `/client${normalizeSubPath(subPath)}`;
+export const adminPath = (subPath: string = "") => `/admin${normalizeSubPath(subPath)}`;
+
+
 
 
 // export const CLOUD_NAME = "dksb7fler";

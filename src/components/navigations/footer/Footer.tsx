@@ -1,66 +1,114 @@
-// path: src/components/Footer.tsx
+// path: src/components/navigations/footer/Footer.tsx
 'use client';
-import {Col, Container, Row} from "react-bootstrap";
-import {Facebook, Instagram, Mail, Twitter} from "lucide-react";
+
+import { Facebook, Instagram, Mail, Package, Twitter } from "lucide-react";
+import Link from "next/link";
+import React from "react";
+import { clientPath } from "@/utils/constants";
 
 const Footer = () => {
     return (
-        <footer className=" bg-gray-900 text-gray-400 py-4 mt-10">
-            <Container>
-                <Row className="align-items-center">
-                    {/* Logo and Copyright */}
-                    <Col md={4} className="text-center text-md-start mb-3 mb-md-0">
-                        <a href="https://www.colisapp.com" className="text-gray-400 text-decoration-none">
-                            <h5 className="text-white font-semibold">ColisApp</h5>
-                        </a>
-                        <p className="small">
-                            © 2024 ColisApp. Tous droits réservés.
-                        </p>
-                    </Col>
+        <footer className="bg-gray-800 dark:bg-black text-white py-12 mt-10">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    {/* Logo + Description */}
+                    <div>
+                        <div className="flex items-center space-x-2 mb-4">
+                            <Package className="h-6 w-6 text-indigo-400" />
+                            <span className="text-xl font-bold">ColisApp</span>
+                        </div>
+                        <div className="text-gray-400 text-sm leading-relaxed dark:text-gray-300">
+                            La solution complète pour la gestion et le suivi de vos colis entre le Maroc et la Belgique.
+                        </div>
+                    </div>
 
-                    {/* Navigation Links */}
-                    <Col md={4} className="text-center mb-3 mb-md-0">
-                        <Row>
-                            <Col className="mb-2">
-                                <a href="/about" className="text-gray-400 hover:text-white text-decoration-none small">À
-                                    propos</a>
-                            </Col>
-                            <Col className="mb-2">
-                                <a href="/contact"
-                                   className="text-gray-400 hover:text-white text-decoration-none small">Contact</a>
-                            </Col>
-                            <Col className="mb-2">
-                                <a href="/privacy-policy"
-                                   className="text-gray-400 hover:text-white text-decoration-none small">Politique de
-                                    confidentialité</a>
-                            </Col>
-                            <Col className="mb-2">
-                                <a href="/terms" className="text-gray-400 hover:text-white text-decoration-none small">Conditions
-                                    d&#39;utilisation</a>
-                            </Col>
-                        </Row>
-                    </Col>
+                    {/* Liens rapides */}
+                    <div>
+                        <h4 className="text-lg font-semibold mb-4">Liens rapides</h4>
+                        <ul className="space-y-2 text-sm">
+                            <li>
+                                <Link href={clientPath()} className="text-gray-300 hover:text-white transition">
+                                    Accueil
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href={clientPath("features")} className="text-gray-300 hover:text-white transition">
+                                    Fonctionnalités
+                                </Link>
+                            </li>
+                            <Link href={clientPath("about")} className="text-gray-300 hover:text-white transition">
+                                À propos
+                            </Link>
+                        </ul>
+                    </div>
 
-                    {/* Social Media Links */}
-                    <Col md={4} className="flex  text-center text-md-end">
-                        <a href={`mailto:${process.env.NEXT_PUBLIC_MY_CONTACT_EMAIL}`} className="text-gray-400 me-3">
-                            <Mail className="h-5 w-5"/>
-                        </a>
-                        <a href="https://facebook.com/colisapp" className="text-gray-400 me-3" target="_blank"
-                           rel="noopener noreferrer">
-                            <Facebook className="h-5 w-5"/>
-                        </a>
-                        <a href="https://twitter.com/colisapp" className="text-gray-400 me-3" target="_blank"
-                           rel="noopener noreferrer">
-                            <Twitter className="h-5 w-5"/>
-                        </a>
-                        <a href="https://instagram.com/colisapp" className="text-gray-400" target="_blank"
-                           rel="noopener noreferrer">
-                            <Instagram className="h-5 w-5"/>
-                        </a>
-                    </Col>
-                </Row>
-            </Container>
+                    {/* Support */}
+                    <div>
+                        <h4 className="text-lg font-semibold mb-4">Support</h4>
+                        <ul className="space-y-2 text-sm">
+                            <li>
+                                <Link href={clientPath("help")} className="text-gray-300 hover:text-white transition">
+                                    Aide
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href={clientPath("faq")} className="text-gray-300 hover:text-white transition">
+                                    FAQ
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href={clientPath("contact-us")} className="text-gray-300 hover:text-white transition">
+                                    Contact
+                                </Link>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {/* Légal */}
+                    <div>
+                        <h4 className="text-lg font-semibold mb-4">Légal</h4>
+                        <ul className="space-y-2 text-sm">
+                            <li>
+                                <Link href={clientPath("terms")} className="text-gray-300 hover:text-white transition">
+                                    Conditions d&#39;utilisation
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href={clientPath("privacy-policy")} className="text-gray-300 hover:text-white transition">
+                                    Politique de confidentialité
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href={clientPath("legal")} className="text-gray-300 hover:text-white transition">
+                                    Mentions légales
+                                </Link>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                {/* Bas de page */}
+                <div className="mt-10 border-t border-gray-700 dark:border-gray-600 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-400 dark:text-gray-400">
+                    <span>&copy; {new Date().getFullYear()} ColisApp. Tous droits réservés.</span>
+                    <div className="mt-4 md:mt-0 flex space-x-4">
+                        <Link
+                            href={`mailto:${process.env.NEXT_PUBLIC_MY_CONTACT_EMAIL || "contact@colisapp.com"}`}
+                            aria-label="email"
+                        >
+                            <Mail className="w-5 h-5 hover:text-white" />
+                        </Link>
+                        <Link href="https://facebook.com/colisapp" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                            <Facebook className="w-5 h-5 hover:text-white" />
+                        </Link>
+                        <Link href="https://twitter.com/colisapp" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+                            <Twitter className="w-5 h-5 hover:text-white" />
+                        </Link>
+                        <Link href="https://instagram.com/colisapp" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                            <Instagram className="w-5 h-5 hover:text-white" />
+                        </Link>
+                    </div>
+                </div>
+            </div>
         </footer>
     );
 };

@@ -9,7 +9,7 @@ import {
     DestinataireResponseWithRoleDto,
     FullUserResponseDto, ProfileDto,
     RoleDto,
-    UpdateUserDto, UserLoginDto,
+    UpdateUserDto, UserDto, UserLoginDto,
     UserLoginResponseDto,
     UserModelDto,
     UserResponseDto
@@ -83,7 +83,8 @@ export async function handleDestinataire(
         });
 
         // 5. Si l'association n'existe pas, la créer
-        if (!existingAssociation) {await tx.clientDestinataire.create({
+        if (!existingAssociation) {
+            await tx.clientDestinataire.create({
                 data: {
                     clientId: userId,
                     destinataireId: found.id,
@@ -346,7 +347,7 @@ export async function getUserByEmail(email: string): Promise<UserLoginDto | null
 
 }
 
-export async function getUserProfileById(userId: number) : Promise<ProfileDto | null> {
+export async function getUserProfileById(userId: number): Promise<ProfileDto | null> {
     try {
         const response = await userRepositories.getUserProfileById(userId);
         if (!response) {
@@ -357,4 +358,17 @@ export async function getUserProfileById(userId: number) : Promise<ProfileDto | 
         console.error("Error getting user profile:", error);
         throw error;
     }
+}
+
+export async function getUsersByAgencyAdmin(adminId: number): Promise<ProfileDto[] | null> {
+
+    return await userRepositories.getUsersByAgencyAdmin(adminId); // Implémentation spécifique avec agencyId
+
+}
+
+
+export async function getAllUsers(): Promise<ProfileDto[] | null> {
+    const users = userRepositories.getAllUsers();
+
+    return users;
 }

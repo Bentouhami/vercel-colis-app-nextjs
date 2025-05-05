@@ -1,3 +1,5 @@
+// path: src/components/forms/SimulationForms/CitySelectForm.tsx
+
 import React, {ChangeEvent, useMemo} from "react";
 import {Label} from "@/components/ui/label";
 
@@ -20,16 +22,7 @@ const CitySelect = ({label, value, onChange, cities, disabled = false}: CitySele
                 value={value}
                 onChange={onChange}
                 disabled={disabled}
-                className="
-                  mt-1 w-full
-                  border-2 border-gray-300
-                  rounded-lg
-                  p-2
-                  focus:outline-none
-                  focus:border-blue-600
-                  transition duration-200
-                "
-            >
+                className="mt-1 w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-600 transition duration-200">
                 <option value="">{placeholder}</option>
                 {cities.length > 0 ? (
                     cities.map((city) => (

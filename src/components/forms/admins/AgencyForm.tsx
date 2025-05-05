@@ -93,7 +93,6 @@ export default function AgencyForm({agencyId}: AgencyFormProps) {
         (async () => {
             try {
                 const agencyResponse = await getAgencyById(agencyId);
-                console.log("✅ Agency fetched successfully:", agencyResponse);
 
                 if (agencyResponse instanceof Error) {
                     toast.error("Error fetching agency: " + agencyResponse.message);
@@ -101,7 +100,6 @@ export default function AgencyForm({agencyId}: AgencyFormProps) {
                     setAgency(agencyResponse);
                 }
             } catch (error) {
-                console.error("Error fetching agency:", error);
                 toast.error("Failed to fetch agency data.");
             }
         })();
@@ -178,22 +176,18 @@ export default function AgencyForm({agencyId}: AgencyFormProps) {
             },
         };
 
-        console.log("🚀 Submitting form with values:", newAgency);
         try {
             if (agencyId) {
                 // Call update function if agencyId exists
                 const agencyResponse = await updateAgency(newAgency); // Assuming you have updateAgency defined
                 toast.success("Agence mise à jour avec succès !");
-                console.log("Agency updated:", agencyResponse);
             } else {
                 // Call create function if no agencyId
                 const agencyResponse = await createAgency(newAgency);
                 toast.success("Agence créée avec succès !");
-                console.log("Agency created:", agencyResponse);
             }
         } catch (error) {
             toast.error("Erreur lors de la création de l'agence");
-            console.error("Creation error:", error);
         }
     }
 
@@ -386,6 +380,7 @@ export default function AgencyForm({agencyId}: AgencyFormProps) {
 
                                 return (
                                     <CountrySelect
+                                        placeholder=""
                                         label="Pays"
                                         value={field.value ? field.value.toString() : ""}
                                         onChange={(e) => {

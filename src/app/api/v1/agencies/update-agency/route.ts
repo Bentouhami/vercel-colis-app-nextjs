@@ -32,8 +32,6 @@ export async function PUT(req: NextRequest) {
             return NextResponse.json({error: 'Failed to update agency'}, {status: 500});
         }
 
-        console.log("🚀 Agency updated successfully in api route path api/v1/agencies/update-agency :", updatedAgency);
-
         return NextResponse.json(updatedAgency, {status: 200});
     } catch (error) {
         return NextResponse.json({error: 'Failed to update agency'}, {status: 500});

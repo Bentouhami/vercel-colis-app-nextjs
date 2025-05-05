@@ -8,7 +8,7 @@ import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/compo
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
 import {Loader2, Mail, Phone, User, UserPlus} from "lucide-react";
-import {toast, ToastContainer} from "react-toastify";
+import {toast} from "sonner";
 
 import {DestinataireInput, destinataireSchema} from "@/utils/validationSchema";
 import {addDestinataire} from "@/services/frontend-services/UserService";
@@ -237,7 +237,6 @@ export default function AddReceiverForm() {
                                 )}
                             </Button>
                         </form>
-                        <ToastContainer position="bottom-right" autoClose={2000} hideProgressBar theme="colored"/>
                     </CardContent>
                 </Card>
             </div>

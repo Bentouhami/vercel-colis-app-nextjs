@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({error: 'Agency data not found'}, {status: 400});
         }
 
-        const staffId = parseInt(session?.user?.id!, 10);
+        const staffId = parseInt(<string>session?.user?.id!, 10);
         // Call the createAgency function to create the agency
         const createdAgency = await createAgency(agencyData, staffId);
 
@@ -36,7 +36,6 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({error: 'Failed to create agency'}, {status: 500});
         }
 
-        console.log("🚀 Agency created successfully in api route path api/v1/agencies/create-agency :", createdAgency);
 
         return NextResponse.json(createdAgency, {status: 200});
     } catch (error) {

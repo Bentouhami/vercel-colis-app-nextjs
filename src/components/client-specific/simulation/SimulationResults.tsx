@@ -4,7 +4,7 @@
 import React, {useEffect, useState, useTransition} from "react";
 import {useRouter} from "next/navigation";
 import Link from "next/link";
-import {toast, ToastContainer} from "react-toastify";
+import {toast} from "sonner";
 
 // Services & Helpers
 import {deleteSimulationCookie, getSimulation} from "@/services/frontend-services/simulation/SimulationService";
@@ -28,7 +28,7 @@ export default function SimulationResults() {
     const [isPending, startTransition] = useTransition();
     const [results, setResults] = useState<SimulationResponseDto | null>(null);
     const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-    const [userId, setUserId] = useState<string | null>(null);
+    const [userId, setUserId] = useState<string | number | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     // Check user authentication status
@@ -302,9 +302,6 @@ export default function SimulationResults() {
                     </Button>
                 </Link>
             </div>
-
-            <ToastContainer position="bottom-right" autoClose={2000} hideProgressBar theme="colored"/>
-
             <LoginPromptModal
                 show={showLoginPrompt}
                 handleClose={() => setShowLoginPrompt(false)}

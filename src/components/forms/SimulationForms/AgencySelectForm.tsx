@@ -1,5 +1,7 @@
-import React, { ChangeEvent } from "react";
-import { Label } from "@/components/ui/label";
+// path: src/components/forms/SimulationForms/AgencySelectForm.tsx
+
+import React, {ChangeEvent} from "react";
+import {Label} from "@/components/ui/label";
 
 interface AgencySelectProps {
     label: string;
@@ -9,7 +11,7 @@ interface AgencySelectProps {
     disabled?: boolean;
 }
 
-const AgencySelect = ({ label, value, onChange, agencies, disabled = false }: AgencySelectProps) => {
+const AgencySelect = ({label, value, onChange, agencies, disabled = false}: AgencySelectProps) => {
     return (
         <div className="mb-4">
             <Label className="text-gray-700 font-semibold">{label}</Label>
@@ -17,16 +19,7 @@ const AgencySelect = ({ label, value, onChange, agencies, disabled = false }: Ag
                 value={value}
                 onChange={onChange}
                 disabled={disabled}
-                className="
-                  mt-1 w-full
-                  border-2 border-gray-300
-                  rounded-lg
-                  p-2
-                  focus:outline-none
-                  focus:border-blue-600
-                  transition duration-200
-                "
-            >
+                className="mt-1 w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-600 transition duration-200">
                 <option value="">{disabled ? "Sélection non disponible" : "Sélectionner une agence"}</option>
                 {agencies.length > 0 ? (
                     agencies.map((agency) => (

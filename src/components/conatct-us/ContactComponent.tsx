@@ -1,19 +1,18 @@
 // path: components/forms/ContactComponent.tsx
 'use client';
 
-import React, {FormEvent, useEffect, useState} from "react";
-import {toast} from "react-toastify";
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
-import {Input} from "@/components/ui/input";
-import {Textarea} from "@/components/ui/textarea";
-import {Button} from "@/components/ui/button";
-import {Mail, MapPin, Phone, Send} from "lucide-react";
-import {motion} from "framer-motion";
-import {sendContactEmail} from "@/services/frontend-services/contact/ContactService";
-import {getCurrentUserId} from "@/lib/auth";
-import {router} from "next/client";
-import {getUserProfileById} from "@/services/frontend-services/UserService";
-import {ProfileDto} from "@/services/dtos";
+import React, { FormEvent, useEffect, useState } from "react";
+import { toast } from "sonner";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Mail, MapPin, Phone, Send } from "lucide-react";
+import { motion } from "framer-motion";
+import { sendContactEmail } from "@/services/frontend-services/contact/ContactService";
+import { getCurrentUserId } from "@/lib/auth";
+import { getUserProfileById } from "@/services/frontend-services/UserService";
+import { ProfileDto } from "@/services/dtos";
 
 function ContactComponent() {
     const [name, setName] = useState('');
@@ -24,8 +23,8 @@ function ContactComponent() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
-    // check if the user is logged in and fetch their data if so to pre-fill the form with their information (name, email, phone)
     const [userData, setUserData] = useState<ProfileDto | null>(null);
+
     useEffect(() => {
         const fetchUserData = async () => {
             try {
@@ -37,10 +36,8 @@ function ContactComponent() {
                     return;
                 }
                 const user = await getUserProfileById(Number(userId));
-
                 if (user) {
                     setUserData(user);
-                    // pré-remplir le formulaire
                     setName(user.name ?? "");
                     setEmail(user.email ?? "");
                     setPhone(user.phoneNumber ?? "");
@@ -50,213 +47,162 @@ function ContactComponent() {
                 console.error("Error fetching user data:", error);
             }
         };
-
         fetchUserData();
     }, []);
 
-    if (isLoading) {
-        return <div>Loading...</div>;
-    }
-
+    if (isLoading) return <div>Chargement...</div>;
 
     async function handleSubmit(e: FormEvent) {
         e.preventDefault();
         setIsSubmitting(true);
-
-        const messageBody = {name, email, phone, subject, message};
-
+        const messageBody = { name, email, phone, subject, message };
         try {
             const mailSent = await sendContactEmail(messageBody);
-            toast.success("Votre message a été envoyé !");
-            setName('');
-            setEmail('');
-            setPhone('');
-            setSubject('');
-            setMessage('');
-
             if (mailSent) {
                 toast.success("Votre message a été envoyé !");
+                setName('');
+                setEmail('');
+                setPhone('');
+                setSubject('');
+                setMessage('');
             } else {
-
                 toast.error("Erreur lors de l'envoi du message.");
             }
         } catch (error) {
-            console.error("Erreur lors de l'envoi du message :", error);
+            console.error("Erreur lors de l'envoi :", error);
+            toast.error("Une erreur est survenue.");
         } finally {
             setIsSubmitting(false);
         }
     }
 
     return (
-        <section className="py-16 bg-gradient-to-b from-gray-50 to-white">
+        <section className="py-16 bg-gray-50 dark:bg-gray-900">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <motion.div
-                    initial={{opacity: 0, y: 20}}
-                    animate={{opacity: 1, y: 0}}
-                    transition={{duration: 0.5}}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
                     className="text-center mb-12"
                 >
-                    <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">Contactez-nous</h2>
-                    <p className="mt-4 text-lg text-gray-600">
+                    <h2 className="text-3xl font-bold text-gray-900 dark:text-white sm:text-4xl">
+                        Contactez-nous
+                    </h2>
+                    <p className="mt-4 text-lg text-gray-600 dark:text-gray-300">
                         Nous sommes là pour répondre à toutes vos questions
                     </p>
                 </motion.div>
 
                 <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+                    {/* Infos de contact */}
                     <motion.div
-                        initial={{opacity: 0, x: -20}}
-                        animate={{opacity: 1, x: 0}}
-                        transition={{duration: 0.5}}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5 }}
                         className="lg:col-span-1"
                     >
-                        <Card>
+                        <Card className="bg-white dark:bg-gray-800 shadow">
                             <CardHeader>
-                                <CardTitle>Informations de contact</CardTitle>
-                                <CardDescription>
+                                <CardTitle className="text-gray-900 dark:text-white">Informations de contact</CardTitle>
+                                <CardDescription className="text-gray-600 dark:text-gray-300">
                                     Plusieurs façons de nous joindre
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <div className="flex items-center space-x-4">
-                                    <Phone className="h-5 w-5 text-blue-600"/>
+                                    <Phone className="h-5 w-5 text-blue-600" />
                                     <div>
-                                        <p className="text-sm font-medium text-gray-900">Téléphone</p>
-                                        <p className="text-sm text-gray-600">+32 xxx xxx xxx</p>
+                                        <p className="text-sm font-medium text-gray-900 dark:text-white">Téléphone</p>
+                                        <p className="text-sm text-gray-600 dark:text-gray-300">+32 xxx xxx xxx</p>
                                     </div>
                                 </div>
-
                                 <div className="flex items-center space-x-4">
-                                    <Mail className="h-5 w-5 text-blue-600"/>
+                                    <Mail className="h-5 w-5 text-blue-600" />
                                     <div>
-                                        <p className="text-sm font-medium text-gray-900">Email</p>
-                                        <p className="text-sm text-gray-600">contact@example.com</p>
+                                        <p className="text-sm font-medium text-gray-900 dark:text-white">Email</p>
+                                        <p className="text-sm text-gray-600 dark:text-gray-300">contact@example.com</p>
                                     </div>
                                 </div>
-
                                 <div className="flex items-center space-x-4">
-                                    <MapPin className="h-5 w-5 text-blue-600"/>
+                                    <MapPin className="h-5 w-5 text-blue-600" />
                                     <div>
-                                        <p className="text-sm font-medium text-gray-900">Adresse</p>
-                                        <p className="text-sm text-gray-600">Rue xxx, 12345 Ville</p>
+                                        <p className="text-sm font-medium text-gray-900 dark:text-white">Adresse</p>
+                                        <p className="text-sm text-gray-600 dark:text-gray-300">Rue xxx, 12345 Ville</p>
                                     </div>
                                 </div>
                             </CardContent>
                         </Card>
                     </motion.div>
 
+                    {/* Formulaire */}
                     <motion.div
-                        initial={{opacity: 0, x: 20}}
-                        animate={{opacity: 1, x: 0}}
-                        transition={{duration: 0.5}}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5 }}
                         className="lg:col-span-2"
                     >
-                        <Card>
+                        <Card className="bg-white dark:bg-gray-800 shadow">
                             <CardHeader>
-                                <CardTitle>Envoyez-nous un message</CardTitle>
-                                <CardDescription>
+                                <CardTitle className="text-gray-900 dark:text-white">Envoyez-nous un message</CardTitle>
+                                <CardDescription className="text-gray-600 dark:text-gray-300">
                                     Remplissez le formulaire ci-dessous
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <form onSubmit={handleSubmit} className="space-y-6">
-                                    <motion.div
-                                        initial={{opacity: 0, y: 10}}
-                                        animate={{opacity: 1, y: 0}}
-                                        transition={{duration: 0.3}}
-                                        className="grid grid-cols-1 gap-6 sm:grid-cols-2"
-                                    >
+                                    {/* Ligne 1 */}
+                                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                                         <div className="space-y-2">
-                                            <label htmlFor="name" className="text-sm font-medium text-gray-900">
+                                            <label htmlFor="name" className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                 Nom
                                             </label>
-                                            <Input
-                                                id="name"
-                                                value={name}
-                                                onChange={(e) => setName(e.target.value)}
-                                                placeholder="Votre nom"
-                                                required
-                                            />
+                                            <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required />
                                         </div>
                                         <div className="space-y-2">
-                                            <label htmlFor="email" className="text-sm font-medium text-gray-900">
+                                            <label htmlFor="email" className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                 Email
                                             </label>
-                                            <Input
-                                                id="email"
-                                                type="email"
-                                                value={email}
-                                                onChange={(e) => setEmail(e.target.value)}
-                                                placeholder="votre@email.com"
-                                                required
-                                            />
+                                            <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                                         </div>
-                                    </motion.div>
+                                    </div>
 
-                                    <motion.div
-                                        initial={{opacity: 0, y: 10}}
-                                        animate={{opacity: 1, y: 0}}
-                                        transition={{duration: 0.3, delay: 0.1}}
-                                        className="grid grid-cols-1 gap-6 sm:grid-cols-2"
-                                    >
+                                    {/* Ligne 2 */}
+                                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                                         <div className="space-y-2">
-                                            <label htmlFor="phone" className="text-sm font-medium text-gray-900">
+                                            <label htmlFor="phone" className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                 Téléphone
                                             </label>
-                                            <Input
-                                                id="phone"
-                                                type="tel"
-                                                value={phone}
-                                                onChange={(e) => setPhone(e.target.value)}
-                                                placeholder="+32 xxx xxx xxx"
-                                            />
+                                            <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
                                         </div>
                                         <div className="space-y-2">
-                                            <label htmlFor="subject" className="text-sm font-medium text-gray-900">
+                                            <label htmlFor="subject" className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                 Objet
                                             </label>
-                                            <Input
-                                                id="subject"
-                                                value={subject}
-                                                onChange={(e) => setSubject(e.target.value)}
-                                                placeholder="Objet de votre message"
-                                                required
-                                            />
+                                            <Input id="subject" value={subject} onChange={(e) => setSubject(e.target.value)} required />
                                         </div>
-                                    </motion.div>
+                                    </div>
 
-                                    <motion.div
-                                        initial={{opacity: 0, y: 10}}
-                                        animate={{opacity: 1, y: 0}}
-                                        transition={{duration: 0.3, delay: 0.2}}
-                                        className="space-y-2"
-                                    >
-                                        <label htmlFor="message" className="text-sm font-medium text-gray-900">
+                                    {/* Message */}
+                                    <div className="space-y-2">
+                                        <label htmlFor="message" className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                             Message
                                         </label>
                                         <Textarea
                                             id="message"
                                             value={message}
                                             onChange={(e) => setMessage(e.target.value)}
-                                            placeholder="Votre message..."
-                                            className="h-32"
+                                            rows={5}
                                             required
                                         />
-                                    </motion.div>
+                                    </div>
 
-                                    <motion.div
-                                        initial={{opacity: 0, y: 10}}
-                                        animate={{opacity: 1, y: 0}}
-                                        transition={{duration: 0.3, delay: 0.3}}
-                                    >
-                                        <Button
-                                            type="submit"
-                                            className="w-full sm:w-auto"
-                                            disabled={isSubmitting}
-                                        >
-                                            <Send className="w-4 h-4 mr-2"/>
+                                    {/* Bouton */}
+                                    <div>
+                                        <Button type="submit" className="w-full sm:w-auto" disabled={isSubmitting}>
+                                            <Send className="w-4 h-4 mr-2" />
                                             {isSubmitting ? "Envoi en cours..." : "Envoyer le message"}
                                         </Button>
-                                    </motion.div>
+                                    </div>
                                 </form>
                             </CardContent>
                         </Card>

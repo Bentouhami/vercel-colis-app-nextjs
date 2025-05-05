@@ -4,9 +4,9 @@ import {Address} from "@prisma/client";
 import prisma from "@/utils/db";
 
 interface Props {
-    params: {
+    params: Promise<{
         id: string;
-    }
+    }>
 }
 
 /**
@@ -15,7 +15,8 @@ interface Props {
  * @desc Get single address by id
  * @access public
  */
-export async function GET(request: NextRequest, {params}: Props) {
+export async function GET(request: NextRequest, props: Props) {
+    const params = await props.params;
     try {
         // // on récupère l'adresse avec l'id passé en paramètre
         const address: Address | null = await prisma.address.findUnique({
@@ -49,7 +50,8 @@ export async function GET(request: NextRequest, {params}: Props) {
  * @desc Update single address by id
  * @access public
  */
-export async function PUT(request: NextRequest, {params}: Props) {
+export async function PUT(request: NextRequest, props: Props) {
+    const params = await props.params;
     if (request.method !== "PUT") {
         return errorHandler("Method not allowed", 405);
     }

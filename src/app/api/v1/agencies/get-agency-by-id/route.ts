@@ -14,7 +14,8 @@ import {auth} from "@/auth/auth";
  * @desc Get agency by id
  * @access public
  */
-export async function GET(req: NextRequest , {params} : {params: {agencyId: string}}) {
+export async function GET(req: NextRequest, props: {params: Promise<{agencyId: string}>}) {
+    const params = await props.params;
     if (req.method !== 'GET') {
         return NextResponse.json({error: 'Method not allowed'}, {status: 405});
     }

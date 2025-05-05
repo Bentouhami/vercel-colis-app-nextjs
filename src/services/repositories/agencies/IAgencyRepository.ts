@@ -11,5 +11,6 @@ export interface IAgencyRepository {
     getAgencyById(id: number): Promise<AgencyResponseDto | null>;
     getAgencyId(country: string, city: string, agencyName: string): Promise<number | null>;
     createAgency(agencyData: AgencyDto, staffId: number): Promise<AgencyResponseDto | null>;
+    getAgencyIdForAdmin(adminId: number): Promise<number | null>;
 
 }

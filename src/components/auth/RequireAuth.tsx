@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 import {RoleDto} from "@/services/dtos";
 
 interface RequireAuthProps {

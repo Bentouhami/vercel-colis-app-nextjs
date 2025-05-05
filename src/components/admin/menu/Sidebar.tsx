@@ -154,7 +154,7 @@ const Sidebar = () => {
                 <div className="flex items-center space-x-4">
                     <Link href={`/`}>
                         <h1 className="font-bold text-xl bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                            Gest Fac
+                            Colis App Gestion
                         </h1>
                     </Link>
                 </div>
@@ -188,7 +188,7 @@ const Sidebar = () => {
                         className={cn("flex items-center space-x-3 transition-all duration-300", isCollapsed && "opacity-0 w-0 hidden")}>
                         <Link href={`/`}>
                             <h1 className="font-bold text-xl bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                                Gest Fac
+                                Colis App Gestion
                             </h1>
                         </Link>
                     </div>

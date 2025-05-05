@@ -18,7 +18,7 @@ export async function GET(req: Request) {
         }
 
         // Delete the simulationResponse cookie
-        cookies().delete("simulationResponse");
+        (await cookies()).delete("simulationResponse");
 
         // Create response
         const response = NextResponse.json(

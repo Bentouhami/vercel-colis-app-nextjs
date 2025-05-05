@@ -118,6 +118,7 @@ export default function DeliveriesTable() {
                         <PaginationContent>
                             <PaginationItem>
                                 <PaginationPrevious
+                                    size="default"
                                     onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
                                     isActive={page === 1}
                                 />
@@ -129,6 +130,7 @@ export default function DeliveriesTable() {
                             </PaginationItem>
                             <PaginationItem>
                                 <PaginationNext
+                                    size="default"
                                     onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
                                     isActive={page === totalPages}
                                 />

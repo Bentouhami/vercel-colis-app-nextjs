@@ -21,7 +21,7 @@ export default function UsersPage() {
 
     useEffect(() => {
         if (status === 'authenticated' && session?.user?.role) {
-            setRole(session.user.role as RoleDto);
+            setRole(session.user.role);
         }
     }, [status, session]);
 
@@ -49,7 +49,7 @@ export default function UsersPage() {
                         <Plus className="mr-2 h-4 w-4"/> Add User
                     </Button>
                 </div>
-                {/*<UsersList role={role.includes(RoleDto.ACCOUNTANT) ? RoleDto.ACCOUNTANT : RoleDto.SUPER_ADMIN}/>*/}
+                <UsersList/>
             </div>
         </RequireAuth>
     );

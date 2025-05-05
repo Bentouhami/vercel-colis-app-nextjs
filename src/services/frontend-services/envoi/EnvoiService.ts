@@ -57,7 +57,7 @@ export async function getEnvoiById(envoiId: number): Promise<PaymentSuccessDto |
     }
 }
 
-export async function fetchUserDeliveries(userId: string, page: number = 1, limit: number = 5): Promise<{
+export async function fetchUserDeliveries(userId: string | number | null, page: number = 1, limit: number = 5): Promise<{
     data: EnvoisListDto[],
     total: number
 }> {

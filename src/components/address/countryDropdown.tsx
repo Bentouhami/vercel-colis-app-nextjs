@@ -35,24 +35,22 @@ const formSchema = z.object({
 
 export default function CountryDropdown() {
 
-    const [countryName, setCountryName] = useState < string > ('')
-    const [stateName, setStateName] = useState < string > ('')
+    const [countryName, setCountryName] = useState<string>('')
+    const [stateName, setStateName] = useState<string>('')
 
-    const form = useForm < z.infer < typeof formSchema >> ({
+    const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
 
     })
 
-    function onSubmit(values: z.infer < typeof formSchema > ) {
+    function onSubmit(values: z.infer<typeof formSchema>) {
         try {
-            console.log(values);
             toast(
                 <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
           <code className="text-white">{JSON.stringify(values, null, 2)}</code>
         </pre>
             );
         } catch (error) {
-            console.error("Form submission error", error);
             toast.error("Failed to submit the form. Please try again.");
         }
     }
@@ -64,7 +62,7 @@ export default function CountryDropdown() {
                 <FormField
                     control={form.control}
                     name="country"
-                    render={({ field }) => (
+                    render={({field}) => (
                         <FormItem>
                             <FormLabel>Select Country</FormLabel>
                             <FormControl>
@@ -79,8 +77,9 @@ export default function CountryDropdown() {
                                     }}
                                 />
                             </FormControl>
-                            <FormDescription>If your country has states, it will be appear after selecting country</FormDescription>
-                            <FormMessage />
+                            <FormDescription>If your country has states, it will be appear after selecting
+                                country</FormDescription>
+                            <FormMessage/>
                         </FormItem>
                     )}
                 />

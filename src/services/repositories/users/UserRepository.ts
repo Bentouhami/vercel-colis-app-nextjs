@@ -2,16 +2,19 @@
 
 import {IUserRepository} from "@/services/repositories/users/IUserRepository";
 import {
-    AddressResponseDto,
     ProfileDto,
     RoleDto,
     UserAddressDto,
     UserLoginDto,
-    UserLoginResponseDto
+    UserLoginResponseDto,
 } from "@/services/dtos";
 import prisma from "@/utils/db";
+import {mapUserToProfileDto} from "@/services/mappers/user.mapper";
+
 
 export class UserRepository implements IUserRepository {
+
+
     async findUserByEmail(email: string): Promise<UserLoginDto | null> {
         // Check if the email is valid
         if (!email) {
@@ -163,7 +166,75 @@ export class UserRepository implements IUserRepository {
         }
 
     }
+
+    // Pour SUPER_ADMIN
+    async getAllUsers(): Promise<ProfileDto[] | null> {
+
+        const users = await prisma.user.findMany({
+            include: {
+                userAddresses: {
+                    include: {
+                        address: {
+                            include: {
+                                city: {
+                                    include: {country: true}
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        const us =  users.map(user => mapUserToProfileDto(user));
+        return us;
+    }
+
+// Pour AGENCY_ADMIN
+    async getUsersByAgencyAdmin(adminId: number): Promise<ProfileDto[]> {
+
+        const staff = await prisma.agencyStaff.findFirst({
+            where: {
+                staffId: adminId,
+                staffRole: 'AGENCY_ADMIN',
+            },
+        });
+
+        if (!staff) return [];
+
+        const agencyClients = await prisma.agencyClients.findMany({
+            where: {
+                agencyId: staff.agencyId,
+            },
+            include: {
+                client: {
+                    include: {
+                        userAddresses: {
+                            include: {
+                                address: {
+                                    include: {
+                                        city: {
+                                            include: {
+                                                country: true,
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        return agencyClients
+            .filter(ac => ac.client.role === 'CLIENT')
+            .map(ac => mapUserToProfileDto(ac.client));
+
+    }
+
+
 }
 
 // Export a single instance of the UserRepository for use throughout the application
-export const userRepositories = new UserRepository();
+export const userRepositories = new UserRepository;

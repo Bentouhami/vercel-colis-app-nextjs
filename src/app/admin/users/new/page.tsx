@@ -2,7 +2,7 @@
 'use client'
 
 import React, {useState} from 'react';
-import {Tabs, TabsList, TabsTrigger} from "@/components/ui/tabs";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 
 import RequireAuth from "@/components/auth/RequireAuth";
 import {useSession} from "next-auth/react";
@@ -12,6 +12,10 @@ import {FaUsers} from "react-icons/fa6";
 import {Card, CardContent} from "@/components/ui/card";
 import {accessControlHelper} from "@/utils/accessControlHelper";
 import {RoleDto} from "@/services/dtos";
+import {NewCustomer} from '@/components/users/NewCustomer';
+import {NewAdmin} from '@/components/users/NewAdminForm';
+import {NewAccountant} from '@/components/users/NewAccountant';
+import {NewSuperAdmin} from "@/components/users/NewSuperAdminsForm";
 
 export default function UsersPage() {
     const router = useRouter();
@@ -92,20 +96,20 @@ export default function UsersPage() {
                                 </TabsList>
 
                                 <div className="mt-6">
-                                    {/*<TabsContent value="customer">*/}
-                                    {/*    <NewCustomer/>*/}
-                                    {/*</TabsContent>*/}
-                                    {/*<TabsContent value="admin">*/}
-                                    {/*    <NewAdmin/>*/}
-                                    {/*</TabsContent>*/}
-                                    {/*<TabsContent value="accountant">*/}
-                                    {/*    <NewAccountant/>*/}
-                                    {/*</TabsContent>*/}
-                                    {/*{isSuperAdmin && (*/}
-                                    {/*    <TabsContent value="superadmin">*/}
-                                    {/*        <NewSuperAdmin/>*/}
-                                    {/*    </TabsContent>*/}
-                                    {/*)}*/}
+                                    <TabsContent value="customer">
+                                        <NewCustomer/>
+                                    </TabsContent>
+                                    <TabsContent value="admin">
+                                        <NewAdmin/>
+                                    </TabsContent>
+                                    <TabsContent value="accountant">
+                                        <NewAccountant/>
+                                    </TabsContent>
+                                    {isSuperAdmin && (
+                                        <TabsContent value="superadmin">
+                                            <NewSuperAdmin/>
+                                        </TabsContent>
+                                    )}
                                 </div>
                             </Tabs>
                         </CardContent>

@@ -14,6 +14,7 @@ import {RegisterUserFrontendFormType} from "@/utils/validationSchema";
 import {getCitiesPerCountry} from "@/services/frontend-services/city/CityService";
 import {getAllCountries} from "@/services/frontend-services/country/CountryService";
 import {CityDto} from "@/services/dtos/cities/CityDto";
+import {toast} from "sonner";
 
 interface CountryCitySelectorProps {
     form: UseFormReturn<RegisterUserFrontendFormType>;
@@ -48,11 +49,9 @@ export default function SimulationCountryCitySelector({form}: CountryCitySelecto
     useEffect(() => {
         (async () => {
             if (selectedCountry) {
-                console.log("selectedCountry in useEffect in path: src/components/dashboard/forms/RegisterUserFrontendForm.tsx is :", selectedCountry);
                 // Récupérer l'id du pays en fonction du nom sélectionné
                 const countryId = countries.find(c => c.name === selectedCountry)?.id;
                 if (countryId) {
-                    console.log("countryId in useEffect in path: src/components/dashboard/forms/RegisterUserFrontendForm.tsx is :", countryId);
                     try {
                         const cities = await getCitiesPerCountry(Number(countryId));
                         if (cities) {
@@ -60,7 +59,7 @@ export default function SimulationCountryCitySelector({form}: CountryCitySelecto
                             setValue("address.city", "");
                         }
                     } catch (error) {
-                        console.error("Erreur lors de la récupération des villes :", error);
+                        toast.error("Erreur lors de la récupération des villes");
                     }
                 }
             } else {

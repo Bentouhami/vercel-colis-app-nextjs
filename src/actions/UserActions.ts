@@ -1,25 +1,22 @@
-"use sever";
+"use server";
 
-import {LoginUserDto} from "@/services/dtos/users/UserDto"
+import {LoginUserDto} from "@/services/dtos/users/UserDto";
 import {loginUserSchema} from "@/utils/validationSchema";
-import {signIn} from "next-auth/react";
-import {toast} from "react-toastify";
+import {signIn} from "@/auth/auth";
+
 
 const login = async (email: string, password: string) => {
-    // const email = formData.get("email") as string;
-    // const password = formData.get("password") as string;
-
     if (!email || !password) {
-        return;
+        return {error: "Veuillez fournir un email et un mot de passe."};
     }
 
-    // call frontend service
     const loginData: LoginUserDto = {email, password};
     const validated = loginUserSchema.safeParse(loginData);
 
     if (!validated.success) {
-        return;
+        return {error: "Les données saisies sont invalides."};
     }
+
     try {
         const result = await signIn("credentials", {
             redirect: false,
@@ -28,11 +25,13 @@ const login = async (email: string, password: string) => {
         });
 
         if (result?.error) {
-            return {error: "Incorrect email or password"};
+            return {error: "Email ou mot de passe incorrect."};
         }
-    } catch (error) {
-        toast.error("Erreur lors de la connexion");
-    }
-}
 
-export {login}
+        return {success: true};
+    } catch (error) {
+        return {error: "Erreur inattendue lors de la connexion."};
+    }
+};
+
+export {login};

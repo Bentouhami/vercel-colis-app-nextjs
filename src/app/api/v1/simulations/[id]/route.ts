@@ -5,7 +5,8 @@ import {getSimulationById, updateSimulationTransportId} from "@/services/backend
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: NextRequest, {params}: { params: { id: string } }) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
     if (request.method !== 'GET') {
         return NextResponse.json({error: 'Method not allowed'}, {status: 405});
     }
@@ -33,7 +34,8 @@ export async function GET(request: NextRequest, {params}: { params: { id: string
 }
 
 // Update simulation with the suitable transport id
-export async function PUT(request: NextRequest, {params}: { params: { id: string } }) {
+export async function PUT(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
 
 
     if (request.method !== "PUT") {

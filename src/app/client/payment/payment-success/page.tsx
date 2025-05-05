@@ -2,7 +2,7 @@
 
 import React, {useCallback, useEffect, useState} from 'react';
 import RequireAuth from '@/components/auth/RequireAuth';
-import {toast} from 'react-toastify';
+import {toast} from 'sonner';
 import {getSimulationFromCookie} from '@/lib/simulationCookie';
 import {getEnvoiById, updateEnvoiDatas} from '@/services/frontend-services/envoi/EnvoiService';
 import {useRouter} from 'next/navigation';
@@ -70,8 +70,6 @@ export default function PaymentSuccessPage() {
             // 4) Update the envoi
             const updateSuccess = await updateEnvoiDatas(Number(simulation.id));
 
-            console.log("log ====> updateSuccess: ", updateSuccess);
-
             if (!updateSuccess) {
                 toast.error("Erreur lors de la mise à jour de l'envoi.");
                 return;
@@ -97,7 +95,6 @@ export default function PaymentSuccessPage() {
                 return;
             }
         } catch (error) {
-            console.error('Error in finalizePayment:', error);
             toast.error('Une erreur est survenue lors de la finalisation du paiement.');
         } finally {
             setIsLoading(false);

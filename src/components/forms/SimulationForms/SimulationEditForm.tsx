@@ -9,7 +9,7 @@ import React, {
 } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'sonner';
 
 import {
     PartielUpdateSimulationDto,
@@ -74,7 +74,7 @@ const SimulationEditForm = () => {
     const [isPending, startTransition] = useTransition();
 
     // Authentication
-    const [userId, setUserId] = useState<string | null>(null);
+    const [userId, setUserId] = useState<string | number | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     // The entire simulation object from the backend
@@ -797,17 +797,6 @@ const SimulationEditForm = () => {
 
             {/* Parcel edit modal */}
             {renderParcelEditDialog()}
-
-            <ToastContainer
-                position="bottom-right"
-                autoClose={5000}
-                hideProgressBar={false}
-                theme="colored"
-                closeOnClick
-                pauseOnHover
-                draggable
-                pauseOnFocusLoss
-            />
         </motion.div>
     );
 };

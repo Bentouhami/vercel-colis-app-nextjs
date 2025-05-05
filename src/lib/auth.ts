@@ -1,40 +1,17 @@
 // path: src/lib/auth.ts
 
-
-import bcrypt from "bcryptjs";
 import { getSession } from "next-auth/react";
-import { toast } from "react-toastify";
+import { toast } from 'sonner';
 import {RoleDto} from "@/services/dtos";
-
-/**
- * Hash a password with bcrypt
- * @param password
- * @returns {Promise<string>} hashed password
- */
-export function saltAndHashPassword(password: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-        // Utiliser bcrypt pour générer un salt avec 10 rounds (nombre de tours recommandé)
-        bcrypt.genSalt(10, (err, salt) => {
-            if (err) return reject(err);
-
-            // Utiliser le salt généré pour hashes le mot de passe
-            bcrypt.hash(password, salt, (err, hashedPassword) => {
-                if (err) return reject(err);
-                resolve(hashedPassword);
-            });
-        });
-    });
-}
-
 
 
 
 interface AuthCheckResult {
     isAuthenticated: boolean;
-    userId?: string;
-    email?: string;
+    userId?: string | number | null; // Allow userId to be string, null, or undefined
+    email?: string | null; // It's good practice to allow null for email too, depending on your session type
     error?: string;
-    role?: RoleDto;
+    role?: RoleDto | null; // Allow role to be RoleDto, null, or undefined, depending on your session type
 }
 export async function checkAuthStatus(showToast: boolean = true): Promise<AuthCheckResult> {
     try {
@@ -52,9 +29,9 @@ export async function checkAuthStatus(showToast: boolean = true): Promise<AuthCh
 
         return {
             isAuthenticated: true,
-            userId: session.user?.id,
-            email: session.user?.email!,
-            role: session.user?.role
+            userId: session.user?.id ?? null,
+            email: session.user?.email ?? null, // Use nullish coalescing to ensure null if email is undefined
+            role: session.user?.role ?? null // Use nullish coalescing to ensure null if role is undefined
         };
     } catch (error) {
         if (showToast) {
@@ -68,7 +45,7 @@ export async function checkAuthStatus(showToast: boolean = true): Promise<AuthCh
 }
 
 // Optional: Helper for getting just the userId
-export async function getCurrentUserId(): Promise<string | null> {
+export async function getCurrentUserId(): Promise<string | number | null> {
     const { userId } = await checkAuthStatus(false);
     return userId || null;
 }

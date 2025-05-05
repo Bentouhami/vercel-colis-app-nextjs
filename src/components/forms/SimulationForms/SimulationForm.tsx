@@ -1,10 +1,11 @@
+// path: src/components/forms/SimulationForms/SimulationForm.tsx
+
 'use client';
 
 import React, { ChangeEvent, useEffect, useState, useTransition } from 'react';
 import { motion } from 'framer-motion';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
 
 // UI components
 import CountrySelect from "@/components/forms/SimulationForms/CountrySelectForm";
@@ -59,7 +60,7 @@ const SimulationForm = () => {
     // endregion
 
     // region: user or simulation state
-    const [userId, setUserId] = useState<string | null>(null);
+    const [userId, setUserId] = useState<string | number | null>(null);
     const [simulationConfirmationModal, setSimulationConfirmationModal] = useState(false);
     // endregion
 
@@ -504,6 +505,7 @@ const SimulationForm = () => {
                                     <PaginationContent>
                                         <PaginationItem>
                                             <PaginationPrevious
+                                                size="default"
                                                 isActive={currentPackage === 0}
                                                 onClick={() => setCurrentPackage((p) => Math.max(p - 1, 0))}
                                             />
@@ -511,6 +513,7 @@ const SimulationForm = () => {
                                         {parcels.map((_, idx) => (
                                             <PaginationItem key={idx}>
                                                 <PaginationLink
+                                                    size="default"
                                                     isActive={idx === currentPackage}
                                                     onClick={() => handlePageChange(idx)}
                                                 >
@@ -520,6 +523,7 @@ const SimulationForm = () => {
                                         ))}
                                         <PaginationItem>
                                             <PaginationNext
+                                                size="default"
                                                 isActive={currentPackage === parcels.length - 1}
                                                 onClick={() =>
                                                     setCurrentPackage((p) => Math.min(p + 1, parcels.length - 1))
@@ -552,7 +556,7 @@ const SimulationForm = () => {
             </form>
 
             {/* Toast notifications */}
-            <ToastContainer position="bottom-right" autoClose={5000} theme="colored" />
+            {/*<ToastContainer position="bottom-right" autoClose={5000} theme="colored" />*/}
 
             {/* If existing simulation was found: show confirmation modal */}
             {simulationConfirmationModal && (

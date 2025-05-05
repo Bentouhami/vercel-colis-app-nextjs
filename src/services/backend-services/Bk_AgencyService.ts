@@ -57,8 +57,92 @@ export async function getAgencyById(id: number): Promise<AgencyResponseDto | nul
 }
 
 
+export async function getAgencies(p0: { page: number; limit: number; search: string; sortKey: string; sortDir: string; }): Promise<AgencyDto[] | null> {
+    try {
+
+        const agencies = await prisma.agency.findMany(
+            {
+                select: {
+                    id: true,
+                    name: true,
+                    location: true,
+                    addressId: true,
+                    capacity: true,
+                    availableSlots: true,
+                    createdAt: true,
+                    updatedAt: true,
+                    address: {
+                        select: {
+                            id: true,
+                            street: true,
+                            complement: true,
+                            streetNumber: true,
+                            boxNumber: true,
+                            city: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    country: {
+                                        select: {
+                                            id: true,
+                                            name: true,
+                                        }
+                                    }
+                                }
+                            },
+                        },
+                    },
+                },
+            }
+        );
+
+        if (!agencies) {
+            throw new Error("Agencies not found");
+        }
+
+        // format the response to match the AgencyResponseDto interface
+        const formattedAgencies = agencies.map((agency) => ({
+            id: agency.id,
+            name: agency.name,
+            location: agency.location || '',
+            addressId: agency.addressId,
+            capacity: agency.capacity || 0,
+            availableSlots: agency.availableSlots,
+            address: {
+                id: agency.address.id,
+                street: agency.address.street,
+                complement: agency.address.complement,
+                streetNumber: agency.address.streetNumber,
+                boxNumber: agency.address.boxNumber,
+                city: {
+                    id: agency.address.city.id,
+                    name: agency.address.city.name,
+                    country: {
+                        id: agency.address.city.country.id,
+                        name: agency.address.city.country.name,
+                    }
+                }
+            },
+            createdAt: agency.createdAt,
+            updatedAt: agency.updatedAt,
+        }));
+
+        return formattedAgencies;
+
+    } catch (error) {
+        console.error("Error getting agencies for super admin:", error);
+        throw error;
+    }
+}
+
 // region agency admin functions
-export async function getAgenciesByAdminId(staffId: number): Promise<AgencyDto[] | null> {
+export async function getAgenciesByAdminId(staffId: number, p0: {
+    page: number;
+    limit: number;
+    search: string;
+    sortKey: string;
+    sortDir: string;
+}): Promise<AgencyDto[] | null> {
     if (!staffId) {
         throw new Error("Invalid admin id");
     }
@@ -110,9 +194,6 @@ export async function getAgenciesByAdminId(staffId: number): Promise<AgencyDto[]
             throw new Error("Agencies not found");
         }
 
-        console.log("agencies found function getAgenciesByAdminId in Bk_AgencyService.ts", agencies);
-
-
         // format the response to match the AgencyResponseDto interface
         const formattedAgencies = agencies.map((agency) => ({
             id: agency.agency.id,
@@ -140,8 +221,6 @@ export async function getAgenciesByAdminId(staffId: number): Promise<AgencyDto[]
             updatedAt: agency.agency.updatedAt,
         }));
 
-        console.log("formattedAgencies found function getAgenciesByAdminId in Bk_AgencyService.ts", formattedAgencies);
-
         return formattedAgencies;
 
     } catch (error) {
@@ -152,7 +231,7 @@ export async function getAgenciesByAdminId(staffId: number): Promise<AgencyDto[]
 
 export async function createAgency(agencyData: AgencyDto, staffId: number): Promise<AgencyResponseDto | null> {
     try {
-        const agency = await agencyRepository.createAgency(agencyData , staffId);
+        const agency = await agencyRepository.createAgency(agencyData, staffId);
         if (!agency) {
             throw new Error("Agency not created");
         }
@@ -175,6 +254,7 @@ export async function updateAgency(agencyData: AgencyDto): Promise<AgencyRespons
         throw error;
     }
 }
+
 
 // endregion
 

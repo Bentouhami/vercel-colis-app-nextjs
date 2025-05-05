@@ -1,3 +1,5 @@
+// path: src/app/client/contact-us/page.tsx
+
 import ContactComponent from "@/components/conatct-us/ContactComponent";
 import type { Metadata } from 'next'
 

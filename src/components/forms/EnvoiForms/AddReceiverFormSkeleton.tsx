@@ -7,7 +7,6 @@ import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/compo
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
 import {Loader2, Mail, Phone, User, UserPlus} from "lucide-react";
-import {ToastContainer} from "react-toastify";
 
 export default function AddReceiverFormSkeleton() {
     // Placeholder state for skeleton loading effect
@@ -105,7 +104,6 @@ export default function AddReceiverFormSkeleton() {
                             )}
                         </Button>
                     </form>
-                    <ToastContainer position="bottom-right" autoClose={2000} hideProgressBar theme="colored"/>
                 </CardContent>
             </Card>
         </div>

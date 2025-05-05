@@ -4,7 +4,7 @@ import React, {useTransition} from "react";
 import {useRouter} from "next/navigation";
 import {motion} from "framer-motion";
 import {useForm} from "react-hook-form";
-import {toast} from "react-toastify";
+import {toast} from "sonner";
 import Image from "next/image";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {
@@ -95,7 +95,7 @@ export default function RegisterForm() {
                 initial={{opacity: 0, scale: 0.95}}
                 animate={{opacity: 1, scale: 1}}
                 transition={{duration: 0.6}}
-                className="w-full max-w-3xl space-y-6"
+
             >
                 {/* Image Section */}
                 <motion.div
@@ -103,14 +103,16 @@ export default function RegisterForm() {
                     animate={{opacity: 1, x: 0}}
                     transition={{duration: 0.7}}
                 >
-                    <Image
-                        priority
-                        className="rounded-md mx-auto"
-                        src="/svg/login/register.svg"
-                        alt="Register Illustration"
-                        width={300}
-                        height={300}
-                    />
+                    <div className="w-full max-w-3xl space-y-6">
+                        <Image
+                            priority
+                            className="rounded-md mx-auto"
+                            src="/svg/login/register.svg"
+                            alt="Register Illustration"
+                            width={300}
+                            height={300}
+                        />
+                    </div>
                 </motion.div>
 
                 {/* Form Section */}

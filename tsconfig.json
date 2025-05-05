@@ -1,5 +1,4 @@
 // path: src/tsconfig.json
-
 {
   "compilerOptions": {
     "lib": [
@@ -31,7 +30,8 @@
       "@/*": [
         "./src/*"
       ]
-    }
+    },
+    "target": "ES2017"
   },
   "include": [
     "next-env.d.ts",

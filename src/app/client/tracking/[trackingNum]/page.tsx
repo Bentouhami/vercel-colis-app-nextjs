@@ -4,12 +4,13 @@ import TrackingComponent from "@/components/tracking/TrackingComponent";
 
 // Définir le type pour params
 interface TrackingPageParams {
-    params: {
+    params: Promise<{
         trackingNum: string;
-    };
+    }>;
 }
 
-export default function TrackingPage({params}: TrackingPageParams) {
+export default async function TrackingPage(props: TrackingPageParams) {
+    const params = await props.params;
     return (
         <div className={"container"}>
             <h1 className={"text-center container-fluid p-5 text-6xl mt-5 rounded-top-5 shadow max-w-6xl w-full"}>

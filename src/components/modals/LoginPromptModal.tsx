@@ -1,6 +1,7 @@
-// path: /src/components/LoginPromptModal.tsx
-import React from 'react';
-import {Button, Modal} from 'react-bootstrap';
+// src/components/LoginPromptModal.tsx
+import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { LogIn } from "lucide-react"; // Icône de connexion
 
 interface LoginPromptModalProps {
     show: boolean;
@@ -8,24 +9,33 @@ interface LoginPromptModalProps {
     handleLoginRedirect: () => void;
 }
 
-const LoginPromptModal: React.FC<LoginPromptModalProps> = ({show, handleClose, handleLoginRedirect}) => {
+const LoginPromptModal: React.FC<LoginPromptModalProps> = ({ show, handleClose, handleLoginRedirect }) => {
     return (
-        <Modal show={show} onHide={handleClose} centered>
-            <Modal.Header closeButton>
-                <Modal.Title>Connexion requise</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <p>Veuillez vous connecter pour valider la simulation.</p>
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>
-                    Annuler
-                </Button>
-                <Button variant="primary" onClick={handleLoginRedirect}>
-                    Se connecter
-                </Button>
-            </Modal.Footer>
-        </Modal>
+        <Dialog open={show} onOpenChange={handleClose}>
+            <DialogContent className="sm:max-w-md p-6">
+                <DialogHeader className="text-center">
+                    <div className="flex flex-col items-center space-y-2">
+                        <div className="bg-primary/10 p-3 rounded-full">
+                            <LogIn className="h-8 w-8 text-primary" />
+                        </div>
+                        <DialogTitle className="text-2xl font-semibold">
+                            Connexion requise
+                        </DialogTitle>
+                    </div>
+                </DialogHeader>
+                <div className="py-4 text-center text-muted-foreground">
+                    <p>Veuillez vous connecter pour valider la simulation.</p>
+                </div>
+                <DialogFooter className="flex justify-center gap-4">
+                    <Button variant="outline" onClick={handleClose}>
+                        Annuler
+                    </Button>
+                    <Button onClick={handleLoginRedirect}>
+                        Se connecter
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     );
 };
 

@@ -3,7 +3,8 @@
 import {NextRequest, NextResponse} from 'next/server';
 import {getAgencyById} from "@/services/backend-services/Bk_AgencyService";
 
-export async function GET(request: NextRequest, {params}: { params: { id: string } }) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
     if (request.method !== 'GET') {
         return new NextResponse('Method not allowed', {
             status: 405,

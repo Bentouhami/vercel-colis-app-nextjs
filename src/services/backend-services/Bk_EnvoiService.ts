@@ -120,7 +120,7 @@ export async function updateEnvoi(envoiId: number): Promise<boolean> {
         if (envoi.paid &&
             (envoi.simulationStatus === SimulationStatus.COMPLETED) &&
             envoi.qrCodeUrl) {
-            cookies().delete(process.env.SIMULATION_COOKIE_NAME!);
+            (await cookies()).delete(process.env.SIMULATION_COOKIE_NAME!);
 
             return false;
         }
@@ -157,7 +157,7 @@ export async function updateEnvoi(envoiId: number): Promise<boolean> {
         ;
 
         // Step 4: Generate and upload QR Code
-        const qrCodeUrl = envoi.qrCodeUrl || await generateAndUploadQRCode(qrData, trackingNumber, QR_CODES_FOLDER);
+        const qrCodeUrl = envoi.qrCodeUrl || (await generateAndUploadQRCode(qrData, trackingNumber, QR_CODES_FOLDER));
 
 
         // remove parcels from envoi

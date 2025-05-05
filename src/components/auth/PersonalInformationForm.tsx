@@ -1,3 +1,5 @@
+// path: src/components/auth/PersonalInformationForm.tsx
+
 "use client";
 
 import React from "react";

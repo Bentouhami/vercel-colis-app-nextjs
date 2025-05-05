@@ -265,6 +265,18 @@ export class AgencyRepository implements IAgencyRepository {
         }
 
     }
+
+    async getAgencyIdForAdmin(adminId: number): Promise<number | null> {
+        const staff = await prisma.agencyStaff.findFirst({
+            where: {
+                staffId: adminId,
+                staffRole: 'AGENCY_ADMIN',
+            },
+        });
+
+        return staff?.agencyId ?? null;
+    }
+
 }
 
 export const agencyRepository = new AgencyRepository();

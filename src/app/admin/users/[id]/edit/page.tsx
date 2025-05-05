@@ -1,6 +1,6 @@
 // path: src/app/dashboard/users/[id]/edit/page.tsx
 'use client'
-import React, {useEffect} from 'react'
+import React, { useEffect, use } from 'react';
 import RequireAuth from '@/components/auth/RequireAuth';
 import {useSession} from "next-auth/react";
 import {useRouter} from "next/navigation";
@@ -8,7 +8,8 @@ import {accessControlHelper} from "@/utils/accessControlHelper";
 import UsersForm from "@/components/forms/admins/UsersForm";
 import {RoleDto} from "@/services/dtos";
 
-const EditUserPage = ({params}: { params: { id: string } }) => {
+const EditUserPage = (props: { params: Promise<{ id: string }> }) => {
+    const params = use(props.params);
     const {data: session, status} = useSession();
     const router = useRouter();
 

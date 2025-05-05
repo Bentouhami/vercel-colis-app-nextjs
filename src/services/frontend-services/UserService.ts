@@ -1,9 +1,9 @@
-// path: src/services/frontend-services/Bk_UserService.ts
+// path: src/services/frontend-services/UserService.ts
 
 import {JWTPayload} from "@/utils/types";
 import {setCookie} from "@/utils/generateToken";
 import {API_DOMAIN, DOMAIN} from "@/utils/constants";
-import {CreateDestinataireDto, ProfileDto, RegisterClientDto, RoleDto} from "@/services/dtos";
+import {CreateDestinataireDto, ProfileDto, RoleDto, UserDto} from "@/services/dtos";
 import axios from "axios";
 import {RegisterUserBackendType} from "@/utils/validationSchema";
 
@@ -166,4 +166,29 @@ export async function addDestinataire(newUser: CreateDestinataireDto): Promise<n
         throw error;
     }
 }
+
+/**
+ * get users list based on the userRole
+ */
+export async function getUsers(): Promise<ProfileDto[] | null> {
+    try {
+
+        const response = await axios.get(`${API_DOMAIN}/users/list`, {
+            headers: {
+                // assure que le cache ne garde pas les réponses
+                'Cache-Control': 'no-store'
+            },
+            withCredentials: true,
+        });
+
+
+        if (!response.data)
+            return null;
+
+        return response.data;
+    } catch (e) {
+        return null;
+    }
+}
+
 

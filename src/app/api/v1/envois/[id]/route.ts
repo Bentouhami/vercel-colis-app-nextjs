@@ -9,10 +9,8 @@ import { getPaymentSuccessDataById, updateEnvoi} from "@/services/backend-servic
  * @param params {id: string} The ID of the envoi to update
  * @returns
  */
-export async function PUT(
-    req: NextRequest,
-    {params}: { params: { id: string } }
-) {
+export async function PUT(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
 
     if (req.method !== 'PUT') {
         return NextResponse.json("Not allowed method!")
@@ -52,7 +50,8 @@ export async function PUT(
  * @param res
  * */
 
-export async function GET(req: NextRequest, {params}: { params: { id: string } }) {
+export async function GET(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
     if (req.method !== 'GET') {
         return NextResponse.json("Not allowed method!")
     }

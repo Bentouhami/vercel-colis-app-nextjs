@@ -10,7 +10,7 @@ export async function getSimulationFromCookie() : Promise<CreatedSimulationRespo
         const cookieName = process.env.SIMULATION_COOKIE_NAME;
         if (!cookieName) return null;
 
-        const cookieStore = cookies();
+        const cookieStore = await cookies();
         const simulationCookie = cookieStore.get(cookieName);
 
         if (!simulationCookie) {

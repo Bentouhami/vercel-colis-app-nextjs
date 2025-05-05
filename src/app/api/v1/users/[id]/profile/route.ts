@@ -2,10 +2,8 @@
 import {NextRequest, NextResponse} from 'next/server';
 import {getUserProfileById} from "@/services/backend-services/Bk_UserService";
 
-export async function GET(
-    req: NextRequest,
-    {params}: { params: { id: string } }
-): Promise<NextResponse> {
+export async function GET(req: NextRequest, props: { params: Promise<{ id: string }> }): Promise<NextResponse> {
+    const params = await props.params;
 
     if (req.method !== 'GET') {
         return NextResponse.json("Not allowed method!")
