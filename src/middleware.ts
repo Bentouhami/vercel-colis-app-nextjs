@@ -73,8 +73,7 @@ export async function middleware(req: NextRequest) {
 
             if (req.nextUrl.pathname === "/client/auth/login" ||
                 req.nextUrl.pathname === "/client/auth/register" ||
-                req.nextUrl.pathname === "/" ||
-                req.nextUrl.pathname.startsWith("/client")
+                req.nextUrl.pathname === "/"
             ) {
                 if (allowedAdminRoles.includes(userRole!)) {
                     return NextResponse.redirect(new URL(adminPath(), req.nextUrl.origin));

@@ -1,5 +1,3 @@
-// path: src/components/navigations/header/HeaderNavbar.tsx
-
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -37,6 +35,8 @@ interface NavbarProps {
 const HeaderNavbar: React.FC<NavbarProps> = ({
                                                  role,
                                                  isLoggedIn,
+                                                 firstName,
+                                                 lastName,
                                                  name,
                                                  email,
                                                  image,
@@ -175,23 +175,23 @@ const HeaderNavbar: React.FC<NavbarProps> = ({
                             </SheetTrigger>
                             <SheetContent side="right" className="w-64">
                                 <nav className="flex flex-col gap-4">
-                                    <Link href={clientPath()} className="hover:text-primary text-gray-700">
+                                    <Link href={clientPath()} className="hover:text-primary text-gray-700 dark:text-gray-300">
                                         Accueil
                                     </Link>
-                                    <Link href={clientPath("simulation")} className="hover:text-primary text-gray-700">
+                                    <Link href={clientPath("simulation")} className="hover:text-primary text-gray-700 dark:text-gray-300">
                                         Simulation
                                     </Link>
-                                    <Link href={clientPath("services")} className="hover:text-primary text-gray-700">
+                                    <Link href={clientPath("services")} className="hover:text-primary text-gray-700 dark:text-gray-300">
                                         Services
                                     </Link>
-                                    <Link href={clientPath("tarifs")} className="hover:text-primary text-gray-700">
+                                    <Link href={clientPath("tarifs")} className="hover:text-primary text-gray-700 dark:text-gray-300">
                                         Tarifs
                                     </Link>
-                                    <Link href={clientPath("contact-us")} className="hover:text-primary text-gray-700">
+                                    <Link href={clientPath("contact-us")} className="hover:text-primary text-gray-700 dark:text-gray-300">
                                         Contact-nous
                                     </Link>
                                 </nav>
-                                <Separator />
+                                <Separator className="my-3" />
 
                                 {isLoggedIn ? (
                                     <div className="mt-4">
@@ -205,20 +205,21 @@ const HeaderNavbar: React.FC<NavbarProps> = ({
                                             <Link href={clientPath("profile/notifications")} className="flex items-center gap-2">
                                                 <Bell className="w-4 h-4" /> Mes Notifications
                                             </Link>
+                                            {hasDashboardAccess && (
+                                                <Link href={adminPath()} className="flex items-center gap-2 mt-2">
+                                                    <Settings className="w-4 h-4" /> Dashboard
+                                                </Link>
+                                            )}
                                         </div>
-                                        {hasDashboardAccess && (
-                                            <Link href={adminPath()} className="flex items-center gap-2 my-2">
-                                                <Settings className="w-4 h-4" /> Dashboard
-                                            </Link>
-                                        )}
-                                        <div className="mt-2 flex flex-col items-center gap-2 sm:flex-row sm:gap-3">
-                                            <LogoutButton className="w-full sm:w-auto" />
+                                        <Separator className="my-3" />
+                                        <div className="mt-2">
+                                            <LogoutButton />
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="mt-2 flex flex-col items-center gap-2 sm:flex-row sm:gap-3">
-                                        <LoginButton className="w-full sm:w-auto" />
-                                        <RegisterButton className="w-full sm:w-auto" />
+                                    <div className="mt-4 flex flex-col gap-2">
+                                        <LoginButton className="w-full" />
+                                        <RegisterButton className="w-full" />
                                     </div>
                                 )}
 

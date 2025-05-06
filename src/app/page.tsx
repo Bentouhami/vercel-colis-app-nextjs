@@ -65,7 +65,7 @@ export default function Home() {
 
                                 {/* Agency Admin */}
                                 <Link
-                                    href="/admin/agency-admin"
+                                    href={adminPath()}
                                     className="flex flex-col items-center p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow hover:bg-gray-50 dark:hover:bg-gray-700 transition group"
                                 >
                                     <Building className="w-12 h-12 text-indigo-600 mb-4" />
