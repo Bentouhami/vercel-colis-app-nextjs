@@ -63,6 +63,7 @@ export default function PersonalInformationForm({ form, isPending }: PersonalInf
                             <FormItem className="w-full md:w-1/2">
                                 <FormLabel>Date de naissance <span className="text-red-500 ml-1">*</span></FormLabel>
                                 <FormControl>
+
                                     <DatePicker
                                         field={{
                                             ...field,

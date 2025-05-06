@@ -1,4 +1,4 @@
-// path: src/components/calendar-date-picker.tsx
+// path: src/components/calendar-date-picker-fr.tsx
 
 "use client";
 
@@ -15,13 +15,13 @@ import {
     startOfDay,
     endOfDay,
 } from "date-fns";
+import { fr } from "date-fns/locale"; // Import French locale
 import { toDate, formatInTimeZone } from "date-fns-tz";
 import { DateRange } from "react-day-picker";
 import { cva, VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import {
     Popover,
     PopoverContent,
@@ -35,20 +35,22 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import {useCallback, useEffect} from "react";
+import {Calendar} from "@/components/ui/calender";
 
+// French month names
 const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+    "Janvier",
+    "Février",
+    "Mars",
+    "Avril",
+    "Mai",
+    "Juin",
+    "Juillet",
+    "Août",
+    "Septembre",
+    "Octobre",
+    "Novembre",
+    "Décembre",
 ];
 
 const multiSelectVariants = cva(
@@ -85,7 +87,7 @@ interface CalendarDatePickerProps
     onDateSelect: (range: { from: Date; to: Date }) => void;
 }
 
-export const CalendarDatePicker = React.forwardRef<
+export const CalendarDatePickerFr = React.forwardRef<
     HTMLButtonElement,
     CalendarDatePickerProps
 >(
@@ -105,7 +107,7 @@ export const CalendarDatePicker = React.forwardRef<
     ) => {
         const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
         const [selectedRange, setSelectedRange] = React.useState<string | null>(
-            numberOfMonths === 2 ? "This Year" : "Today"
+            numberOfMonths === 2 ? "Cette année" : "Aujourd'hui"
         );
         const [monthFrom, setMonthFrom] = React.useState<Date | undefined>(
             date?.from
@@ -267,33 +269,34 @@ export const CalendarDatePicker = React.forwardRef<
             (_, i) => today.getFullYear() - yearsRange / 2 + i
         );
 
+        // French date ranges
         const dateRanges = [
-            { label: "Today", start: today, end: today },
-            { label: "Yesterday", start: subDays(today, 1), end: subDays(today, 1) },
+            { label: "Aujourd'hui", start: today, end: today },
+            { label: "Hier", start: subDays(today, 1), end: subDays(today, 1) },
             {
-                label: "This Week",
+                label: "Cette semaine",
                 start: startOfWeek(today, { weekStartsOn: 1 }),
                 end: endOfWeek(today, { weekStartsOn: 1 }),
             },
             {
-                label: "Last Week",
+                label: "Semaine dernière",
                 start: subDays(startOfWeek(today, { weekStartsOn: 1 }), 7),
                 end: subDays(endOfWeek(today, { weekStartsOn: 1 }), 7),
             },
-            { label: "Last 7 Days", start: subDays(today, 6), end: today },
+            { label: "7 derniers jours", start: subDays(today, 6), end: today },
             {
-                label: "This Month",
+                label: "Ce mois-ci",
                 start: startOfMonth(today),
                 end: endOfMonth(today),
             },
             {
-                label: "Last Month",
+                label: "Mois dernier",
                 start: startOfMonth(subDays(today, today.getDate())),
                 end: endOfMonth(subDays(today, today.getDate())),
             },
-            { label: "This Year", start: startOfYear(today), end: endOfYear(today) },
+            { label: "Cette année", start: startOfYear(today), end: endOfYear(today) },
             {
-                label: "Last Year",
+                label: "Année dernière",
                 start: startOfYear(subDays(today, 365)),
                 end: endOfYear(subDays(today, 365)),
             },
@@ -350,10 +353,11 @@ export const CalendarDatePicker = React.forwardRef<
                     }
                 });
             };
-        }, [highlightedPart, date, id, handleWheel]); // Ajout de `handleWheel`
+        }, [highlightedPart, date, id, handleWheel]);
 
-        const formatWithTz = (date: Date, fmt: string) =>
-            formatInTimeZone(date, timeZone, fmt);
+        // Use French locale for date formatting
+        const formatWithTz = (d: Date, fmt: string) =>
+            formatInTimeZone(d, timeZone, fmt, { locale: fr })
 
         return (
             <>
@@ -501,7 +505,7 @@ export const CalendarDatePicker = React.forwardRef<
                         </>
                     )
                 ) : (
-                    <span>Pick a date</span>
+                    <span>Sélectionner une date</span>
                 )}
               </span>
                         </Button>
@@ -557,7 +561,7 @@ export const CalendarDatePicker = React.forwardRef<
                                                 }
                                             >
                                                 <SelectTrigger className="hidden sm:flex w-[122px] focus:ring-0 focus:ring-offset-0 font-medium hover:bg-accent hover:text-accent-foreground">
-                                                    <SelectValue placeholder="Month" />
+                                                    <SelectValue placeholder="Mois" />
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     {months.map((month, idx) => (
@@ -575,7 +579,7 @@ export const CalendarDatePicker = React.forwardRef<
                                                 value={yearFrom ? yearFrom.toString() : undefined}
                                             >
                                                 <SelectTrigger className="hidden sm:flex w-[122px] focus:ring-0 focus:ring-offset-0 font-medium hover:bg-accent hover:text-accent-foreground">
-                                                    <SelectValue placeholder="Year" />
+                                                    <SelectValue placeholder="Année" />
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     {years.map((year, idx) => (
@@ -598,7 +602,7 @@ export const CalendarDatePicker = React.forwardRef<
                                                     }
                                                 >
                                                     <SelectTrigger className="hidden sm:flex w-[122px] focus:ring-0 focus:ring-offset-0 font-medium hover:bg-accent hover:text-accent-foreground">
-                                                        <SelectValue placeholder="Month" />
+                                                        <SelectValue placeholder="Mois" />
                                                     </SelectTrigger>
                                                     <SelectContent>
                                                         {months.map((month, idx) => (
@@ -616,7 +620,7 @@ export const CalendarDatePicker = React.forwardRef<
                                                     value={yearTo ? yearTo.toString() : undefined}
                                                 >
                                                     <SelectTrigger className="hidden sm:flex w-[122px] focus:ring-0 focus:ring-offset-0 font-medium hover:bg-accent hover:text-accent-foreground">
-                                                        <SelectValue placeholder="Year" />
+                                                        <SelectValue placeholder="Année" />
                                                     </SelectTrigger>
                                                     <SelectContent>
                                                         {years.map((year, idx) => (
@@ -640,6 +644,7 @@ export const CalendarDatePicker = React.forwardRef<
                                             numberOfMonths={numberOfMonths}
                                             showOutsideDays={false}
                                             className={className}
+                                            locale={fr} // Set French locale for the calendar
                                         />
                                     </div>
                                 </div>
@@ -652,4 +657,4 @@ export const CalendarDatePicker = React.forwardRef<
     }
 );
 
-CalendarDatePicker.displayName = "CalendarDatePicker";
+CalendarDatePickerFr.displayName = "CalendarDatePickerFr";
