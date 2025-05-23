@@ -4,74 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="89845570-396d-49b4-b7c4-14309075f121" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/svg/reset-forgot-password/forgot-password.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/svg/reset-forgot-password/reset-password.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/themes/gray.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/themes/green.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/themes/orange.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/themes/violet.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/themes/yellow.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/api/v1/(auth)/check-reset-token/route.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/api/v1/(auth)/forgot-password/route.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/api/v1/(auth)/reset-password/route.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/api/v1/agencies/light/route.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/client/auth/forgot-password/page.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/forms/AuthForms/ForgotPasswordForm.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/forms/AuthForms/ResetPasswordForm.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/forms/AuthForms/ResetPasswordFormWrapper.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/forms/admins/AgencySelector.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/providers/ProgressWrapper.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/skeletons/SimulationSkeleton.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/theme/ThemeColorSelector.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/ui/GlobalLoadingOverlay.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/contexts/LoadingContext.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/hooks/useApi.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/hooks/useThemeColor.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/services/backend-services/Bk_AuthService.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/services/dtos/auth/authDtos.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/styles/nprogress-custom.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/prisma/migrations/migration_lock.toml" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/migrations/migration_lock.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/prisma/schema.prisma" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/schema.prisma" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/admin/agency-admins/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/agence/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/admin/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/client/auth/login/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/client/auth/login/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/client/auth/reset-password/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/client/auth/reset-password/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/client/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/client/layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/client/simulation/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/client/simulation/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/client/tarifs/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/client/tarifs/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/globals.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/admin/menu/Sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/admin/menu/Sidebar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/auth/PersonalInformationForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/auth/PersonalInformationForm.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/client-specific/profile/ProfileComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/client-specific/profile/ProfileComponent.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/forms/AuthForms/LoginForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/forms/AuthForms/LoginForm.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/forms/SimulationForms/AgencySelectForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/forms/SimulationForms/AgencySelectForm.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/forms/SimulationForms/CitySelectForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/forms/SimulationForms/CitySelectForm.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/forms/SimulationForms/SimulationEditForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/forms/SimulationForms/SimulationEditForm.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/forms/SimulationForms/SimulationForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/forms/SimulationForms/SimulationForm.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/forms/admins/AgencyForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/forms/admins/AgencyForm.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/modals/LoginPromptModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/modals/LoginPromptModal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/navigations/header/HeaderNavbar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/navigations/header/HeaderNavbar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/providers.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/providers.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/tarifs/TarifsComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/tarifs/TarifsComponent.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/theme-provider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/theme-provider.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/hooks/useSimulationLogic.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useSimulationLogic.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/backend-services/Bk_AgencyService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/backend-services/Bk_AgencyService.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/frontend-services/AddressService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/frontend-services/AddressService.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/frontend-services/AgencyService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/frontend-services/AgencyService.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/frontend-services/AuthService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/frontend-services/AuthService.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/frontend-services/agencies/AgencyService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/frontend-services/agencies/AgencyService.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/axiosInstance.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/axiosInstance.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/validationSchema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/validationSchema.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tailwind.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tailwind.config.ts" afterDir="false" />
-    </list>
+    <list default="true" id="89845570-396d-49b4-b7c4-14309075f121" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -193,7 +126,7 @@
       <workItem from="1747947365934" duration="52000" />
       <workItem from="1747947429261" duration="41000" />
       <workItem from="1747947483934" duration="8577000" />
-      <workItem from="1747997031888" duration="12438000" />
+      <workItem from="1747997031888" duration="13087000" />
     </task>
     <servers />
   </component>
