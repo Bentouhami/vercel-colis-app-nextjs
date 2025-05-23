@@ -5,26 +5,98 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="89845570-396d-49b4-b7c4-14309075f121" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svg/reset-forgot-password/forgot-password.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/svg/reset-forgot-password/reset-password.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/themes/gray.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/themes/green.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/themes/orange.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/themes/violet.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/themes/yellow.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/api/v1/(auth)/check-reset-token/route.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/api/v1/(auth)/forgot-password/route.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/api/v1/(auth)/reset-password/route.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/api/v1/agencies/light/route.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/client/auth/forgot-password/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/forms/AuthForms/ForgotPasswordForm.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/forms/AuthForms/ResetPasswordForm.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/forms/AuthForms/ResetPasswordFormWrapper.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/forms/admins/AgencySelector.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/providers/ProgressWrapper.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/skeletons/SimulationSkeleton.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/theme/ThemeColorSelector.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/ui/GlobalLoadingOverlay.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/contexts/LoadingContext.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/hooks/useApi.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/hooks/useThemeColor.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/services/backend-services/Bk_AuthService.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/services/dtos/auth/authDtos.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/styles/nprogress-custom.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/prisma/migrations/migration_lock.toml" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/migrations/migration_lock.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/prisma/schema.prisma" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/schema.prisma" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/admin/agency-admins/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/agence/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/admin/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/client/auth/login/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/client/auth/login/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/client/auth/reset-password/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/client/auth/reset-password/page.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/client/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/client/layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/client/profile/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/client/profile/layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/client/simulation/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/client/simulation/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/client/tarifs/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/client/tarifs/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/globals.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/layout.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/buttons/LogoutButton.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/buttons/LogoutButton.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/admin/menu/Sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/admin/menu/Sidebar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/auth/PersonalInformationForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/auth/PersonalInformationForm.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/client-specific/profile/ProfileComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/client-specific/profile/ProfileComponent.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/forms/AuthForms/LoginForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/forms/AuthForms/LoginForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/forms/SimulationForms/AgencySelectForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/forms/SimulationForms/AgencySelectForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/forms/SimulationForms/CitySelectForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/forms/SimulationForms/CitySelectForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/forms/SimulationForms/SimulationEditForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/forms/SimulationForms/SimulationEditForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/forms/SimulationForms/SimulationForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/forms/SimulationForms/SimulationForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/forms/admins/AgencyForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/forms/admins/AgencyForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/modals/LoginPromptModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/modals/LoginPromptModal.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/navigations/header/HeaderNavbar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/navigations/header/HeaderNavbar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/middleware.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/middleware.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/providers.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/providers.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/tarifs/TarifsComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/tarifs/TarifsComponent.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/theme-provider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/theme-provider.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/useSimulationLogic.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useSimulationLogic.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/backend-services/Bk_AgencyService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/backend-services/Bk_AgencyService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/frontend-services/AddressService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/frontend-services/AddressService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/frontend-services/AgencyService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/frontend-services/AgencyService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/frontend-services/AuthService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/frontend-services/AuthService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/frontend-services/agencies/AgencyService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/frontend-services/agencies/AgencyService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/axiosInstance.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/axiosInstance.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/validationSchema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/validationSchema.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tailwind.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tailwind.config.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="CodeInsightWorkspaceSettings">
+    <option name="optimizeImportsOnTheFly" value="true" />
+  </component>
   <component name="ComposerSettings">
     <execution />
+  </component>
+  <component name="FormatOnSaveOptions">
+    <option name="myRunOnSave" value="false" />
+    <option name="myAllFileTypesSelected" value="true" />
+    <option name="mySelectedFileTypes">
+      <set />
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
   <component name="PhpWorkspaceProjectConfiguration" interpreter_name="C:\php-8.4.6\php.exe" />
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 0
@@ -34,30 +106,45 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;js.debugger.nextJs.config.created.client&quot;: &quot;true&quot;,
-    &quot;js.debugger.nextJs.config.created.server&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;E:/fullstack_project/NextJs_Projects/newColiApp/src/components&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.standard&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.standard&quot;: &quot;&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;actions.on.save&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;E:\\fullstack_project\\NextJs_Projects\\newColiApp\\node_modules\\typescript\\lib&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "full.screen.before.presentation.mode": "false",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "js.debugger.nextJs.config.created.client": "true",
+    "js.debugger.nextJs.config.created.server": "true",
+    "junie.onboarding.icon.badge.shown": "true",
+    "last_opened_file_path": "E:/fullstack_project/NextJs_Projects/newColiApp/public/thems",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.standard": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.standard": "",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "swagger",
+    "ts.external.directory.path": "E:\\fullstack_project\\NextJs_Projects\\newColiApp\\node_modules\\typescript\\lib"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "postgresql"
+    ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\fullstack_project\NextJs_Projects\newColiApp\public\thems" />
+      <recent name="E:\fullstack_project\NextJs_Projects\newColiApp\public\svg\reset" />
+      <recent name="E:\fullstack_project\NextJs_Projects\newColiApp\public\svg" />
       <recent name="E:\fullstack_project\NextJs_Projects\newColiApp\src\components" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="E:\fullstack_project\NextJs_Projects\newColiApp\src\app\api\v1\(auth)" />
+      <recent name="E:\fullstack_project\NextJs_Projects\newColiApp\public\svg\reset" />
     </key>
   </component>
   <component name="RunManager" selected="npm.Next.js: server-side">
@@ -92,12 +179,35 @@
       <workItem from="1746360536219" duration="12950000" />
       <workItem from="1746384172335" duration="14422000" />
       <workItem from="1746469825986" duration="13551000" />
-      <workItem from="1746518541885" duration="23577000" />
+      <workItem from="1746518541885" duration="24766000" />
+      <workItem from="1746794916279" duration="136000" />
+      <workItem from="1747053472960" duration="4012000" />
+      <workItem from="1747255574728" duration="1549000" />
+      <workItem from="1747663325840" duration="1614000" />
+      <workItem from="1747672905811" duration="38000" />
+      <workItem from="1747672953461" duration="40000" />
+      <workItem from="1747673005884" duration="9722000" />
+      <workItem from="1747730891862" duration="23575000" />
+      <workItem from="1747820308287" duration="16856000" />
+      <workItem from="1747925219508" duration="5902000" />
+      <workItem from="1747947365934" duration="52000" />
+      <workItem from="1747947429261" duration="41000" />
+      <workItem from="1747947483934" duration="8577000" />
+      <workItem from="1747997031888" duration="12438000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="dependencySupport" implementationName="javascript:npm:react" />
+    <option featureType="dependencySupport" implementationName="executable:docker" />
+    <option featureType="dependencySupport" implementationName="javascript:npm:tailwindcss" />
+    <option featureType="dependencySupport" implementationName="javascript:npm:prisma" />
+    <option featureType="dependencySupport" implementationName="executable:kubectl" />
+    <option featureType="dependencySupport" implementationName="javascript:npm:next" />
+    <option featureType="dependencySupport" implementationName="javascript:npm:postcss" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

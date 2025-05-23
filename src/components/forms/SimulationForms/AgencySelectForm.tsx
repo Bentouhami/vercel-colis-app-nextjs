@@ -23,7 +23,7 @@ const AgencySelect = ({label, value, onChange, agencies, disabled = false}: Agen
                 <option value="">{disabled ? "Sélection non disponible" : "Sélectionner une agence"}</option>
                 {agencies.length > 0 ? (
                     agencies.map((agency) => (
-                        <option key={agency.id} value={agency.name}>
+                        <option key={agency.id} value={agency.id.toString()}>
                             {agency.name}
                         </option>
                     ))

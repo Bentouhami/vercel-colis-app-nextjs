@@ -31,6 +31,7 @@ import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
 import {signOut, useSession} from 'next-auth/react';
 import {RoleDto} from '@/services/dtos';
 import {FaUsers} from "react-icons/fa6";
+import ThemeColorSelector from "@/components/theme/ThemeColorSelector";
 
 type MenuItem = {
     name: string;
@@ -56,10 +57,17 @@ const Sidebar = () => {
             roleAllowed: [RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN, RoleDto.ACCOUNTANT, RoleDto.CLIENT],
         },
         {
-            name: 'Agences',
+            name: 'Mes Agences',
             icon: Building,
             path: '/admin/agencies',
             roleAllowed: [RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN],
+        },
+
+        {
+            name: 'Mon Agence',
+            icon: Building,
+            path: '/admin/agence',
+            roleAllowed: [RoleDto.AGENCY_ADMIN],
         },
         {
             name: 'Envois',
@@ -298,6 +306,9 @@ const Sidebar = () => {
                             })}
                         </DropdownMenuContent>
                     </DropdownMenu>
+                    <div>
+                        <ThemeColorSelector/>
+                    </div>
 
                     {session ? (
                         <Button

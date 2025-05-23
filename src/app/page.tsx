@@ -9,12 +9,12 @@ import HeaderWrapper from "@/components/navigations/header/HeaderWrapper";
 
 export default function Home() {
     return (
-        <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-black">
+        <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-black ">
             <HeaderWrapper />
 
             {/* Hero Section */}
-            <section className="pt-16 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-                <div className="text-center mb-16">
+            <section className=" pt-16 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+                <div className="mt-40 text-center mb-16">
                     <h2 className="text-4xl font-extrabold text-gray-900 dark:text-white sm:text-5xl md:text-6xl">
                         Bienvenue sur <span className="text-indigo-600 dark:text-indigo-400">ColisApp</span>
                     </h2>

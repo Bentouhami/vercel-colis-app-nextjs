@@ -26,7 +26,7 @@ const CitySelect = ({label, value, onChange, cities, disabled = false}: CitySele
                 <option value="">{placeholder}</option>
                 {cities.length > 0 ? (
                     cities.map((city) => (
-                        <option key={city.id} value={city.name}> {/* ✅ Ensure correct key and value */}
+                        <option key={city.id} value={city.id.toString()}>
                             {city.name}
                         </option>
                     ))

@@ -1,3 +1,5 @@
+// path: src\utils\validationSchema.ts
+
 import {z} from "zod";
 import {
     MAX_TRANSPORT_VOLUME,
@@ -36,7 +38,27 @@ const passwordValidation = z.string()
     .min(PASSWORD_MIN_LENGTH, {message: `Le mot de passe doit contenir au moins ${PASSWORD_MIN_LENGTH} caractères`})
     .regex(PASSWORD_REGEX, {
         message: "Le mot de passe doit contenir au moins une majuscule, une minuscule, un chiffre et un caractère spécial"
-    });
+    })
+
+// forgot password validation
+export const forgotPasswordSchema = z.object({
+    email: z.string()
+        .min(1, { message: "L'email est requis" })
+        .email({ message: "Format d'email invalide" })
+        .refine(email => {
+            const domain = email.toLowerCase().split('@')[1]
+            return !['tempmail.com', 'yopmail.com', '10minutemail.com'].includes(domain)
+        }, { message: "Les adresses email temporaires ne sont pas autorisées" })
+})
+
+// reset password validation
+export const resetPasswordSchema = z.object({
+    password: passwordValidation,
+    confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+    message: "Les mots de passe ne correspondent pas",
+    path: ["confirmPassword"],
+});
 
 // Phone number validation
 const phoneValidation = z.string()
@@ -82,20 +104,36 @@ export const addressSchema = z.object({
 // endregion Address schema
 
 
-// region User Schemas
+// Ajout en bas du schéma existant
 export const registerUserFrontendSchema = z.object({
-    firstName: z.string().min(1, {message: "Le prénom est requis"}),
-    lastName: z.string().min(1, {message: "Le nom est requis"}),
+    firstName: z.string().min(1, { message: "Le prénom est requis" }),
+    lastName: z.string().min(1, { message: "Le nom est requis" }),
     birthDate: oldBirthDateValidation,
     phoneNumber: phoneValidation,
     email: emailValidation,
     password: passwordValidation,
     checkPassword: z.string(),
     address: addressSchema,
+
+    // Nouveau champ pour relier une agence
+    agencyId: z.number()
+        .int({ message: "L'identifiant de l'agence doit être un entier" })
+        .positive({ message: "L'agence sélectionnée est invalide" })
+        .optional() // uniquement requis pour certains rôles
 }).refine((data) => data.password === data.checkPassword, {
     message: "Les mots de passe ne correspondent pas",
     path: ["checkPassword"],
+}).superRefine((data, ctx) => {
+    const rolesRequiringAgency = ['AGENCY_ADMIN', 'ACCOUNTANT'];
+    if (rolesRequiringAgency.includes((data as any).role) && !data.agencyId) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['agencyId'],
+            message: "L'agence est requise pour ce rôle",
+        });
+    }
 });
+
 
 // Schema pour l'inscription backend
 export const registerUserBackendSchema = z.object({

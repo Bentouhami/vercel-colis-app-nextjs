@@ -4,6 +4,7 @@
 import {AgencyDto} from "@/services/dtos";
 import {API_DOMAIN} from "@/utils/constants";
 import axios from "axios";
+import apiClient from "@/utils/axiosInstance";
 
 export async function getAgenciesForAdmin({
                                               page = 1,
@@ -27,4 +28,14 @@ export async function getAgenciesForAdmin({
     });
 
     return res.data; // contient { data, total, page, totalPages }
+}
+
+
+export async function getAgenciesLight(params?: {
+    countryId?: number;
+    cityId?: number;
+    search?: string;
+}) {
+    const res = await apiClient.get("/agencies/light", { params });
+    return res.data as { id: number; name: string }[];
 }

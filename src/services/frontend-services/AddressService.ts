@@ -7,7 +7,7 @@ import axios from "axios";
 import apiClient from "@/utils/axiosInstance";
 
 // Récupérer les pays disponibles pour la simulation
-export async function fetchCountries() {
+export async function getAllCountries() {
 
     try {
         const response = await apiClient.get(`/countries`);
@@ -27,10 +27,10 @@ export async function fetchCountries() {
 
 
 // Récupérer les pays de destination disponibles pour la simulation (selon le pays de départ)
-export async function fetchDestinationCountries(departureCountry: string) {
+export async function getDestinationCountries(departureCountry: string) {
 
     try {
-        const response = await axios.get(`${API_DOMAIN}/countries`, {
+        const response = await apiClient.get(`/countries`, {
             params: {departureCountry}
         });
 
@@ -48,10 +48,10 @@ export async function fetchDestinationCountries(departureCountry: string) {
 
 
 // Récupérer les villes disponibles pour un pays donné
-export async function fetchCities(countryId: number) {
+export async function getCitiesByCountryId(countryId: number) {
 
     try {
-        const response = await axios.get(`${API_DOMAIN}/cities`, {
+        const response = await apiClient.get(`/cities`, {
             params: {countryId: countryId}, // Send `countryId` as number
         });
 
@@ -71,11 +71,11 @@ export async function fetchCities(countryId: number) {
 
 
 // Récupérer les agences disponibles pour une ville donnée
-export async function fetchAgencies(cityId: number) {
+export async function getAgenciesByCityId(cityId: number) {
 
     try {
-        const response = await axios.get(`${API_DOMAIN}/agencies`, {
-            params: { city: cityId }, // ✅ Ensure city ID is sent
+        const response = await apiClient.get(`agencies`, {
+            params: {city: cityId}, // ✅ Ensure city ID is sent
         });
 
         if (response.status === 200) {
@@ -91,4 +91,15 @@ export async function fetchAgencies(cityId: number) {
         throw error;
     }
 }
+
+
+export async function getAgenciesLight(params?: {
+    countryId?: number;
+    cityId?: number;
+    search?: string;
+}) {
+    const res = await apiClient.get("/agencies/light", {params});
+    return res.data as { id: number; name: string }[];
+}
+
 

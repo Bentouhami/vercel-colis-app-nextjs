@@ -1,3 +1,5 @@
+// src/app/client/auth/login/page.tsx
+
 "use client";
 import React, { Suspense } from "react";
 import LoginForm from "@/components/forms/AuthForms/LoginForm";

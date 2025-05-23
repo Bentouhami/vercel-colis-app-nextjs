@@ -15,7 +15,10 @@ import { DatePicker } from "@/components/ui/date-picker";
 interface PersonalInformationFormProps {
     form: UseFormReturn<RegisterUserFrontendFormType>;
     isPending: boolean;
+    role?: string;
+    agencies?: { id: number; name: string }[];
 }
+
 
 export default function PersonalInformationForm({ form, isPending }: PersonalInformationFormProps) {
     const { control } = form;
@@ -91,6 +94,8 @@ export default function PersonalInformationForm({ form, isPending }: PersonalInf
                             </FormControl>
                         </FormItem>
                     )} />
+
+
                 </div>
             </CardContent>
         </Card>

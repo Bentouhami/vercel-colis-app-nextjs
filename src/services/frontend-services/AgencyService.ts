@@ -1,10 +1,8 @@
 // path: src/services/frontend-services/AgencyService.ts
 'use server';
 
-import axios from 'axios';
-import {API_DOMAIN} from "@/utils/constants";
-import {AgencyResponseDto, CreateAgencyDto} from "@/services/dtos";
-
+import { API_DOMAIN } from "@/utils/constants";
+import { AgencyResponseDto, CreateAgencyDto } from "@/services/dtos";
 
 /**
  * Get agency id by country, city, and agency name
@@ -19,27 +17,30 @@ export async function getAgencyId(country: string, city: string, agencyName: str
     }
 
     try {
-        const response = await axios.get(`${API_DOMAIN}/agencies/findAgency`, {
-            params: {
-                country: country,       // expects a numeric string
-                city: city,
-                agency_name: agencyName,
-            },
+        // First get the agency by ID
+        const response = await fetch(`${API_DOMAIN}/agencies/get-agency-by-id/${agencyName}`, {
+            method: 'GET',
             headers: {
-                "Content-Type": "application/json",
+                'Content-Type': 'application/json',
             },
         });
 
-        if (response.status !== 200) {
+        if (!response.ok) {
             throw new Error("Failed to get agency id");
         }
 
-        const data = response.data;
+        const data = await response.json();
         if (!data) {
             throw new Error("Failed to get agency id");
         }
 
-        return data.agencyId;
+        // Verify that the agency belongs to the correct city and country
+        if (data.address.city.id.toString() !== city || 
+            data.address.city.country.id.toString() !== country) {
+            throw new Error("Agency does not match the selected city and country");
+        }
+
+        return data.id;
     } catch (error) {
         console.error("Error getting agency id:", error);
         throw error;
@@ -58,15 +59,18 @@ export async function linkClientToAgency(agencyId: number, clientId: number): Pr
     }
 
     try {
-        const response = await axios.post(`${API_DOMAIN}/agencies/link-client`, {
-            agencyId: agencyId,
-            clientId: clientId
-        }, {
+        const response = await fetch(`${API_DOMAIN}/agencies/link-client`, {
+            method: 'POST',
             headers: {
-                "Content-Type": "application/json",
-            }
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                agencyId: agencyId,
+                clientId: clientId
+            }),
         });
-        if (response.status !== 200) {
+
+        if (!response.ok) {
             throw new Error("Failed to link client to agency");
         }
         return true;
@@ -81,16 +85,19 @@ export async function unlinkClientFromAgency(agencyId: number, clientId: number)
     }
 
     try {
-        const response = await axios.delete(`${API_DOMAIN}/agencies/unlink-client`, {
-            params: {
-                agencyId: agencyId,
-                clientId: clientId
-            },
-            headers: {
-                "Content-Type": "application/json",
-            }
+        const params = new URLSearchParams({
+            agencyId: agencyId.toString(),
+            clientId: clientId.toString(),
         });
-        if (response.status !== 200) {
+
+        const response = await fetch(`${API_DOMAIN}/agencies/unlink-client?${params}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
             throw new Error("Failed to unlink client from agency");
         }
         return true;
@@ -109,25 +116,27 @@ export async function getAgencyById(id: number): Promise<AgencyResponseDto | Err
         return new Error("Missing Agency ID");
     }
     try {
-        const response = await axios.get(`${API_DOMAIN}/agencies/get-agency-by-id/${id}`);
+        const response = await fetch(`${API_DOMAIN}/agencies/get-agency-by-id/${id}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
 
-        if (response.status !== 200) {
+        if (!response.ok) {
             throw new Error("Failed to get agency by id");
         }
 
-        const data = response.data;
-
+        const data = await response.json();
         if (!data) {
             throw new Error("Failed to get agency by id");
         }
 
         return data;
-
     } catch (error) {
         throw error;
     }
 }
-
 
 /**
  * Create agency
@@ -139,17 +148,19 @@ export async function createAgency(agencyData: CreateAgencyDto): Promise<AgencyR
     }
 
     try {
-        const response = await axios.post(`${API_DOMAIN}/agencies/create-agency`, agencyData, {
+        const response = await fetch(`${API_DOMAIN}/agencies/create-agency`, {
+            method: 'POST',
             headers: {
-                "Content-Type": "application/json",
-            }
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(agencyData),
         });
 
-        if (response.status !== 200) {
+        if (!response.ok) {
             throw new Error("Failed to create agency");
         }
 
-        const data = response.data;
+        const data = await response.json();
         if (!data) {
             throw new Error("Failed to create agency");
         }
@@ -160,7 +171,6 @@ export async function createAgency(agencyData: CreateAgencyDto): Promise<AgencyR
     }
 }
 
-
 /**
  * Update agency
  * @param agencyData
@@ -168,16 +178,21 @@ export async function createAgency(agencyData: CreateAgencyDto): Promise<AgencyR
 export async function updateAgency(agencyData: CreateAgencyDto): Promise<AgencyResponseDto | Error> {
     if (!agencyData) {
         return new Error("Missing Agency Data");
-    }    try {
-        const response = await axios.put(`${API_DOMAIN}/agencies/update-agency`, agencyData, {
+    }
+    try {
+        const response = await fetch(`${API_DOMAIN}/agencies/update-agency`, {
+            method: 'PUT',
             headers: {
-                "Content-Type": "application/json",
-            }
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(agencyData),
         });
-        if (response.status !== 200) {
+
+        if (!response.ok) {
             throw new Error("Failed to update agency");
         }
-        const data = response.data;
+
+        const data = await response.json();
         if (!data) {
             throw new Error("Failed to update agency");
         }

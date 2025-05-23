@@ -186,7 +186,7 @@ export default function LoginForm() {
                     </form>
                 </Form>
 
-                {/* Helpful Tips */}
+
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -194,7 +194,7 @@ export default function LoginForm() {
                     className="mt-6 text-center text-sm text-gray-500 dark:text-gray-300"
                 >
                     <a
-                        href="/client/auth/login"
+                        href="/client/auth/forgot-password"
                         className="block mb-2 text-blue-600 dark:text-blue-400 hover:underline"
                     >
                         Vous avez oublié votre mot de passe ?

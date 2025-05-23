@@ -134,7 +134,7 @@ function InfoItem({ icon, label, value }: { icon: React.ReactNode; label: string
             {icon}
             <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
-                <p className="font-medium">{value}</p>
+                <div className="font-medium">{value}</div>
             </div>
         </div>
     )

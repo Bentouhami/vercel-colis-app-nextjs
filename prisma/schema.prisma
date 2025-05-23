@@ -15,6 +15,7 @@ datasource db {
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
+  output   = "app/generated/prisma/client"
 }
 
 enum PaymentMethod {
@@ -101,6 +102,16 @@ enum TrackingEventStatus {
   FAILED
 }
 
+model PasswordResetToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  createdAt DateTime @default(now())
+}
+
+
 model Payment {
   id            Int           @id @default(autoincrement())
   envoiId       Int           @unique
@@ -169,6 +180,7 @@ model User {
   createdAgencies    Agency[]
   staffsActivityLogs ActivityLog[]
 
+  passwordResetTokens PasswordResetToken[]
   @@map("users")
 }
 
@@ -450,7 +462,12 @@ model Agency {
 
   agencyClients AgencyClients[]
   agencyStaff   AgencyStaff[]
-  ActivityLog   ActivityLog[]
+  activityLogs   ActivityLog[]
+
+  //  Interdire les doublons de noms dans une même ville
+  @@unique([name, addressId])
+
+
 
   @@map("agencies")
 }

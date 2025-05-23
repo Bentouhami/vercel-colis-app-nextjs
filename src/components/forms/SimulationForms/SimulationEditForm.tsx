@@ -3,6 +3,7 @@
 'use client';
 
 import React, {
+    useCallback,
     useEffect,
     useState,
     useTransition,
@@ -22,10 +23,10 @@ import {
     updateSimulationEdited,
 } from '@/services/frontend-services/simulation/SimulationService';
 import {
-    fetchAgencies,
-    fetchCities,
-    fetchCountries,
-    fetchDestinationCountries,
+    getAgenciesByCityId,
+    getCitiesByCountryId,
+    getAllCountries,
+    getDestinationCountries,
 } from '@/services/frontend-services/AddressService';
 
 import { updateSimulationUserId } from '@/services/backend-services/Bk_SimulationService';
@@ -65,6 +66,12 @@ import AgencySelect from '@/components/forms/SimulationForms/AgencySelectForm';
 // Zod schema for parcel validation (if you want to keep it)
 import { parcelsSchema } from '@/utils/validationSchema';
 import { z } from 'zod';
+import SimulationSkeleton from "@/components/skeletons/SimulationSkeleton";
+
+// Add these type definitions at the top of the file, after the imports
+type Country = { id: number; name: string };
+type City = { id: number; name: string };
+type Agency = { id: number; name: string };
 
 /**
  * Simulation Edit Form
@@ -134,146 +141,106 @@ const SimulationEditForm = () => {
     }, []);
 
     /**
-     * Fetch initial departure countries
-     */
-    useEffect(() => {
-        fetchCountries()
-            .then((data) => {
-                setOptions((prev) => ({
-                    ...prev,
-                    departureCountries: data,
-                }));
-            })
-            .catch((err) => {
-                console.error('Error fetching departure countries:', err);
-                toast.error('Error fetching departure countries');
-            });
-    }, []);
-
-    /**
      * On mount, retrieve the existing simulation and fill states
      */
-    useEffect(() => {
-        const fetchSimulation = async () => {
-            setIsLoading(true);
-            try {
-                const simData = await getSimulation();
-                if (!simData) {
-                    toast.error('No simulation to edit. Redirecting...');
-                    router.push('/client/simulation');
-                    return;
-                }
-
-                if (isAuthenticated && userId && !simData.userId) {
-                    await updateSimulationUserId(simData.id, Number(userId));
-                    simData.userId = Number(userId);
-                }
-
-                setSimulation(simData);
-
-                // Fetch countries first (ensures country exists before setting cities)
-                const countries = await fetchCountries();
-                setOptions((prev) => ({ ...prev, departureCountries: countries }));
-
-                // Find the correct country object
-                const departureCountry = countries.find((c: { name: string | null; }) => c.name === simData.departureCountry);
-                if (departureCountry) {
-                    setDeparture((prev) => ({ ...prev, country: departureCountry.id.toString() }));
-
-                    // Fetch cities for the selected country
-                    const cities = await fetchCities(departureCountry.id);
-                    setOptions((prev) => ({ ...prev, departureCities: cities }));
-
-                    // Find and set the correct city
-                    const departureCity = cities.find((c: { name: string | null; }) => c.name === simData.departureCity);
-                    if (departureCity) {
-                        setDeparture((prev) => ({ ...prev, city: departureCity.id.toString() }));
-
-                        // Fetch agencies for the selected city
-                        const agencies = await fetchAgencies(departureCity.id);
-                        setOptions((prev) => ({ ...prev, departureAgencies: agencies }));
-
-                        // Find and set the correct agency
-                        const departureAgency = agencies.find((a: { name: string | null; }) => a.name === simData.departureAgency);
-                        if (departureAgency) {
-                            setDeparture((prev) => ({ ...prev, agencyName: departureAgency.id.toString() }));
-                        }
-                    }
-                }
-
-                // Repeat the same logic for destination
-                const destinationCountry = countries.find((c: { name: string | null; }) => c.name === simData.destinationCountry);
-                if (destinationCountry) {
-                    setDestination((prev) => ({ ...prev, country: destinationCountry.id.toString() }));
-
-                    const destCities = await fetchCities(destinationCountry.id);
-                    setOptions((prev) => ({ ...prev, destinationCities: destCities }));
-
-                    const destinationCity = destCities.find((c: { name: string | null; }) => c.name === simData.destinationCity);
-                    if (destinationCity) {
-                        setDestination((prev) => ({ ...prev, city: destinationCity.id.toString() }));
-
-                        const destAgencies = await fetchAgencies(destinationCity.id);
-                        setOptions((prev) => ({ ...prev, destinationAgencies: destAgencies }));
-
-                        const destinationAgency = destAgencies.find((a: { name: string | null; }) => a.name === simData.destinationAgency);
-                        if (destinationAgency) {
-                            setDestination((prev) => ({ ...prev, agencyName: destinationAgency.id.toString() }));
-                        }
-                    }
-                }
-
-                // Set parcels
-                if (simData.parcels && simData.parcels.length > 0) {
-                    setParcels(simData.parcels);
-                }
-
-            } catch (error) {
-                console.error('Error fetching simulation:', error);
-                toast.error('Error fetching simulation. Redirecting...');
+    const fetchInitialData = useCallback(async () => {
+        setIsLoading(true);
+        try {
+            // 1. Simulation
+            const simData = await getSimulation();
+            if (!simData) {
+                toast.error('No simulation to edit. Redirecting...');
                 router.push('/client/simulation');
+                return;
             }
-            setIsLoading(false);
-        };
 
-        fetchSimulation();
+            // 2. Link user if not yet linked
+            if (isAuthenticated && userId && !simData.userId) {
+                await updateSimulationUserId(simData.id, Number(userId));
+                simData.userId = Number(userId);
+            }
+
+            setSimulation(simData);
+
+            // 3. Departure countries
+            const countries = await getAllCountries();
+            setOptions(prev => ({ ...prev, departureCountries: countries }));
+
+            const departureCountry = countries.find((c: { name: string | null; }) => c.name === simData.departureCountry);
+            if (!departureCountry) return;
+            setDeparture(prev => ({ ...prev, country: departureCountry.id.toString() }));
+
+            // 4. Departure cities
+            const cities = await getCitiesByCountryId(departureCountry.id);
+            setOptions(prev => ({ ...prev, departureCities: cities }));
+
+            const departureCity = cities.find((c: { name: string | null; }) => c.name === simData.departureCity);
+            if (!departureCity) return;
+            setDeparture(prev => ({ ...prev, city: departureCity.id.toString() }));
+
+            // 5. Departure agencies
+            const agencies = await getAgenciesByCityId(departureCity.id);
+            setOptions(prev => ({ ...prev, departureAgencies: agencies }));
+
+            const departureAgency = agencies.find((a: { name: string | null; }) => a.name === simData.departureAgency);
+            if (!departureAgency) return;
+            setDeparture(prev => ({ ...prev, agencyName: departureAgency.id.toString() }));
+
+            // 6. Destination countries
+            const destCountries = await getDestinationCountries(departureCountry.id);
+            setOptions(prev => ({ ...prev, destinationCountries: destCountries }));
+
+            const destinationCountry = destCountries.find((c: { name: string | null; }) => c.name === simData.destinationCountry);
+            if (!destinationCountry) return;
+            setDestination(prev => ({ ...prev, country: destinationCountry.id.toString() }));
+
+            // 7. Destination cities
+            const destCities = await getCitiesByCountryId(destinationCountry.id);
+            setOptions(prev => ({ ...prev, destinationCities: destCities }));
+
+            const destinationCity = destCities.find((c: { name: string | null; }) => c.name === simData.destinationCity);
+            if (!destinationCity) return;
+            setDestination(prev => ({ ...prev, city: destinationCity.id.toString() }));
+
+            // 8. Destination agencies
+            const destAgencies = await getAgenciesByCityId(destinationCity.id);
+            setOptions(prev => ({ ...prev, destinationAgencies: destAgencies }));
+
+            const destinationAgency = destAgencies.find((a: { name: string | null; }) => a.name === simData.destinationAgency);
+            if (!destinationAgency) return;
+            setDestination(prev => ({ ...prev, agencyName: destinationAgency.id.toString() }));
+
+            // 9. Parcels
+            if (simData.parcels?.length > 0) {
+                setParcels(simData.parcels);
+            }
+        } catch (error) {
+            console.error('Error fetching initial data:', error);
+            toast.error('Error loading simulation data. Redirecting...');
+            router.push('/client/simulation');
+        } finally {
+            setIsLoading(false);
+        }
     }, [isAuthenticated, userId, router]);
 
-
-
-    //==================================
-    //   FETCH DEPARTURE COUNTRIES
-    //==================================
     useEffect(() => {
-        (async () => {
-            try {
-                const data = await fetchCountries();
-                setOptions(prev => ({ ...prev, countries: data }));
-                setIsLoading(false); // when countries are loaded
-            } catch (error) {
-                console.error("Error fetching countries:", error);
-            }
-        })();
-    }, []);
+        fetchInitialData();
+    }, [fetchInitialData]);
 
     //==================================
     //   FETCH DEPARTURE CITIES
     //==================================
     useEffect(() => {
-
         if (!departure.country) {
             setOptions(prev => ({ ...prev, departureCities: [] }));
-            setDeparture(prev => ({ ...prev, city: '', agencyName: '' }));
             return;
         }
 
         (async () => {
             try {
                 const countryId = Number(departure.country);
-                const data = await fetchCities(countryId); // Only cities that actually have an agency
+                const data = await getCitiesByCountryId(countryId);
                 setOptions(prev => ({ ...prev, departureCities: data }));
-                // Reset city + agency
-                setDeparture(prev => ({ ...prev, city: '', agencyName: '' }));
             } catch (error) {
                 console.error("Error fetching departure cities:", error);
                 toast.error("Failed to fetch cities. Please try again.");
@@ -287,18 +254,15 @@ const SimulationEditForm = () => {
     useEffect(() => {
         if (!departure.city) {
             setOptions(prev => ({ ...prev, departureAgencies: [] }));
-            setDeparture(prev => ({ ...prev, agencyName: '' }));
             return;
         }
 
         (async () => {
             try {
-                // cityId from the state
-                const cityObj = options.departureCities.find(c => c.name === departure.city);
+                const cityObj = options.departureCities.find(c => c.id.toString() === departure.city);
                 if (cityObj) {
-                    const data = await fetchAgencies(cityObj.id);
+                    const data = await getAgenciesByCityId(cityObj.id);
                     setOptions(prev => ({ ...prev, departureAgencies: data }));
-                    setDeparture(prev => ({ ...prev, agencyName: '' }));
                 }
             } catch (error) {
                 console.error("Error fetching departure agencies:", error);
@@ -313,20 +277,14 @@ const SimulationEditForm = () => {
     //==================================
     useEffect(() => {
         if (!departure.agencyName) {
-            // We haven't chosen a valid departure agency yet => clear it
             setOptions(prev => ({ ...prev, destinationCountries: [] }));
-            setDestination({ country: '', city: '', agencyName: '' });
             return;
         }
 
-        // If the user has fully chosen a valid departure agency,
-        // we fetch all possible other countries that have agencies
         (async () => {
             try {
-                const data = await fetchDestinationCountries(departure.country);
+                const data = await getDestinationCountries(departure.country);
                 setOptions(prev => ({ ...prev, destinationCountries: data }));
-                // reset destination
-                setDestination({ country: '', city: '', agencyName: '' });
             } catch (error) {
                 console.error("Error fetching destination countries:", error);
             }
@@ -339,16 +297,14 @@ const SimulationEditForm = () => {
     useEffect(() => {
         if (!destination.country) {
             setOptions(prev => ({ ...prev, destinationCities: [] }));
-            setDestination(prev => ({ ...prev, city: '', agencyName: '' }));
             return;
         }
 
         (async () => {
             try {
                 const countryId = Number(destination.country);
-                const data = await fetchCities(countryId); // Only cities with agencies
+                const data = await getCitiesByCountryId(countryId);
                 setOptions(prev => ({ ...prev, destinationCities: data }));
-                setDestination(prev => ({ ...prev, city: '', agencyName: '' }));
             } catch (error) {
                 console.error("Error fetching destination cities:", error);
             }
@@ -361,17 +317,15 @@ const SimulationEditForm = () => {
     useEffect(() => {
         if (!destination.city) {
             setOptions(prev => ({ ...prev, destinationAgencies: [] }));
-            setDestination(prev => ({ ...prev, agencyName: '' }));
             return;
         }
 
         (async () => {
             try {
-                const cityObj = options.destinationCities.find(c => c.name === destination.city);
+                const cityObj = options.destinationCities.find(c => c.id.toString() === destination.city);
                 if (cityObj) {
-                    const data = await fetchAgencies(cityObj.id);
+                    const data = await getAgenciesByCityId(cityObj.id);
                     setOptions(prev => ({ ...prev, destinationAgencies: data }));
-                    setDestination(prev => ({ ...prev, agencyName: '' }));
                 }
             } catch (error) {
                 console.error("Error fetching destination agencies:", error);
@@ -460,6 +414,36 @@ const SimulationEditForm = () => {
         startTransition(() => {
             (async () => {
                 try {
+                    // Get the names for the agencies
+                    const departureAgency = options.departureAgencies.find(a => a.id.toString() === departure.agencyName);
+                    const destinationAgency = options.destinationAgencies.find(a => a.id.toString() === destination.agencyName);
+                    
+                    if (!departureAgency || !destinationAgency) {
+                        toast.error('Invalid agency selection');
+                        setIsLoading(false);
+                        return;
+                    }
+
+                    // Get the names for the cities
+                    const departureCity = options.departureCities.find(c => c.id.toString() === departure.city);
+                    const destinationCity = options.destinationCities.find(c => c.id.toString() === destination.city);
+                    
+                    if (!departureCity || !destinationCity) {
+                        toast.error('Invalid city selection');
+                        setIsLoading(false);
+                        return;
+                    }
+
+                    // Get the names for the countries
+                    const departureCountry = options.departureCountries.find(c => c.id.toString() === departure.country);
+                    const destinationCountry = options.destinationCountries.find(c => c.id.toString() === destination.country);
+                    
+                    if (!departureCountry || !destinationCountry) {
+                        toast.error('Invalid country selection');
+                        setIsLoading(false);
+                        return;
+                    }
+
                     const simulationData: PartielUpdateSimulationDto = {
                         id: simulation.id,
                         userId: simulation.userId,
@@ -474,8 +458,6 @@ const SimulationEditForm = () => {
                         simulationStatus: simulation.simulationStatus,
                         envoiStatus: simulation.envoiStatus,
                     };
-
-                    // (Optional) Validate with zod if you have a schema
 
                     // Actually call the update service
                     const response = await updateSimulationEdited(simulationData);
@@ -623,23 +605,21 @@ const SimulationEditForm = () => {
         );
     };
 
+    // Add a useEffect to log state changes
+    useEffect(() => {
+        console.log('Current state:', {
+            departure,
+            destination,
+            options,
+            parcels
+        });
+    }, [departure, destination, options, parcels]);
+
     /**
      * If loading, show a spinner or skeleton
      */
     if (isLoading) {
-        return (
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex items-center justify-center min-h-screen"
-            >
-                <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
-                    className="rounded-full h-16 w-16 border-4 border-transparent border-b-blue-500"
-                />
-            </motion.div>
-        );
+        return <SimulationSkeleton />;
     }
 
     /**
@@ -707,7 +687,7 @@ const SimulationEditForm = () => {
                         }
                         countries={options.destinationCountries}
                         disabled={!departure.agencyName || isPending}
-                        placeholder="Sélectionnez d’abord un pays de départ"
+                        placeholder="Sélectionnez d'abord un pays de départ"
                     />
                     <CitySelect
                         label="Ville de destination"

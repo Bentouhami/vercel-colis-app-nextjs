@@ -1,7 +1,8 @@
-// path: src/app/client/(user)/reset-password/page.tsx
+// src/app/client/auth/reset-password/page.tsx
 'use client'
+
+import ResetPasswordFormWrapper from '@/components/forms/AuthForms/ResetPasswordFormWrapper'
+
 export default function ResetPasswordPage() {
-    return (
-        <div>ResetPasswordPage</div>
-    )
+    return <ResetPasswordFormWrapper />
 }

@@ -1,7 +1,8 @@
 // src/components/LoginPromptModal.tsx
 import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { LogIn } from "lucide-react"; // Icône de connexion
+import { LogIn } from "lucide-react";
+import React from "react"; // Icône de connexion
 
 interface LoginPromptModalProps {
     show: boolean;

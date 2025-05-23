@@ -13,7 +13,7 @@ import {createAgency, getAgencyById, updateAgency} from "@/services/frontend-ser
 import {AgencyResponseDto, CreateAgencyDto} from "@/services/dtos";
 import CountrySelect from "@/components/forms/SimulationForms/CountrySelectForm";
 import CitySelect from "@/components/forms/SimulationForms/CitySelectForm";
-import {fetchCities, fetchCountries} from "@/services/frontend-services/AddressService";
+import {getCitiesByCountryId, getAllCountries} from "@/services/frontend-services/AddressService";
 
 //
 // Schéma de validation avec les champs d'adresse imbriqués
@@ -77,7 +77,7 @@ export default function AgencyForm({agencyId}: AgencyFormProps) {
 
     useEffect(() => {
         if (selectedCountryId && selectedCountryId !== 0) {
-            fetchCities(selectedCountryId).then(setCities).catch(console.error);
+            getCitiesByCountryId(selectedCountryId).then(setCities).catch(console.error);
             // Only reset city if you really want to clear it out each time
             form.setValue("address.city.id", 0);
             form.setValue("address.city.name", "");
@@ -137,7 +137,7 @@ export default function AgencyForm({agencyId}: AgencyFormProps) {
 
     // 3. Récupérer la liste des pays
     useEffect(() => {
-        fetchCountries()
+        getAllCountries()
             .then(setCountries)
             .catch(console.error);
     }, []);
@@ -147,7 +147,7 @@ export default function AgencyForm({agencyId}: AgencyFormProps) {
         // Nous utilisons setValue pour récupérer l'ID du pays dans address.country.id
         const countryId = (form.getValues("address.city.country") as { id: number }).id;
         if (countryId !== 0) {
-            fetchCities(countryId)
+            getCitiesByCountryId(countryId)
                 .then(setCities)
                 .catch(console.error);
             // Réinitialiser la ville sélectionnée

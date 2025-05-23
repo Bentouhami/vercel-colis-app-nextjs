@@ -4,6 +4,32 @@ import {AgencyDto, AgencyResponseDto, FullAgencyDto} from "@/services/dtos";
 import prisma from "@/utils/db";
 import {agencyRepository} from "@/services/repositories/agencies/AgencyRepository";
 
+export async function getLightAgencies(filters?: {
+    countryId?: number;
+    cityId?: number;
+    search?: string;
+}) {
+    return prisma.agency.findMany({
+        where: {
+            address: {
+                city: {
+                    countryId: filters?.countryId,
+                    id: filters?.cityId,
+                },
+            },
+            name: filters?.search
+                ? {contains: filters.search, mode: "insensitive"}
+                : undefined,
+        },
+        select: {
+            id: true,
+            name: true,
+        },
+        orderBy: {
+            name: "asc",
+        },
+    });
+}
 
 /**
  * Find agency by name
@@ -57,7 +83,13 @@ export async function getAgencyById(id: number): Promise<AgencyResponseDto | nul
 }
 
 
-export async function getAgencies(p0: { page: number; limit: number; search: string; sortKey: string; sortDir: string; }): Promise<AgencyDto[] | null> {
+export async function getAgencies(p0: {
+    page: number;
+    limit: number;
+    search: string;
+    sortKey: string;
+    sortDir: string;
+}): Promise<AgencyDto[] | null> {
     try {
 
         const agencies = await prisma.agency.findMany(
