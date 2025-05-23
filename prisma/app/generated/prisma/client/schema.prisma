@@ -109,6 +109,8 @@ model PasswordResetToken {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    Int
   createdAt DateTime @default(now())
+
+  @@map("password_reset_tokens")
 }
 
 model Payment {

@@ -15,7 +15,7 @@ datasource db {
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
-  output   = "app/generated/prisma/client"
+  // output          = "app/generated/prisma/client"
 }
 
 enum PaymentMethod {
@@ -109,8 +109,9 @@ model PasswordResetToken {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    Int
   createdAt DateTime @default(now())
-}
 
+  @@map("password_reset_tokens")
+}
 
 model Payment {
   id            Int           @id @default(autoincrement())
@@ -181,6 +182,7 @@ model User {
   staffsActivityLogs ActivityLog[]
 
   passwordResetTokens PasswordResetToken[]
+
   @@map("users")
 }
 
@@ -462,13 +464,10 @@ model Agency {
 
   agencyClients AgencyClients[]
   agencyStaff   AgencyStaff[]
-  activityLogs   ActivityLog[]
+  activityLogs  ActivityLog[]
 
   //  Interdire les doublons de noms dans une même ville
   @@unique([name, addressId])
-
-
-
   @@map("agencies")
 }
 

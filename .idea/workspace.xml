@@ -4,37 +4,46 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="89845570-396d-49b4-b7c4-14309075f121" name="Changes" comment="" />
+    <list default="true" id="2deb5b8d-2e5a-49be-8fef-c18e90334d13" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/a9905ee1-dd9b-4e3e-a287-9e2eb3b720f2.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/a9905ee1-dd9b-4e3e-a287-9e2eb3b720f2/storage_v2/_src_/database/verceldb.hSjLiA.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/a9905ee1-dd9b-4e3e-a287-9e2eb3b720f2/storage_v2/_src_/database/verceldb.hSjLiA/schema/information_schema.FNRwLQ.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/a9905ee1-dd9b-4e3e-a287-9e2eb3b720f2/storage_v2/_src_/database/verceldb.hSjLiA/schema/pg_catalog.0S1ZNQ.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/a9905ee1-dd9b-4e3e-a287-9e2eb3b720f2/storage_v2/_src_/database/verceldb.hSjLiA/schema/public.abK9xQ.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/next.config.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/next.config.mjs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/prisma/app/generated/prisma/client/edge.js" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/app/generated/prisma/client/edge.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/prisma/app/generated/prisma/client/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/app/generated/prisma/client/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/prisma/app/generated/prisma/client/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/app/generated/prisma/client/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/prisma/app/generated/prisma/client/schema.prisma" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/app/generated/prisma/client/schema.prisma" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/prisma/app/generated/prisma/client/wasm.js" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/app/generated/prisma/client/wasm.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/prisma/schema.prisma" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/schema.prisma" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/admin/envois/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/envois/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/prisma.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/prisma.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/backend-services/Bk_AuthService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/backend-services/Bk_AuthService.ts" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="CodeInsightWorkspaceSettings">
-    <option name="optimizeImportsOnTheFly" value="true" />
-  </component>
   <component name="ComposerSettings">
     <execution />
-  </component>
-  <component name="FormatOnSaveOptions">
-    <option name="myRunOnSave" value="false" />
-    <option name="myAllFileTypesSelected" value="true" />
-    <option name="mySelectedFileTypes">
-      <set />
-    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="KubernetesApiPersistence">{}</component>
-  <component name="KubernetesApiProvider">{
-  &quot;isMigrated&quot;: true
-}</component>
+  <component name="KubernetesApiPersistence"><![CDATA[{}]]></component>
   <component name="PhpWorkspaceProjectConfiguration" interpreter_name="C:\php-8.4.6\php.exe" />
-  <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 0
-}</component>
-  <component name="ProjectId" id="2wd9MKv80EgQEuiF42cifG6KUtZ" />
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 0
+}]]></component>
+  <component name="ProjectId" id="2xW60fNXaNLSLmjtvNoTBTilouB" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -44,42 +53,19 @@
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "full.screen.before.presentation.mode": "false",
     "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
     "js.debugger.nextJs.config.created.client": "true",
     "js.debugger.nextJs.config.created.server": "true",
     "junie.onboarding.icon.badge.shown": "true",
-    "last_opened_file_path": "E:/fullstack_project/NextJs_Projects/newColiApp/public/thems",
     "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.standard": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.standard": "",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "swagger",
     "ts.external.directory.path": "E:\\fullstack_project\\NextJs_Projects\\newColiApp\\node_modules\\typescript\\lib"
-  },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "postgresql"
-    ]
   }
 }]]></component>
-  <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="E:\fullstack_project\NextJs_Projects\newColiApp\public\thems" />
-      <recent name="E:\fullstack_project\NextJs_Projects\newColiApp\public\svg\reset" />
-      <recent name="E:\fullstack_project\NextJs_Projects\newColiApp\public\svg" />
-      <recent name="E:\fullstack_project\NextJs_Projects\newColiApp\src\components" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="E:\fullstack_project\NextJs_Projects\newColiApp\src\app\api\v1\(auth)" />
-      <recent name="E:\fullstack_project\NextJs_Projects\newColiApp\public\svg\reset" />
-    </key>
-  </component>
   <component name="RunManager" selected="npm.Next.js: server-side">
     <configuration name="Next.js: debug client-side" type="JavascriptDebugType" uri="http://localhost:3000/">
       <method v="2" />
@@ -104,46 +90,16 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="89845570-396d-49b4-b7c4-14309075f121" name="Changes" comment="" />
-      <created>1746360534872</created>
+      <changelist id="2deb5b8d-2e5a-49be-8fef-c18e90334d13" name="Changes" comment="" />
+      <created>1748041262627</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1746360534872</updated>
-      <workItem from="1746360536219" duration="12950000" />
-      <workItem from="1746384172335" duration="14422000" />
-      <workItem from="1746469825986" duration="13551000" />
-      <workItem from="1746518541885" duration="24766000" />
-      <workItem from="1746794916279" duration="136000" />
-      <workItem from="1747053472960" duration="4012000" />
-      <workItem from="1747255574728" duration="1549000" />
-      <workItem from="1747663325840" duration="1614000" />
-      <workItem from="1747672905811" duration="38000" />
-      <workItem from="1747672953461" duration="40000" />
-      <workItem from="1747673005884" duration="9722000" />
-      <workItem from="1747730891862" duration="23575000" />
-      <workItem from="1747820308287" duration="16856000" />
-      <workItem from="1747925219508" duration="5902000" />
-      <workItem from="1747947365934" duration="52000" />
-      <workItem from="1747947429261" duration="41000" />
-      <workItem from="1747947483934" duration="8577000" />
-      <workItem from="1747997031888" duration="13087000" />
+      <updated>1748041262627</updated>
+      <workItem from="1748041264279" duration="1874000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
-  </component>
-  <component name="UnknownFeatures">
-    <option featureType="dependencySupport" implementationName="javascript:npm:react" />
-    <option featureType="dependencySupport" implementationName="executable:docker" />
-    <option featureType="dependencySupport" implementationName="javascript:npm:tailwindcss" />
-    <option featureType="dependencySupport" implementationName="javascript:npm:prisma" />
-    <option featureType="dependencySupport" implementationName="executable:kubectl" />
-    <option featureType="dependencySupport" implementationName="javascript:npm:next" />
-    <option featureType="dependencySupport" implementationName="javascript:npm:postcss" />
-  </component>
-  <component name="XSLT-Support.FileAssociations.UIState">
-    <expand />
-    <select />
   </component>
 </project>

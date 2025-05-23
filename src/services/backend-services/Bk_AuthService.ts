@@ -1,10 +1,11 @@
 // path: src/services/backend-services/Bk_AuthService.ts
-import { prisma } from "@/lib/prisma"
 import { randomUUID } from "crypto"
 import { addHours } from "date-fns"
 import nodemailer from "nodemailer"
 import { DOMAIN } from "@/utils/constants"
 import bcrypt from "bcryptjs";
+import prisma from '@/lib/prisma'
+
 
 const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_SERVER_HOST,

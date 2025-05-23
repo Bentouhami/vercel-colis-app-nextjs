@@ -11,7 +11,19 @@ const nextConfig = {
             },
         ],
     },
+    webpack: (config, { isServer }) => {
+        // Ignore problematic directories
+        config.watchOptions = {
+            ...config.watchOptions,
+            ignored: [
+                '**/node_modules',
+                '**/.git',
+                '**/Application Data',
+                '**/AppData',
+            ],
+        };
+        return config;
+    },
 };
 
 export default nextConfig;
-
