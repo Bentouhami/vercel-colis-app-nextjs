@@ -9,6 +9,8 @@ import {QR_CODES_FOLDER} from "@/utils/constants";
 import {envoiRepository} from "@/services/repositories/envois/EnvoiRepository";
 import {cookies} from "next/headers";
 import {PaymentSuccessDto} from "@/services/dtos/envois/PaymentSuccessDto";
+import {trackingRepository} from "@/services/repositories/tracking/TrackingRepository";
+import {TrackingEventStatus} from "@prisma/client";
 
 /**
  * Cancel a simulation
@@ -88,79 +90,69 @@ async function linkClientToAgency(clientId: number, agencyId: number): Promise<v
  * @param envoiId
  * @returns
  */
+
+/**
+ * Update an envoi
+ * @param envoiId
+ * @returns true si tout OK, false sinon
+ */
 export async function updateEnvoi(envoiId: number): Promise<boolean> {
-    if (!envoiId) {
-        return false;
-    }
+    if (!envoiId) return false;
 
     try {
-
-        // Step 1: Retrieve the envoi details
+        // Step 1: récupérer les infos simulation & envoi
         const envoiResponse = await simulationRepository.getSimulationResponseById(envoiId);
-        if (!envoiResponse) {
-            return false;
-        }
+        if (!envoiResponse) return false;
 
-
-        // get the envoi by id
         const envoi: EnvoiDto | null = await envoiRepository.getEnvoiById(envoiId);
+        if (!envoi) return false;
 
-        if (!envoi) {
-            return false;
-        }
-
-        // after the first update, if the second request hits, do:
-        if (envoi.trackingNumber && envoi.qrCodeUrl && envoi.paid && envoi.simulationStatus === 'COMPLETED') {
-            // Return early: we've already updated this envoi
+        // Early exit si déjà traité
+        if (envoi.trackingNumber && envoi.qrCodeUrl && envoi.paid && envoi.simulationStatus === "COMPLETED") {
             return true;
         }
 
-
-        // check if the envoi has already been paid
-        if (envoi.paid &&
-            (envoi.simulationStatus === SimulationStatus.COMPLETED) &&
-            envoi.qrCodeUrl) {
+        // Si payé mais pas encore COMPLETED => cookie à supprimer, on stoppe
+        if (envoi.paid && envoi.simulationStatus === SimulationStatus.COMPLETED && envoi.qrCodeUrl) {
             (await cookies()).delete(process.env.SIMULATION_COOKIE_NAME!);
-
             return false;
         }
-        // Step 1: verify and generate a tracking number
-        const trackingNumber = envoi.trackingNumber || generateTrackingNumber(
-            envoiResponse.departureCountry!,
-            envoiResponse.departureCity!,
-            envoiResponse.destinationCountry!,
-            envoiResponse.destinationCity!
-        );
 
+        // Step 2: générer/valider trackingNumber & QR
+        const trackingNumber =
+            envoi.trackingNumber ||
+            generateTrackingNumber(
+                envoiResponse.departureCountry!,
+                envoiResponse.departureCity!,
+                envoiResponse.destinationCountry!,
+                envoiResponse.destinationCity!
+            );
 
-        // Step 2: Prepare QR code data
         const qrData = {
-                trackingNumber,
-                departureCountry: envoiResponse.departureCountry,
-                departureCity: envoiResponse.departureCity,
-                destinationCountry: envoiResponse.destinationCountry,
-                destinationCity: envoiResponse.destinationCity,
-                userId: envoiResponse.userId,
-                numberOfPackages: envoiResponse.parcels.length,
-                paid: envoi.paid,
-                envoiStatus: envoi.envoiStatus,
-                simulationStatus: envoi.simulationStatus,
-                arrivalDate: envoi.arrivalDate,
-                departureDate: envoi.departureDate,
-                transportId: envoi.transportId,
-                comment: envoi.comment,
-                parcels: envoi.parcels,
-                totalWeight: envoi.totalWeight,
-                totalVolume: envoi.totalVolume,
-                totalPrice: envoi.totalPrice,
-            }
-        ;
+            trackingNumber,
+            departureCountry: envoiResponse.departureCountry,
+            departureCity: envoiResponse.departureCity,
+            destinationCountry: envoiResponse.destinationCountry,
+            destinationCity: envoiResponse.destinationCity,
+            userId: envoiResponse.userId,
+            numberOfPackages: envoiResponse.parcels.length,
+            paid: envoi.paid,
+            envoiStatus: envoi.envoiStatus,
+            simulationStatus: envoi.simulationStatus,
+            arrivalDate: envoi.arrivalDate,
+            departureDate: envoi.departureDate,
+            transportId: envoi.transportId,
+            comment: envoi.comment,
+            parcels: envoi.parcels,
+            totalWeight: envoi.totalWeight,
+            totalVolume: envoi.totalVolume,
+            totalPrice: envoi.totalPrice,
+        };
 
-        // Step 4: Generate and upload QR Code
-        const qrCodeUrl = envoi.qrCodeUrl || (await generateAndUploadQRCode(qrData, trackingNumber, QR_CODES_FOLDER));
+        const qrCodeUrl =
+            envoi.qrCodeUrl || (await generateAndUploadQRCode(qrData, trackingNumber, QR_CODES_FOLDER));
 
-
-        // remove parcels from envoi
+        // Préparer l'objet de mise à jour
         const {
             parcels,
             id,
@@ -181,25 +173,31 @@ export async function updateEnvoi(envoiId: number): Promise<boolean> {
             ...restEnvoi
         } = envoi;
 
-        // Step 5: Prepare updated envoi data
         const updatedEnvoiData = {
             ...restEnvoi,
             trackingNumber,
             qrCodeUrl,
             envoiStatus: EnvoiStatus.PENDING,
             simulationStatus: SimulationStatus.COMPLETED,
-            paid: true
+            paid: true,
         };
 
+        // Step 3: enregistrer l'envoi mis à jour
         const updatedEnvoi = await envoiRepository.updateEnvoi(envoi.id!, updatedEnvoiData);
+        if (!updatedEnvoi) return false;
 
-        if (!updatedEnvoi) {
-            return false;
-        }
+        // Step 4: lier le client à l'agence si besoin
         if (envoi.userId && envoi.departureAgencyId) {
             await linkClientToAgency(envoi.userId, envoi.departureAgencyId);
         }
 
+        // Step 5: **Créer l'évènement Tracking "CREATED"**
+        await trackingRepository.addEvent({
+            envoiId: updatedEnvoi.id!,
+            status: TrackingEventStatus.CREATED,
+            location: `${envoiResponse.departureCity}, ${envoiResponse.departureCountry}`,
+            description: "Envoi confirmé et payé – prêt pour collecte",
+        });
 
         return true;
     } catch (error) {

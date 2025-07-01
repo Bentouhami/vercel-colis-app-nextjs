@@ -25,7 +25,7 @@ export default function ExportPage () {
     return (
         <RequireAuth allowedRoles={[RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN]}>
             <div className="container mx-auto py-10">
-                <h1 className="text-2xl font-bold mb-5">Admin Envois</h1>
+                <h1 className="text-2xl font-bold mb-5">Admin Export datas </h1>
                 <p>This page is under construction.</p>
             </div>
         </RequireAuth>

@@ -56,6 +56,12 @@ export default function ProfileComponent() {
                                     <Badge className="bg-white/20 hover:bg-white/30 dark:bg-white/10 dark:hover:bg-white/20 text-white">
                                         {userData?.role}
                                     </Badge>
+                                    <a 
+                                        href="/client/profile/settings" 
+                                        className="inline-flex items-center px-3 py-1 rounded-full bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium transition-colors"
+                                    >
+                                        Modifier mon profil
+                                    </a>
                                 </div>
                             </div>
                         </div>

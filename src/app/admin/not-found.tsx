@@ -1,6 +1,6 @@
 // Path: src/app/admin/not-found.tsx
 
-import NotFound from '@/components/NotFound';
+import NotFound from '@/components/not-found';
 
 export default function AdminNotFound() {
     return (

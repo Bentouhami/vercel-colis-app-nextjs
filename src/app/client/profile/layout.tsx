@@ -46,8 +46,8 @@ export default function ProfileLayout({
                             } hidden md:flex flex-col border-r border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 transition-all duration-300 relative`}
                         >
 
-                        {isSidebarOpen && <ProfileSideMenu/>}
-
+                            {/*{isSidebarOpen && <ProfileSideMenu/>}*/}
+                            <ProfileSideMenu iconOnly={!isSidebarOpen}/>
                             {/* Toggle Button - Always Visible */}
                             <Button
                                 variant="ghost"

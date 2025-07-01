@@ -1,14 +1,40 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { ProfileDto } from "@/services/dtos";
+import { getCurrentUserId } from "@/lib/auth";
+import { getUserProfileById } from "@/services/frontend-services/UserService";
+import EditProfileForm from "@/components/forms/AuthForms/EditProfileForm";
 
 export default function SettingsComponent() {
-    // For example, a form to update name, password, etc.
+    const [userData, setUserData] = useState<ProfileDto | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        async function fetchUserData() {
+            try {
+                setLoading(true);
+                const userId = await getCurrentUserId();
+                if (userId) {
+                    const user = await getUserProfileById(Number(userId));
+                    setUserData(user);
+                }
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchUserData();
+    }, []);
+
+    if (loading) {
+        return <div className="text-center py-10">Chargement...</div>;
+    }
 
     return (
-        <form>
-            {/* User can update the personal information like: first name, last name, email, phone number, etc. */}
-            {/*    User can also update the password */}
-            {/*    and address*/}
-        </form>
+        <div>
+            <EditProfileForm initialData={userData} />
+        </div>
     );
 }

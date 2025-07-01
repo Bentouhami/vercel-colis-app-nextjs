@@ -19,7 +19,6 @@ import {findSuitableTransport} from "@/services/frontend-services/transport/Tran
 import {updateTransport} from "@/services/frontend-services/transport/TransportService";
 import apiClient from "@/utils/axiosInstance";
 
-
 /**
  *  get a simulation by id
  * @param id

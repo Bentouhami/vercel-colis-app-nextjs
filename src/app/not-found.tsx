@@ -1,5 +1,5 @@
 // path: src/app/not-found.tsx
-import NotFound from '@/components/NotFound';
+import NotFound from '@/components/not-found';
 
 export default function ClientNotFound() {
     return (

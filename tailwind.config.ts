@@ -1,3 +1,5 @@
+// E:\fullstack_project\NextJs_Projects\newColiApp\tailwind.config.ts
+
 import type { Config } from "tailwindcss";
 
 const config: Config = {

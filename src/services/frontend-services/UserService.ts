@@ -145,7 +145,6 @@ export async function registerUser(newUser: RegisterUserBackendType) {
     }
 }
 
-
 export async function addDestinataire(newUser: CreateDestinataireDto): Promise<number | null> {
 
     try {
@@ -190,5 +189,28 @@ export async function getUsers(): Promise<ProfileDto[] | null> {
         return null;
     }
 }
+
+export async function updateUserProfile(data: Partial<ProfileDto>) {
+    try {
+        const response = await fetch(`${API_DOMAIN}/users/me`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+            throw new Error('Échec de la mise à jour du profil.');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Erreur dans updateUserProfile:', error);
+        throw error;
+    }
+}
+
 
 

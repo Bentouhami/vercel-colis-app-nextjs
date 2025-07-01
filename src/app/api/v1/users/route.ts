@@ -5,6 +5,45 @@ import {ProfileDto, RoleDto} from "@/services/dtos";
 import {getAllUsers, getUsersByAgencyAdmin} from "@/services/backend-services/Bk_UserService";
 import {auth} from "@/auth/auth";
 
+/**
+ * @swagger
+ * /users:
+ *   get:
+ *     summary: Get users list
+ *     description: Retrieves a list of users based on the authenticated user's role. Super admins can see all users, while agency admins can only see users associated with their agency.
+ *     tags: [Users]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: A list of users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/ProfileDto'
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Unauthorized
+ *       405:
+ *         description: Method not allowed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Method not allowed
+ */
 export async function GET(req: NextRequest) {
 
     if (req.method !== "GET") {

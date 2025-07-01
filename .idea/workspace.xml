@@ -5,26 +5,54 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2deb5b8d-2e5a-49be-8fef-c18e90334d13" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/a9905ee1-dd9b-4e3e-a287-9e2eb3b720f2.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/a9905ee1-dd9b-4e3e-a287-9e2eb3b720f2/storage_v2/_src_/database/verceldb.hSjLiA.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/a9905ee1-dd9b-4e3e-a287-9e2eb3b720f2/storage_v2/_src_/database/verceldb.hSjLiA/schema/information_schema.FNRwLQ.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/a9905ee1-dd9b-4e3e-a287-9e2eb3b720f2/storage_v2/_src_/database/verceldb.hSjLiA/schema/pg_catalog.0S1ZNQ.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/a9905ee1-dd9b-4e3e-a287-9e2eb3b720f2/storage_v2/_src_/database/verceldb.hSjLiA/schema/public.abK9xQ.meta" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/admin/envois/[id]/tracking/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/api/v1/tracking/[trackingNumber]/route.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/api/v1/tracking/route.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/client/tracking/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/admin/ManualStatusForm.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/admin/collections/EnvoisList.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/not-found.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/tracking/TrackingTimeline.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/services/repositories/tracking/TrackingRepository.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/next.config.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/next.config.mjs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/prisma/app/generated/prisma/client/edge.js" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/app/generated/prisma/client/edge.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/prisma/app/generated/prisma/client/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/app/generated/prisma/client/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/prisma/app/generated/prisma/client/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/app/generated/prisma/client/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/prisma/app/generated/prisma/client/schema.prisma" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/app/generated/prisma/client/schema.prisma" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/prisma/app/generated/prisma/client/wasm.js" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/app/generated/prisma/client/wasm.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/prisma/schema.prisma" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/schema.prisma" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/admin/envois/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/envois/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/prisma.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/prisma.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/backend-services/Bk_AuthService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/backend-services/Bk_AuthService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/admin/export/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/export/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/admin/not-found.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/not-found.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/admin/stats/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/stats/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/v1/envois/[id]/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/v1/envois/[id]/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/v1/users/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/v1/users/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/client/not-found.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/client/not-found.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/client/payment/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/client/payment/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/client/payment/payment-success/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/client/payment/payment-success/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/client/profile/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/client/profile/layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/client/tracking/[trackingNum]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/client/tracking/[trackingNum]/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/not-found.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/not-found.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/auth/auth.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/auth/auth.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/NotFound.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/address/AddressForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/address/AddressForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/admin/menu/Sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/admin/menu/Sidebar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/auth/LoginInformationForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/auth/LoginInformationForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/auth/PersonalInformationForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/auth/PersonalInformationForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/client-specific/profile/ProfileComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/client-specific/profile/ProfileComponent.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/client-specific/profile/ProfileSideMenu.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/client-specific/profile/ProfileSideMenu.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/client-specific/profile/SettingsComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/client-specific/profile/SettingsComponent.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/client-specific/simulation/simulation-country-city-selector.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/client-specific/simulation/simulation-country-city-selector.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/navigations/header/HeaderNavbar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/navigations/header/HeaderNavbar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/providers.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/providers.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/tracking/TrackingComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/tracking/TrackingComponent.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/backend-services/Bk_EnvoiService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/backend-services/Bk_EnvoiService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/backend-services/Bk_SimulationService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/backend-services/Bk_SimulationService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/frontend-services/UserService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/frontend-services/UserService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/frontend-services/payment/paymentService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/frontend-services/payment/paymentService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/frontend-services/simulation/SimulationService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/frontend-services/simulation/SimulationService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/axiosInstance.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/axiosInstance.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tailwind.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tailwind.config.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,35 +65,44 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="KubernetesApiPersistence"><![CDATA[{}]]></component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
   <component name="PhpWorkspaceProjectConfiguration" interpreter_name="C:\php-8.4.6\php.exe" />
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 0
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 0
+}</component>
   <component name="ProjectId" id="2xW60fNXaNLSLmjtvNoTBTilouB" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "js.debugger.nextJs.config.created.client": "true",
-    "js.debugger.nextJs.config.created.server": "true",
-    "junie.onboarding.icon.badge.shown": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "ts.external.directory.path": "E:\\fullstack_project\\NextJs_Projects\\newColiApp\\node_modules\\typescript\\lib"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;js.debugger.nextJs.config.created.client&quot;: &quot;true&quot;,
+    &quot;js.debugger.nextJs.config.created.server&quot;: &quot;true&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;actions.on.save&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;E:\\fullstack_project\\NextJs_Projects\\newColiApp\\node_modules\\typescript\\lib&quot;
   }
-}]]></component>
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="E:\fullstack_project\NextJs_Projects\newColiApp\src\app\api\v1\tracking\[trackingNumber]" />
+    </key>
+  </component>
   <component name="RunManager" selected="npm.Next.js: server-side">
     <configuration name="Next.js: debug client-side" type="JavascriptDebugType" uri="http://localhost:3000/">
       <method v="2" />
@@ -84,7 +121,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.23774.435" />
+        <option value="bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.26094.121" />
       </set>
     </attachedChunks>
   </component>
@@ -96,6 +133,39 @@
       <option name="presentableId" value="Default" />
       <updated>1748041262627</updated>
       <workItem from="1748041264279" duration="1874000" />
+      <workItem from="1748043713534" duration="684000" />
+      <workItem from="1748188295764" duration="7735000" />
+      <workItem from="1748215594640" duration="834000" />
+      <workItem from="1748268859721" duration="1298000" />
+      <workItem from="1748281180970" duration="6140000" />
+      <workItem from="1748341303908" duration="2682000" />
+      <workItem from="1748414252090" duration="1507000" />
+      <workItem from="1748423300309" duration="2040000" />
+      <workItem from="1748442292163" duration="15440000" />
+      <workItem from="1748643646415" duration="889000" />
+      <workItem from="1748710866347" duration="1267000" />
+      <workItem from="1748735977234" duration="610000" />
+      <workItem from="1748773207055" duration="1288000" />
+      <workItem from="1748779519358" duration="732000" />
+      <workItem from="1748784283947" duration="169000" />
+      <workItem from="1748789460402" duration="1545000" />
+      <workItem from="1748802874193" duration="1250000" />
+      <workItem from="1748816006840" duration="925000" />
+      <workItem from="1748846313066" duration="58000" />
+      <workItem from="1748890603174" duration="789000" />
+      <workItem from="1748896454839" duration="106000" />
+      <workItem from="1749331526811" duration="2239000" />
+      <workItem from="1749384521696" duration="2004000" />
+      <workItem from="1749410500462" duration="443000" />
+      <workItem from="1749416978834" duration="6611000" />
+      <workItem from="1749500986889" duration="4558000" />
+      <workItem from="1749720143947" duration="77000" />
+      <workItem from="1749885013700" duration="48000" />
+      <workItem from="1750011889732" duration="78000" />
+      <workItem from="1750011985151" duration="311000" />
+      <workItem from="1750023673717" duration="3466000" />
+      <workItem from="1750090948955" duration="1931000" />
+      <workItem from="1750184104511" duration="87000" />
     </task>
     <servers />
   </component>

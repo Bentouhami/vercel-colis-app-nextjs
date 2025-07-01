@@ -280,10 +280,7 @@ L’application est disponible sur [http://localhost:3000](http://localhost:3000
     │   │       │
     │   │       ├───payment
     │   │       │   │   route.ts
-    │   │       │   │
-    │   │       │   └───complete-payment
-    │   │       │           route.ts
-    │   │       │
+    │   │       │ 
     │   │       ├───simulations
     │   │       │   │   route.ts
     │   │       │   │

@@ -242,5 +242,3 @@ export async function updateSimulationTransportId(simulationId: number, transpor
         throw error;
     }
 }
-
-

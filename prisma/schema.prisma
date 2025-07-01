@@ -593,6 +593,8 @@ model TrackingEvent {
 
   envoi Envoi @relation(fields: [envoiId], references: [id])
 
+  @@index([envoiId, createdAt]) // timeline rapide
+  @@index([eventStatus, createdAt]) // filtre « EN_TRANSIT aujourd’hui »
   @@map("tracking_events")
 }
 

@@ -13,9 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { FaEnvelope, FaLock } from "react-icons/fa";
 import { UseFormReturn } from "react-hook-form";
-import { RegisterClientDto } from "@/services/dtos";
 import {RegisterUserFrontendFormType} from "@/utils/validationSchema";
-import {cn} from "@/lib/utils";
 
 interface LoginInformationFormProps {
     form: UseFormReturn<RegisterUserFrontendFormType>;

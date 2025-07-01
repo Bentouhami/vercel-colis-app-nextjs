@@ -64,12 +64,6 @@ const Sidebar = () => {
         },
 
         {
-            name: 'Mon Agence',
-            icon: Building,
-            path: '/admin/agence',
-            roleAllowed: [RoleDto.AGENCY_ADMIN],
-        },
-        {
             name: 'Envois',
             icon: Package,
             path: '/admin/envois',
