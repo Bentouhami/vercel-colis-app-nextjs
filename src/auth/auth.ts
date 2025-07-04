@@ -4,8 +4,8 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import {PrismaAdapter} from "@auth/prisma-adapter";
 import prisma from "@/utils/db";
 import bcrypt from "bcryptjs";
-import GoogleProvider from "@auth/core/providers/google";
-import GitHubProvider from "@auth/core/providers/github";
+import Google from "next-auth/providers/google";
+import GitHub from "next-auth/providers/github";
 import {RoleDto} from "@/services/dtos/enums/EnumsDto";
 import {AddressResponseDto} from "@/services/dtos";
 import {getUserByEmail} from "@/services/backend-services/Bk_UserService";
@@ -66,7 +66,7 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
             },
         }),
 
-        GoogleProvider({
+        Google({
             clientId: process.env.GOOGLE_CLIENT_ID!,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
             authorization: {
@@ -91,7 +91,7 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
             },
         }),
 
-        GitHubProvider({
+        GitHub({
             clientId: process.env.GITHUB_ID!,
             clientSecret: process.env.GITHUB_SECRET!,
             authorization: {

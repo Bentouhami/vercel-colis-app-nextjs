@@ -15,7 +15,7 @@ import { Form } from "@/components/ui/form";
 import PersonalInformationForm from "@/components/auth/PersonalInformationForm";
 import AddressForm from "@/components/address/AddressForm";
 import { z } from "zod";
-import {updateUserProfile} from "@/services/frontend-services/UserService";
+import { updateUserProfile } from "@/services/frontend-services/UserService";
 
 // Define the validation schema for the edit profile form
 const editProfileSchema = z.object({
@@ -125,13 +125,13 @@ export default function EditProfileForm({ initialData }: EditProfileFormProps) {
                     <CardContent>
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(handleSubmit, (errors) => console.log(errors))}
-                                  className="space-y-6">
+                                className="space-y-6">
 
                                 {/* Personal Information */}
-                                <PersonalInformationForm form={form} isPending={isPending}/>
+                                <PersonalInformationForm form={form} isPending={isPending} />
 
                                 {/* Address Information */}
-                                <AddressForm form={form} isPending={isPending}/>
+                                <AddressForm form={form} isPending={isPending} />
 
                                 {/* Submit Button */}
                                 <Button

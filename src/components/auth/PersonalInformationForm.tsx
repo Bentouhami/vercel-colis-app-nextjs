@@ -8,19 +8,26 @@ import { FaCalendar, FaPhone, FaUser } from "react-icons/fa";
 import { FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/phone-input";
-import { UseFormReturn, Controller } from "react-hook-form";
-import { RegisterUserFrontendFormType } from "@/utils/validationSchema";
+import { UseFormReturn, Controller, FieldValues, Path } from "react-hook-form";
+
+interface PersonalInfoFields {
+    firstName: string;
+    lastName: string;
+    birthDate: string;
+    phoneNumber: string;
+    email: string;
+}
 import { DatePicker } from "@/components/ui/date-picker";
 
-interface PersonalInformationFormProps {
-    form: UseFormReturn<RegisterUserFrontendFormType>;
+interface PersonalInformationFormProps<TForm extends FieldValues> {
+    form: UseFormReturn<TForm>;
     isPending: boolean;
     role?: string;
     agencies?: { id: number; name: string }[];
 }
 
 
-export default function PersonalInformationForm({ form, isPending }: PersonalInformationFormProps) {
+export default function PersonalInformationForm<TForm extends FieldValues>({ form, isPending }: PersonalInformationFormProps<TForm>) {
     const { control } = form;
 
     return (
@@ -31,7 +38,7 @@ export default function PersonalInformationForm({ form, isPending }: PersonalInf
             <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
                     {/* First Name */}
-                    <FormField control={control} name="firstName" render={({ field }) => (
+                    <FormField control={control} name={"firstName" as Path<TForm>} render={({ field }) => (
                         <FormItem>
                             <FormLabel>Prénom <span className="text-red-500 ml-1">*</span></FormLabel>
                             <FormControl>
@@ -44,7 +51,7 @@ export default function PersonalInformationForm({ form, isPending }: PersonalInf
                     )} />
 
                     {/* Last Name */}
-                    <FormField control={control} name="lastName" render={({ field }) => (
+                    <FormField control={control} name={"lastName" as Path<TForm>} render={({ field }) => (
                         <FormItem>
                             <FormLabel>Nom <span className="text-red-500 ml-1">*</span></FormLabel>
                             <FormControl>
@@ -61,7 +68,7 @@ export default function PersonalInformationForm({ form, isPending }: PersonalInf
                     {/* BirthDate */}
                     <Controller
                         control={control}
-                        name="birthDate"
+                        name={"birthDate" as Path<TForm>}
                         render={({ field }) => (
                             <FormItem className="w-full md:w-1/2">
                                 <FormLabel>Date de naissance <span className="text-red-500 ml-1">*</span></FormLabel>
@@ -83,7 +90,7 @@ export default function PersonalInformationForm({ form, isPending }: PersonalInf
 
 
                     {/* PhoneNumber */}
-                    <FormField control={control} name="phoneNumber" render={({ field }) => (
+                    <FormField control={control} name={"phoneNumber" as Path<TForm>} render={({ field }) => (
                         <FormItem className="w-full md:w-1/2">
                             <FormLabel>Téléphone <span className="text-red-500 ml-1">*</span></FormLabel>
                             <FormControl>

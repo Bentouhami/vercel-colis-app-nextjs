@@ -46,7 +46,7 @@ const Sidebar = () => {
     const [mounted, setMounted] = useState(false);
     const pathname = usePathname();
     const {theme, setTheme} = useTheme();
-    const {data: session} = useSession();
+    const {data: session, status} = useSession();
     const router = useRouter();
 
     const menuItems: MenuItem[] = [
@@ -110,7 +110,7 @@ const Sidebar = () => {
     ];
 
     // Properly filter menu items based on a user role
-    const finalMenuItems = menuItems.filter((item) => {
+    const finalMenuItems = status === 'loading' ? [] : menuItems.filter((item) => {
         if (!item.roleAllowed) return true;
         return item.roleAllowed.includes(session?.user?.role!);
     });
@@ -241,8 +241,8 @@ const Sidebar = () => {
                     )}
                 </div>
 
-                {/* Navigation Links (Only show if logged in) */}
-                {session && (
+                {/* Navigation Links (Only show if logged in and not loading) */}
+                {status !== 'loading' && session && (
                     <nav className="flex-1 p-4 space-y-1 overflow-y-auto scrollbar-none">
                         {finalMenuItems.map((item) => {
                             const Icon = item.icon;

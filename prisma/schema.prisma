@@ -120,6 +120,7 @@ model Payment {
   status        PaymentStatus @default(PENDING)
   amount        Float
   transactionId String?       @unique // utile pour Stripe (paiement par carte)
+  isDeleted     Boolean       @default(false)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
@@ -148,6 +149,7 @@ model User {
   verificationTokenExpires DateTime? // Date d'expiration du token
   createdAt                DateTime  @default(now())
   updatedAt                DateTime  @updatedAt
+  isDeleted                Boolean   @default(false)
 
   isEnterprise Boolean   @default(false)
   lastLogin    DateTime?
@@ -327,6 +329,7 @@ model Notification {
   clientId       Int?     @db.Integer
   envoiId        Int      @db.Integer
   isRead         Boolean  @default(false)
+  isDeleted      Boolean  @default(false)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -350,6 +353,7 @@ model VatRate {
   vatPercent  Decimal  @db.Decimal(5, 2)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  isDeleted   Boolean  @default(false)
   vatType     VatType? @default(STANDARD)
   country     Country  @relation(fields: [countryId], references: [id])
 
@@ -363,6 +367,7 @@ model City {
   latitude  String? @db.VarChar(20) // Latitude
   longitude String? @db.VarChar(20) // Longitude
   countryId Int
+  isDeleted Boolean @default(false)
 
   // Relation
   country   Country   @relation(fields: [countryId], references: [id])
@@ -383,6 +388,7 @@ model Country {
   latitude  String? @db.VarChar(20) // Latitude du pays
   longitude String? @db.VarChar(20) // Longitude du pays
   emoji     String? @db.VarChar(5) // 🇦🇫, 🇫🇷, 🇲🇦 (facultatif)
+  isDeleted Boolean @default(false)
 
   // Relations
   cities    City[]
@@ -393,11 +399,12 @@ model Country {
 }
 
 model Timezone {
-  id           Int    @id @default(autoincrement())
-  zoneName     String @db.VarChar(50)
+  id           Int     @id @default(autoincrement())
+  zoneName     String  @db.VarChar(50)
   gmtOffset    Int
-  abbreviation String @db.VarChar(10)
+  abbreviation String  @db.VarChar(10)
   countryId    Int
+  isDeleted    Boolean @default(false)
 
   // Relations
   country Country @relation(fields: [countryId], references: [id])
@@ -413,6 +420,7 @@ model UserAddress {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   addressType AddressType
+  isDeleted   Boolean     @default(false)
 
   // Relations
   address Address @relation(fields: [addressId], references: [id])
@@ -428,6 +436,7 @@ model Address {
   streetNumber  String?       @db.VarChar(10)
   boxNumber     String?       @db.VarChar(10)
   cityId        Int
+  isDeleted     Boolean       @default(false)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   city          City          @relation(fields: [cityId], references: [id])
@@ -447,6 +456,7 @@ model Agency {
   addressId      Int      @unique
   capacity       Int?     @db.Integer
   availableSlots Int?     @db.Integer
+  isDeleted      Boolean  @default(false)
   updatedAt      DateTime @updatedAt
   createdAt      DateTime @default(now())
 
@@ -496,6 +506,7 @@ model Coupon {
   termsAndConditions String?   @db.VarChar(255)
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
+  isDeleted          Boolean   @default(false)
 
   // Relations
 
@@ -527,6 +538,7 @@ model Transport {
   currentWeight Decimal @db.Decimal(10, 2)
   isAvailable   Boolean @default(true)
   agencyId      Int?
+  isDeleted     Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -559,6 +571,7 @@ model Envoi {
   paid          Boolean  @default(false)
   departureDate DateTime
   arrivalDate   DateTime
+  isDeleted     Boolean  @default(false)
 
   verificationToken String  @unique @default(uuid()) @db.Uuid
   comment           String? @default("No comment provided yet!") @db.Text()
@@ -604,6 +617,7 @@ model Appointment {
   agencyId  Int
   date      DateTime          @db.Timestamp(3)
   status    AppointmentStatus @default(PENDING)
+  isDeleted Boolean           @default(false)
   createdAt DateTime          @default(now())
   updatedAt DateTime          @updatedAt
 
@@ -634,6 +648,7 @@ model Parcel {
   weight    Decimal  @db.Decimal(5, 2)
   width     Decimal  @db.Decimal(5, 2)
   length    Decimal  @db.Decimal(5, 2)
+  isDeleted Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -653,6 +668,7 @@ model Tarifs {
   fixedRate  Decimal  @db.Decimal(5, 2)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  isDeleted  Boolean  @default(false)
 
   // Relations
 

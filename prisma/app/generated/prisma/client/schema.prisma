@@ -7,6 +7,7 @@ datasource db {
 }
 
 //
+// Removed duplicate datasource db block to fix error
 // datasource db {
 //   provider = "postgresql"
 //   url      = env("DATABASE_URL")

@@ -1,12 +1,13 @@
-FROM node:20-alpine
+FROM node:20-alpine3.19
 WORKDIR /app
 
+# Update Alpine packages to reduce vulnerabilities
+RUN apk update && apk upgrade --no-cache
+
 # Declare build arguments
-ARG STRIPE_SECRET_KEY
 ARG NEXT_PUBLIC_STRIPE_PUBLIC_KEY
 
 # Set environment variables for build
-ENV STRIPE_SECRET_KEY=$STRIPE_SECRET_KEY
 ENV NEXT_PUBLIC_STRIPE_PUBLIC_KEY=$NEXT_PUBLIC_STRIPE_PUBLIC_KEY
 
 COPY package*.json ./

@@ -9,26 +9,33 @@ import {Button} from "@/components/ui/button";
 import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,} from "@/components/ui/command";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Label} from "@/components/ui/label";
-import {UseFormReturn} from "react-hook-form";
-import {RegisterUserFrontendFormType} from "@/utils/validationSchema";
+import { UseFormReturn, FieldValues, Path, PathValue } from "react-hook-form";
+import { EditProfileFormType } from "@/components/forms/AuthForms/EditProfileForm";
+
+interface CountryCityFields {
+    address: {
+        country: string;
+        city: string;
+    };
+}
 import {getCitiesPerCountry} from "@/services/frontend-services/city/CityService";
 import {getAllCountries} from "@/services/frontend-services/country/CountryService";
 import {CityDto} from "@/services/dtos/cities/CityDto";
 import {toast} from "sonner";
 
-interface CountryCitySelectorProps {
-    form: UseFormReturn<RegisterUserFrontendFormType>;
+interface CountryCitySelectorProps<TForm extends FieldValues> {
+    form: UseFormReturn<TForm>;
 }
 
-export default function SimulationCountryCitySelector({form}: CountryCitySelectorProps) {
+export default function SimulationCountryCitySelector<TForm extends FieldValues>({form}: CountryCitySelectorProps<TForm>) {
     const {setValue, watch} = form;
     const [countries, setCountries] = useState<any[]>([]);
     const [cities, setCities] = useState<CityDto[]>([]);
     const [openCountry, setOpenCountry] = useState(false);
     const [openCity, setOpenCity] = useState(false);
 
-    const selectedCountry = watch("address.country");
-    const selectedCity = watch("address.city");
+    const selectedCountry = watch("address.country" as Path<TForm>);
+    const selectedCity = watch("address.city" as Path<TForm>);
 
     // Charger la liste des pays au montage du composant
     useEffect(() => {
@@ -56,7 +63,7 @@ export default function SimulationCountryCitySelector({form}: CountryCitySelecto
                         const cities = await getCitiesPerCountry(Number(countryId));
                         if (cities) {
                             setCities(cities);
-                            setValue("address.city", "");
+                            setValue("address.city" as Path<TForm>, "" as PathValue<TForm, Path<TForm>>);
                         }
                     } catch (error) {
                         toast.error("Erreur lors de la récupération des villes");
@@ -93,7 +100,7 @@ export default function SimulationCountryCitySelector({form}: CountryCitySelecto
                                             key={country.id}
                                             value={country.name}
                                             onSelect={() => {
-                                                setValue("address.country", country.name);
+                                                setValue("address.country" as Path<TForm>, country.name);
                                                 setOpenCountry(false);
                                             }}
                                         >
@@ -140,7 +147,7 @@ export default function SimulationCountryCitySelector({form}: CountryCitySelecto
                                             key={city.id}
                                             value={city.name}
                                             onSelect={() => {
-                                                setValue("address.city", city.name);
+                                                setValue("address.city" as Path<TForm>, city.name as PathValue<TForm, Path<TForm>>);
                                                 setOpenCity(false);
                                             }}
                                         >

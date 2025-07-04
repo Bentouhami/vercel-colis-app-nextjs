@@ -7,16 +7,26 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { FaBuilding, FaHashtag, FaMapMarkerAlt } from "react-icons/fa";
-import { UseFormReturn } from "react-hook-form";
-import { RegisterUserFrontendFormType } from "@/utils/validationSchema";
+import { UseFormReturn, FieldValues, Path } from "react-hook-form";
+
+interface AddressFields {
+    address: {
+        street: string;
+        complement?: string;
+        streetNumber?: string;
+        boxNumber?: string;
+        city: string;
+        country: string;
+    };
+}
 import SimulationCountryCitySelector from "@/components/client-specific/simulation/simulation-country-city-selector";
 
-interface AddressFormProps {
-    form: UseFormReturn<RegisterUserFrontendFormType>;
+interface AddressFormProps<TForm extends FieldValues> {
+    form: UseFormReturn<TForm>;
     isPending: boolean;
 }
 
-export default function AddressForm({ form, isPending }: AddressFormProps) {
+export default function AddressForm<TForm extends FieldValues>({ form, isPending }: AddressFormProps<TForm>) {
     const { control } = form;
 
     return (
@@ -37,7 +47,7 @@ export default function AddressForm({ form, isPending }: AddressFormProps) {
                 {/* Street (required) */}
                 <FormField
                     control={control}
-                    name="address.street"
+                    name={"address.street" as Path<TForm>}
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>
@@ -62,7 +72,7 @@ export default function AddressForm({ form, isPending }: AddressFormProps) {
                 <div className="flex flex-col md:flex-row gap-4">
                     <FormField
                         control={control}
-                        name="address.streetNumber"
+                        name={"address.streetNumber" as Path<TForm>}
                         render={({ field }) => (
                             <FormItem className="w-full md:w-1/2">
                                 <FormLabel>Numéro de rue</FormLabel>
@@ -83,7 +93,7 @@ export default function AddressForm({ form, isPending }: AddressFormProps) {
 
                     <FormField
                         control={control}
-                        name="address.boxNumber"
+                        name={"address.boxNumber" as Path<TForm>}
                         render={({ field }) => (
                             <FormItem className="w-full md:w-1/2">
                                 <FormLabel>Boîte</FormLabel>
@@ -106,7 +116,7 @@ export default function AddressForm({ form, isPending }: AddressFormProps) {
                 {/* complement is also optional */}
                 <FormField
                     control={control}
-                    name="address.complement"
+                    name={"address.complement" as Path<TForm>}
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Complément</FormLabel>
