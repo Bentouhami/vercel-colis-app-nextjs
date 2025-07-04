@@ -26,6 +26,7 @@ export default function SimulationResults() {
     const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [isPending, startTransition] = useTransition();
+    const [isActionInProgress, setIsActionInProgress] = useState(false);
     const [results, setResults] = useState<SimulationResponseDto | null>(null);
     const [showLoginPrompt, setShowLoginPrompt] = useState(false);
     const [userId, setUserId] = useState<string | number | null>(null);
@@ -69,28 +70,31 @@ export default function SimulationResults() {
 
     // Validate the simulation and redirect to the add destinataire page
     const handleValidate = async () => {
-        try {
-            setLoading(true);
-            if (isAuthenticated) {
-                if (results) {
-                    if (userId && !results.userId) {
-                        results.userId = Number(userId);
-                        await updateSimulationUserId(results.id, results.userId);
+        setIsActionInProgress(true);
+        startTransition(async () => {
+            try {
+                if (isAuthenticated) {
+                    if (results) {
+                        if (userId && !results.userId) {
+                            results.userId = Number(userId);
+                            await updateSimulationUserId(results.id, results.userId);
+                        }
+                        toast("Redirecting to add destinataire page...");
+                        setTimeout(() => {
+                            router.push("/client/simulation/ajouter-destinataire");
+                            setIsActionInProgress(false);
+                        }, 1000);
                     }
-                    toast("Redirecting to add destinataire page...");
-                    setTimeout(() => {
-                        router.push("/client/simulation/ajouter-destinataire");
-                    }, 1000);
+                } else {
+                    setShowLoginPrompt(true);
+                    setIsActionInProgress(false);
                 }
-            } else {
-                setShowLoginPrompt(true);
+            } catch (error) {
+                console.error("Error validating simulation:", error);
+                toast.error("An error occurred while validating the simulation.");
+                setIsActionInProgress(false);
             }
-        } catch (error) {
-            console.error("Error validating simulation:", error);
-            toast.error("An error occurred while validating the simulation.");
-        } finally {
-            setLoading(false);
-        }
+        });
     };
 
     // Redirect to login if user is not authenticated
@@ -102,6 +106,7 @@ export default function SimulationResults() {
 
     // Cancel the simulation and clean up
     const handleCancel = () => {
+        setIsActionInProgress(true);
         startTransition(() => {
             (async () => {
                 try {
@@ -115,6 +120,7 @@ export default function SimulationResults() {
                     toast("Redirecting to simulation page...");
                     setTimeout(() => {
                         router.push("/client/simulation");
+                        setIsActionInProgress(false);
                     }, 3000);
                 }
             })();
@@ -123,6 +129,7 @@ export default function SimulationResults() {
 
     // Edit the current simulation and redirect to the edit page
     const handleEdit = async () => {
+        setIsActionInProgress(true);
         startTransition(() => {
             (async () => {
                 try {
@@ -134,19 +141,23 @@ export default function SimulationResults() {
                             const response = await updateSimulationUserId(results.id, results.userId);
                             if (!response) {
                                 toast.error("Une erreur est survenue lors de la mise à jour de la simulation.");
+                                setIsActionInProgress(false);
                                 return;
                             }
                             toast("Redirection en cours...");
                             setTimeout(() => {
                                 router.push("/client/simulation/edit");
+                                setIsActionInProgress(false);
                             }, 3000);
                         }
                     } else {
                         toast.error("Une erreur est survenue lors de la récupération des résultats de la simulation.");
+                        setIsActionInProgress(false);
                     }
                 } catch (error) {
                     console.error("Error updating simulation:", error);
                     toast.error("Une erreur est survenue lors de la mise à jour de la simulation.");
+                    setIsActionInProgress(false);
                 }
             })();
         });
@@ -277,14 +288,14 @@ export default function SimulationResults() {
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
                 <Button
-                    disabled={isPending}
+                    disabled={isActionInProgress}
                     className="flex items-center gap-2 px-8 py-6 text-lg bg-green-500 hover:bg-green-600 text-white"
                     onClick={handleValidate}
                 >
                     Valider
                 </Button>
                 <Button
-                    disabled={isPending}
+                    disabled={isActionInProgress}
                     variant="destructive"
                     className="flex items-center gap-2 px-8 py-6 text-lg bg-red-500 hover:bg-red-600 text-white"
                     onClick={handleCancel}
@@ -294,7 +305,7 @@ export default function SimulationResults() {
                 <Link href="/client/simulation/edit">
                     <Button
                         onClick={handleEdit}
-                        disabled={isPending}
+                        disabled={isActionInProgress}
                         className="flex items-center gap-2 px-8 py-6 text-lg bg-green-500 hover:bg-green-600 text-white"
                     >
                         Modifier ma simulation

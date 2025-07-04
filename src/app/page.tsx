@@ -6,11 +6,14 @@ import Link from 'next/link';
 import { adminPath, clientPath } from "@/utils/constants";
 import Footer from "@/components/navigations/footer/Footer";
 import HeaderWrapper from "@/components/navigations/header/HeaderWrapper";
+import { auth } from "@/auth/auth";
 
-export default function Home() {
+export default async function Home() {
+    const session = await auth();
+
     return (
         <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-black ">
-            <HeaderWrapper />
+            <HeaderWrapper session={session} />
 
             {/* Hero Section */}
             <section className=" pt-16 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">

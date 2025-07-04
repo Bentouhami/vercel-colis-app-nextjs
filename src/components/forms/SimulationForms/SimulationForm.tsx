@@ -1,12 +1,12 @@
 // path: src/components/forms/SimulationForms/SimulationForm.tsx
 
 'use client';
-import {useApi} from '@/hooks/useApi';
+import { useApi } from '@/hooks/useApi';
 
-import React, {ChangeEvent, useEffect, useState, useTransition} from 'react';
-import {motion} from 'framer-motion';
-import {toast} from 'sonner';
-import {useRouter} from 'next/navigation';
+import React, { ChangeEvent, useEffect, useState, useTransition } from 'react';
+import { motion } from 'framer-motion';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 // UI components
 import CountrySelect from "@/components/forms/SimulationForms/CountrySelectForm";
@@ -16,8 +16,8 @@ import PackageForm from './PackageForm';
 import {
     Card, CardContent, CardHeader, CardTitle
 } from "@/components/ui/card";
-import {Label} from "@/components/ui/label";
-import {Input} from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import {
     PaginationContent,
     PaginationItem,
@@ -25,8 +25,8 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination";
-import {Button} from "@/components/ui/button";
-import {ArrowRight, Box, Calculator, MapPin, Truck} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, Box, Calculator, MapPin, Truck } from "lucide-react";
 
 // Services
 import {
@@ -34,18 +34,18 @@ import {
     getSimulation,
     submitSimulation
 } from "@/services/frontend-services/simulation/SimulationService";
-import {simulationRequestSchema} from "@/utils/validationSchema";
+import { simulationRequestSchema } from "@/utils/validationSchema";
 import {
     getAgenciesByCityId,
     getCitiesByCountryId,
     getAllCountries,
     getDestinationCountries
 } from "@/services/frontend-services/AddressService";
-import {SimulationDtoRequest} from "@/services/dtos";
-import {COLIS_MAX_PER_ENVOI} from "@/utils/constants";
-import {getSimulationFromCookie} from "@/lib/simulationCookie";
-import {updateSimulationUserId} from "@/services/backend-services/Bk_SimulationService";
-import {checkAuthStatus} from "@/lib/auth";
+import { SimulationDtoRequest } from "@/services/dtos";
+import { COLIS_MAX_PER_ENVOI } from "@/utils/constants";
+import { getSimulationFromCookie } from "@/lib/simulationCookie";
+import { updateSimulationUserId } from "@/services/backend-services/Bk_SimulationService";
+import { checkAuthStatus } from "@/lib/auth";
 
 // Others
 import SimulationSkeleton from "@/app/client/simulation/simulationSkeleton";
@@ -53,7 +53,7 @@ import SimulationConfirmationModal from "@/components/modals/SimulationConfirmat
 
 const SimulationForm = () => {
     const router = useRouter();
-    const {call} = useApi();
+    const { call } = useApi();
 
     const [isPending, startTransition] = useTransition();
 
@@ -91,7 +91,7 @@ const SimulationForm = () => {
 
     // region: parcels
     const [packageCount, setPackageCount] = useState(1);
-    const [parcels, setParcels] = useState([{height: 0, width: 0, length: 0, weight: 0}]);
+    const [parcels, setParcels] = useState([{ height: 0, width: 0, length: 0, weight: 0 }]);
     const [currentPackage, setCurrentPackage] = useState(0);
     // endregion
 
@@ -138,7 +138,7 @@ const SimulationForm = () => {
         (async () => {
             try {
                 const data = await getAllCountries();
-                setOptions(prev => ({...prev, countries: data}));
+                setOptions(prev => ({ ...prev, countries: data }));
                 setLoading(false); // when countries are loaded
             } catch (error) {
                 console.error("Error fetching countries:", error);
@@ -151,8 +151,8 @@ const SimulationForm = () => {
     //==================================
     useEffect(() => {
         if (!departure.country) {
-            setOptions(prev => ({...prev, departureCities: []}));
-            setDeparture(prev => ({...prev, city: '', agencyName: ''}));
+            setOptions(prev => ({ ...prev, departureCities: [] }));
+            setDeparture(prev => ({ ...prev, city: '', agencyName: '' }));
             return;
         }
 
@@ -160,9 +160,9 @@ const SimulationForm = () => {
             try {
                 const countryId = Number(departure.country);
                 const data = await getCitiesByCountryId(countryId); // Only cities that actually have an agency
-                setOptions(prev => ({...prev, departureCities: data}));
+                setOptions(prev => ({ ...prev, departureCities: data }));
                 // Reset city + agency
-                setDeparture(prev => ({...prev, city: '', agencyName: ''}));
+                setDeparture(prev => ({ ...prev, city: '', agencyName: '' }));
             } catch (error) {
                 console.error("Error fetching departure cities:", error);
                 toast.error("Failed to fetch cities. Please try again.");
@@ -180,8 +180,8 @@ const SimulationForm = () => {
 
         if (!departure.city) {
             console.log("❌ No departure city selected, clearing agencies");
-            setOptions(prev => ({...prev, departureAgencies: []}));
-            setDeparture(prev => ({...prev, agencyName: ''}));
+            setOptions(prev => ({ ...prev, departureAgencies: [] }));
+            setDeparture(prev => ({ ...prev, agencyName: '' }));
             return;
         }
 
@@ -196,8 +196,8 @@ const SimulationForm = () => {
                     console.log("📞 Calling getAgenciesByCityId with cityId:", cityObj.id);
                     const data = await getAgenciesByCityId(cityObj.id);
                     console.log("✅ Agencies received:", data);
-                    setOptions(prev => ({...prev, departureAgencies: data}));
-                    setDeparture(prev => ({...prev, agencyName: ''}));
+                    setOptions(prev => ({ ...prev, departureAgencies: data }));
+                    setDeparture(prev => ({ ...prev, agencyName: '' }));
                 } else {
                     console.log("❌ City object not found in departureCities array");
                 }
@@ -215,8 +215,8 @@ const SimulationForm = () => {
     useEffect(() => {
         if (!departure.agencyName) {
             // We haven't chosen a valid departure agency yet => clear it
-            setOptions(prev => ({...prev, destinationCountries: []}));
-            setDestination({country: '', city: '', agencyName: ''});
+            setOptions(prev => ({ ...prev, destinationCountries: [] }));
+            setDestination({ country: '', city: '', agencyName: '' });
             return;
         }
 
@@ -225,9 +225,9 @@ const SimulationForm = () => {
         (async () => {
             try {
                 const data = await getDestinationCountries(departure.country);
-                setOptions(prev => ({...prev, destinationCountries: data}));
+                setOptions(prev => ({ ...prev, destinationCountries: data }));
                 // reset destination
-                setDestination({country: '', city: '', agencyName: ''});
+                setDestination({ country: '', city: '', agencyName: '' });
             } catch (error) {
                 console.error("Error fetching destination countries:", error);
             }
@@ -239,8 +239,8 @@ const SimulationForm = () => {
     //==================================
     useEffect(() => {
         if (!destination.country) {
-            setOptions(prev => ({...prev, destinationCities: []}));
-            setDestination(prev => ({...prev, city: '', agencyName: ''}));
+            setOptions(prev => ({ ...prev, destinationCities: [] }));
+            setDestination(prev => ({ ...prev, city: '', agencyName: '' }));
             return;
         }
 
@@ -248,8 +248,8 @@ const SimulationForm = () => {
             try {
                 const countryId = Number(destination.country);
                 const data = await getCitiesByCountryId(countryId); // Only cities with agencies
-                setOptions(prev => ({...prev, destinationCities: data}));
-                setDestination(prev => ({...prev, city: '', agencyName: ''}));
+                setOptions(prev => ({ ...prev, destinationCities: data }));
+                setDestination(prev => ({ ...prev, city: '', agencyName: '' }));
             } catch (error) {
                 console.error("Error fetching destination cities:", error);
             }
@@ -261,8 +261,8 @@ const SimulationForm = () => {
     //==================================
     useEffect(() => {
         if (!destination.city) {
-            setOptions(prev => ({...prev, destinationAgencies: []}));
-            setDestination(prev => ({...prev, agencyName: ''}));
+            setOptions(prev => ({ ...prev, destinationAgencies: [] }));
+            setDestination(prev => ({ ...prev, agencyName: '' }));
             return;
         }
 
@@ -271,8 +271,8 @@ const SimulationForm = () => {
                 const cityObj = options.destinationCities.find(c => c.id === Number(destination.city));
                 if (cityObj) {
                     const data = await getAgenciesByCityId(cityObj.id);
-                    setOptions(prev => ({...prev, destinationAgencies: data}));
-                    setDestination(prev => ({...prev, agencyName: ''}));
+                    setOptions(prev => ({ ...prev, destinationAgencies: data }));
+                    setDestination(prev => ({ ...prev, agencyName: '' }));
                 }
             } catch (error) {
                 console.error("Error fetching destination agencies:", error);
@@ -286,18 +286,18 @@ const SimulationForm = () => {
     //==================================
     const handleDepartureChange = (field: keyof typeof departure, value: string) => {
         console.log(`🔄 handleDepartureChange: ${field} = ${value}`);
-        setDeparture(prev => ({...prev, [field]: value}));
+        setDeparture(prev => ({ ...prev, [field]: value }));
     };
 
     const handleDestinationChange = (field: keyof typeof destination, value: string) => {
-        setDestination(prev => ({...prev, [field]: value}));
+        setDestination(prev => ({ ...prev, [field]: value }));
     };
 
     const handlePackageCountChange = (e: ChangeEvent<HTMLInputElement>) => {
         const newCount = parseInt(e.target.value, 10);
         if (newCount > COLIS_MAX_PER_ENVOI) return; // guard
         setPackageCount(newCount);
-        const newParcels = Array.from({length: newCount}, (_, i) => parcels[i] || {
+        const newParcels = Array.from({ length: newCount }, (_, i) => parcels[i] || {
             height: 0,
             width: 0,
             length: 0,
@@ -312,7 +312,7 @@ const SimulationForm = () => {
 
     const handlePackageChange = (index: number, field: string, value: number) => {
         const updated = parcels.map((pkg, i) =>
-            i === index ? {...pkg, [field]: value} : pkg
+            i === index ? { ...pkg, [field]: value } : pkg
         );
         setParcels(updated);
     };
@@ -392,19 +392,19 @@ const SimulationForm = () => {
     //   RENDER
     //==================================
     if (loading || isPending) {
-        return <SimulationSkeleton/>;
+        return <SimulationSkeleton />;
     }
 
     return (
         <motion.div
-            initial={{opacity: 0}}
-            animate={{opacity: 1}}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             className="max-w-4xl mx-auto p-8 mt-10 space-y-8"
         >
             <motion.h2
-                initial={{opacity: 0, y: -20}}
-                animate={{opacity: 1, y: 0}}
-                transition={{delay: 0.1}}
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
                 className="text-center mt-3 text-6xl"
             >
                 Système de Simulation d&#39;Envoi
@@ -416,7 +416,7 @@ const SimulationForm = () => {
                 {/* ====== DEPARTURE ====== */}
                 <Card>
                     <CardHeader className="flex items-center gap-2">
-                        <MapPin/>
+                        <MapPin />
                         <CardTitle>Informations de Départ</CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -449,7 +449,7 @@ const SimulationForm = () => {
                 {/* ====== DESTINATION ====== */}
                 <Card>
                     <CardHeader className="flex items-center gap-2">
-                        <Truck/>
+                        <Truck />
                         <CardTitle>Informations de Destination</CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -483,7 +483,7 @@ const SimulationForm = () => {
                 {/* ====== PARCELS ====== */}
                 <Card>
                     <CardHeader className="flex items-center gap-2">
-                        <Box/>
+                        <Box />
                         <CardTitle>Informations des Colis</CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -506,14 +506,14 @@ const SimulationForm = () => {
 
                             {/* Show only the currently focused package in the form */}
                             {parcels.map((pkg, index) =>
-                                    index === currentPackage && (
-                                        <PackageForm
-                                            key={index}
-                                            index={index}
-                                            pkg={pkg}
-                                            onChange={handlePackageChange}
-                                        />
-                                    )
+                                index === currentPackage && (
+                                    <PackageForm
+                                        key={index}
+                                        index={index}
+                                        pkg={pkg}
+                                        onChange={handlePackageChange}
+                                    />
+                                )
                             )}
 
                             {/* If multiple parcels, show pagination to move between them */}
@@ -559,12 +559,12 @@ const SimulationForm = () => {
                     <Button type="submit" className="flex items-center gap-2">
                         {isPending ? (
                             <>
-                                <Calculator className="h-4 w-4"/>
+                                <Calculator className="h-4 w-4" />
                                 Calculation...
                             </>
                         ) : (
                             <>
-                                <ArrowRight className="h-4 w-4"/>
+                                <ArrowRight className="h-4 w-4" />
                                 Soumettre la simulation
                             </>
                         )}

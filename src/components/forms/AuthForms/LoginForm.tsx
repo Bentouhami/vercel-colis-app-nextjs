@@ -35,6 +35,7 @@ export default function LoginForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [showPassword, setShowPassword] = useState(false);
+    const [isDisabled, setIsDisabled] = useState(false);
     const [isPending, startTransition] = useTransition();
 
     const form = useForm<LoginUserDto>({
@@ -46,13 +47,17 @@ export default function LoginForm() {
     });
 
     async function onSubmit(data: LoginUserDto) {
+        setIsDisabled(true); // Disable button on submit
         startTransition(() => {
             (async () => {
                 try {
                     const result = await login(data.email, data.password);
                     if (result?.error) {
                         toast.error(result.error);
+                        setIsDisabled(false); // Re-enable button on error
                     } else {
+                        setShowPassword(false);
+
                         toast.success("Connexion réussie");
 
                         const redirectUrl =
@@ -60,13 +65,24 @@ export default function LoginForm() {
                                 ? searchParams.get("redirect") || adminPath()
                                 : searchParams.get("redirect") || clientPath();
 
+
+                        // Redirect after a short delay to allow toast to display
+                        // This is useful to ensure the UI updates before the redirect
+                        // and to prevent any flickering or abrupt changes
+                        // setTimeout is used to ensure the toast message is displayed before redirecting
                         setTimeout(() => {
+
+                            // Use router.replace to avoid adding a new entry in the history stack
+                            // This is useful for login redirects to prevent going back to the login page
                             router.replace(redirectUrl);
+                            // Refresh the router to ensure the new page is loaded
                             router.refresh();
                         }, 600);
                     }
+
                 } catch (error) {
                     toast.error("Erreur lors de la connexion");
+                    setIsDisabled(false); // Re-enable button on error
                 }
             })();
         });
@@ -177,7 +193,7 @@ export default function LoginForm() {
                         >
                             <Button
                                 type="submit"
-                                disabled={isPending}
+                                disabled={isDisabled || isPending}
                                 className="w-full py-2 font-semibold shadow-sm transition duration-150 ease-in-out"
                             >
                                 {isPending ? "Connexion en cours..." : "Se connecter"}

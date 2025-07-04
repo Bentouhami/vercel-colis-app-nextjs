@@ -24,7 +24,7 @@ export async function GET(
         { status: 400 }
       );
     }
-    console.log(`Getting user with ID: ${userId}`);
+    
 
     const user = await getUserById(Number(userId));
 
@@ -33,7 +33,7 @@ export async function GET(
     }
     return NextResponse.json({ data: user });
   } catch (error) {
-    console.error("Error getting user:", error);
+    
     return NextResponse.json({ error: "Failed to get user" }, { status: 500 });
   }
 }
@@ -57,7 +57,7 @@ export async function DELETE(
         { status: 400 }
       );
     }
-    console.log(`Deleting user with ID: ${userId}`);
+    
 
     const result = await getUserById(Number(userId));
 
@@ -81,7 +81,7 @@ export async function DELETE(
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error deleting user:", error);
+    
     return NextResponse.json(
       { error: "Failed to delete user" },
       { status: 500 }

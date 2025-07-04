@@ -1,28 +1,28 @@
 "use client";
 
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import {usePathname} from "next/navigation";
-import {Button} from "@/components/ui/button";
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import { usePathname } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {Separator} from "@/components/ui/separator";
-import {Bell, Menu, Settings, User, Sun, Moon, Laptop} from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { Bell, Menu, Settings, User, Sun, Moon, Laptop } from "lucide-react";
 import ColisBrand from "@/components/navigations/brand/ColisBrand";
 import LogoutButton from "../../buttons/LogoutButton";
-import {Sheet, SheetContent, SheetTrigger} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import LoginButton from "@/components/buttons/LoginButton";
 import RegisterButton from "@/components/buttons/RegisterButton";
-import {RoleDto} from "@/services/dtos";
-import {adminPath, clientPath} from "@/utils/constants";
-import {useTheme} from "next-themes";
+import { RoleDto } from "@/services/dtos";
+import { adminPath, clientPath } from "@/utils/constants";
+import { useTheme } from "next-themes";
 import ThemeColorSelector from "@/components/theme/ThemeColorSelector";
-import {DialogTitle} from "@radix-ui/react-dialog";
+import { DialogTitle } from "@radix-ui/react-dialog";
 
 interface NavbarProps {
     role: RoleDto | undefined;
@@ -35,18 +35,16 @@ interface NavbarProps {
 }
 
 const HeaderNavbar: React.FC<NavbarProps> = ({
-                                                 role,
-                                                 isLoggedIn,
-                                                 firstName,
-                                                 lastName,
-                                                 name,
-                                                 email,
-                                                 image,
-                                             }) => {
+    role,
+    isLoggedIn,
+    name,
+    email,
+    image,
+}) => {
     const pathname = usePathname();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [hasDashboardAccess, setHasDashboardAccess] = useState(false);
-    const {theme, setTheme, resolvedTheme} = useTheme();
+    const { theme, setTheme, resolvedTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -64,9 +62,9 @@ const HeaderNavbar: React.FC<NavbarProps> = ({
     }, [role]);
 
     const themeOptions = [
-        {value: "light", label: "Clair", icon: Sun},
-        {value: "dark", label: "Sombre", icon: Moon},
-        {value: "system", label: "Système", icon: Laptop},
+        { value: "light", label: "Clair", icon: Sun },
+        { value: "dark", label: "Sombre", icon: Moon },
+        { value: "system", label: "Système", icon: Laptop },
     ];
 
     // Function to get the current theme icon
@@ -97,7 +95,7 @@ const HeaderNavbar: React.FC<NavbarProps> = ({
             <div className="container flex justify-between items-center h-16">
                 {/* Brand */}
                 <Link href="/client" className="flex items-center">
-                    <ColisBrand/>
+                    <ColisBrand />
                 </Link>
 
                 {/* Navigation links */}
@@ -106,7 +104,7 @@ const HeaderNavbar: React.FC<NavbarProps> = ({
                         Accueil
                     </Link>
                     <Link href={clientPath("simulation")}
-                          className="hover:text-primary text-gray-700 dark:text-gray-300">
+                        className="hover:text-primary text-gray-700 dark:text-gray-300">
                         Simulation
                     </Link>
                     <Link href={clientPath("services")} className="hover:text-primary text-gray-700 dark:text-gray-300">
@@ -116,7 +114,7 @@ const HeaderNavbar: React.FC<NavbarProps> = ({
                         Tarifs
                     </Link>
                     <Link href={clientPath("contact-us")}
-                          className="hover:text-primary text-gray-700 dark:text-gray-300">
+                        className="hover:text-primary text-gray-700 dark:text-gray-300">
                         Contact-nous
                     </Link>
                 </nav>
@@ -130,9 +128,9 @@ const HeaderNavbar: React.FC<NavbarProps> = ({
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" size="icon">
                                     {mounted ? (
-                                        <CurrentThemeIcon size={20}/>
+                                        <CurrentThemeIcon size={20} />
                                     ) : (
-                                        <Laptop size={20}/>
+                                        <Laptop size={20} />
                                     )}
                                 </Button>
                             </DropdownMenuTrigger>
@@ -146,7 +144,7 @@ const HeaderNavbar: React.FC<NavbarProps> = ({
                                             onClick={() => setTheme(option.value)}
                                             className={isSelected ? "bg-accent" : ""}
                                         >
-                                            <Icon size={16} className="mr-2"/>
+                                            <Icon size={16} className="mr-2" />
                                             {option.label}
                                             {isSelected && <span className="ml-auto">✓</span>}
                                         </DropdownMenuItem>
@@ -154,13 +152,13 @@ const HeaderNavbar: React.FC<NavbarProps> = ({
                                 })}
                             </DropdownMenuContent>
                         </DropdownMenu>
-                        <ThemeColorSelector/>
+                        <ThemeColorSelector />
 
                         {isLoggedIn ? (
                             <DropdownMenu>
                                 <DropdownMenuTrigger className="flex items-center gap-2">
                                     <Avatar>
-                                        <AvatarImage src={image} alt={name}/>
+                                        <AvatarImage src={image} alt={name} />
                                         <AvatarFallback>{name.charAt(0)}</AvatarFallback>
                                     </Avatar>
                                 </DropdownMenuTrigger>
@@ -169,35 +167,35 @@ const HeaderNavbar: React.FC<NavbarProps> = ({
                                         <p className="text-sm font-medium">{name}</p>
                                         <p className="text-xs text-gray-500">{email}</p>
                                     </div>
-                                    <Separator/>
+                                    <Separator />
                                     <DropdownMenuItem asChild>
                                         <Link href={clientPath("profile")} className="flex items-center gap-2">
-                                            <User className="w-4 h-4"/> Mon Profil
+                                            <User className="w-4 h-4" /> Mon Profil
                                         </Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem asChild>
                                         <Link href={clientPath("profile/notifications")}
-                                              className="flex items-center gap-2">
-                                            <Bell className="w-4 h-4"/> Mes Notifications
+                                            className="flex items-center gap-2">
+                                            <Bell className="w-4 h-4" /> Mes Notifications
                                         </Link>
                                     </DropdownMenuItem>
                                     {hasDashboardAccess && (
                                         <>
                                             <DropdownMenuItem asChild>
                                                 <Link href={adminPath()} className="flex items-center gap-2">
-                                                    <Settings className="w-4 h-4"/> Dashboard
+                                                    <Settings className="w-4 h-4" /> Dashboard
                                                 </Link>
                                             </DropdownMenuItem>
                                             <DropdownMenuItem asChild>
                                                 <Link href="/docs" className="flex items-center gap-2">
-                                                    <svg 
-                                                        xmlns="http://www.w3.org/2000/svg" 
-                                                        viewBox="0 0 24 24" 
-                                                        fill="none" 
-                                                        stroke="currentColor" 
-                                                        strokeWidth="2" 
-                                                        strokeLinecap="round" 
-                                                        strokeLinejoin="round" 
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        strokeWidth="2"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
                                                         className="w-4 h-4"
                                                     >
                                                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -205,22 +203,22 @@ const HeaderNavbar: React.FC<NavbarProps> = ({
                                                         <line x1="16" y1="13" x2="8" y2="13"></line>
                                                         <line x1="16" y1="17" x2="8" y2="17"></line>
                                                         <polyline points="10 9 9 9 8 9"></polyline>
-                                                    </svg> 
+                                                    </svg>
                                                     API Documentation
                                                 </Link>
                                             </DropdownMenuItem>
                                         </>
                                     )}
-                                    <Separator/>
+                                    <Separator />
                                     <div className="px-4 py-3 flex justify-center">
-                                        <LogoutButton/>
+                                        <LogoutButton />
                                     </div>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         ) : (
                             <div className="flex gap-2">
-                                <LoginButton/>
-                                <RegisterButton/>
+                                <LoginButton />
+                                <RegisterButton />
                             </div>
                         )}
                     </div>
@@ -230,62 +228,62 @@ const HeaderNavbar: React.FC<NavbarProps> = ({
                         <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
                             <SheetTrigger asChild>
                                 <Button variant="ghost" size="icon">
-                                    <Menu className="w-6 h-6"/>
+                                    <Menu className="w-6 h-6" />
                                 </Button>
                             </SheetTrigger>
                             <SheetContent side="right" className="w-64">
                                 <DialogTitle className="sr-only">Menu de navigation</DialogTitle>
                                 <nav className="flex flex-col gap-4">
                                     <Link href={clientPath()}
-                                          className="hover:text-primary text-gray-700 dark:text-gray-300">
+                                        className="hover:text-primary text-gray-700 dark:text-gray-300">
                                         Accueil
                                     </Link>
                                     <Link href={clientPath("simulation")}
-                                          className="hover:text-primary text-gray-700 dark:text-gray-300">
+                                        className="hover:text-primary text-gray-700 dark:text-gray-300">
                                         Simulation
                                     </Link>
                                     <Link href={clientPath("services")}
-                                          className="hover:text-primary text-gray-700 dark:text-gray-300">
+                                        className="hover:text-primary text-gray-700 dark:text-gray-300">
                                         Services
                                     </Link>
                                     <Link href={clientPath("tarifs")}
-                                          className="hover:text-primary text-gray-700 dark:text-gray-300">
+                                        className="hover:text-primary text-gray-700 dark:text-gray-300">
                                         Tarifs
                                     </Link>
                                     <Link href={clientPath("contact-us")}
-                                          className="hover:text-primary text-gray-700 dark:text-gray-300">
+                                        className="hover:text-primary text-gray-700 dark:text-gray-300">
                                         Contact-nous
                                     </Link>
                                 </nav>
-                                <Separator className="my-3"/>
+                                <Separator className="my-3" />
 
                                 {isLoggedIn ? (
                                     <div className="mt-4">
                                         <p className="text-sm font-medium">{name}</p>
                                         <p className="text-xs text-gray-500">{email}</p>
-                                        <Separator className="my-3"/>
+                                        <Separator className="my-3" />
                                         <div className="flex flex-col gap-2">
                                             <Link href={clientPath("profile")} className="flex items-center gap-2">
-                                                <User className="w-4 h-4"/> Mon Profil
+                                                <User className="w-4 h-4" /> Mon Profil
                                             </Link>
                                             <Link href={clientPath("profile/notifications")}
-                                                  className="flex items-center gap-2">
-                                                <Bell className="w-4 h-4"/> Mes Notifications
+                                                className="flex items-center gap-2">
+                                                <Bell className="w-4 h-4" /> Mes Notifications
                                             </Link>
                                             {hasDashboardAccess && (
                                                 <>
                                                     <Link href={adminPath()} className="flex items-center gap-2 mt-2">
-                                                        <Settings className="w-4 h-4"/> Dashboard
+                                                        <Settings className="w-4 h-4" /> Dashboard
                                                     </Link>
                                                     <Link href="/docs" className="flex items-center gap-2 mt-2">
-                                                        <svg 
-                                                            xmlns="http://www.w3.org/2000/svg" 
-                                                            viewBox="0 0 24 24" 
-                                                            fill="none" 
-                                                            stroke="currentColor" 
-                                                            strokeWidth="2" 
-                                                            strokeLinecap="round" 
-                                                            strokeLinejoin="round" 
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            viewBox="0 0 24 24"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            strokeWidth="2"
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
                                                             className="w-4 h-4"
                                                         >
                                                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -293,25 +291,25 @@ const HeaderNavbar: React.FC<NavbarProps> = ({
                                                             <line x1="16" y1="13" x2="8" y2="13"></line>
                                                             <line x1="16" y1="17" x2="8" y2="17"></line>
                                                             <polyline points="10 9 9 9 8 9"></polyline>
-                                                        </svg> 
+                                                        </svg>
                                                         API Documentation
                                                     </Link>
                                                 </>
                                             )}
                                         </div>
-                                        <Separator className="my-3"/>
+                                        <Separator className="my-3" />
                                         <div className="mt-2">
-                                            <LogoutButton/>
+                                            <LogoutButton />
                                         </div>
                                     </div>
                                 ) : (
                                     <div className="mt-4 flex flex-col gap-2">
-                                        <LoginButton className="w-full"/>
-                                        <RegisterButton className="w-full"/>
+                                        <LoginButton className="w-full" />
+                                        <RegisterButton className="w-full" />
                                     </div>
                                 )}
 
-                                <Separator className="my-4"/>
+                                <Separator className="my-4" />
                                 <div className="flex items-center gap-2">
                                     <div>
                                         <span className="text-sm font-medium">Thème :</span>
@@ -319,9 +317,9 @@ const HeaderNavbar: React.FC<NavbarProps> = ({
                                             <DropdownMenuTrigger asChild>
                                                 <Button variant="outline" size="sm">
                                                     {mounted ? (
-                                                        <CurrentThemeIcon size={16}/>
+                                                        <CurrentThemeIcon size={16} />
                                                     ) : (
-                                                        <Laptop size={16}/>
+                                                        <Laptop size={16} />
                                                     )}
                                                 </Button>
                                             </DropdownMenuTrigger>
@@ -335,7 +333,7 @@ const HeaderNavbar: React.FC<NavbarProps> = ({
                                                             onClick={() => setTheme(option.value)}
                                                             className={isSelected ? "bg-accent" : ""}
                                                         >
-                                                            <Icon size={16} className="mr-2"/>
+                                                            <Icon size={16} className="mr-2" />
                                                             {option.label}
                                                             {isSelected && <span className="ml-auto">✓</span>}
                                                         </DropdownMenuItem>
@@ -346,7 +344,7 @@ const HeaderNavbar: React.FC<NavbarProps> = ({
                                     </div>
                                     <div>
                                         <span className="text-sm font-medium">Couleur :</span>
-                                        <ThemeColorSelector/>
+                                        <ThemeColorSelector />
                                     </div>
                                 </div>
                             </SheetContent>

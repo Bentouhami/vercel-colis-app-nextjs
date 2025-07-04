@@ -28,7 +28,7 @@ import {cn} from '@/lib/utils';
 import {useTheme} from 'next-themes';
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from '@/components/ui/dropdown-menu';
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
-import {signOut, useSession} from 'next-auth/react';
+import {signOut} from 'next-auth/react';
 import {RoleDto} from '@/services/dtos';
 import {FaUsers} from "react-icons/fa6";
 import ThemeColorSelector from "@/components/theme/ThemeColorSelector";
@@ -40,13 +40,19 @@ type MenuItem = {
     roleAllowed: RoleDto[];
 };
 
-const Sidebar = () => {
+import { Session } from "next-auth";
+
+interface SidebarProps {
+    session: Session | null;
+}
+
+const Sidebar = ({ session }: SidebarProps) => {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
+    
     const pathname = usePathname();
     const {theme, setTheme} = useTheme();
-    const {data: session, status} = useSession();
     const router = useRouter();
 
     const menuItems: MenuItem[] = [
@@ -110,10 +116,10 @@ const Sidebar = () => {
     ];
 
     // Properly filter menu items based on a user role
-    const finalMenuItems = status === 'loading' ? [] : menuItems.filter((item) => {
+    const finalMenuItems = session?.user?.role ? menuItems.filter((item) => {
         if (!item.roleAllowed) return true;
         return item.roleAllowed.includes(session?.user?.role!);
-    });
+    }) : [];
 
 
     // Set mounted to true once on mount
@@ -133,6 +139,8 @@ const Sidebar = () => {
     useEffect(() => {
         setIsMobileOpen(false);
     }, [pathname]);
+
+    
 
     const toggleSidebar = () => setIsCollapsed((prev) => !prev);
     const toggleMobileSidebar = () => setIsMobileOpen((prev) => !prev);
@@ -242,7 +250,7 @@ const Sidebar = () => {
                 </div>
 
                 {/* Navigation Links (Only show if logged in and not loading) */}
-                {status !== 'loading' && session && (
+                {session?.user?.role && (
                     <nav className="flex-1 p-4 space-y-1 overflow-y-auto scrollbar-none">
                         {finalMenuItems.map((item) => {
                             const Icon = item.icon;
@@ -261,8 +269,8 @@ const Sidebar = () => {
                                             isCollapsed ? 'justify-center' : 'justify-start',
                                             ' transition-all duration-200',
                                             isActive && 'font-semibold'
-                                        )}
-                                    >
+                                        )
+                                    }>
                                         <Icon
                                             size={20}
                                             className={cn('transition-transform duration-200', isActive ? '' : 'text-muted-foreground', 'group-hover:scale-110')}

@@ -124,7 +124,7 @@ export default function RegisterForm() {
                     </CardHeader>
                     <CardContent>
                         <Form {...form}>
-                            <form onSubmit={form.handleSubmit(handleSubmit, (errors) => console.log(errors))}
+                            <form onSubmit={form.handleSubmit(handleSubmit)}
                                   className="space-y-6">
 
                                 {/* Personal Information */}

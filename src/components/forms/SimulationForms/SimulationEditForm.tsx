@@ -417,7 +417,7 @@ const SimulationEditForm = () => {
                     // Get the names for the agencies
                     const departureAgency = options.departureAgencies.find(a => a.id.toString() === departure.agencyName);
                     const destinationAgency = options.destinationAgencies.find(a => a.id.toString() === destination.agencyName);
-                    
+
                     if (!departureAgency || !destinationAgency) {
                         toast.error('Invalid agency selection');
                         setIsLoading(false);
@@ -427,7 +427,7 @@ const SimulationEditForm = () => {
                     // Get the names for the cities
                     const departureCity = options.departureCities.find(c => c.id.toString() === departure.city);
                     const destinationCity = options.destinationCities.find(c => c.id.toString() === destination.city);
-                    
+
                     if (!departureCity || !destinationCity) {
                         toast.error('Invalid city selection');
                         setIsLoading(false);
@@ -437,7 +437,7 @@ const SimulationEditForm = () => {
                     // Get the names for the countries
                     const departureCountry = options.departureCountries.find(c => c.id.toString() === departure.country);
                     const destinationCountry = options.destinationCountries.find(c => c.id.toString() === destination.country);
-                    
+
                     if (!departureCountry || !destinationCountry) {
                         toast.error('Invalid country selection');
                         setIsLoading(false);

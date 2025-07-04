@@ -1,17 +1,19 @@
 // path: src/components/navigations/header/HeaderWrapper.tsx
 "use client";
 
-import {useSession} from "next-auth/react";
+import { Session } from "next-auth";
 import HeaderNavbar from "@/components/navigations/header/HeaderNavbar";
-import {RoleDto} from "@/services/dtos/enums/EnumsDto";
 
-const HeaderWrapper = () => {
-    const {data: session, status} = useSession();
+interface HeaderWrapperProps {
+    session: Session | null;
+}
+
+const HeaderWrapper = ({ session }: HeaderWrapperProps) => {
 
     return (
         <HeaderNavbar
             role={session?.user?.role}
-            isLoggedIn={status === "authenticated"}
+            isLoggedIn={session?.user ? true : false}
             firstName={session?.user?.firstName || ""}
             lastName={session?.user?.lastName || ""}
             name={session?.user?.name || ""}
