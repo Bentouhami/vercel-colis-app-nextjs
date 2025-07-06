@@ -18,6 +18,13 @@ export async function middleware(req: NextRequest) {
   try {
     const token = await getToken({ req, secret: process.env.AUTH_SECRET });
     const pathname = req.nextUrl.pathname;
+
+    // 🔍 DEBUG: Log what middleware sees
+    console.log("🔍 MIDDLEWARE DEBUG:");
+    console.log("- Pathname:", pathname);
+    console.log("- Token exists:", !!token);
+    console.log("- User role:", token?.role);
+
     const userRole = token?.role as string;
     const isAuthenticated = !!token;
 
@@ -27,6 +34,7 @@ export async function middleware(req: NextRequest) {
 
     // Handle public routes first (marketing pages, etc.)
     if (isPublicRoute(pathname)) {
+      console.log("✅ Public route, allowing access");
       const response = NextResponse.next();
       if (corsHeaders) {
         const headers = corsHeaders as Record<string, string>;
@@ -40,17 +48,26 @@ export async function middleware(req: NextRequest) {
     // 1. Prevent ANY authenticated user from accessing auth pages
     if (pathname.startsWith("/client/auth/") && isAuthenticated) {
       const redirectUrl = isAdmin ? "/admin" : "/client";
+      console.log(
+        "🚀 REDIRECTING authenticated user from auth page to:",
+        redirectUrl
+      );
       return NextResponse.redirect(new URL(redirectUrl, req.url));
     }
 
     // 2. Protect ADMIN routes - only admin roles
     if (pathname.startsWith("/admin")) {
       if (!isAuthenticated) {
+        console.log("🚫 Admin route, not authenticated, redirecting to login");
         return NextResponse.redirect(new URL("/client/auth/login", req.url));
       }
       if (!isAdmin) {
+        console.log(
+          "🚫 Admin route, not admin role, redirecting to unauthorized"
+        );
         return NextResponse.redirect(new URL("/client/unauthorized", req.url));
       }
+      console.log("✅ Admin route, admin user, allowing access");
     }
 
     // 3. Protect CLIENT-ONLY routes
@@ -65,18 +82,24 @@ export async function middleware(req: NextRequest) {
 
     if (isClientOnlyRoute) {
       if (!isAuthenticated) {
+        console.log("🚫 Client route, not authenticated, redirecting to login");
         return NextResponse.redirect(new URL("/client/auth/login", req.url));
       }
       if (!isClient) {
-        // Admin trying to access client routes → redirect to admin dashboard
         const redirectUrl = isAdmin ? "/admin" : "/client/unauthorized";
+        console.log(
+          "🚫 Client route, not client role, redirecting to:",
+          redirectUrl
+        );
         return NextResponse.redirect(new URL(redirectUrl, req.url));
       }
+      console.log("✅ Client route, client user, allowing access");
     }
 
     // 4. Handle root path redirect
     if (pathname === "/" && isAuthenticated) {
       const redirectUrl = isAdmin ? "/admin" : "/client";
+      console.log("🚀 Root path, redirecting to:", redirectUrl);
       return NextResponse.redirect(new URL(redirectUrl, req.url));
     }
 
@@ -90,8 +113,7 @@ export async function middleware(req: NextRequest) {
     }
     return response;
   } catch (error) {
-    console.error("Middleware error:", error);
-    // On error, redirect to login
+    console.error("❌ Middleware error:", error);
     return NextResponse.redirect(new URL("/client/auth/login", req.url));
   }
 }

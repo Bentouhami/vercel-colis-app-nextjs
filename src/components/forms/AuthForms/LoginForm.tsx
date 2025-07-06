@@ -1,14 +1,13 @@
-// path: src/components/forms/AuthForms/LoginForm.tsx
 "use client"
 
-import { useState, useTransition, useEffect } from "react"
+import { useState, useTransition } from "react" // ✅ Remove useEffect
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { motion } from "framer-motion"
 import Image from "next/image"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
-import { useSession } from "next-auth/react" // ✅ Add this import
+// ✅ Remove useSession import - let middleware handle redirects
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -24,23 +23,12 @@ interface LoginUserDto {
 }
 
 export default function LoginForm() {
-    const { data: session, status } = useSession() // ✅ Add this hook
+    // ✅ Remove useSession and useEffect - let middleware handle redirects
     const router = useRouter()
     const searchParams = useSearchParams()
     const [showPassword, setShowPassword] = useState(false)
     const [isDisabled, setIsDisabled] = useState(false)
     const [isPending, startTransition] = useTransition()
-
-    // ✅ Add this useEffect to handle already authenticated users
-    useEffect(() => {
-        if (status === "authenticated" && session?.user) {
-            console.log("🔍 User already authenticated:", session.user.role)
-            const redirectUrl = session.user.role !== RoleDto.CLIENT ? adminPath() : clientPath()
-
-            console.log("🚀 Redirecting authenticated user to:", redirectUrl)
-            window.location.href = redirectUrl // Force hard redirect
-        }
-    }, [status, session])
 
     const form = useForm<LoginUserDto>({
         resolver: zodResolver(loginUserSchema),
@@ -87,25 +75,8 @@ export default function LoginForm() {
         })
     }
 
-    // ✅ Show loading while checking authentication
-    if (status === "loading") {
-        return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                <div>Vérification de l&apos;authentification...</div>
-            </div>
-        )
-    }
-
-    // ✅ Show redirect message if already authenticated
-    if (status === "authenticated") {
-        return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                <div>Redirection en cours...</div>
-            </div>
-        )
-    }
-
-    // Rest of your form JSX remains exactly the same
+    // ✅ Remove all loading/authentication checks - let middleware handle it
+    // Just render the form directly
     return (
         <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
