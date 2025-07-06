@@ -1,13 +1,12 @@
 "use client"
 
-import { useState, useTransition } from "react" // ✅ Remove useEffect
+import { useState, useTransition } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { motion } from "framer-motion"
 import Image from "next/image"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
-// ✅ Remove useSession import - let middleware handle redirects
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -23,7 +22,6 @@ interface LoginUserDto {
 }
 
 export default function LoginForm() {
-    // ✅ Remove useSession and useEffect - let middleware handle redirects
     const router = useRouter()
     const searchParams = useSearchParams()
     const [showPassword, setShowPassword] = useState(false)
@@ -61,10 +59,12 @@ export default function LoginForm() {
 
                         console.log("🚀 Login success, redirecting to:", redirectUrl)
 
-                        // Force a hard redirect for better reliability on Vercel
+                        // ✅ Reduce timeout and add page refresh to trigger middleware
                         setTimeout(() => {
                             window.location.href = redirectUrl
-                        }, 600)
+                            // Force page refresh to ensure middleware sees the new token
+                            window.location.reload()
+                        }, 300) // Reduced from 600ms
                     }
                 } catch (error) {
                     console.error("Login error:", error)
@@ -75,8 +75,6 @@ export default function LoginForm() {
         })
     }
 
-    // ✅ Remove all loading/authentication checks - let middleware handle it
-    // Just render the form directly
     return (
         <motion.div
             initial={{ opacity: 0, scale: 0.95 }}

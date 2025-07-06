@@ -24,6 +24,7 @@ export async function middleware(req: NextRequest) {
     console.log("- Pathname:", pathname);
     console.log("- Token exists:", !!token);
     console.log("- User role:", token?.role);
+    console.log("- Is public route:", isPublicRoute(pathname));
 
     const userRole = token?.role as string;
     const isAuthenticated = !!token;
@@ -45,14 +46,28 @@ export async function middleware(req: NextRequest) {
       return response;
     }
 
-    // 1. Prevent ANY authenticated user from accessing auth pages
-    if (pathname.startsWith("/client/auth/") && isAuthenticated) {
-      const redirectUrl = isAdmin ? "/admin" : "/client";
-      console.log(
-        "🚀 REDIRECTING authenticated user from auth page to:",
-        redirectUrl
-      );
-      return NextResponse.redirect(new URL(redirectUrl, req.url));
+    // 🔥 Handle auth pages (login, register, forgot-password)
+    if (pathname.startsWith("/client/auth/")) {
+      if (isAuthenticated) {
+        // User is logged in, redirect them away from auth pages
+        const redirectUrl = isAdmin ? "/admin" : "/client";
+        console.log(
+          "🚀 REDIRECTING authenticated user from auth page to:",
+          redirectUrl
+        );
+        return NextResponse.redirect(new URL(redirectUrl, req.url));
+      } else {
+        // User not logged in, allow access to auth pages
+        console.log("✅ Auth page, not authenticated, allowing access");
+        const response = NextResponse.next();
+        if (corsHeaders) {
+          const headers = corsHeaders as Record<string, string>;
+          Object.entries(headers).forEach(([key, value]) =>
+            response.headers.set(key, value)
+          );
+        }
+        return response;
+      }
     }
 
     // 2. Protect ADMIN routes - only admin roles
@@ -122,7 +137,7 @@ export const config = {
   matcher: [
     "/",
     "/admin/:path*",
-    "/client/auth/:path*",
+    "/client/auth/:path*", // ✅ This will now be handled by middleware
     "/client/profile/:path*",
     "/client/payment/:path*",
     "/client/envois/:path*",

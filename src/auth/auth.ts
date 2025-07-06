@@ -1,3 +1,5 @@
+// src/auth/auth.ts
+
 import NextAuth, { Session, User } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -21,9 +23,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials): Promise<User | null> {
-        
-        
-
         // verify if credentials details are provided
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Please enter a valid email and password");
@@ -34,11 +33,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
           // Check if the user exists and has a password
           if (!user) {
-            
             throw new Error("Incorrect credentials");
           }
-
-          
 
           const passwordValid = await bcrypt.compare(
             String(credentials.password),
@@ -46,10 +42,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           );
 
           if (!passwordValid) {
-            
             throw new Error("Incorrect credentials");
           }
-          
 
           return {
             id: user.id.toString(),
@@ -64,7 +58,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             emailVerified: user.emailVerified ?? null,
           } as User;
         } catch (error) {
-          
           return null;
         }
       },
