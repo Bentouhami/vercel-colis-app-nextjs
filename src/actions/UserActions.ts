@@ -1,8 +1,10 @@
+// actions/UserActions.ts
 "use server";
 
 import { LoginUserDto } from "@/services/dtos/users/UserDto";
 import { loginUserSchema } from "@/utils/validationSchema";
 import { signIn } from "@/auth/auth";
+import { getUserByEmail } from "@/services/backend-services/Bk_UserService";
 
 const login = async (email: string, password: string) => {
   if (!email || !password) {
@@ -17,6 +19,13 @@ const login = async (email: string, password: string) => {
   }
 
   try {
+    // Get user data before signing in to determine role
+    const user = await getUserByEmail(loginData.email);
+
+    if (!user) {
+      return { error: "Email ou mot de passe incorrect." };
+    }
+
     const result = await signIn("credentials", {
       redirect: false,
       email: loginData.email,
@@ -27,13 +36,11 @@ const login = async (email: string, password: string) => {
       return { error: "Email ou mot de passe incorrect." };
     }
 
-    // If signIn is successful and redirect is false, result should contain user data
-    const user = result?.user; // Assuming result contains a user object
-    if (!user || !user.role) {
-      return { error: "User role not found after successful login." };
-    }
-
-    return { success: true, userRole: user.role };
+    // Return success with user role
+    return {
+      success: true,
+      userRole: user.role,
+    };
   } catch (error) {
     return { error: "Erreur inattendue lors de la connexion." };
   }

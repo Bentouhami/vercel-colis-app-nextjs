@@ -30,7 +30,7 @@ interface LoginUserDto {
 }
 
 export default function LoginForm() {
-    
+
     const router = useRouter();
     const searchParams = useSearchParams();
     const [showPassword, setShowPassword] = useState(false);
@@ -46,47 +46,38 @@ export default function LoginForm() {
     });
 
     async function onSubmit(data: LoginUserDto) {
-        setIsDisabled(true); // Disable button on submit
+        setIsDisabled(true);
+
         startTransition(() => {
             (async () => {
                 try {
                     const result = await login(data.email, data.password);
+
                     if (result?.error) {
                         toast.error(result.error);
-                        setIsDisabled(false); // Re-enable button on error
-                    } else {
+                        setIsDisabled(false);
+                    } else if (result?.success) {
                         setShowPassword(false);
-
                         toast.success("Connexion réussie");
 
-                        const redirectUrl =
-                            result.userRole !== RoleDto.CLIENT
-                                ? searchParams.get("redirect") || adminPath()
-                                : searchParams.get("redirect") || clientPath();
+                        // Use the role returned from the server action
+                        const redirectUrl = result.userRole !== RoleDto.CLIENT
+                            ? searchParams.get("redirect") || adminPath()
+                            : searchParams.get("redirect") || clientPath();
 
-
-                        // Redirect after a short delay to allow toast to display
-                        // This is useful to ensure the UI updates before the redirect
-                        // and to prevent any flickering or abrupt changes
-                        // setTimeout is used to ensure the toast message is displayed before redirecting
+                        // Force a hard redirect for better reliability on Vercel
                         setTimeout(() => {
-
-                            // Use router.replace to avoid adding a new entry in the history stack
-                            // This is useful for login redirects to prevent going back to the login page
-                            router.replace(redirectUrl);
-                            // Refresh the router to ensure the new page is loaded
-                            router.refresh();
+                            window.location.href = redirectUrl;
                         }, 600);
                     }
-
                 } catch (error) {
+                    console.error("Login error:", error);
                     toast.error("Erreur lors de la connexion");
-                    setIsDisabled(false); // Re-enable button on error
+                    setIsDisabled(false);
                 }
             })();
         });
     }
-
     return (
         <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
