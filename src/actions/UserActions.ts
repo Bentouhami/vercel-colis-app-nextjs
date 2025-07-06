@@ -27,7 +27,13 @@ const login = async (email: string, password: string) => {
       return { error: "Email ou mot de passe incorrect." };
     }
 
-    return { success: true };
+    // If signIn is successful and redirect is false, result should contain user data
+    const user = result?.user; // Assuming result contains a user object
+    if (!user || !user.role) {
+      return { error: "User role not found after successful login." };
+    }
+
+    return { success: true, userRole: user.role };
   } catch (error) {
     return { error: "Erreur inattendue lors de la connexion." };
   }

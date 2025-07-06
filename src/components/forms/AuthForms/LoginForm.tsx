@@ -21,7 +21,6 @@ import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { loginUserSchema } from "@/utils/validationSchema";
 import { login } from "@/actions/UserActions";
-import { useSession } from "next-auth/react";
 import { RoleDto } from "@/services/dtos";
 import { adminPath, clientPath } from "@/utils/constants";
 
@@ -31,7 +30,7 @@ interface LoginUserDto {
 }
 
 export default function LoginForm() {
-    const { data: session } = useSession();
+    
     const router = useRouter();
     const searchParams = useSearchParams();
     const [showPassword, setShowPassword] = useState(false);
@@ -61,7 +60,7 @@ export default function LoginForm() {
                         toast.success("Connexion réussie");
 
                         const redirectUrl =
-                            session?.user?.role !== RoleDto.CLIENT
+                            result.userRole !== RoleDto.CLIENT
                                 ? searchParams.get("redirect") || adminPath()
                                 : searchParams.get("redirect") || clientPath();
 
@@ -70,8 +69,6 @@ export default function LoginForm() {
                         // This is useful to ensure the UI updates before the redirect
                         // and to prevent any flickering or abrupt changes
                         // setTimeout is used to ensure the toast message is displayed before redirecting
-                        console.log("Session role:", session?.user?.role);
-                        console.log("Redirect URL:", redirectUrl);
                         setTimeout(() => {
 
                             // Use router.replace to avoid adding a new entry in the history stack
