@@ -70,6 +70,8 @@ export default function LoginForm() {
                         // This is useful to ensure the UI updates before the redirect
                         // and to prevent any flickering or abrupt changes
                         // setTimeout is used to ensure the toast message is displayed before redirecting
+                        console.log("Session role:", session?.user?.role);
+                        console.log("Redirect URL:", redirectUrl);
                         setTimeout(() => {
 
                             // Use router.replace to avoid adding a new entry in the history stack
