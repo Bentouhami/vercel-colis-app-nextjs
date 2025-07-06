@@ -1,41 +1,46 @@
 // path: src/components/forms/AuthForms/LoginForm.tsx
-"use client";
+"use client"
 
-import React, { useState, useTransition } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { motion } from "framer-motion";
-import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
-import { toast } from "sonner";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Eye, EyeOff, Lock, Mail } from "lucide-react";
-import { loginUserSchema } from "@/utils/validationSchema";
-import { login } from "@/actions/UserActions";
-import { RoleDto } from "@/services/dtos";
-import { adminPath, clientPath } from "@/utils/constants";
+import { useState, useTransition, useEffect } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { motion } from "framer-motion"
+import Image from "next/image"
+import { useRouter, useSearchParams } from "next/navigation"
+import { toast } from "sonner"
+import { useSession } from "next-auth/react" // ✅ Add this import
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Eye, EyeOff, Lock, Mail } from "lucide-react"
+import { loginUserSchema } from "@/utils/validationSchema"
+import { login } from "@/actions/UserActions"
+import { RoleDto } from "@/services/dtos"
+import { adminPath, clientPath } from "@/utils/constants"
 
 interface LoginUserDto {
-    email: string;
-    password: string;
+    email: string
+    password: string
 }
 
 export default function LoginForm() {
+    const { data: session, status } = useSession() // ✅ Add this hook
+    const router = useRouter()
+    const searchParams = useSearchParams()
+    const [showPassword, setShowPassword] = useState(false)
+    const [isDisabled, setIsDisabled] = useState(false)
+    const [isPending, startTransition] = useTransition()
 
-    const router = useRouter();
-    const searchParams = useSearchParams();
-    const [showPassword, setShowPassword] = useState(false);
-    const [isDisabled, setIsDisabled] = useState(false);
-    const [isPending, startTransition] = useTransition();
+    // ✅ Add this useEffect to handle already authenticated users
+    useEffect(() => {
+        if (status === "authenticated" && session?.user) {
+            console.log("🔍 User already authenticated:", session.user.role)
+            const redirectUrl = session.user.role !== RoleDto.CLIENT ? adminPath() : clientPath()
+
+            console.log("🚀 Redirecting authenticated user to:", redirectUrl)
+            window.location.href = redirectUrl // Force hard redirect
+        }
+    }, [status, session])
 
     const form = useForm<LoginUserDto>({
         resolver: zodResolver(loginUserSchema),
@@ -43,41 +48,64 @@ export default function LoginForm() {
             email: "",
             password: "",
         },
-    });
+    })
 
     async function onSubmit(data: LoginUserDto) {
-        setIsDisabled(true);
+        setIsDisabled(true)
 
         startTransition(() => {
-            (async () => {
+            ; (async () => {
                 try {
-                    const result = await login(data.email, data.password);
+                    const result = await login(data.email, data.password)
 
                     if (result?.error) {
-                        toast.error(result.error);
-                        setIsDisabled(false);
+                        toast.error(result.error)
+                        setIsDisabled(false)
                     } else if (result?.success) {
-                        setShowPassword(false);
-                        toast.success("Connexion réussie");
+                        setShowPassword(false)
+                        toast.success("Connexion réussie")
 
                         // Use the role returned from the server action
-                        const redirectUrl = result.userRole !== RoleDto.CLIENT
-                            ? searchParams.get("redirect") || adminPath()
-                            : searchParams.get("redirect") || clientPath();
+                        const redirectUrl =
+                            result.userRole !== RoleDto.CLIENT
+                                ? searchParams.get("redirect") || adminPath()
+                                : searchParams.get("redirect") || clientPath()
+
+                        console.log("🚀 Login success, redirecting to:", redirectUrl)
 
                         // Force a hard redirect for better reliability on Vercel
                         setTimeout(() => {
-                            window.location.href = redirectUrl;
-                        }, 600);
+                            window.location.href = redirectUrl
+                        }, 600)
                     }
                 } catch (error) {
-                    console.error("Login error:", error);
-                    toast.error("Erreur lors de la connexion");
-                    setIsDisabled(false);
+                    console.error("Login error:", error)
+                    toast.error("Erreur lors de la connexion")
+                    setIsDisabled(false)
                 }
-            })();
-        });
+            })()
+        })
     }
+
+    // ✅ Show loading while checking authentication
+    if (status === "loading") {
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <div>Vérification de l'authentification...</div>
+            </div>
+        )
+    }
+
+    // ✅ Show redirect message if already authenticated
+    if (status === "authenticated") {
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <div>Redirection en cours...</div>
+            </div>
+        )
+    }
+
+    // Rest of your form JSX remains exactly the same
     return (
         <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -92,14 +120,7 @@ export default function LoginForm() {
                 transition={{ duration: 0.5 }}
                 className="flex-shrink-0"
             >
-                <Image
-                    src="/svg/login/login.svg"
-                    alt="Welcome"
-                    width={300}
-                    height={300}
-                    priority
-                    className="rounded-md"
-                />
+                <Image src="/svg/login/login.svg" alt="Welcome" width={300} height={300} priority className="rounded-md" />
             </motion.div>
 
             {/* Form Section */}
@@ -117,18 +138,11 @@ export default function LoginForm() {
                             name="email"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-gray-700 dark:text-gray-200 font-medium">
-                                        Adresse Email
-                                    </FormLabel>
+                                    <FormLabel className="text-gray-700 dark:text-gray-200 font-medium">Adresse Email</FormLabel>
                                     <div className="relative">
                                         <Mail className="absolute left-2 top-2.5 h-5 w-5 text-muted-foreground dark:text-gray-400" />
                                         <FormControl>
-                                            <Input
-                                                placeholder="Entrez votre email"
-                                                disabled={isPending}
-                                                className="pl-8"
-                                                {...field}
-                                            />
+                                            <Input placeholder="Entrez votre email" disabled={isPending} className="pl-8" {...field} />
                                         </FormControl>
                                     </div>
                                     <FormMessage />
@@ -142,9 +156,7 @@ export default function LoginForm() {
                             name="password"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-gray-700 dark:text-gray-200 font-medium">
-                                        Mot de Passe
-                                    </FormLabel>
+                                    <FormLabel className="text-gray-700 dark:text-gray-200 font-medium">Mot de Passe</FormLabel>
                                     <div className="relative">
                                         <Lock className="absolute left-2 top-2.5 h-5 w-5 text-muted-foreground dark:text-gray-400" />
                                         <FormControl>
@@ -156,18 +168,13 @@ export default function LoginForm() {
                                                 {...field}
                                             />
                                         </FormControl>
-
                                         <button
                                             type="button"
                                             onClick={() => setShowPassword(!showPassword)}
                                             className="absolute right-2 top-2.5 inline-flex h-5 w-5 items-center justify-center text-muted-foreground dark:text-gray-400"
                                             tabIndex={-1}
                                         >
-                                            {showPassword ? (
-                                                <EyeOff className="h-4 w-4" />
-                                            ) : (
-                                                <Eye className="h-4 w-4" />
-                                            )}
+                                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                         </button>
                                     </div>
                                     <FormMessage />
@@ -192,7 +199,6 @@ export default function LoginForm() {
                     </form>
                 </Form>
 
-
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -205,14 +211,11 @@ export default function LoginForm() {
                     >
                         Vous avez oublié votre mot de passe ?
                     </a>
-                    <a
-                        href="/client/auth/register"
-                        className="text-blue-600 dark:text-blue-400 hover:underline"
-                    >
+                    <a href="/client/auth/register" className="text-blue-600 dark:text-blue-400 hover:underline">
                         Pas encore inscrit ? Créez un compte
                     </a>
                 </motion.div>
             </motion.div>
         </motion.div>
-    );
+    )
 }
