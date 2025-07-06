@@ -91,7 +91,7 @@ export default function LoginForm() {
     if (status === "loading") {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
-                <div>Vérification de l'authentification...</div>
+                <div>Vérification de l&apos;authentification...</div>
             </div>
         )
     }
