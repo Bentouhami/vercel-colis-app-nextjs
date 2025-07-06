@@ -174,12 +174,8 @@ const SimulationForm = () => {
     //   FETCH DEPARTURE AGENCIES
     //==================================
     useEffect(() => {
-        console.log("🔍 FETCH DEPARTURE AGENCIES useEffect triggered");
-        console.log("departure.city:", departure.city);
-        console.log("options.departureCities:", options.departureCities);
-
         if (!departure.city) {
-            console.log("❌ No departure city selected, clearing agencies");
+
             setOptions(prev => ({ ...prev, departureAgencies: [] }));
             setDeparture(prev => ({ ...prev, agencyName: '' }));
             return;
@@ -187,25 +183,24 @@ const SimulationForm = () => {
 
         (async () => {
             try {
-                console.log("🔎 Looking for city object...");
+
                 // cityId from the state
                 const cityObj = options.departureCities.find(c => c.id === Number(departure.city));
-                console.log("Found cityObj:", cityObj);
+
 
                 if (cityObj) {
-                    console.log("📞 Calling getAgenciesByCityId with cityId:", cityObj.id);
+
                     const data = await getAgenciesByCityId(cityObj.id);
-                    console.log("✅ Agencies received:", data);
+
                     setOptions(prev => ({ ...prev, departureAgencies: data }));
                     setDeparture(prev => ({ ...prev, agencyName: '' }));
-                } else {
-                    console.log("❌ City object not found in departureCities array");
                 }
             } catch (error) {
                 console.error("❌ Error fetching departure agencies:", error);
                 toast.error("Failed to fetch agencies. Please try again.");
             }
-        })();
+        }
+        )();
     }, [departure.city, options.departureCities]);
 
     //==================================
@@ -285,7 +280,7 @@ const SimulationForm = () => {
     //   HANDLERS
     //==================================
     const handleDepartureChange = (field: keyof typeof departure, value: string) => {
-        console.log(`🔄 handleDepartureChange: ${field} = ${value}`);
+
         setDeparture(prev => ({ ...prev, [field]: value }));
     };
 

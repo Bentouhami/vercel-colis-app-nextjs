@@ -28,7 +28,7 @@ export async function middleware(req: NextRequest) {
   }
 
   try {
-    console.log("--------------Start Middleware-------------");
+    
     // Retrieve JWT token
     const token = await getToken({ req, secret: process.env.AUTH_SECRET });
 
@@ -96,7 +96,7 @@ export async function middleware(req: NextRequest) {
       new URL("/client/auth/login", req.nextUrl.origin)
     );
   } finally {
-    console.log("---------------End Middleware-------------");
+    
   }
 }
 

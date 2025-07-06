@@ -1,9 +1,8 @@
 // path: src/components/NotFound.tsx
-
 'use client';
 
 import React, {useEffect, useState} from 'react';
-import {useRouter} from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 interface NotFoundProps {
     redirectPath?: string; // Optional path to redirect to
@@ -12,10 +11,10 @@ interface NotFoundProps {
 }
 
 export default function NotFound({
-                                     redirectPath = '/', // Default to homepage
-                                     message = "La page que vous recherchez n'existe pas ou a été déplacée.",
-                                     countdownSeconds = 5, // Default countdown is 5 seconds
-                                 }: NotFoundProps) {
+    redirectPath = '/', // Default to homepage
+    message = "La page que vous recherchez n'existe pas ou a été déplacée.",
+    countdownSeconds = 5, // Default countdown is 5 seconds
+}: NotFoundProps) {
     const [countdown, setCountdown] = useState(countdownSeconds);
     const router = useRouter();
 

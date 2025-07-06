@@ -605,15 +605,7 @@ const SimulationEditForm = () => {
         );
     };
 
-    // Add a useEffect to log state changes
-    useEffect(() => {
-        console.log('Current state:', {
-            departure,
-            destination,
-            options,
-            parcels
-        });
-    }, [departure, destination, options, parcels]);
+    
 
     /**
      * If loading, show a spinner or skeleton
