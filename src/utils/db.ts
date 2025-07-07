@@ -1,5 +1,4 @@
 // path: src/utils/db.ts
-import "dotenv/config";
 import { PrismaNeon } from "@prisma/adapter-neon";
 import { neonConfig } from "@neondatabase/serverless";
 

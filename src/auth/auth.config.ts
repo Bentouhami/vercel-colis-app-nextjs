@@ -1,64 +1,12 @@
 import type { NextAuthConfig } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import GitHub from "next-auth/providers/github";
 import { RoleDto } from "@/services/dtos/enums/EnumsDto";
 
-// ✅ Lightweight config WITHOUT database adapter - for Edge Runtime
+// ✅ ULTRA-LIGHTWEIGHT config - NO database imports, NO credentials provider
 export default {
   providers: [
-    CredentialsProvider({
-      name: "credentials",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials) {
-        // ⚠️ This will only be used in server-side auth, not middleware
-        if (!credentials?.email || !credentials?.password) {
-          throw new Error("Please enter a valid email and password");
-        }
-
-        try {
-          // Dynamic imports to avoid bundling in middleware
-          const { getUserByEmail } = await import(
-            "@/services/backend-services/Bk_UserService"
-          );
-          const bcrypt = await import("bcryptjs");
-
-          const user = await getUserByEmail(credentials.email as string);
-
-          if (!user) {
-            throw new Error("Incorrect credentials");
-          }
-
-          const passwordValid = await bcrypt.compare(
-            String(credentials.password),
-            String(user.password)
-          );
-
-          if (!passwordValid) {
-            throw new Error("Incorrect credentials");
-          }
-
-          return {
-            id: user.id.toString(),
-            firstName: user.firstName ?? undefined,
-            lastName: user.lastName ?? undefined,
-            name: user.name ? `${user.lastName} ${user.firstName}` : undefined,
-            email: user.email,
-            phoneNumber: user.phoneNumber ?? undefined,
-            image: user.image ?? undefined,
-            userAddress: user.userAddresses,
-            role: user.role,
-            emailVerified: user.emailVerified ?? null,
-          };
-        } catch (error) {
-          return null;
-        }
-      },
-    }),
-
+    // ❌ Remove CredentialsProvider from here - it will be added in auth.ts
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
@@ -107,7 +55,7 @@ export default {
   ],
 
   session: {
-    strategy: "jwt", // ✅ JWT strategy works in Edge Runtime
+    strategy: "jwt",
   },
 
   callbacks: {
