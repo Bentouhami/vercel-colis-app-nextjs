@@ -1,7 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server";
+import NextAuth from "next-auth";
+import authConfig from "./auth/auth.config";
 import { setCorsHeaders } from "./utils/cors";
 import { isPublicRoute } from "./utils/publicRoutesHelper";
-import { auth } from "./auth/auth";
+
+// ✅ Lightweight Auth.js instance WITHOUT database adapter - for Edge Runtime
+const { auth: middlewareAuth } = NextAuth(authConfig);
 
 export async function middleware(req: NextRequest) {
   const origin = req.headers.get("origin") || "";
@@ -31,7 +35,8 @@ export async function middleware(req: NextRequest) {
       console.log("- AUTH_SECRET length:", process.env.AUTH_SECRET?.length);
     }
 
-    const session = await auth();
+    // ✅ Use lightweight auth instance (no database dependencies)
+    const session = await middlewareAuth();
     const token = session?.user;
 
     // MORE DEBUG for admin access
@@ -73,7 +78,7 @@ export async function middleware(req: NextRequest) {
       if (isAuthenticated) {
         const redirectUrl = isAdmin ? "/admin" : "/client";
         console.log(
-          "REDIRECTING authenticated user from auth page to:",
+          "🚀 REDIRECTING authenticated user from auth page to:",
           redirectUrl
         );
         return NextResponse.redirect(new URL(redirectUrl, req.url));
@@ -90,15 +95,15 @@ export async function middleware(req: NextRequest) {
       }
     }
 
-    // ADMIN ROUTES - This is where your issue is
+    // 🔥 ADMIN ROUTES - This is where your issue was
     if (pathname.startsWith("/admin")) {
       if (!isAuthenticated) {
-        console.log(" Admin route, not authenticated, redirecting to login");
+        console.log("🚫 Admin route, not authenticated, redirecting to login");
         return NextResponse.redirect(new URL("/client/auth/login", req.url));
       }
       if (!isAdmin) {
         console.log(
-          " Admin route, not admin role, redirecting to unauthorized"
+          "🚫 Admin route, not admin role, redirecting to unauthorized"
         );
         return NextResponse.redirect(new URL("/client/unauthorized", req.url));
       }
@@ -117,13 +122,13 @@ export async function middleware(req: NextRequest) {
 
     if (isClientOnlyRoute) {
       if (!isAuthenticated) {
-        console.log(" Client route, not authenticated, redirecting to login");
+        console.log("🚫 Client route, not authenticated, redirecting to login");
         return NextResponse.redirect(new URL("/client/auth/login", req.url));
       }
       if (!isClient) {
         const redirectUrl = isAdmin ? "/admin" : "/client/unauthorized";
         console.log(
-          " Client route, not client role, redirecting to:",
+          "🚫 Client route, not client role, redirecting to:",
           redirectUrl
         );
         return NextResponse.redirect(new URL(redirectUrl, req.url));
@@ -146,7 +151,7 @@ export async function middleware(req: NextRequest) {
     }
     return response;
   } catch (error) {
-    console.error(" Middleware error:", error);
+    console.error("❌ Middleware error:", error);
     return NextResponse.redirect(new URL("/client/auth/login", req.url));
   }
 }
