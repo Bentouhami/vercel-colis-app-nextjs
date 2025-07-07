@@ -1,13 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
 import { setCorsHeaders } from "./utils/cors";
 import { isPublicRoute } from "./utils/publicRoutesHelper";
+import { auth } from "./auth/auth";
 
 export async function middleware(req: NextRequest) {
   const origin = req.headers.get("origin") || "";
   const corsHeaders = setCorsHeaders(origin);
 
-  // Handle OPTIONS requests (CORS preflight)
   if (req.method === "OPTIONS") {
     if (corsHeaders) {
       return new NextResponse(null, { headers: corsHeaders });
@@ -16,15 +15,32 @@ export async function middleware(req: NextRequest) {
   }
 
   try {
-    const token = await getToken({ req, secret: process.env.AUTH_SECRET });
     const pathname = req.nextUrl.pathname;
 
-    // 🔍 DEBUG: Log what middleware sees
-    console.log("🔍 MIDDLEWARE DEBUG:");
-    console.log("- Pathname:", pathname);
-    console.log("- Token exists:", !!token);
-    console.log("- User role:", token?.role);
-    console.log("- Is public route:", isPublicRoute(pathname));
+    // 🔍 ENHANCED DEBUG: Check cookies and token
+    if (pathname.startsWith("/admin")) {
+      console.log("🔍 ADMIN ACCESS DEBUG:");
+      console.log("- Pathname:", pathname);
+      console.log(
+        "- All cookies:",
+        req.cookies
+          .getAll()
+          .map((c) => `${c.name}=${c.value.substring(0, 20)}...`)
+      );
+      console.log("- AUTH_SECRET exists:", !!process.env.AUTH_SECRET);
+      console.log("- AUTH_SECRET length:", process.env.AUTH_SECRET?.length);
+    }
+
+    const session = await auth();
+    const token = session?.user;
+
+    // MORE DEBUG for admin access
+    if (pathname.startsWith("/admin")) {
+      console.log("- Raw token:", token ? "EXISTS" : "NULL");
+      console.log("- Token role:", token?.role);
+      console.log("- Token email:", token?.email);
+      console.log("- Token id:", token?.id);
+    }
 
     const userRole = token?.role as string;
     const isAuthenticated = !!token;
@@ -33,9 +49,15 @@ export async function middleware(req: NextRequest) {
     const isAdmin = adminRoles.includes(userRole);
     const isClient = userRole === "CLIENT";
 
-    // Handle public routes first (marketing pages, etc.)
+    // FINAL DEBUG before decision
+    if (pathname.startsWith("/admin")) {
+      console.log("- isAuthenticated:", isAuthenticated);
+      console.log("- isAdmin:", isAdmin);
+      console.log("- Will redirect to login:", !isAuthenticated);
+    }
+
+    // Handle public routes first
     if (isPublicRoute(pathname)) {
-      console.log("✅ Public route, allowing access");
       const response = NextResponse.next();
       if (corsHeaders) {
         const headers = corsHeaders as Record<string, string>;
@@ -46,18 +68,16 @@ export async function middleware(req: NextRequest) {
       return response;
     }
 
-    // 🔥 Handle auth pages (login, register, forgot-password)
+    // Handle auth pages
     if (pathname.startsWith("/client/auth/")) {
       if (isAuthenticated) {
-        // User is logged in, redirect them away from auth pages
         const redirectUrl = isAdmin ? "/admin" : "/client";
         console.log(
-          "🚀 REDIRECTING authenticated user from auth page to:",
+          "REDIRECTING authenticated user from auth page to:",
           redirectUrl
         );
         return NextResponse.redirect(new URL(redirectUrl, req.url));
       } else {
-        // User not logged in, allow access to auth pages
         console.log("✅ Auth page, not authenticated, allowing access");
         const response = NextResponse.next();
         if (corsHeaders) {
@@ -70,22 +90,22 @@ export async function middleware(req: NextRequest) {
       }
     }
 
-    // 2. Protect ADMIN routes - only admin roles
+    // ADMIN ROUTES - This is where your issue is
     if (pathname.startsWith("/admin")) {
       if (!isAuthenticated) {
-        console.log("🚫 Admin route, not authenticated, redirecting to login");
+        console.log(" Admin route, not authenticated, redirecting to login");
         return NextResponse.redirect(new URL("/client/auth/login", req.url));
       }
       if (!isAdmin) {
         console.log(
-          "🚫 Admin route, not admin role, redirecting to unauthorized"
+          " Admin route, not admin role, redirecting to unauthorized"
         );
         return NextResponse.redirect(new URL("/client/unauthorized", req.url));
       }
       console.log("✅ Admin route, admin user, allowing access");
     }
 
-    // 3. Protect CLIENT-ONLY routes
+    // Client-only routes
     const clientOnlyRoutes = [
       "/client/profile",
       "/client/payment",
@@ -97,28 +117,26 @@ export async function middleware(req: NextRequest) {
 
     if (isClientOnlyRoute) {
       if (!isAuthenticated) {
-        console.log("🚫 Client route, not authenticated, redirecting to login");
+        console.log(" Client route, not authenticated, redirecting to login");
         return NextResponse.redirect(new URL("/client/auth/login", req.url));
       }
       if (!isClient) {
         const redirectUrl = isAdmin ? "/admin" : "/client/unauthorized";
         console.log(
-          "🚫 Client route, not client role, redirecting to:",
+          " Client route, not client role, redirecting to:",
           redirectUrl
         );
         return NextResponse.redirect(new URL(redirectUrl, req.url));
       }
-      console.log("✅ Client route, client user, allowing access");
     }
 
-    // 4. Handle root path redirect
+    // Root path redirect
     if (pathname === "/" && isAuthenticated) {
       const redirectUrl = isAdmin ? "/admin" : "/client";
       console.log("🚀 Root path, redirecting to:", redirectUrl);
       return NextResponse.redirect(new URL(redirectUrl, req.url));
     }
 
-    // Create response with CORS headers
     const response = NextResponse.next();
     if (corsHeaders) {
       const headers = corsHeaders as Record<string, string>;
@@ -128,7 +146,7 @@ export async function middleware(req: NextRequest) {
     }
     return response;
   } catch (error) {
-    console.error("❌ Middleware error:", error);
+    console.error(" Middleware error:", error);
     return NextResponse.redirect(new URL("/client/auth/login", req.url));
   }
 }
@@ -137,7 +155,7 @@ export const config = {
   matcher: [
     "/",
     "/admin/:path*",
-    "/client/auth/:path*", // ✅ This will now be handled by middleware
+    "/client/auth/:path*",
     "/client/profile/:path*",
     "/client/payment/:path*",
     "/client/envois/:path*",

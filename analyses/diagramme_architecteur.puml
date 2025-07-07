@@ -1,0 +1,40 @@
+@startuml Architecture Component
+
+package "ColisApp Architecture" {
+
+  folder "Presentation Layer (Next.js Pages & Components)" as Presentation {
+    [UI Components]
+    [Pages]
+  }
+
+  folder "API Layer (Next.js API Routes)" as API {
+    [API Endpoints]
+  }
+
+  folder "Service Layer (Backend Services)" as Service {
+    [Business Logic]
+    [Bk_UserService]
+    [Bk_EnvoiService]
+  }
+
+  folder "Data Access Layer (Prisma)" as DAL {
+    [Prisma Client]
+    [Database]
+  }
+
+  folder "Utilities/Helpers Layer" as Utils {
+    [Auth.js Config]
+    [Mailer]
+    [Cloudinary Config]
+    [Common Utils]
+  }
+
+  Presentation --> API : "Makes Requests"
+  API -down-> Service : "Delegates Business Logic"
+  Service --> DAL : "Performs DB Operations"
+  Service -right-> Utils : "Uses Helpers/Services"
+  API --> Utils : "Uses Auth/Helpers"
+
+}
+
+@enduml

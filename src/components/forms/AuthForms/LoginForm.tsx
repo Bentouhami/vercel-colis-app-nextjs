@@ -5,16 +5,15 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { motion } from "framer-motion"
 import Image from "next/image"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import { toast } from "sonner"
+
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Eye, EyeOff, Lock, Mail } from "lucide-react"
 import { loginUserSchema } from "@/utils/validationSchema"
 import { login } from "@/actions/UserActions"
-import { RoleDto } from "@/services/dtos"
-import { adminPath, clientPath } from "@/utils/constants"
 
 interface LoginUserDto {
     email: string
@@ -22,7 +21,6 @@ interface LoginUserDto {
 }
 
 export default function LoginForm() {
-    const router = useRouter()
     const searchParams = useSearchParams()
     const [showPassword, setShowPassword] = useState(false)
     const [isDisabled, setIsDisabled] = useState(false)
@@ -39,39 +37,23 @@ export default function LoginForm() {
     async function onSubmit(data: LoginUserDto) {
         setIsDisabled(true)
 
-        startTransition(() => {
-            ; (async () => {
-                try {
-                    const result = await login(data.email, data.password)
+        startTransition(async () => {
+            try {
+                const redirectUrl = searchParams.get("redirect") || undefined;
 
-                    if (result?.error) {
-                        toast.error(result.error)
-                        setIsDisabled(false)
-                    } else if (result?.success) {
-                        setShowPassword(false)
-                        toast.success("Connexion réussie")
+                // This will either return an error or redirect (no return)
+                const result = await login(data.email, data.password, redirectUrl);
 
-                        // Use the role returned from the server action
-                        const redirectUrl =
-                            result.userRole !== RoleDto.CLIENT
-                                ? searchParams.get("redirect") || adminPath()
-                                : searchParams.get("redirect") || clientPath()
-
-                        console.log("🚀 Login success, redirecting to:", redirectUrl)
-
-                        // ✅ Reduce timeout and add page refresh to trigger middleware
-                        setTimeout(() => {
-                            window.location.href = redirectUrl
-                            // Force page refresh to ensure middleware sees the new token
-                            window.location.reload()
-                        }, 300) // Reduced from 600ms
-                    }
-                } catch (error) {
-                    console.error("Login error:", error)
-                    toast.error("Erreur lors de la connexion")
-                    setIsDisabled(false)
+                // If we get here, there was an error
+                if (result?.error) {
+                    toast.error(result.error);
+                    setIsDisabled(false);
                 }
-            })()
+            } catch (error) {
+                console.error("Login error:", error);
+                toast.error("Erreur lors de la connexion");
+                setIsDisabled(false);
+            }
         })
     }
 

@@ -5,8 +5,11 @@ import { LoginUserDto } from "@/services/dtos/users/UserDto";
 import { loginUserSchema } from "@/utils/validationSchema";
 import { signIn } from "@/auth/auth";
 import { getUserByEmail } from "@/services/backend-services/Bk_UserService";
+import { redirect } from "next/navigation";
+import { adminPath, clientPath } from "@/utils/constants";
+import { RoleDto } from "@/services/dtos";
 
-const login = async (email: string, password: string) => {
+const login = async (email: string, password: string, redirectUrl?: string) => {
   if (!email || !password) {
     return { error: "Veuillez fournir un email et un mot de passe." };
   }
@@ -26,6 +29,7 @@ const login = async (email: string, password: string) => {
       return { error: "Email ou mot de passe incorrect." };
     }
 
+    // Use redirect: false to prevent automatic redirection
     const result = await signIn("credentials", {
       redirect: false,
       email: loginData.email,
@@ -36,12 +40,21 @@ const login = async (email: string, password: string) => {
       return { error: "Email ou mot de passe incorrect." };
     }
 
-    // Return success with user role
-    return {
-      success: true,
-      userRole: user.role,
-    };
+    // Determine redirect URL based on role
+    const defaultRedirectUrl =
+      user.role !== RoleDto.CLIENT ? adminPath() : clientPath();
+
+    const finalRedirectUrl = redirectUrl || defaultRedirectUrl;
+
+    // Use Next.js redirect for proper server-side navigation
+    redirect(finalRedirectUrl);
   } catch (error) {
+    // If it's a redirect, let it propagate
+    if (typeof error === 'object' && error !== null && 'digest' in error && typeof error.digest === 'string' && error.digest.startsWith("NEXT_REDIRECT")) {
+      throw error;
+    }
+
+    console.error("Login error:", error);
     return { error: "Erreur inattendue lors de la connexion." };
   }
 };
