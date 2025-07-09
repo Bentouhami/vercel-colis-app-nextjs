@@ -12,7 +12,7 @@ import {
 import {IEnvoiRepository} from "@/services/repositories/envois/IEnvoiRepository";
 import {envoiDAO} from "@/services/dal/DAO/envois/EnvoiDAO";
 import {simulationRepository} from "@/services/repositories/simulations/SimulationRepository";
-import prisma from "@/utils/db";
+import { prisma } from "@/utils/db";
 import {PaymentSuccessDto} from "@/services/dtos/envois/PaymentSuccessDto";
 
 /**

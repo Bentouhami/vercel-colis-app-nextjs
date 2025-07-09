@@ -1,7 +1,7 @@
 // path src/services/frontend-services/NotificationService.ts src/services/frontend-services/NotificationService.ts
 
 import {NotificationDto} from "@/services/dtos/notifications/NotificationDto";
-import {getCurrentUserId} from "@/lib/auth";
+import {getCurrentUserId} from "@/lib/auth-utils";
 import apiClient from "@/utils/axiosInstance";
 
 export async function fetchUserNotifications(userId: string | number | null): Promise<NotificationDto[]> {

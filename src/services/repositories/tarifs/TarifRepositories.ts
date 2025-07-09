@@ -3,7 +3,7 @@
 import {ITarifRepository} from "@/services/repositories/tarifs/ITarifRepositories";
 import {tarifsDAO} from "@/services/dal/DAO/tarifs/TarifDAO";
 import {TarifsDto} from "@/services/dtos";
-import prisma from "@/utils/db";
+import { prisma } from "@/utils/db";
 
 /**
  * This class provides methods for interacting with the tarifs table in the database.

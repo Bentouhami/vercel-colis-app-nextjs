@@ -1,7 +1,7 @@
 // path: src/services/dal/DAO/simulations/SimulationDAO.ts
 
 
-import prisma from "@/utils/db";
+import { prisma } from "@/utils/db";
 import {Envoi as EnvoiPrisma} from "@prisma/client";
 import {CreateSimulationRequestDto} from "@/services/dtos";
 import {ISimulationDAO} from "@/services/dal/DAO/simulations/ISimulationDAO";

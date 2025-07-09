@@ -422,7 +422,7 @@ L’application est disponible sur [http://localhost:3000](http://localhost:3000
     │           page.tsx
     │
     ├───auth
-    │       auth.ts
+    │       auth-utils.ts
     │
     ├───components
     │   │   app-sidebar.tsx
@@ -595,7 +595,7 @@ L’application est disponible sur [http://localhost:3000](http://localhost:3000
     │       useSimulationLogic.ts
     │
     ├───lib
-    │       auth.ts
+    │       auth-utils.ts
     │       mailer.ts
     │       prisma.ts
     │       simulationCookie.ts

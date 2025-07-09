@@ -1,6 +1,6 @@
 // path: src/services/dal/DAO/tarifs/TarifDAO.ts
 
-import prisma from "@/utils/db";
+import {prisma} from "@/utils/db";
 import {ITarifDAO} from "@/services/dal/DAO/tarifs/ITarifDAO";
 import {Tarifs as TarifsPrisma} from "@prisma/client";
 

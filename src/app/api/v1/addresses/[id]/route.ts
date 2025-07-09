@@ -1,7 +1,7 @@
 import {NextRequest, NextResponse} from "next/server";
 import {errorHandler} from "@/utils/handelErrors";
 import {Address} from "@prisma/client";
-import prisma from "@/utils/db";
+import {prisma} from "@/utils/db";
 
 interface Props {
     params: Promise<{

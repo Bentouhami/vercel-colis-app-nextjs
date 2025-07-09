@@ -3,7 +3,7 @@
 import {NextRequest, NextResponse} from "next/server";
 import bcrypt from "bcryptjs";
 import {registerUserBackendSchema} from "@/utils/validationSchema";
-import prisma from "@/utils/db";
+import { prisma } from "@/utils/db";
 import {generateVerificationTokenForUser} from "@/utils/generateToken";
 import {sendVerificationEmail} from "@/lib/mailer";
 

@@ -1,7 +1,7 @@
 // path: src/services/dal/envois/EnvoiDAO.ts
 
 import {Envoi as EnvoiPrisma} from "@prisma/client";
-import prisma from "@/utils/db";
+import { prisma } from "@/utils/db";
 import {EnvoiStatus, SimulationStatus} from "@/services/dtos";
 import {IEnvoiDAO} from "@/services/dal/DAO/envois/IEnvoiDAO";
 

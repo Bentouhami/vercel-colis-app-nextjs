@@ -1,7 +1,7 @@
 // E:\fullstack_project\NextJs_Projects\newColiApp\src\app\api\v1\tracking\route.ts
 import {NextRequest, NextResponse} from "next/server";
 import {trackingRepository} from "@/services/repositories/tracking/TrackingRepository";
-import prisma from "@/utils/db"
+import { prisma } from "@/utils/db"
 
 export async function POST(req: NextRequest) {
     const body = await req.json();

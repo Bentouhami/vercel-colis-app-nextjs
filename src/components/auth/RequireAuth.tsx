@@ -1,75 +1,135 @@
-'use client';
-import React, { useEffect } from 'react';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
-import {RoleDto} from "@/services/dtos";
+"use client"
+
+import type React from "react"
+import { useEffect, useState, useCallback } from "react"
+import { useSession } from "next-auth/react"
+import { useRouter, usePathname, useSearchParams } from "next/navigation"
+import { Loader2 } from "lucide-react"
+import { toast } from "sonner"
+import type { RoleDto } from "@/services/dtos"
+import { getRoleRedirectUrl, isAdminRole } from "@/lib/auth-utils"
 
 interface RequireAuthProps {
-    children: React.ReactNode;
-    redirectTo?: string;
-    customMessage?: string;
-    allowedRoles?: RoleDto[]; // Add roles parameter
+    children: React.ReactNode
+    redirectTo?: string
+    customMessage?: string
+    allowedRoles?: RoleDto[]
+    showToast?: boolean
+    fallback?: React.ReactNode
 }
 
 export default function RequireAuth({
                                         children,
-                                        redirectTo = "/client/auth/login",
+                                        redirectTo,
                                         customMessage = "Vous devez être connecté pour accéder à cette page",
-                                        allowedRoles, // Optional roles to check
+                                        allowedRoles,
+                                        showToast = true,
+                                        fallback,
                                     }: RequireAuthProps) {
-    const { data: session, status } = useSession();
-    const router = useRouter();
+    const { data: session, status } = useSession()
+    const router = useRouter()
+    const pathname = usePathname()
+    const searchParams = useSearchParams()
+    const [isRedirecting, setIsRedirecting] = useState(false)
+
+    // 🚀 FIXED: Move getRedirectUrl inside useCallback to fix React warning
+    const getRedirectUrl = useCallback(() => {
+        if (redirectTo) return redirectTo
+
+        // If a user is authenticated but doesn't have the right role, redirect to their appropriate dashboard
+        if (session?.user?.role) {
+            return getRoleRedirectUrl(session.user.role as RoleDto)
+        }
+
+        // Default to log in with callback
+        const callbackUrl = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : "")
+        return `/client/auth/login?callbackUrl=${encodeURIComponent(callbackUrl)}`
+    }, [redirectTo, session?.user?.role, pathname, searchParams])
 
     useEffect(() => {
-        if (status === "loading") return;
+        if (status === "loading" || isRedirecting) return
 
-        // If not authenticated, redirect with a delay
+        // Handle unauthenticated users
         if (status === "unauthenticated") {
-            toast.error(customMessage);
-            setTimeout(() => router.push(redirectTo), 1000);
-            return;
+            if (showToast) {
+                toast.error(customMessage)
+            }
+            setIsRedirecting(true)
+            setTimeout(() => router.push(getRedirectUrl()), 1000)
+            return
         }
 
-        // If authenticated but role check is required
+        // Handle authenticated users with role restrictions
         if (status === "authenticated" && allowedRoles && session?.user?.role) {
-            // Check if user's role is in the allowed roles array
-            if (!allowedRoles.includes(session.user.role)) {
-                toast.error("Vous n'avez pas l'autorisation pour accéder à cette page");
-                setTimeout(() => router.push("/client"), 1000);
+            const userRole = session.user.role as RoleDto
+
+            if (!allowedRoles.includes(userRole)) {
+                const errorMessage = "Vous n'avez pas l'autorisation pour accéder à cette page"
+                if (showToast) {
+                    toast.error(errorMessage)
+                }
+
+                setIsRedirecting(true)
+                // Redirect to the appropriate dashboard based on user's role
+                const redirectUrl = getRoleRedirectUrl(userRole)
+                setTimeout(() => router.push(redirectUrl), 1000)
+                return
             }
         }
-    }, [status, router, redirectTo, customMessage, session, allowedRoles]);
+    }, [status, router, customMessage, session, allowedRoles, showToast, isRedirecting, getRedirectUrl])
 
+    // Loading state
     if (status === "loading") {
         return (
             <div className="flex justify-center items-center min-h-screen">
-                <Loader2 className="h-8 w-8 animate-spin" />
+                <div className="flex flex-col items-center space-y-4">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    <p className="text-sm text-muted-foreground">Vérification de l&#39;authentification...</p>
+                </div>
             </div>
-        );
+        )
     }
 
-    // If unauthenticated, show message and spinner until redirection occurs.
+    // Unauthenticated state
     if (status === "unauthenticated") {
+        if (fallback) {
+            return <>{fallback}</>
+        }
+
         return (
             <div className="flex flex-col justify-center items-center min-h-screen space-y-4">
-                <p className="text-center text-lg text-gray-700">{customMessage}</p>
-                <Loader2 className="h-8 w-8 animate-spin" />
+                <div className="text-center space-y-2">
+                    <p className="text-lg text-gray-700">{customMessage}</p>
+                    <p className="text-sm text-muted-foreground">Redirection en cours...</p>
+                </div>
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
-        );
+        )
     }
 
-    // If role check is required and user doesn't have the proper role
-    if (allowedRoles && session?.user?.role && !allowedRoles.includes(session.user.role)) {
+    // Role check failed
+    if (allowedRoles && session?.user?.role && !allowedRoles.includes(session.user.role as RoleDto)) {
+        if (fallback) {
+            return <>{fallback}</>
+        }
+
+        const userRole = session.user.role as RoleDto
+        const isAdmin = isAdminRole(userRole)
+
         return (
             <div className="flex flex-col justify-center items-center min-h-screen space-y-4">
-                <p className="text-center text-lg text-gray-700">Vous n&#39;avez pas l&#39;autorisation pour accéder à cette page</p>
-                <Loader2 className="h-8 w-8 animate-spin" />
+                <div className="text-center space-y-2 max-w-md">
+                    <h2 className="text-xl font-semibold text-gray-900">Accès non autorisé</h2>
+                    <p className="text-gray-700">Vous n&#39;avez pas l&#39;autorisation pour accéder à cette page</p>
+                    <p className="text-sm text-muted-foreground">
+                        Redirection vers votre {isAdmin ? "tableau de bord administrateur" : "espace client"}...
+                    </p>
+                </div>
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
-        );
+        )
     }
 
-    // If authenticated with correct role (or no role check required), render children
-    return <>{children}</>;
+    // Success - render children
+    return <>{children}</>
 }

@@ -1,6 +1,6 @@
 // Path: src/services/backend-services/Bk_EnvoiService.ts
 
-import prisma from "@/utils/db";
+import { prisma } from "@/utils/db";
 import {EnvoiDto, EnvoisListDto, EnvoiStatus, SimulationStatus} from "@/services/dtos";
 import {generateTrackingNumber} from "@/utils/generateTrackingNumber";
 import {simulationRepository} from "@/services/repositories/simulations/SimulationRepository";

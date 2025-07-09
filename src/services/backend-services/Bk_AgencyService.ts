@@ -1,7 +1,7 @@
 // path: src/backend-services/Bk_AgencyService.ts
 
 import {AgencyDto, AgencyResponseDto, FullAgencyDto} from "@/services/dtos";
-import prisma from "@/utils/db";
+import {prisma} from "@/utils/db";
 import {agencyRepository} from "@/services/repositories/agencies/AgencyRepository";
 
 export async function getLightAgencies(filters?: {

@@ -1,7 +1,7 @@
 // path: src/services/repositories/AgencyStaffs/agencyStaffRepository.ts
 
 import {RoleDto} from "@/services/dtos";
-import prisma from "@/utils/db";
+import { prisma } from "@/utils/db";
 import {IAgencyStaffRepository} from "@/services/repositories/AgencyStaffs/IAgencyStaffRepository";
 import {AgencyStaffDto} from "@/services/dtos/agencyStaffs/AgencyStaffDto";
 

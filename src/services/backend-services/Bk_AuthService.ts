@@ -4,7 +4,7 @@ import { addHours } from "date-fns"
 import nodemailer from "nodemailer"
 import { DOMAIN } from "@/utils/constants"
 import bcrypt from "bcryptjs";
-import prisma from '@/lib/prisma'
+import { prisma } from "@/utils/db"
 
 
 const transporter = nodemailer.createTransport({

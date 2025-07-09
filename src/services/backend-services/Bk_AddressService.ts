@@ -1,7 +1,7 @@
 // path: src/backend-services/Bk_AddressService.ts
 'use server';
 import {AddressDto, UpdateAddressDto} from "@/services/dtos";
-import prisma from "@/utils/db";
+import { prisma } from "@/utils/db";
 import {FrontendAddressType} from "@/utils/validationSchema";
 
 /**

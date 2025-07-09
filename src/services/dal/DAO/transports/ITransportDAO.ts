@@ -1,6 +1,6 @@
 // path: src/services/dal/DAO/transports/ITransportDAO.ts
 
-import {TransportResponseDto, UpdateTransportRequestDto} from "@/services/dtos";
+import { UpdateTransportRequestDto} from "@/services/dtos";
 import {Transport as TransportPrisma} from "@prisma/client";
 
 export interface ITransportDAO {

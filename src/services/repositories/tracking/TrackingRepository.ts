@@ -1,6 +1,6 @@
 // src/services/repositories/tracking/TrackingRepository.ts
 import {TrackingEventStatus} from "@prisma/client";
-import prisma from "@/utils/db";
+import { prisma } from "@/utils/db";
 import { RoleDto } from "@/services/dtos/enums/EnumsDto";
 
 export const trackingRepository = {

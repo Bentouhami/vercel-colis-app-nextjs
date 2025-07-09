@@ -3,7 +3,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { getCurrentUserId } from "@/lib/auth";
+import { getCurrentUserId } from "@/lib/auth-utils";
 import { fetchUserNotifications } from "@/services/frontend-services/NotificationService";
 import { NotificationDto } from "@/services/dtos/notifications/NotificationDto";
 

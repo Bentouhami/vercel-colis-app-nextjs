@@ -163,7 +163,7 @@ The project utilizes Next.js App Router for page-based routing, with pages organ
 
 ## 4. Auth.js Configuration
 
-The `src/auth/auth.ts` file configures Auth.js (NextAuth.js), providing robust authentication capabilities.
+The `src/auth/auth-utils.ts` file configures Auth.js (NextAuth.js), providing robust authentication capabilities.
 
 **Key Configuration Details:**
 
@@ -233,7 +233,7 @@ The project exhibits a well-structured layered architecture, promoting separatio
 
 - **Location**: `src/utils/`, `src/lib/`
 - **Responsibility**: Provides common utility functions, helper modules, and shared configurations that can be used across different layers.
-- **Examples**: `axiosInstance.ts` (for API calls), `db.ts` (Prisma client), `constants.ts`, `dateUtils.ts`, `helpers.ts`, `validationSchema.ts`, `auth.ts` (Auth.js configuration).
+- **Examples**: `axiosInstance.ts` (for API calls), `db.ts` (Prisma client), `constants.ts`, `dateUtils.ts`, `helpers.ts`, `validationSchema.ts`, `auth-utils.ts` (Auth.js configuration).
 
 1. **DTOs (Data Transfer Objects)**:
 
@@ -245,7 +245,7 @@ The project exhibits a well-structured layered architecture, promoting separatio
 
 - **`Bk_UserService`**: Manages user-related operations (e.g., `getAllUsers`, `getUsersByAgencyAdmin`, `getUserByEmail`).
 - **`Bk_EnvoiService`**: Handles shipment-related logic (e.g., `updateEnvoi`, `getPaymentSuccessDataById`).
-- **`Auth.js` (via `src/auth/auth.ts`)**: Provides authentication and session management.
+- **`Auth.js` (via `src/auth/auth-utils.ts`)**: Provides authentication and session management.
 - **Prisma Client (`src/lib/prisma.ts`)**: The ORM for database interactions.
 - **Mailer Service (implied by `src/lib/mailer.ts` and `/api/send-email`)**: For sending emails.
 - **Cloudinary Configuration (`src/config/cloudinary.ts`)**: For image storage and management.

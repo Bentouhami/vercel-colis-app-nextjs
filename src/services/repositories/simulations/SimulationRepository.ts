@@ -16,7 +16,7 @@ import {
     UserDto
 } from "@/services/dtos";
 import {simulationDAO} from "@/services/dal/DAO/simulations/SimulationDAO";
-import prisma from "@/utils/db";
+import { prisma } from "@/utils/db";
 
 /**
  * @class SimulationRepository

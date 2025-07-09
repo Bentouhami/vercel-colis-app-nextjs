@@ -1,13 +1,13 @@
 // path: src/services/dal/DAO/transports/TransportDAO.ts
 
-import {TransportResponseDto, UpdateTransportRequestDto} from "@/services/dtos";
+import { UpdateTransportRequestDto} from "@/services/dtos";
 import {ITransportDAO} from "@/services/dal/DAO/transports/ITransportDAO";
-import prisma from "@/utils/db";
+import { prisma } from "@/utils/db";
 import {Transport as TransportPrisma} from "@prisma/client";
 
 
 /**
- * This class provides methods for interacting with the transports table in the database.
+ * This class provides methods for interacting with the transport table in the database.
  * @class TransportDAO
  * @description This class is responsible for handling database operations related to transports. It provides methods for retrieving transports from the database.
  * @implements {ITransportDAO}

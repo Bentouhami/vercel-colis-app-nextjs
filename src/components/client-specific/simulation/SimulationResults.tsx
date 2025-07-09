@@ -9,7 +9,7 @@ import {toast} from "sonner";
 // Services & Helpers
 import {deleteSimulationCookie, getSimulation} from "@/services/frontend-services/simulation/SimulationService";
 import {updateSimulationUserId} from "@/services/backend-services/Bk_SimulationService";
-import {checkAuthStatus} from "@/lib/auth";
+import {checkAuthStatus} from "@/lib/auth-utils";
 import ResultsSkeleton from "@/app/client/simulation/results/resultsSkeleton";
 import LoginPromptModal from "@/components/modals/LoginPromptModal";
 import {SimulationResponseDto} from "@/services/dtos";

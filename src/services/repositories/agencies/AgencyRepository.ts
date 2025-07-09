@@ -3,7 +3,7 @@
 import {IAgencyRepository} from "@/services/repositories/agencies/IAgencyRepository";
 import {AgencyAddressDto, AgencyDto, AgencyResponseDto, RoleDto} from "@/services/dtos";
 import {agencyDAO} from "@/services/dal/DAO/agencies/AgencyDAO";
-import prisma from "@/utils/db";
+import {prisma} from "@/utils/db";
 import {agencyStaffRepository} from "@/services/repositories/AgencyStaffs/agencyStaffRepository";
 
 export class AgencyRepository implements IAgencyRepository {

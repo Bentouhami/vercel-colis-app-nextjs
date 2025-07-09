@@ -1,3 +1,5 @@
+// path: src/app/client/unauthorized/page.tsx
+
 'use client';
 import React, {useEffect, useState} from 'react';
 import {useRouter} from 'next/navigation';

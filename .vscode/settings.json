@@ -1,0 +1,27 @@
+{
+    "github.copilot.advanced": {
+        "chat": {
+            "agent": {
+                "thinkingTool": true
+            },
+            "editor": {
+                "temporalContext": {
+                    "enabled": true
+                }
+            }
+        }
+    },
+    "github.copilot.chat.codesearch.enabled": true,
+    "github.copilot.enable": {
+        "typescript": true,
+        "markdown": true,
+        "plaintext": true,
+        "scminput": true,
+        "javascript": true,
+        "php": true
+    },
+    "php.validate.executablePath": "",
+    "editor.accessibilitySupport": "off",
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "github.copilot.nextEditSuggestions.enabled": true
+}

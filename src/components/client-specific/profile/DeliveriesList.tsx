@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useMemo } from "react";
-import { getCurrentUserId } from "@/lib/auth";
+import { getCurrentUserId } from "@/lib/auth-utils";
 import { fetchUserDeliveries } from "@/services/frontend-services/envoi/EnvoiService";
 import { EnvoisListDto } from "@/services/dtos";
 import { Loader2, ArrowUpDown, CheckCircle, XCircle } from "lucide-react";

@@ -6,7 +6,15 @@ export function setCorsHeaders(origin: string): HeadersInit | undefined {
   // Liste dynamique des origines autorisées
   const allowedOrigins =
     process.env.NODE_ENV === "production"
-      ? [PRODUCTION_ORIGIN]
+      ? [
+          PRODUCTION_ORIGIN,
+          ...(process.env.VERCEL_URL
+            ? [`https://${process.env.VERCEL_URL}`]
+            : []),
+          ...(process.env.VERCEL_PROJECT_PRODUCTION_URL
+            ? [`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`]
+            : []),
+        ]
       : [DEVELOPMENT_ORIGIN];
 
   // Vérification si l'origine est autorisée

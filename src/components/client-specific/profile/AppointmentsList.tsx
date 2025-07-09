@@ -2,7 +2,7 @@
 
 "use client";
 import React, { useEffect, useState } from "react";
-import { getCurrentUserId } from "@/lib/auth";
+import { getCurrentUserId } from "@/lib/auth-utils";
 import { AppointmentDto } from "@/services/dtos/appointments/AppointmentDto";
 import {fetchUserAppointments} from "@/services/frontend-services/appointement/AppointmentService";
 

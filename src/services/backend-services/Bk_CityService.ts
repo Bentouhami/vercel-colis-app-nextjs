@@ -1,6 +1,6 @@
 // path: src/services/backend-services/Bk_CityService.ts
 'use server';
-import prisma from "@/utils/db";
+import { prisma } from "@/utils/db";
 import {CityDto} from "@/services/dtos/cities/CityDto";
 
 /**

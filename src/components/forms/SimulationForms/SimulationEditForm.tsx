@@ -30,7 +30,7 @@ import {
 } from '@/services/frontend-services/AddressService';
 
 import { updateSimulationUserId } from '@/services/backend-services/Bk_SimulationService';
-import { checkAuthStatus } from '@/lib/auth';
+import { checkAuthStatus } from '@/lib/auth-utils';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

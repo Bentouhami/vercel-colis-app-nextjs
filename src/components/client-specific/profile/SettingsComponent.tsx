@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { ProfileDto } from "@/services/dtos";
-import { getCurrentUserId } from "@/lib/auth";
+import { getCurrentUserId } from "@/lib/auth-utils";
 import { getUserProfileById } from "@/services/frontend-services/UserService";
 import EditProfileForm from "@/components/forms/AuthForms/EditProfileForm";
 

@@ -7,7 +7,6 @@ import { motion } from "framer-motion"
 import Image from "next/image"
 import { useSearchParams } from "next/navigation"
 import { toast } from "sonner"
-
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -36,23 +35,36 @@ export default function LoginForm() {
 
     async function onSubmit(data: LoginUserDto) {
         setIsDisabled(true)
-
         startTransition(async () => {
             try {
-                const redirectUrl = searchParams.get("redirect") || undefined;
-
+                const redirectUrl = searchParams.get("redirect") || undefined
                 // This will either return an error or redirect (no return)
-                const result = await login(data.email, data.password, redirectUrl);
+                const result = await login(data.email, data.password, redirectUrl)
 
                 // If we get here, there was an error
                 if (result?.error) {
-                    toast.error(result.error);
-                    setIsDisabled(false);
+                    toast.error(result.error)
+                    setIsDisabled(false)
                 }
+                // If result is undefined, it means redirect happened successfully
+                // Don't show any error in this case
             } catch (error) {
-                console.error("Login error:", error);
-                toast.error("Erreur lors de la connexion");
-                setIsDisabled(false);
+                // 🚀 FIXED: Don't catch Next.js redirects as errors
+                if (
+                    error &&
+                    typeof error === "object" &&
+                    "digest" in error &&
+                    typeof error.digest === "string" &&
+                    error.digest.startsWith("NEXT_REDIRECT")
+                ) {
+                    // This is a successful redirect, don't show error toast
+                    return
+                }
+
+                // Only show error for actual errors
+                console.error("Login error:", error)
+                toast.error("Erreur lors de la connexion")
+                setIsDisabled(false)
             }
         })
     }

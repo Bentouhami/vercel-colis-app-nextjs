@@ -2,7 +2,7 @@
 
 import {IParcelDAO} from "@/services/dal/DAO/parcels/IParcelDAO";
 import {ParcelDto} from "@/services/dtos";
-import prisma from "@/utils/db";
+import { prisma } from "@/utils/db";
 
 class ParcelDAO implements IParcelDAO {
     async getParcelsBySimulationId(id: number): Promise<any | null> {

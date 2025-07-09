@@ -1,6 +1,6 @@
 // path: src/services/backend-services/Bk_CountryService.ts
 
-import prisma from "@/utils/db";
+import { prisma } from "@/utils/db";
 import {CountryDto} from "@/services/dtos/countries/CountryDto";
 
 /**

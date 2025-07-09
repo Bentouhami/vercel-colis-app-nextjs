@@ -10,7 +10,7 @@ import { CalendarDays, Mail, MapPin, Phone, Shield } from "lucide-react"
 import { CheckCircleIcon } from "@heroicons/react/24/solid"
 
 import RequireAuth from "@/components/auth/RequireAuth"
-import { getCurrentUserId } from "@/lib/auth"
+import { getCurrentUserId } from "@/lib/auth-utils"
 import { getUserProfileById } from "@/services/frontend-services/UserService"
 import { ProfileDto } from "@/services/dtos/users/UserDto"
 import { RoleDto } from "@/services/dtos"

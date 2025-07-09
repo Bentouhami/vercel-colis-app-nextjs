@@ -1,13 +1,19 @@
-// E:\fullstack_project\NextJs_Projects\newColiApp\src\lib\prisma.ts
-import { PrismaClient } from '@prisma/client'
-import { withAccelerate } from '@prisma/extension-accelerate'
+import { PrismaClient } from "@prisma/client/edge"
+import { withAccelerate } from "@prisma/extension-accelerate"
 
-const globalForPrisma = global as unknown as {
-    prisma: PrismaClient
+const prismaClientSingleton = () => {
+    return new PrismaClient({
+        datasourceUrl: process.env.DATABASE_URL,
+    }).$extends(withAccelerate())
 }
 
-const prisma = globalForPrisma.prisma || new PrismaClient().$extends(withAccelerate())
+type PrismaClientSingleton = ReturnType<typeof prismaClientSingleton>
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+const globalForPrisma = globalThis as unknown as {
+    prisma: PrismaClientSingleton | undefined
+}
 
-export default prisma
+// 🚀 FIXED: Export prisma properly
+export const prisma = globalForPrisma.prisma ?? prismaClientSingleton()
+
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma

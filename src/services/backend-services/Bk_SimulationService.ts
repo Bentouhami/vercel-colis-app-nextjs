@@ -7,7 +7,7 @@ import {
     SimulationSummaryDto,
     UpdateEditedSimulationDto,
 } from "@/services/dtos";
-import prisma from "@/utils/db";
+import { prisma } from "@/utils/db";
 import {simulationRepository} from "@/services/repositories/simulations/SimulationRepository";
 import {agencyRepository} from "@/services/repositories/agencies/AgencyRepository";
 import {parcelRepository} from "@/services/repositories/parcels/ParcelRepository";

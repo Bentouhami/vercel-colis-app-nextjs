@@ -1,7 +1,7 @@
 // path: src/app/api/v1/agencies/findAgency/route.ts
 
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/utils/db";
+import { prisma } from "@/utils/db";
 
 export async function GET(req: NextRequest) {
     // Extract query parameters

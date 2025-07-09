@@ -1,13 +1,12 @@
-// path: src/components/admin/menu/Sidebar.tsx
-'use client';
+"use client"
 
-import React, {useEffect, useState} from 'react';
-import Link from 'next/link';
-import {usePathname, useRouter} from 'next/navigation';
+import { useEffect, useState } from "react"
+import Link from "next/link"
+import { usePathname, useRouter } from "next/navigation"
 import {
     Bell,
     Building,
-    ChartPie,
+    PieChartIcon as ChartPie,
     ChevronLeft,
     ChevronRight,
     FileText,
@@ -22,147 +21,161 @@ import {
     Settings,
     Sun,
     Users,
-} from 'lucide-react';
-import {Button} from '@/components/ui/button';
-import {cn} from '@/lib/utils';
-import {useTheme} from 'next-themes';
-import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from '@/components/ui/dropdown-menu';
-import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
-import {signOut} from 'next-auth/react';
-import {RoleDto} from '@/services/dtos';
-import {FaUsers} from "react-icons/fa6";
-import ThemeColorSelector from "@/components/theme/ThemeColorSelector";
+} from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
+import { useTheme } from "next-themes"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { signOut } from "next-auth/react"
+import { RoleDto } from "@/services/dtos"
+import { FaUsers } from "react-icons/fa6"
+import ThemeColorSelector from "@/components/theme/ThemeColorSelector"
+import type { Session } from "next-auth"
+import { isAdminRole } from "@/lib/auth-utils"
 
 type MenuItem = {
-    name: string;
-    path: string;
-    icon: any;
-    roleAllowed: RoleDto[];
-};
-
-import { Session } from "next-auth";
+    name: string
+    path: string
+    icon: any
+    roleAllowed: RoleDto[]
+}
 
 interface SidebarProps {
-    session: Session | null;
+    session: Session | null
 }
 
 const Sidebar = ({ session }: SidebarProps) => {
-    const [isCollapsed, setIsCollapsed] = useState(false);
-    const [isMobileOpen, setIsMobileOpen] = useState(false);
-    const [mounted, setMounted] = useState(false);
-    
-    const pathname = usePathname();
-    const {theme, setTheme} = useTheme();
-    const router = useRouter();
+    const [isCollapsed, setIsCollapsed] = useState(false)
+    const [isMobileOpen, setIsMobileOpen] = useState(false)
+    const [mounted, setMounted] = useState(false)
+
+    const pathname = usePathname()
+    const { theme, setTheme } = useTheme()
+    const router = useRouter()
 
     const menuItems: MenuItem[] = [
         {
-            name: 'Dashboard',
+            name: "Dashboard",
             icon: Home,
-            path: '/admin',
-            roleAllowed: [RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN, RoleDto.ACCOUNTANT, RoleDto.CLIENT],
+            path: "/admin",
+            roleAllowed: [RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN, RoleDto.ACCOUNTANT],
         },
         {
-            name: 'Mes Agences',
+            name: "Mes Agences",
             icon: Building,
-            path: '/admin/agencies',
+            path: "/admin/agencies",
             roleAllowed: [RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN],
         },
-
         {
-            name: 'Envois',
+            name: "Envois",
             icon: Package,
-            path: '/admin/envois',
+            path: "/admin/envois",
             roleAllowed: [RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN, RoleDto.ACCOUNTANT],
         },
         {
-            name: 'Utilisateurs',
+            name: "Utilisateurs",
             icon: Users,
-            path: '/admin/users',
+            path: "/admin/users",
             roleAllowed: [RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN],
         },
         {
-            name: 'Paramètres',
+            name: "Paramètres",
             icon: Settings,
-            path: '/admin/settings',
+            path: "/admin/settings",
             roleAllowed: [RoleDto.SUPER_ADMIN],
         },
         {
-            name: 'Statistiques',
+            name: "Statistiques",
             icon: ChartPie,
-            path: '/admin/stats',
+            path: "/admin/stats",
             roleAllowed: [RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN, RoleDto.ACCOUNTANT],
         },
         {
-            name: 'Rapports',
+            name: "Rapports",
             icon: FileText,
-            path: '/admin/reports',
+            path: "/admin/reports",
             roleAllowed: [RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN, RoleDto.ACCOUNTANT],
         },
-
         {
-            name: 'Exporter',
+            name: "Exporter",
             icon: SaveAllIcon,
-            path: '/admin/export',
+            path: "/admin/export",
             roleAllowed: [RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN, RoleDto.ACCOUNTANT],
         },
-
         {
-            name: 'Administrateurs des Agences',
+            name: "Administrateurs des Agences",
             icon: FaUsers,
-            path: '/admin/agency-admins',
+            path: "/admin/agency-admins",
             roleAllowed: [RoleDto.SUPER_ADMIN],
-        }
-    ];
+        },
+    ]
 
-    // Properly filter menu items based on a user role
-    const finalMenuItems = session?.user?.role ? menuItems.filter((item) => {
-        if (!item.roleAllowed) return true;
-        return item.roleAllowed.includes(session?.user?.role!);
-    }) : [];
+    // Filter menu items based on user role
+    const finalMenuItems = session?.user?.role
+        ? menuItems.filter((item) => {
+            if (!item.roleAllowed) return true
+            return item.roleAllowed.includes(session.user.role as RoleDto)
+        })
+        : []
 
-
-    // Set mounted to true once on mount
     useEffect(() => {
-        setMounted(true);
-    }, []);
+        setMounted(true)
+    }, [])
 
-    // Update body overflow only when isMobileOpen changes
     useEffect(() => {
-        document.body.style.overflow = isMobileOpen ? 'hidden' : 'unset';
+        document.body.style.overflow = isMobileOpen ? "hidden" : "unset"
         return () => {
-            document.body.style.overflow = 'unset';
-        };
-    }, [isMobileOpen]);
+            document.body.style.overflow = "unset"
+        }
+    }, [isMobileOpen])
 
-    // Close mobile sidebar on route change
     useEffect(() => {
-        setIsMobileOpen(false);
-    }, [pathname]);
+        setIsMobileOpen(false)
+    }, [pathname])
 
-    
-
-    const toggleSidebar = () => setIsCollapsed((prev) => !prev);
-    const toggleMobileSidebar = () => setIsMobileOpen((prev) => !prev);
+    const toggleSidebar = () => setIsCollapsed((prev) => !prev)
+    const toggleMobileSidebar = () => setIsMobileOpen((prev) => !prev)
 
     const themeOptions = [
-        {value: 'light', icon: Sun, label: 'Light'},
-        {value: 'dark', icon: Moon, label: 'Dark'},
-        {value: 'system', icon: Laptop, label: 'System'},
-    ];
+        { value: "light", icon: Sun, label: "Light" },
+        { value: "dark", icon: Moon, label: "Dark" },
+        { value: "system", icon: Laptop, label: "System" },
+    ]
 
-    if (!mounted) return null;
+    const handleSignOut = async () => {
+        await signOut({ redirectTo: "/client/auth/login" })
+    }
+
+    const getRoleDisplayName = (role: RoleDto) => {
+        switch (role) {
+            case RoleDto.SUPER_ADMIN:
+                return "Super Admin"
+            case RoleDto.AGENCY_ADMIN:
+                return "Agency Admin"
+            case RoleDto.ACCOUNTANT:
+                return "Accountant"
+            default:
+                return "Role not defined!"
+        }
+    }
+
+    if (!mounted) return null
+
+    // Don't render sidebar if user doesn't have admin access
+    if (!session?.user?.role || !isAdminRole(session.user.role as RoleDto)) {
+        return null
+    }
 
     return (
         <div>
             {/* Mobile Navbar */}
-            <div
-                className="md:hidden fixed top-0 left-0 w-full bg-background z-50 border-b px-4 py-3 flex items-center justify-between backdrop-blur-lg bg-opacity-90">
+            <div className="md:hidden fixed top-0 left-0 w-full bg-background z-50 border-b px-4 py-3 flex items-center justify-between backdrop-blur-lg bg-opacity-90">
                 <Button variant="ghost" size="icon" onClick={toggleMobileSidebar} className="hover:bg-secondary">
-                    <Menu size={20}/>
+                    <Menu size={20} />
                 </Button>
                 <div className="flex items-center space-x-4">
-                    <Link href={`/`}>
+                    <Link href="/">
                         <h1 className="font-bold text-xl bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
                             Colis App Gestion
                         </h1>
@@ -171,7 +184,7 @@ const Sidebar = ({ session }: SidebarProps) => {
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon">
-                            <Bell size={20}/>
+                            <Bell size={20} />
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-64">
@@ -185,59 +198,54 @@ const Sidebar = ({ session }: SidebarProps) => {
             {/* Desktop Sidebar */}
             <div
                 className={cn(
-                    'fixed md:relative z-40 h-screen border-r bg-background/60 backdrop-blur-xl',
-                    'transition-all duration-300 ease-in-out',
-                    isCollapsed ? 'w-20' : 'w-72',
-                    isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
-                    'flex flex-col'
+                    "fixed md:relative z-40 h-screen border-r bg-background/60 backdrop-blur-xl",
+                    "transition-all duration-300 ease-in-out",
+                    isCollapsed ? "w-20" : "w-72",
+                    isMobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
+                    "flex flex-col",
                 )}
             >
                 {/* Sidebar Header */}
                 <div className="p-6 flex justify-between items-center border-b">
                     <div
-                        className={cn("flex items-center space-x-3 transition-all duration-300", isCollapsed && "opacity-0 w-0 hidden")}>
-                        <Link href={`/`}>
+                        className={cn(
+                            "flex items-center space-x-3 transition-all duration-300",
+                            isCollapsed && "opacity-0 w-0 hidden",
+                        )}
+                    >
+                        <Link href="/">
                             <h1 className="font-bold text-xl bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
                                 Colis App Gestion
                             </h1>
                         </Link>
                     </div>
-                    <Button variant="ghost" size="icon" onClick={toggleSidebar}
-                            className="hidden md:flex hover:bg-secondary">
-                        {isCollapsed ? <ChevronRight size={16}/> : <ChevronLeft size={16}/>}
+                    <Button variant="ghost" size="icon" onClick={toggleSidebar} className="hidden md:flex hover:bg-secondary">
+                        {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
                     </Button>
                 </div>
 
-                {/* User Profile Section or Login Prompt */}
+                {/* User Profile Section */}
                 <div className={cn("p-6 border-b", isCollapsed ? "flex justify-center" : "")}>
                     {session ? (
-                        <div
-                            className={cn("flex items-center space-x-4", isCollapsed && "flex-col space-x-0 space-y-2")}>
+                        <div className={cn("flex items-center space-x-4", isCollapsed && "flex-col space-x-0 space-y-2")}>
                             <Avatar className="h-10 w-10 border-2 border-primary/20">
-                                <AvatarImage src={session?.user?.image || undefined}/>
-                                <AvatarFallback>{session?.user?.name?.[0] || 'U'}</AvatarFallback>
+                                <AvatarImage src={session.user.image || undefined} />
+                                <AvatarFallback>{session.user.name?.[0] || "U"}</AvatarFallback>
                             </Avatar>
                             {!isCollapsed && (
                                 <div className="space-y-1">
-                                    <h2 className="text-sm font-semibold">{session?.user?.name || 'User'}</h2>
-                                    <p className="text-xs text-muted-foreground">{session?.user?.email?.toLowerCase()}</p>
+                                    <h2 className="text-sm font-semibold">{session.user.name || "User"}</h2>
+                                    <p className="text-xs text-muted-foreground">{session.user.email?.toLowerCase()}</p>
                                     <p className="text-xs text-muted-foreground capitalize">
-                                        {session?.user?.role === RoleDto.SUPER_ADMIN
-                                            ? 'Super Admin'
-                                            : session?.user?.role === RoleDto.AGENCY_ADMIN
-                                                ? 'Agency Admin'
-                                                : session?.user?.role === RoleDto.ACCOUNTANT
-                                                    ? 'Accountant'
-                                                    : "Role not defined!"}
+                                        {getRoleDisplayName(session.user.role as RoleDto)}
                                     </p>
                                 </div>
                             )}
                         </div>
                     ) : (
-                        <div
-                            className={cn("flex items-center space-x-4", isCollapsed && "flex-col space-x-0 space-y-2")}>
+                        <div className={cn("flex items-center space-x-4", isCollapsed && "flex-col space-x-0 space-y-2")}>
                             <div className="h-10 w-10 flex items-center justify-center rounded-full bg-primary/10">
-                                <LogIn size={20} className="text-primary"/>
+                                <LogIn size={20} className="text-primary" />
                             </div>
                             {!isCollapsed && (
                                 <div className="space-y-1">
@@ -249,101 +257,104 @@ const Sidebar = ({ session }: SidebarProps) => {
                     )}
                 </div>
 
-                {/* Navigation Links (Only show if logged in and not loading) */}
+                {/* Navigation Links */}
                 {session?.user?.role && (
                     <nav className="flex-1 p-4 space-y-1 overflow-y-auto scrollbar-none">
                         {finalMenuItems.map((item) => {
-                            const Icon = item.icon;
-
-                            // Correct isActive logic to prevent multiple selections
-                            const isActive = item.path === "/admin"
-                                ? pathname === item.path // Only match exactly "/admin" for Dashboard
-                                : pathname.startsWith(item.path); // Other links match as normal
+                            const Icon = item.icon
+                            const isActive = item.path === "/admin" ? pathname === item.path : pathname.startsWith(item.path)
 
                             return (
                                 <Link key={item.name} href={item.path} onClick={toggleMobileSidebar}>
                                     <Button
-                                        variant={isActive ? 'active_primary' : 'ghost'}
+                                        variant={isActive ? "active_primary" : "ghost"}
                                         className={cn(
-                                            'w-full group relative',
-                                            isCollapsed ? 'justify-center' : 'justify-start',
-                                            ' transition-all duration-200',
-                                            isActive && 'font-semibold'
-                                        )
-                                    }>
+                                            "w-full group relative",
+                                            isCollapsed ? "justify-center" : "justify-start",
+                                            "transition-all duration-200",
+                                            isActive && "font-semibold",
+                                        )}
+                                    >
                                         <Icon
                                             size={20}
-                                            className={cn('transition-transform duration-200', isActive ? '' : 'text-muted-foreground', 'group-hover:scale-110')}
+                                            className={cn(
+                                                "transition-transform duration-200",
+                                                isActive ? "" : "text-muted-foreground",
+                                                "group-hover:scale-110",
+                                            )}
                                         />
                                         {!isCollapsed && <span className="ml-3">{item.name}</span>}
                                     </Button>
                                 </Link>
-                            );
+                            )
                         })}
-
                     </nav>
                 )}
 
-                {/* Theme Toggle & Logout/Login */}
+                {/* Theme Toggle & Logout */}
                 <div className="p-4 border-t space-y-4">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost"
-                                    className={cn('w-full', isCollapsed ? 'justify-center' : 'justify-start')}>
-                                {theme === 'dark' ? <Moon size={20}/> : theme === 'light' ? <Sun size={20}/> :
-                                    <Laptop size={20}/>}
+                            <Button variant="ghost" className={cn("w-full", isCollapsed ? "justify-center" : "justify-start")}>
+                                {theme === "dark" ? <Moon size={20} /> : theme === "light" ? <Sun size={20} /> : <Laptop size={20} />}
                                 {!isCollapsed && <span className="ml-3">Theme</span>}
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align={isCollapsed ? 'center' : 'start'}>
+                        <DropdownMenuContent align={isCollapsed ? "center" : "start"}>
                             {themeOptions.map((option) => {
-                                const Icon = option.icon;
+                                const Icon = option.icon
                                 return (
-                                    <DropdownMenuItem key={option.value} onClick={() => setTheme(option.value)}
-                                                      className="cursor-pointer">
-                                        <Icon size={16} className="mr-2"/>
+                                    <DropdownMenuItem
+                                        key={option.value}
+                                        onClick={() => setTheme(option.value)}
+                                        className="cursor-pointer"
+                                    >
+                                        <Icon size={16} className="mr-2" />
                                         <span>{option.label}</span>
                                     </DropdownMenuItem>
-                                );
+                                )
                             })}
                         </DropdownMenuContent>
                     </DropdownMenu>
+
                     <div>
-                        <ThemeColorSelector/>
+                        <ThemeColorSelector />
                     </div>
 
                     {session ? (
                         <Button
                             variant="ghost"
-                            className={cn('w-full hover:bg-destructive/10 hover:text-destructive', isCollapsed ? 'justify-center' : 'justify-start')}
-                            onClick={() => signOut({redirectTo: '/'})}
+                            className={cn(
+                                "w-full hover:bg-destructive/10 hover:text-destructive",
+                                isCollapsed ? "justify-center" : "justify-start",
+                            )}
+                            onClick={handleSignOut}
                         >
-                            <LogOut size={20}/>
+                            <LogOut size={20} />
                             {!isCollapsed && <span className="ml-3">Logout</span>}
                         </Button>
                     ) : (
                         <Button
                             variant="ghost"
-                            className={cn('w-full hover:bg-primary/10 hover:text-primary', isCollapsed ? 'justify-center' : 'justify-start')}
-                            onClick={() => router.push(`/auth`)}
+                            className={cn(
+                                "w-full hover:bg-primary/10 hover:text-primary",
+                                isCollapsed ? "justify-center" : "justify-start",
+                            )}
+                            onClick={() => router.push("/client/auth/login")}
                         >
-                            <LogIn size={20}/>
+                            <LogIn size={20} />
                             {!isCollapsed && <span className="ml-3">Log in</span>}
                         </Button>
                     )}
                 </div>
             </div>
 
-            {/* Overlay for mobile */}
+            {/* Mobile Overlay */}
             {isMobileOpen && (
-                <div
-                    className="fixed inset-0 bg-background/80 backdrop-blur-sm z-30 md:hidden"
-                    onClick={toggleMobileSidebar}
-                />
+                <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-30 md:hidden" onClick={toggleMobileSidebar} />
             )}
         </div>
-    );
-};
+    )
+}
 
-export default Sidebar;
-
+export default Sidebar

@@ -1,7 +1,7 @@
 // path: src/services/repositories/addresses/AddressRepository.ts
 
 import {AddressDto, AgencyAddressDto, CreateAddressDto, UpdateAddressDto, UserAddressDto} from "@/services/dtos";
-import prisma from "@/utils/db";
+import { prisma } from "@/utils/db";
 import {IAddressRepository} from "@/services/repositories/addresses/IAddressRepository";
 import {undefined} from "zod";
 import {FrontendAddressType} from "@/utils/validationSchema";

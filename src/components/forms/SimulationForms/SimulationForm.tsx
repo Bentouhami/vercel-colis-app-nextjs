@@ -45,7 +45,7 @@ import { SimulationDtoRequest } from "@/services/dtos";
 import { COLIS_MAX_PER_ENVOI } from "@/utils/constants";
 import { getSimulationFromCookie } from "@/lib/simulationCookie";
 import { updateSimulationUserId } from "@/services/backend-services/Bk_SimulationService";
-import { checkAuthStatus } from "@/lib/auth";
+import { checkAuthStatus } from "@/lib/auth-utils";
 
 // Others
 import SimulationSkeleton from "@/app/client/simulation/simulationSkeleton";

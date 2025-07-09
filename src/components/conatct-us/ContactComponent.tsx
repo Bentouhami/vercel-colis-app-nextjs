@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Mail, MapPin, Phone, Send } from "lucide-react";
 import { motion } from "framer-motion";
 import { sendContactEmail } from "@/services/frontend-services/contact/ContactService";
-import { getCurrentUserId } from "@/lib/auth";
+import { getCurrentUserId } from "@/lib/auth-utils";
 import { getUserProfileById } from "@/services/frontend-services/UserService";
 import { ProfileDto } from "@/services/dtos";
 

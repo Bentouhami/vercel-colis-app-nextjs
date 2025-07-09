@@ -2,7 +2,7 @@
 
 import {ProfileDto, TransportResponseDto, UpdateTransportRequestDto} from "@/services/dtos";
 import {ITransportRepository} from "@/services/repositories/transports/ITransportRepository";
-import prisma from "@/utils/db";
+import { prisma } from "@/utils/db";
 
 /**
  * This class provides methods for interacting with the transport table in the database.

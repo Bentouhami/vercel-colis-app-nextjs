@@ -1,6 +1,6 @@
 // path: src/services/dal/DAO/agencies/AgencyDAO.ts
 
-import prisma from "@/utils/db";
+import { prisma } from "@/utils/db";
 import {IAgencyDAO} from "@/services/dal/DAO/agencies/IAgencyDAO";
 import {Agency as AgencyPrisma} from "@prisma/client";
 

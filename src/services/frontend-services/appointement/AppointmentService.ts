@@ -1,6 +1,6 @@
 // path: src/services/frontend-services/appointement/AppointmentService.ts
 import {AppointmentDto} from "@/services/dtos/appointments/AppointmentDto";
-import {getCurrentUserId} from "@/lib/auth";
+import {getCurrentUserId} from "@/lib/auth-utils";
 import apiClient from "@/utils/axiosInstance";
 
 export async function fetchUserAppointments(userId: string | number | null): Promise<AppointmentDto[]> {

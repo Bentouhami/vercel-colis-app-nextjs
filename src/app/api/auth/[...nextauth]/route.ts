@@ -1,6 +1,8 @@
 // path: /api/auth/[...nextauth]
+import { handlers } from "@/auth/auth"
 
+export const { GET, POST } = handlers
 
-import {handlers} from "@/auth/auth"
+// Enable edge runtime for better performance
+export const runtime = "edge"
 
-export const {GET, POST} = handlers
