@@ -1,0 +1,72 @@
+@startuml diagramme_uc_administration
+skinparam linetype ortho
+
+title Diagramme des Cas d'Utilisation - Administration Interne
+
+package "Espace Admin d'Agence" {
+  rectangle "UC-AGADM-01: Se connecter admin" as UC_AGADM_01
+  rectangle "UC-AGADM-02: Consulter dashboard agence" as UC_AGADM_02
+  rectangle "UC-AGADM-03: Gérer personnel agence" as UC_AGADM_03
+  rectangle "UC-AGADM-04: Gérer envois agence" as UC_AGADM_04
+  rectangle "UC-AGADM-05: Gérer clients agence" as UC_AGADM_05
+  rectangle "UC-AGADM-06: Consulter journaux activité agence" as UC_AGADM_06
+}
+
+package "Espace Comptable" {
+  rectangle "UC-ACC-01: Se connecter comptable" as UC_ACC_01
+  rectangle "UC-ACC-02: Consulter dashboard financier" as UC_ACC_02
+  rectangle "UC-ACC-03: Gérer & valider paiements" as UC_ACC_03
+  rectangle "UC-ACC-04: Gérer facturation" as UC_ACC_04
+  rectangle "UC-ACC-05: Exporter données financières" as UC_ACC_05
+  rectangle "UC-ACC-06: Consulter & gérer tarifs" as UC_ACC_06
+}
+
+package "Espace Super Admin" {
+  rectangle "UC-SADM-01: Se connecter super admin" as UC_SADM_01
+  rectangle "UC-SADM-02: Consulter dashboard global" as UC_SADM_02
+  rectangle "UC-SADM-03: Créer agence" as UC_SADM_03
+  rectangle "UC-SADM-04: Modifier agence" as UC_SADM_04
+  rectangle "UC-SADM-05: Consulter liste agences" as UC_SADM_05
+  rectangle "UC-SADM-06: Activer/Désactiver agence" as UC_SADM_06
+  rectangle "UC-SADM-07: Créer utilisateur (tous rôles)" as UC_SADM_07
+  rectangle "UC-SADM-08: Modifier infos & rôle utilisateur" as UC_SADM_08
+  rectangle "UC-SADM-09: Consulter liste utilisateurs" as UC_SADM_09
+  rectangle "UC-SADM-10: Bloquer/Débloquer utilisateur" as UC_SADM_10
+  rectangle "UC-SADM-11: Gérer tous les envois" as UC_SADM_11
+  rectangle "UC-SADM-12: Consulter tous journaux activité" as UC_SADM_12
+  rectangle "UC-SADM-13: Gérer paramètres généraux" as UC_SADM_13
+}
+
+' --- Relations Logiques ---
+
+' Admin Login Flow (common entry)
+UC_AGADM_01 --> UC_AGADM_02 : "Dashboard"
+UC_ACC_01 --> UC_ACC_02 : "Dashboard"
+UC_SADM_01 --> UC_SADM_02 : "Dashboard"
+
+' Admin d'Agence Flow
+UC_AGADM_02 --> UC_AGADM_03
+UC_AGADM_02 --> UC_AGADM_04
+UC_AGADM_02 --> UC_AGADM_05
+UC_AGADM_02 --> UC_AGADM_06
+
+' Comptable Flow
+UC_ACC_02 --> UC_ACC_03
+UC_ACC_02 --> UC_ACC_04
+UC_ACC_02 --> UC_ACC_05
+UC_ACC_02 --> UC_ACC_06
+
+' Super Admin Flow
+UC_SADM_02 --> UC_SADM_03
+UC_SADM_02 --> UC_SADM_04
+UC_SADM_02 --> UC_SADM_05
+UC_SADM_02 --> UC_SADM_06
+UC_SADM_02 --> UC_SADM_07
+UC_SADM_02 --> UC_SADM_08
+UC_SADM_02 --> UC_SADM_09
+UC_SADM_02 --> UC_SADM_10
+UC_SADM_02 --> UC_SADM_11
+UC_SADM_02 --> UC_SADM_12
+UC_SADM_02 --> UC_SADM_13
+
+@enduml

@@ -1,0 +1,38 @@
+@startuml uc_client_reinitialisation_mot_de_passe
+skinparam linetype ortho
+
+title Cas d'Utilisation - Réinitialisation du Mot de Passe Client
+
+actor Client
+
+rectangle "Système ColisApp" {
+  usecase "Réinitialiser mot de passe" as UC_ResetPassword
+
+  ' Cas inclus (étapes obligatoires du processus)
+  usecase "Demander réinitialisation" as UC_RequestReset
+  usecase "Recevoir lien de réinitialisation" as UC_ReceiveLink
+  usecase "Saisir nouveau mot de passe" as UC_EnterNewPassword
+  usecase "Confirmer réinitialisation" as UC_ConfirmReset
+
+  ' Cas étendus (scénarios alternatifs ou d'erreur)
+  usecase "Lien invalide ou expiré" as UC_InvalidLink
+  usecase "Erreur de saisie du nouveau mot de passe" as UC_InputError
+}
+
+' L'acteur principal initie le processus
+Client -r- UC_ResetPassword
+
+' Le cas principal inclut ces étapes obligatoires
+UC_ResetPassword .d.> UC_RequestReset : <<include>>
+UC_ResetPassword .u.> UC_ReceiveLink : <<include>>
+UC_ResetPassword ..d..> UC_EnterNewPassword : <<include>>
+UC_ResetPassword ..d..> UC_ConfirmReset : <<include>>
+
+' Scénarios d'erreur étendent le cas principal
+UC_ResetPassword <..d.. UC_InvalidLink : <<extend>>
+note on link: Si le lien est invalide/expiré
+
+UC_ResetPassword <.. UC_InputError : <<extend>>
+note on link: Si la saisie est incorrecte
+
+@enduml
