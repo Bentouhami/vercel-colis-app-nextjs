@@ -23,8 +23,10 @@ export default async function ProfileLayout({ children }: { children: ReactNode 
     }
 
     return (
-        <ProfileLayoutClient session={session}>
-            {children}
+        <ProfileLayoutClient session={session} >
+            <div className="container mx-auto px-4 py-8">
+                {children}
+            </div>
         </ProfileLayoutClient>
     )
 }
