@@ -1,0 +1,27 @@
+@startuml diagramme_uc_public_destinataire
+skinparam linetype ortho
+
+title Cas d'Utilisation - Espace Public & Destinataire
+
+package "Cas d'Utilisation Public & Destinataire" {
+  rectangle "UC-VIS-01: Consulter pages info" as UC_VIS_01
+  rectangle "UC-VIS-02: Simuler tarif envoi" as UC_VIS_02
+  rectangle "UC-VIS-03: Initier inscription" as UC_VIS_03
+  rectangle "UC-VIS-04: Initier connexion" as UC_VIS_04
+  rectangle "UC-VIS-05: Envoyer message contact" as UC_VIS_05
+  rectangle "UC-DEST-01: Suivre envoi par N°" as UC_DEST_01
+  rectangle "UC-DEST-02: Consulter historique événements" as UC_DEST_02
+}
+
+package "Références Externes (vers Client)" {
+  rectangle "UC-CLI-01: S'inscrire & créer compte" as UC_CLI_01
+  rectangle "UC-CLI-03: Se connecter" as UC_CLI_03
+}
+
+' --- Relations Logiques ---
+UC_VIS_02 --> UC_VIS_03 : "Pour finaliser"
+UC_VIS_03 ---> UC_CLI_01 : "Processus d'inscription"
+UC_VIS_04 --> UC_CLI_03 : "Processus de connexion"
+UC_DEST_01 --> UC_DEST_02 : "Détails"
+
+@enduml

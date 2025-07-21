@@ -1,0 +1,56 @@
+@startuml diagramme_uc_client
+skinparam linetype ortho
+
+title Cas d'Utilisation - Espace Client
+
+package "Cas d'Utilisation Client" {
+  rectangle "UC-CLI-01: S'inscrire & créer compte" as UC_CLI_01
+  rectangle "UC-CLI-02: Valider email" as UC_CLI_02
+  rectangle "UC-CLI-03: Se connecter" as UC_CLI_03
+  rectangle "UC-CLI-04: Se déconnecter" as UC_CLI_04
+  rectangle "UC-CLI-05: Réinitialiser mot de passe" as UC_CLI_05
+  rectangle "UC-CLI-06: Consulter profil" as UC_CLI_06
+  rectangle "UC-CLI-07: Modifier infos persos" as UC_CLI_07
+  rectangle "UC-CLI-08: Gérer carnet adresses" as UC_CLI_08
+  rectangle "UC-CLI-09: Gérer notifications" as UC_CLI_09
+  rectangle "UC-CLI-10: Fermer compte" as UC_CLI_10
+  rectangle "UC-CLI-11: Créer nouvel envoi" as UC_CLI_11
+  rectangle "UC-CLI-12: Ajouter/Sélectionner destinataire" as UC_CLI_12
+  rectangle "UC-CLI-13: Consulter récap envoi" as UC_CLI_13
+  rectangle "UC-CLI-14: Consulter historique envois" as UC_CLI_14
+  rectangle "UC-CLI-15: Consulter détails envoi" as UC_CLI_15
+  rectangle "UC-CLI-16: Suivre statut détaillé" as UC_CLI_16
+  rectangle "UC-CLI-17: Annuler envoi" as UC_CLI_17
+  rectangle "UC-CLI-18: Payer envoi" as UC_CLI_18
+  rectangle "UC-CLI-19: Consulter historique paiements" as UC_CLI_19
+  rectangle "UC-CLI-20: Recevoir confirmation paiement" as UC_CLI_20
+}
+
+package "Références Externes (depuis Public)" {
+  rectangle "UC-VIS-03: Initier inscription" as UC_VIS_03
+  rectangle "UC-VIS-04: Initier connexion" as UC_VIS_04
+}
+
+' --- Relations Logiques ---
+UC_CLI_01 --> UC_CLI_02 : "Vérification"
+UC_CLI_02 --> UC_CLI_03 : "Après validation"
+UC_CLI_03 --> UC_CLI_04 : "Déconnexion"
+UC_CLI_03 -right-> UC_CLI_06 : "Accès profil"
+UC_CLI_03 --> UC_CLI_14 : "Accès historique"
+UC_CLI_03 --> UC_CLI_11 : "Nouvel envoi"
+UC_CLI_05 --> UC_CLI_03 : "Après réinitialisation"
+UC_CLI_06 --> UC_CLI_07 : "Modifier"
+UC_CLI_06 --> UC_CLI_08 : "Gérer adresses"
+UC_CLI_06 --> UC_CLI_09 : "Gérer notifications"
+UC_CLI_06 --> UC_CLI_10 : "Fermer"
+
+UC_CLI_11 --> UC_CLI_12 : "Ajout destinataire"
+UC_CLI_12 --> UC_CLI_13 : "Récapitulatif"
+UC_CLI_13 --> UC_CLI_18 : "Paiement"
+UC_CLI_18 --> UC_CLI_19 : "Historique paiements"
+UC_CLI_18 ---> UC_CLI_20 : "Confirmation"
+UC_CLI_14 --> UC_CLI_15 : "Détails envoi"
+UC_CLI_15 --> UC_CLI_16 : "Suivi statut"
+UC_CLI_15 --> UC_CLI_17 : "Annuler"
+
+@enduml

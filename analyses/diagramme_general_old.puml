@@ -1,0 +1,42 @@
+@startuml diagramme_general_old
+skinparam linetype ortho
+
+' --- CAS D’UTILISATION DU VISITEUR (PAS DE COMPTE) ---
+rectangle "UC_visitor_simulation (Simulation sans compte)" as UC_VisitorSim
+
+' --- CAS D’UTILISATION DU CLIENT (AVEC COMPTE) ---
+rectangle "UC_client_inscription" as UC_Inscription
+rectangle "UC_client_se_connecter" as UC_Connexion
+rectangle "UC_client_utilisateur_simulation" as UC_Simulation
+rectangle "UC_client_confirmation_et_paiement" as UC_Paiement
+rectangle "UC_consulter_historique_des_envois" as UC_Historique
+rectangle "UC_suivi (Suivi envoi complet)" as UC_Suivi
+rectangle "UC_client_modifier_les_informations_du_compte" as UC_ModifCompte
+rectangle "UC_client_réinitialiser_du_mot_de_passe" as UC_ResetPass
+rectangle "UC_fermer_le_compte" as UC_CloseAccount
+
+'
+' --- FLÈCHES / RELATIONS LOGIQUES ---
+
+' 1) Visiteur peut simuler ou suivre un envoi sans compte
+UC_VisitorSim --> UC_Inscription : "Pour finaliser l’envoi"
+
+' 2) Inscription => Connexion
+UC_Inscription --> UC_Connexion : "Une fois inscrit"
+
+' 3) Connexion donne accès à la simulation plus poussée
+UC_Connexion --> UC_Simulation : "Simulation avec compte"
+
+' 4) Confirmation & Paiement
+UC_Simulation --> UC_Paiement : "Valider & Payer"
+
+' 5) Historique et Suivi complet
+UC_Paiement --> UC_Historique : "Voir l’envoi payé"
+UC_Historique --> UC_Suivi : "Suivre l’envoi en détail"
+
+' 6) Gestion du compte : profil, mot de passe, fermeture
+UC_Connexion --> UC_ModifCompte : "Modifier profil"
+UC_Connexion --> UC_ResetPass : "Mot de passe oublié"
+UC_ModifCompte --> UC_CloseAccount : "Clôturer / supprimer compte"
+
+@enduml
