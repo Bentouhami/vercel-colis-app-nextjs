@@ -2,21 +2,25 @@
 
 "use client"
 
-import React, { useState } from "react"
+import React from "react"
 import { SidebarProvider } from "@/components/ui/sidebar"
 import ProfileSideMenu from "@/components/client-specific/profile/ProfileSideMenu"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
-export default function ProfileSidebarWrapper() {
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+interface ProfileSidebarWrapperProps {
+    isSidebarOpen: boolean;
+    setIsSidebarOpen: (isOpen: boolean) => void;
+}
+
+export default function ProfileSidebarWrapper({ isSidebarOpen, setIsSidebarOpen }: ProfileSidebarWrapperProps) {
 
     return (
         <SidebarProvider>
             <div
                 className={`${
                     isSidebarOpen ? "w-64" : "w-16"
-                } hidden md:flex flex-col border-r border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 transition-all duration-300 relative`}
+                } flex flex-col border-r border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 transition-all duration-300 relative`}
             >
                 <ProfileSideMenu iconOnly={!isSidebarOpen} />
 

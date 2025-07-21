@@ -3,7 +3,7 @@ import type { ReactNode } from "react"
 import { redirect } from "next/navigation"
 import { auth } from "@/auth/auth"
 import { RoleDto } from "@/services/dtos"
-import ProfileSidebarWrapper from "@/components/client-specific/profile/ProfileSidebarWrapper"
+import ProfileLayoutClient from "@/components/client-specific/profile/ProfileLayoutClient"
 
 export default async function ProfileLayout({ children }: { children: ReactNode }) {
     const session = await auth()
@@ -23,18 +23,8 @@ export default async function ProfileLayout({ children }: { children: ReactNode 
     }
 
     return (
-        <div className="min-h-screen bg-gray-100 dark:bg-gray-900 pt-16">
-            <div className="flex w-full min-h-[calc(100vh-4rem)]">
-                {/* Sidebar - Fixed width */}
-                <div className="w-64 flex-shrink-0">
-                    <ProfileSidebarWrapper />
-                </div>
-
-                {/* Main content - Takes remaining space */}
-                <main className="flex-1 bg-white dark:bg-gray-800 shadow-lg">
-                    <div className="h-full p-6 overflow-y-auto">{children}</div>
-                </main>
-            </div>
-        </div>
+        <ProfileLayoutClient session={session}>
+            {children}
+        </ProfileLayoutClient>
     )
 }

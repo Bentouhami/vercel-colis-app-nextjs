@@ -1,3 +1,5 @@
+// src/components/client-specific/profile/ShipmentsComponent.tsx
+
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -179,7 +181,7 @@ export default function ShipmentsComponent() {
     }
 
     return (
-        <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <div className="w-full h-full">
             {/* Header */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
                 <div>
@@ -281,28 +283,48 @@ export default function ShipmentsComponent() {
 
             {/* Tabs */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-                <TabsList className="flex flex-wrap justify-start gap-2 p-1 bg-gray-100 dark:bg-gray-800 rounded-lg border dark:border-gray-700">
-                    <TabsTrigger value="all" className="text-sm py-2 px-4 data-[state=active]:bg-white data-[state=active]:text-indigo-600 data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-900 dark:data-[state=active]:text-indigo-400">
-                        Tous
-                    </TabsTrigger>
-                    <TabsTrigger value="pending" className="text-sm py-2 px-4 data-[state=active]:bg-white data-[state=active]:text-indigo-600 data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-900 dark:data-[state=active]:text-indigo-400">
-                        En attente
-                    </TabsTrigger>
-                    <TabsTrigger value="sent" className="text-sm py-2 px-4 data-[state=active]:bg-white data-[state=active]:text-indigo-600 data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-900 dark:data-[state=active]:text-indigo-400">
-                        En transit
-                    </TabsTrigger>
-                    <TabsTrigger value="delivered" className="text-sm py-2 px-4 data-[state=active]:bg-white data-[state=active]:text-indigo-600 data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-900 dark:data-[state=active]:text-indigo-400">
-                        Livrés
-                    </TabsTrigger>
-                    <TabsTrigger value="cancelled" className="text-sm py-2 px-4 data-[state=active]:bg-white data-[state=active]:text-indigo-600 data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-900 dark:data-[state=active]:text-indigo-400">
-                        Annulés
-                    </TabsTrigger>
-                    <TabsTrigger value="returned" className="text-sm py-2 px-4 data-[state=active]:bg-white data-[state=active]:text-indigo-600 data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-900 dark:data-[state=active]:text-indigo-400">
-                        Retournés
-                    </TabsTrigger>
-                </TabsList>
+                <div className="mb-6">
+                    <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:flex md:w-auto gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-lg border dark:border-gray-700 h-auto">
+                        <TabsTrigger
+                            value="all"
+                            className="text-xs sm:text-sm py-2 px-2 sm:px-4 whitespace-nowrap data-[state=active]:bg-white data-[state=active]:text-indigo-600 data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-900 dark:data-[state=active]:text-indigo-400"
+                        >
+                            Tous
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="pending"
+                            className="text-xs sm:text-sm py-2 px-2 sm:px-4 whitespace-nowrap data-[state=active]:bg-white data-[state=active]:text-indigo-600 data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-900 dark:data-[state=active]:text-indigo-400"
+                        >
+                            En attente
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="sent"
+                            className="text-xs sm:text-sm py-2 px-2 sm:px-4 whitespace-nowrap data-[state=active]:bg-white data-[state=active]:text-indigo-600 data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-900 dark:data-[state=active]:text-indigo-400"
+                        >
+                            En transit
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="delivered"
+                            className="text-xs sm:text-sm py-2 px-2 sm:px-4 whitespace-nowrap data-[state=active]:bg-white data-[state=active]:text-indigo-600 data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-900 dark:data-[state=active]:text-indigo-400"
+                        >
+                            Livrés
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="cancelled"
+                            className="text-xs sm:text-sm py-2 px-2 sm:px-4 whitespace-nowrap data-[state=active]:bg-white data-[state=active]:text-indigo-600 data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-900 dark:data-[state=active]:text-indigo-400"
+                        >
+                            Annulés
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="returned"
+                            className="text-xs sm:text-sm py-2 px-2 sm:px-4 whitespace-nowrap data-[state=active]:bg-white data-[state=active]:text-indigo-600 data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-900 dark:data-[state=active]:text-indigo-400"
+                        >
+                            Retournés
+                        </TabsTrigger>
+                    </TabsList>
+                </div>
 
-                <TabsContent value={activeTab} className="mt-6">
+                <TabsContent value={activeTab}>
                     {filteredShipments.length === 0 ? (
                         <Card>
                             <CardContent className="p-12 text-center">
@@ -391,7 +413,7 @@ export default function ShipmentsComponent() {
                                                     <p className="font-semibold text-xl text-gray-900 dark:text-gray-100">
                                                         {shipment.totalPrice?.toFixed(2) || "0.00"} €
                                                     </p>
-                                                    <div className="flex gap-2 w-full sm:w-auto justify-end">
+                                                    <div className="flex flex-col gap-2 w-full sm:w-auto justify-end">
                                                         <Button variant="outline" size="sm" onClick={() => handleViewDetails(shipment)} className="flex-1 sm:flex-none">
                                                             <Eye className="h-4 w-4 mr-1" />
                                                             Détails
