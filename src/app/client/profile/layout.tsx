@@ -1,67 +1,40 @@
-"use client"
-
-import type React from "react"
-import { useState } from "react"
-import RequireAuth from "@/components/auth/RequireAuth"
-import { SidebarProvider } from "@/components/ui/sidebar"
-import ProfileSideMenu from "@/components/client-specific/profile/ProfileSideMenu"
-import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, Menu } from "lucide-react"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+// src/app/client/profile/layout.tsx
+import type { ReactNode } from "react"
+import { redirect } from "next/navigation"
+import { auth } from "@/auth/auth"
 import { RoleDto } from "@/services/dtos"
+import ProfileSidebarWrapper from "@/components/client-specific/profile/ProfileSidebarWrapper"
 
-export default function ProfileLayout({ children }: { children: React.ReactNode }) {
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true)
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+export default async function ProfileLayout({ children }: { children: ReactNode }) {
+    const session = await auth()
+
+    // 1. Check for session existence
+    if (!session?.user) {
+        const callbackUrl = encodeURIComponent("/client/profile")
+        redirect(`/client/auth/login?callbackUrl=${callbackUrl}`)
+    }
+
+    // 2. Check for the correct role
+    const allowedRoles = [RoleDto.CLIENT, RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN, RoleDto.ACCOUNTANT]
+
+    const userRole = session.user.role
+    if (!userRole || !allowedRoles.includes(userRole)) {
+        redirect("/client/unauthorized")
+    }
 
     return (
-        <RequireAuth
-            allowedRoles={[RoleDto.CLIENT, RoleDto.DESTINATAIRE]}
-            customMessage="Vous devez être connecté en tant que client pour accéder à votre profil"
-        >
-            <SidebarProvider>
-                <div className="w-full flex justify-center items-start min-h-screen bg-gray-100 dark:bg-gray-900 pt-16 relative">
-                    <div className="flex w-full max-w-5xl min-h-[80vh] bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
-                        {/* Sidebar Toggle for Mobile */}
-                        <div className="absolute top-4 left-4 md:hidden z-10">
-                            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-                                <SheetTrigger asChild>
-                                    <Button variant="outline" size="icon">
-                                        <Menu className="w-6 h-6" />
-                                    </Button>
-                                </SheetTrigger>
-                                <SheetContent side="left" className="p-0 w-64">
-                                    <ProfileSideMenu onNavigate={() => setIsMobileMenuOpen(false)} />
-                                </SheetContent>
-                            </Sheet>
-                        </div>
-
-                        {/* Sidebar for Desktop */}
-                        <div
-                            className={`${
-                                isSidebarOpen ? "w-64" : "w-16"
-                            } hidden md:flex flex-col border-r border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 transition-all duration-300 relative`}
-                        >
-                            <ProfileSideMenu iconOnly={!isSidebarOpen} />
-
-                            {/* Toggle Button - Always Visible */}
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="absolute top-4 -right-5 bg-white dark:bg-gray-800 border dark:border-gray-600 rounded-full shadow-md z-10"
-                                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                            >
-                                {isSidebarOpen ? <ChevronLeft /> : <ChevronRight />}
-                            </Button>
-                        </div>
-
-                        {/* Main Content */}
-                        <main className="flex-1 p-6 flex justify-center">
-                            <div className="w-full max-w-3xl">{children}</div>
-                        </main>
-                    </div>
+        <div className="min-h-screen bg-gray-100 dark:bg-gray-900 pt-16">
+            <div className="flex w-full min-h-[calc(100vh-4rem)]">
+                {/* Sidebar - Fixed width */}
+                <div className="w-64 flex-shrink-0">
+                    <ProfileSidebarWrapper />
                 </div>
-            </SidebarProvider>
-        </RequireAuth>
+
+                {/* Main content - Takes remaining space */}
+                <main className="flex-1 bg-white dark:bg-gray-800 shadow-lg">
+                    <div className="h-full p-6 overflow-y-auto">{children}</div>
+                </main>
+            </div>
+        </div>
     )
 }

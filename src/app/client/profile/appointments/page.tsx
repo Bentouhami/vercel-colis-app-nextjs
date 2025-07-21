@@ -1,7 +1,7 @@
 // src/app/client/profile/appointments/page.tsx
 
 import React from "react";
-import AppointmentsList from "@/components/client-specific/profile/AppointmentsList";
+import AppointmentsList from "@/components/client-specific/profile/AppointmentsComponent";
 
 export default function AppointmentsPage() {
     return (

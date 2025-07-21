@@ -1,26 +1,26 @@
 // path: src/app/client/simulation/results/page.tsx
 "use client";
 
-import React, {useEffect, useState, useTransition} from "react";
-import {useRouter} from "next/navigation";
+import React, { useEffect, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import {toast} from "sonner";
+import { toast } from "sonner";
 
 // Services & Helpers
-import {deleteSimulationCookie, getSimulation} from "@/services/frontend-services/simulation/SimulationService";
-import {updateSimulationUserId} from "@/services/backend-services/Bk_SimulationService";
-import {checkAuthStatus} from "@/lib/auth-utils";
+import { deleteSimulationCookie, getSimulation } from "@/services/frontend-services/simulation/SimulationService";
+import { updateSimulationUserId } from "@/services/backend-services/Bk_SimulationService";
+import { checkAuthStatus } from "@/lib/auth-utils";
 import ResultsSkeleton from "@/app/client/simulation/results/resultsSkeleton";
 import LoginPromptModal from "@/components/modals/LoginPromptModal";
-import {SimulationResponseDto} from "@/services/dtos";
-import {SimulationStatus} from "@/services/dtos/enums/EnumsDto";
+import { SimulationResponseDto } from "@/services/dtos";
+import { SimulationStatus } from "@/services/dtos/enums/EnumsDto";
 
 // Shadcn UI Components
-import {Button} from "@/components/ui/button";
-import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 // Icons
-import {ArrowRight, Calendar, DollarSign, MapPin, Package, Weight} from "lucide-react";
+import { ArrowRight, Calendar, DollarSign, MapPin, Package, Weight } from "lucide-react";
 
 export default function SimulationResults() {
     const router = useRouter();
@@ -134,26 +134,29 @@ export default function SimulationResults() {
             (async () => {
                 try {
                     // const authResult = await checkAuthStatus();
-                    if (results) {
-                        if (userId && !results.userId) {
-                            results.userId = Number(userId);
-                            results.simulationStatus = SimulationStatus.CONFIRMED;
-                            const response = await updateSimulationUserId(results.id, results.userId);
-                            if (!response) {
-                                toast.error("Une erreur est survenue lors de la mise à jour de la simulation.");
-                                setIsActionInProgress(false);
-                                return;
-                            }
-                            toast("Redirection en cours...");
-                            setTimeout(() => {
-                                router.push("/client/simulation/edit");
-                                setIsActionInProgress(false);
-                            }, 3000);
-                        }
-                    } else {
+                    if (!results) {
                         toast.error("Une erreur est survenue lors de la récupération des résultats de la simulation.");
                         setIsActionInProgress(false);
+                        return;
                     }
+
+                    // Only attempt to update userId if authenticated and simulation is not yet associated with a user
+                    if (isAuthenticated && userId && !results.userId) {
+                        results.userId = Number(userId);
+                        results.simulationStatus = SimulationStatus.CONFIRMED; // Consider if this status change is always desired here
+                        const response = await updateSimulationUserId(results.id, results.userId);
+                        if (!response) {
+                            toast.error("Une erreur est survenue lors de la mise à jour de la simulation.");
+                            setIsActionInProgress(false);
+                            return;
+                        }
+                    }
+
+                    toast("Redirection en cours...");
+                    setTimeout(() => {
+                        router.push("/client/simulation/edit");
+                        setIsActionInProgress(false);
+                    }, 1000); // Reduced timeout for faster feedback
                 } catch (error) {
                     console.error("Error updating simulation:", error);
                     toast.error("Une erreur est survenue lors de la mise à jour de la simulation.");
@@ -164,155 +167,136 @@ export default function SimulationResults() {
     };
 
     if (loading || !results) {
-        return <ResultsSkeleton/>;
+        return <ResultsSkeleton />;
     }
 
     return (
-        <div className="max-w-4xl mx-auto p-6 space-y-6 mb-52 bg-gray-50 rounded-lg shadow-lg mt-5">
-            <h1 className="text-3xl font-bold text-center mb-8 text-blue-700">Résultats de la Simulation</h1>
+        <div className="container mx-auto py-10 px-4">
+            <h1 className="text-4xl font-bold text-center mb-8 text-primary">
+                Votre Simulation de Colis
+            </h1>
 
-            {/* Departure & Destination Cards */}
-            <div className="grid md:grid-cols-2 gap-6">
-                <Card className="border-l-4 border-blue-500 shadow-sm">
+            {/* Main Price Display */}
+            <Card className="mb-8 p-6 text-center bg-primary text-primary-foreground shadow-lg">
+                <CardTitle className="text-xl font-semibold mb-2">Prix Total Estimé</CardTitle>
+                <CardContent className="text-6xl font-extrabold">
+                    {results.totalPrice ? `${results.totalPrice} €` : "À calculer"}
+                </CardContent>
+                {results.totalPrice === null && (
+                    <p className="text-sm opacity-80 mt-2">
+                        Le prix sera calculé après validation et confirmation.
+                    </p>
+                )}
+            </Card>
+
+            <div className="grid lg:grid-cols-3 gap-8 mb-8">
+                {/* Departure Card */}
+                <Card className="lg:col-span-1 shadow-md">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-gray-700">
-                            <MapPin className="h-5 w-5 text-blue-500"/>
+                        <CardTitle className="flex items-center gap-2 text-lg font-semibold text-blue-700">
+                            <MapPin className="h-5 w-5 text-blue-600" />
                             Départ
                         </CardTitle>
                     </CardHeader>
-                    <CardContent>
-                        <p>
-                            <span className="font-medium">Pays:</span> {results.departureCountry}
-                        </p>
-                        <p>
-                            <span className="font-medium">Ville:</span> {results.departureCity}
-                        </p>
-                        <p>
-                            <span className="font-medium">Agence:</span> {results.departureAgency}
-                        </p>
+                    <CardContent className="space-y-2">
+                        <p><span className="font-medium">Pays:</span> {results.departureCountry}</p>
+                        <p><span className="font-medium">Ville:</span> {results.departureCity}</p>
+                        <p><span className="font-medium">Agence:</span> {results.departureAgency}</p>
                     </CardContent>
                 </Card>
 
-                <Card className="border-l-4 border-green-500 shadow-sm">
+                {/* Destination Card */}
+                <Card className="lg:col-span-1 shadow-md">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-gray-700">
-                            <MapPin className="h-5 w-5 text-green-500"/>
+                        <CardTitle className="flex items-center gap-2 text-lg font-semibold text-green-700">
+                            <MapPin className="h-5 w-5 text-green-600" />
                             Destination
                         </CardTitle>
                     </CardHeader>
-                    <CardContent>
-                        <p>
-                            <span className="font-medium">Pays:</span> {results.destinationCountry}
-                        </p>
-                        <p>
-                            <span className="font-medium">Ville:</span> {results.destinationCity}
-                        </p>
-                        <p>
-                            <span className="font-medium">Agence:</span> {results.destinationAgency}
-                        </p>
+                    <CardContent className="space-y-2">
+                        <p><span className="font-medium">Pays:</span> {results.destinationCountry}</p>
+                        <p><span className="font-medium">Ville:</span> {results.destinationCity}</p>
+                        <p><span className="font-medium">Agence:</span> {results.destinationAgency}</p>
+                    </CardContent>
+                </Card>
+
+                {/* Summary Calculations Card */}
+                <Card className="lg:col-span-1 shadow-md">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-lg font-semibold text-gray-700">
+                            <DollarSign className="h-5 w-5 text-gray-600" />
+                            Résumé
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                        <div className="flex items-center gap-2">
+                            <Weight className="h-4 w-4 text-gray-500" />
+                            <p><span className="font-medium">Poids total:</span> {results.totalWeight} kg</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Calendar className="h-4 w-4 text-gray-500" />
+                            <p><span className="font-medium">Date de départ:</span> {new Date(results.departureDate).toLocaleDateString()}</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Calendar className="h-4 w-4 text-gray-500" />
+                            <p><span className="font-medium">Date d’arrivée estimée:</span> {new Date(results.arrivalDate).toLocaleDateString()}</p>
+                        </div>
                     </CardContent>
                 </Card>
             </div>
 
             {/* Parcel Details Card */}
-            <Card className="mt-6 bg-blue-50">
+            <Card className="mb-8 shadow-md">
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <Package className="h-5 w-5 text-blue-500"/>
+                    <CardTitle className="flex items-center gap-2 text-lg font-semibold text-gray-700">
+                        <Package className="h-5 w-5 text-gray-600" />
                         Détails des Colis
                     </CardTitle>
                 </CardHeader>
-                <CardContent className="grid md:grid-cols-2 gap-4">
+                <CardContent className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {results.parcels?.map((pkg, index) => (
-                        <div key={index} className="p-4 bg-white rounded-lg shadow-sm border">
-                            <p>
-                                <span className="font-medium">Colis {index + 1}:</span>
-                            </p>
-                            <p>Hauteur: {pkg.height} cm</p>
-                            <p>Largeur: {pkg.width} cm</p>
-                            <p>Longueur: {pkg.length} cm</p>
-                            <p>Poids: {pkg.weight} kg</p>
+                        <div key={index} className="p-4 border rounded-lg bg-muted/20">
+                            <p className="font-semibold mb-1">Colis {index + 1}:</p>
+                            <p className="text-sm text-gray-600">Hauteur: {pkg.height} cm</p>
+                            <p className="text-sm text-gray-600">Largeur: {pkg.width} cm</p>
+                            <p className="text-sm text-gray-600">Longueur: {pkg.length} cm</p>
+                            <p className="text-sm text-gray-600">Poids: {pkg.weight} kg</p>
                         </div>
                     ))}
                 </CardContent>
             </Card>
 
-            {/* Summary Calculations Card */}
-            <Card className="bg-blue-100">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-blue-700">
-                        <DollarSign className="h-5 w-5"/>
-                        Résumé des Calculs
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="grid md:grid-cols-2 gap-4">
-                    <div className="flex items-center gap-3">
-                        <Weight className="h-5 w-5 text-gray-500"/>
-                        <div>
-                            <p className="text-sm text-gray-500">Poids total</p>
-                            <p className="font-medium">{results.totalWeight} kg</p>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <Calendar className="h-5 w-5 text-gray-500"/>
-                        <div>
-                            <p className="text-sm text-gray-500">Date de départ</p>
-                            <p className="font-medium">{new Date(results.departureDate).toLocaleDateString()}</p>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <Calendar className="h-5 w-5 text-gray-500"/>
-                        <div>
-                            <p className="text-sm text-gray-500">Date d’arrivée estimée</p>
-                            <p className="font-medium">{new Date(results.arrivalDate).toLocaleDateString()}</p>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
-
-            {/* Total Price Card */}
-            <Card className="bg-blue-100">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-blue-700">
-                        <DollarSign className="h-5 w-5"/>
-                        Prix Total
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p className="text-3xl font-bold text-center text-blue-800">
-                        {results.totalPrice ? `${results.totalPrice} €` : "À calculer"}
-                    </p>
-                </CardContent>
-            </Card>
-
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
                 <Button
                     disabled={isActionInProgress}
-                    className="flex items-center gap-2 px-8 py-6 text-lg bg-green-500 hover:bg-green-600 text-white"
+                    size="lg"
+                    className="min-w-[200px]"
                     onClick={handleValidate}
                 >
-                    Valider
+                    Valider la Simulation
+                </Button>
+                <Button
+                    disabled={isActionInProgress}
+                    variant="outline"
+                    size="lg"
+                    className="min-w-[200px]"
+                    onClick={handleEdit}
+                >
+                    Modifier la Simulation
+                    <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
                 <Button
                     disabled={isActionInProgress}
                     variant="destructive"
-                    className="flex items-center gap-2 px-8 py-6 text-lg bg-red-500 hover:bg-red-600 text-white"
+                    size="lg"
+                    className="min-w-[200px]"
                     onClick={handleCancel}
                 >
                     Annuler
                 </Button>
-                <Link href="/client/simulation/edit">
-                    <Button
-                        onClick={handleEdit}
-                        disabled={isActionInProgress}
-                        className="flex items-center gap-2 px-8 py-6 text-lg bg-green-500 hover:bg-green-600 text-white"
-                    >
-                        Modifier ma simulation
-                        <ArrowRight className="h-4 w-4"/>
-                    </Button>
-                </Link>
             </div>
+
             <LoginPromptModal
                 show={showLoginPrompt}
                 handleClose={() => setShowLoginPrompt(false)}
