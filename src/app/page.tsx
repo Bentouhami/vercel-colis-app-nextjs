@@ -81,6 +81,22 @@ export default async function Home() {
                                         <ArrowRight className="w-4 h-4" />
                                     </div>
                                 </Link>
+
+                                {/* Suivi Envois */}
+                                <Link
+                                    href="/client/tracking"
+                                    className="flex flex-col items-center p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow hover:bg-gray-50 dark:hover:bg-gray-700 transition group"
+                                >
+                                    <Package className="w-12 h-12 text-indigo-600 mb-4" />
+                                    <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Suivi Envois</h4>
+                                    <p className="text-sm text-gray-600 dark:text-gray-300 text-center mb-4">
+                                        Suivez l&#39;état de votre colis en temps réel
+                                    </p>
+                                    <div className="flex items-center text-indigo-600 group-hover:translate-x-1 transition-transform">
+                                        <span className="text-sm font-medium mr-1">Accéder</span>
+                                        <ArrowRight className="w-4 h-4" />
+                                    </div>
+                                </Link>
                             </div>
                         </div>
                     </div>

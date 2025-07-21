@@ -3,12 +3,14 @@
 "use client";
 import { Suspense, useCallback, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { AlertCircle, ArrowRight, CheckCircle, Loader2, MailCheck, RotateCcw, XCircle } from 'lucide-react';
 
 const VerifyEmailContent = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const token = searchParams.get('token');
+    const { update } = useSession();
     const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'invalid'>('loading');
     const [message, setMessage] = useState<string>("");
     const [countdown, setCountdown] = useState(5);
@@ -19,13 +21,18 @@ const VerifyEmailContent = () => {
             setCountdown((prev) => {
                 if (prev <= 1) {
                     clearInterval(timer);
-                    router.push('/client/auth/login');
                     return 0;
                 }
                 return prev - 1;
             });
         }, 1000);
-    }, [router]);
+    }, []);
+
+    useEffect(() => {
+        if (countdown === 0 && status === 'success') {
+            router.push('/client/auth/login');
+        }
+    }, [countdown, status, router]);
 
     useEffect(() => {
         if (!token) {
@@ -48,6 +55,7 @@ const VerifyEmailContent = () => {
                 if (response.ok) {
                     setStatus('success');
                     setMessage("Votre adresse email a été vérifiée avec succès !");
+                    await update(); // Force session update
                     // Start countdown for redirect
                     startCountdown();
                 } else {
@@ -62,7 +70,7 @@ const VerifyEmailContent = () => {
         };
 
         verifyEmail();
-    }, [startCountdown, token]);
+    }, [startCountdown, token, update]);
 
 
     const handleRetry = () => {

@@ -29,10 +29,7 @@ const login = async (email: string, password: string, redirectUrl?: string) => {
     if (result?.error) {
       return { error: "Email ou mot de passe incorrect." }
     }
-
-    // 🚀 Let middleware handle role-based redirects automatically
-    // Just redirect to root - middleware will redirect to appropriate dashboard
-    redirect(redirectUrl || "/")
+    return { success: true }
   } catch (error) {
     // If it's a redirect, let it propagate
     if (

@@ -1,3 +1,5 @@
+// src/components/forms/AuthForms/LoginForm.tsx
+
 "use client"
 
 import { useState, useTransition } from "react"
@@ -5,7 +7,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { motion } from "framer-motion"
 import Image from "next/image"
-import { useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
@@ -20,6 +22,7 @@ interface LoginUserDto {
 }
 
 export default function LoginForm() {
+    const router = useRouter()
     const searchParams = useSearchParams()
     const [showPassword, setShowPassword] = useState(false)
     const [isDisabled, setIsDisabled] = useState(false)
@@ -37,33 +40,19 @@ export default function LoginForm() {
         setIsDisabled(true)
         startTransition(async () => {
             try {
-                const redirectUrl = searchParams.get("redirect") || undefined
-                // This will either return an error or redirect (no return)
-                const result = await login(data.email, data.password, redirectUrl)
+                const result = await login(data.email, data.password)
 
-                // If we get here, there was an error
                 if (result?.error) {
                     toast.error(result.error)
-                    setIsDisabled(false)
+                } else if (result?.success) {
+                    toast.success("Connexion réussie !")
+                    router.push(searchParams.get("redirect") || "/client/profile")
+                    router.refresh()
                 }
-                // If result is undefined, it means redirect happened successfully
-                // Don't show any error in this case
             } catch (error) {
-                // 🚀 FIXED: Don't catch Next.js redirects as errors
-                if (
-                    error &&
-                    typeof error === "object" &&
-                    "digest" in error &&
-                    typeof error.digest === "string" &&
-                    error.digest.startsWith("NEXT_REDIRECT")
-                ) {
-                    // This is a successful redirect, don't show error toast
-                    return
-                }
-
-                // Only show error for actual errors
                 console.error("Login error:", error)
                 toast.error("Erreur lors de la connexion")
+            } finally {
                 setIsDisabled(false)
             }
         })
