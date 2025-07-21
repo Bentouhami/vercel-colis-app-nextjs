@@ -1,0 +1,22 @@
+@startuml diagramme_uc_admin_agence
+skinparam linetype ortho
+
+title Cas d'Utilisation - Admin d'Agence
+
+package "Cas d'Utilisation Admin d'Agence" {
+  rectangle "UC-AGADM-01: Se connecter admin" as UC_AGADM_01
+  rectangle "UC-AGADM-02: Consulter dashboard agence" as UC_AGADM_02
+  rectangle "UC-AGADM-03: Gérer personnel agence" as UC_AGADM_03
+  rectangle "UC-AGADM-04: Gérer envois agence" as UC_AGADM_04
+  rectangle "UC-AGADM-05: Gérer clients agence" as UC_AGADM_05
+  rectangle "UC-AGADM-06: Consulter journaux activité agence" as UC_AGADM_06
+}
+
+' --- Relations Logiques ---
+UC_AGADM_01 --> UC_AGADM_02 : "Dashboard"
+UC_AGADM_02 --> UC_AGADM_03
+UC_AGADM_02 --> UC_AGADM_04
+UC_AGADM_02 --> UC_AGADM_05
+UC_AGADM_02 --> UC_AGADM_06
+
+@enduml
