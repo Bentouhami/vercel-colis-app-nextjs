@@ -1,11 +1,12 @@
 // src/hooks/useApi.ts
 
+import {useCallback} from "react";
 import {useLoading} from "@/contexts/LoadingContext";
 
 export const useApi = () => {
     const { setIsLoading } = useLoading();
 
-    async function call<T>(fn: () => Promise<T>): Promise<T | null> {
+    const call = useCallback(async <T>(fn: () => Promise<T>): Promise<T | null> => {
         try {
             setIsLoading(true);
             return await fn();
@@ -15,7 +16,7 @@ export const useApi = () => {
         } finally {
             setIsLoading(false);
         }
-    }
+    }, [setIsLoading]);
 
     return { call };
 };

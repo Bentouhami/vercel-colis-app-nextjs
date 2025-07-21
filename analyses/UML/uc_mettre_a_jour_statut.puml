@@ -1,0 +1,34 @@
+@startuml uc_mettre_a_jour_statut
+
+title Diagramme Détaillé - UC: Mettre à jour le statut d'un envoi
+
+
+actor "Admin d'agence" as AdminAgence
+actor "Super Admin" as SuperAdmin
+
+rectangle "Système ColisApp" {
+  usecase "Mettre à jour le statut de l'envoi" as UC_Update
+
+  ' Cas inclus
+  usecase "Identifier l'envoi" as UC_Find
+  usecase "Sélectionner le nouveau statut" as UC_Select
+  usecase "Créer un événement de suivi" as UC_LogEvent
+
+  ' Cas étendu
+  usecase "Notifier le client" as UC_Notify
+}
+
+' Les acteurs principaux initient la mise à jour
+AdminAgence -r- UC_Update
+SuperAdmin -- UC_Update
+
+' Le cas principal inclut plusieurs étapes obligatoires
+UC_Update .> UC_Find : <<include>>
+UC_Update .d.> UC_Select : <<include>>
+UC_Update .d.> UC_LogEvent : <<include>>
+
+' La mise à jour réussie étend le cas pour déclencher une notification
+UC_Update <.d. UC_Notify : <<extend>>
+note on link: Après la mise à jour
+
+@enduml

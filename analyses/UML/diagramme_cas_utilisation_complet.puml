@@ -1,0 +1,134 @@
+@startuml diagramme_cas_utilisation_complet
+skinparam linetype ortho
+
+title Diagramme des Cas d'Utilisation Détaillé - ColisApp
+
+package "Espace Public & Destinataire" {
+  rectangle "UC-VIS-01: Consulter pages info" as UC_VIS_01
+  rectangle "UC-VIS-02: Simuler tarif envoi" as UC_VIS_02
+  rectangle "UC-VIS-03: Initier inscription" as UC_VIS_03
+  rectangle "UC-VIS-04: Initier connexion" as UC_VIS_04
+  rectangle "UC-VIS-05: Envoyer message contact" as UC_VIS_05
+  rectangle "UC-DEST-01: Suivre envoi par N°" as UC_DEST_01
+  rectangle "UC-DEST-02: Consulter historique événements" as UC_DEST_02
+}
+
+package "Espace Client" {
+  rectangle "UC-CLI-01: S'inscrire & créer compte" as UC_CLI_01
+  rectangle "UC-CLI-02: Valider email" as UC_CLI_02
+  rectangle "UC-CLI-03: Se connecter" as UC_CLI_03
+  rectangle "UC-CLI-04: Se déconnecter" as UC_CLI_04
+  rectangle "UC-CLI-05: Réinitialiser mot de passe" as UC_CLI_05
+  rectangle "UC-CLI-06: Consulter profil" as UC_CLI_06
+  rectangle "UC-CLI-07: Modifier infos persos" as UC_CLI_07
+  rectangle "UC-CLI-08: Gérer carnet adresses" as UC_CLI_08
+  rectangle "UC-CLI-09: Gérer notifications" as UC_CLI_09
+  rectangle "UC-CLI-10: Fermer compte" as UC_CLI_10
+  rectangle "UC-CLI-11: Créer nouvel envoi" as UC_CLI_11
+  rectangle "UC-CLI-12: Ajouter/Sélectionner destinataire" as UC_CLI_12
+  rectangle "UC-CLI-13: Consulter récap envoi" as UC_CLI_13
+  rectangle "UC-CLI-14: Consulter historique envois" as UC_CLI_14
+  rectangle "UC-CLI-15: Consulter détails envoi" as UC_CLI_15
+  rectangle "UC-CLI-16: Suivre statut détaillé" as UC_CLI_16
+  rectangle "UC-CLI-17: Annuler envoi" as UC_CLI_17
+  rectangle "UC-CLI-18: Payer envoi" as UC_CLI_18
+  rectangle "UC-CLI-19: Consulter historique paiements" as UC_CLI_19
+  rectangle "UC-CLI-20: Recevoir confirmation paiement" as UC_CLI_20
+}
+
+package "Espace Admin d'Agence" {
+  rectangle "UC-AGADM-01: Se connecter admin" as UC_AGADM_01
+  rectangle "UC-AGADM-02: Consulter dashboard agence" as UC_AGADM_02
+  rectangle "UC-AGADM-03: Gérer personnel agence" as UC_AGADM_03
+  rectangle "UC-AGADM-04: Gérer envois agence" as UC_AGADM_04
+  rectangle "UC-AGADM-05: Gérer clients agence" as UC_AGADM_05
+  rectangle "UC-AGADM-06: Consulter journaux activité agence" as UC_AGADM_06
+}
+
+package "Espace Comptable" {
+  rectangle "UC-ACC-01: Se connecter comptable" as UC_ACC_01
+  rectangle "UC-ACC-02: Consulter dashboard financier" as UC_ACC_02
+  rectangle "UC-ACC-03: Gérer & valider paiements" as UC_ACC_03
+  rectangle "UC-ACC-04: Gérer facturation" as UC_ACC_04
+  rectangle "UC-ACC-05: Exporter données financières" as UC_ACC_05
+  rectangle "UC-ACC-06: Consulter & gérer tarifs" as UC_ACC_06
+}
+
+package "Espace Super Admin" {
+  rectangle "UC-SADM-01: Se connecter super admin" as UC_SADM_01
+  rectangle "UC-SADM-02: Consulter dashboard global" as UC_SADM_02
+  rectangle "UC-SADM-03: Créer agence" as UC_SADM_03
+  rectangle "UC-SADM-04: Modifier agence" as UC_SADM_04
+  rectangle "UC-SADM-05: Consulter liste agences" as UC_SADM_05
+  rectangle "UC-SADM-06: Activer/Désactiver agence" as UC_SADM_06
+  rectangle "UC-SADM-07: Créer utilisateur (tous rôles)" as UC_SADM_07
+  rectangle "UC-SADM-08: Modifier infos & rôle utilisateur" as UC_SADM_08
+  rectangle "UC-SADM-09: Consulter liste utilisateurs" as UC_SADM_09
+  rectangle "UC-SADM-10: Bloquer/Débloquer utilisateur" as UC_SADM_10
+  rectangle "UC-SADM-11: Gérer tous les envois" as UC_SADM_11
+  rectangle "UC-SADM-12: Consulter tous journaux activité" as UC_SADM_12
+  rectangle "UC-SADM-13: Gérer paramètres généraux" as UC_SADM_13
+}
+
+' --- Relations Logiques ---
+
+' Visiteur / Destinataire Flow
+UC_VIS_02 --> UC_VIS_03 : "Pour finaliser"
+UC_VIS_03 --> UC_CLI_01 : "Processus d'inscription"
+UC_VIS_04 --> UC_CLI_03 : "Processus de connexion"
+UC_DEST_01 --> UC_DEST_02 : "Détails"
+
+' Client Account Management Flow
+UC_CLI_01 --> UC_CLI_02 : "Vérification"
+UC_CLI_02 --> UC_CLI_03 : "Après validation"
+UC_CLI_03 --> UC_CLI_04 : "Déconnexion"
+UC_CLI_03 --> UC_CLI_06 : "Accès profil"
+UC_CLI_03 --> UC_CLI_14 : "Accès historique"
+UC_CLI_03 --> UC_CLI_11 : "Nouvel envoi"
+UC_CLI_05 --> UC_CLI_03 : "Après réinitialisation"
+UC_CLI_06 --> UC_CLI_07 : "Modifier"
+UC_CLI_06 --> UC_CLI_08 : "Gérer adresses"
+UC_CLI_06 --> UC_CLI_09 : "Gérer notifications"
+UC_CLI_06 --> UC_CLI_10 : "Fermer"
+
+' Client Shipment Flow
+UC_CLI_11 --> UC_CLI_12 : "Ajout destinataire"
+UC_CLI_12 --> UC_CLI_13 : "Récapitulatif"
+UC_CLI_13 --> UC_CLI_18 : "Paiement"
+UC_CLI_18 --> UC_CLI_19 : "Historique paiements"
+UC_CLI_18 --> UC_CLI_20 : "Confirmation"
+UC_CLI_14 --> UC_CLI_15 : "Détails envoi"
+UC_CLI_15 --> UC_CLI_16 : "Suivi statut"
+UC_CLI_15 --> UC_CLI_17 : "Annuler"
+
+' Admin Login Flow (common entry)
+UC_AGADM_01 --> UC_AGADM_02 : "Dashboard"
+UC_ACC_01 --> UC_ACC_02 : "Dashboard"
+UC_SADM_01 --> UC_SADM_02 : "Dashboard"
+
+' Admin d'Agence Flow
+UC_AGADM_02 --> UC_AGADM_03
+UC_AGADM_02 --> UC_AGADM_04
+UC_AGADM_02 --> UC_AGADM_05
+UC_AGADM_02 --> UC_AGADM_06
+
+' Comptable Flow
+UC_ACC_02 --> UC_ACC_03
+UC_ACC_02 --> UC_ACC_04
+UC_ACC_02 --> UC_ACC_05
+UC_ACC_02 --> UC_ACC_06
+
+' Super Admin Flow
+UC_SADM_02 --> UC_SADM_03
+UC_SADM_02 --> UC_SADM_04
+UC_SADM_02 --> UC_SADM_05
+UC_SADM_02 --> UC_SADM_06
+UC_SADM_02 --> UC_SADM_07
+UC_SADM_02 --> UC_SADM_08
+UC_SADM_02 --> UC_SADM_09
+UC_SADM_02 --> UC_SADM_10
+UC_SADM_02 --> UC_SADM_11
+UC_SADM_02 --> UC_SADM_12
+UC_SADM_02 --> UC_SADM_13
+
+@enduml

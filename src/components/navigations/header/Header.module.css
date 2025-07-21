@@ -1,4 +1,4 @@
-/* components/Header.module.css */
+/* src/components/navigations/header/Header.module.css */
 .navLinks {
     gap: 10px; /* Ajoute un espace de 10px entre les éléments de navigation */
 }

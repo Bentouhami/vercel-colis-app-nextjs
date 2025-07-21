@@ -1,3 +1,5 @@
+// src/components/navigations/header/HeaderNavbar.tsx
+
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -116,6 +118,10 @@ const HeaderNavbar: React.FC<NavbarProps> = ({
                     <Link href={clientPath("contact-us")}
                         className="hover:text-primary text-gray-700 dark:text-gray-300">
                         Contact-nous
+                    </Link>
+                    <Link href={clientPath("tracking")}
+                        className="hover:text-primary text-gray-700 dark:text-gray-300">
+                        Suivi Envois
                     </Link>
                 </nav>
 
@@ -253,6 +259,10 @@ const HeaderNavbar: React.FC<NavbarProps> = ({
                                     <Link href={clientPath("contact-us")}
                                         className="hover:text-primary text-gray-700 dark:text-gray-300">
                                         Contact-nous
+                                    </Link>
+                                    <Link href={clientPath("tracking")}
+                                        className="hover:text-primary text-gray-700 dark:text-gray-300">
+                                        Suivi Envois
                                     </Link>
                                 </nav>
                                 <Separator className="my-3" />
