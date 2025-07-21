@@ -1,3 +1,5 @@
+// src/app/client/layout.tsx
+
 import type React from "react"
 import Footer from "@/components/navigations/footer/Footer"
 import HeaderWrapper from "@/components/navigations/header/HeaderWrapper"
@@ -13,8 +15,14 @@ export default async function ClientLayout({ children }: { children: React.React
             <div className="flex min-h-screen flex-col">
                 {/* Header */}
                 <HeaderWrapper session={session} />
-                {/* Main content */}
-                <main className="flex-grow pt-[70px]">{children}</main>
+
+                {/* Main content avec container unifié */}
+                <main className="flex-grow pt-[70px]">
+                    <div className="container mx-auto px-4">
+                        {children}
+                    </div>
+                </main>
+
                 {/* Footer */}
                 <Footer />
             </div>

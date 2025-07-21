@@ -1,3 +1,5 @@
+// src/components/client-specific/profile/ProfileSideMenu.tsx
+
 "use client"
 
 import React from "react"

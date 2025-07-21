@@ -1,0 +1,55 @@
+@startuml uc_detail_simulation_code_based
+
+title Diagramme de Cas d'Utilisation - Processus de Simulation (Basé sur le Code)
+
+
+actor Utilisateur
+
+rectangle "Système ColisApp" {
+  usecase "Lancer le processus de simulation" as UC_Start
+
+  ' Cas étendus au démarrage
+  usecase "Gérer une simulation existante" as UC_ManageOld
+  usecase "Continuer la simulation" as UC_Continue
+  usecase "Créer une nouvelle simulation" as UC_CreateNew
+
+  ' Cas inclus dans la création
+  usecase "Saisir les informations de l'envoi" as UC_Input
+  usecase "Définir le lieu de départ" as UC_SetDeparture
+  usecase "Définir le lieu de destination" as UC_SetDestination
+  usecase "Définir les détails des colis" as UC_SetParcels
+
+  ' Cas de soumission
+  usecase "Soumettre la simulation pour calcul" as UC_Submit
+  usecase "Valider les données saisies" as UC_Validate
+
+  ' Cas suivant
+  usecase "Consulter les résultats" as UC_ViewResults
+}
+
+' L'utilisateur lance le processus
+Utilisateur -right- UC_Start
+
+' Au démarrage, le système peut trouver une ancienne simulation
+UC_Start <.down. UC_ManageOld : <<extend>>
+UC_ManageOld .down.> UC_Continue : <<include>>
+UC_ManageOld .down.> UC_CreateNew : <<include>>
+
+' Le processus principal inclut la saisie d'informations
+UC_Start .right.> UC_Input : <<include>>
+
+' La saisie est décomposée en plusieurs parties
+UC_Input .down.> UC_SetDeparture : <<include>>
+UC_Input .down.> UC_SetDestination : <<include>>
+UC_Input .> UC_SetParcels : <<include>>
+
+' L'utilisateur soumet ensuite le formulaire
+UC_Input --> UC_Submit
+
+' La soumission inclut une validation
+UC_Submit .down.> UC_Validate : <<include>>
+
+' Une soumission réussie mène à la consultation des résultats
+UC_Submit --> UC_ViewResults
+
+@enduml

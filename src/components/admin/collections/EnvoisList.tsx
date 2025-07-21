@@ -26,7 +26,7 @@ import { API_DOMAIN } from "@/utils/constants";
 import { EnvoiStatus } from "@prisma/client";
 import { format } from "date-fns";
 
-interface EnvoiLiteDto {
+interface EnvoisListDTO {
     id: number;
     trackingNumber: string | null;
     envoiStatus: EnvoiStatus;
@@ -39,7 +39,7 @@ interface EnvoiLiteDto {
 }
 
 interface Props {
-    envois: EnvoiLiteDto[];
+    envois: EnvoisListDTO[];
 }
 
 export default function EnvoisList({ envois }: Props) {
@@ -150,9 +150,9 @@ export default function EnvoisList({ envois }: Props) {
 
             {/* Pagination */}
             <div className="flex items-center justify-between text-sm">
-        <span>
-          Affichage {(page - 1) * perPage + 1}–{Math.min(page * perPage, filtered.length)} sur {filtered.length}
-        </span>
+                <span>
+                    Affichage {(page - 1) * perPage + 1}–{Math.min(page * perPage, filtered.length)} sur {filtered.length}
+                </span>
                 <div className="flex gap-2">
                     <Button variant="secondary" size="sm" disabled={page === 1} onClick={() => setPage(page - 1)}>
                         Précédent
