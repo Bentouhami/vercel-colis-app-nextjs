@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -11,64 +11,105 @@ import { Label } from "@/components/ui/label"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Camera, Save, X } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-
-const editProfileSchema = z.object({
-    firstName: z.string().min(2, "Le prénom doit contenir au moins 2 caractères"),
-    lastName: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
-    birthDate: z.string().min(1, "La date de naissance est requise"),
-    phoneNumber: z.string().min(9, "Le numéro de téléphone doit contenir au moins 9 caractères"),
-    email: z.string().email("Adresse email invalide"),
-    address: z.object({
-        street: z.string().min(1, "La rue est requise"),
-        complement: z.string().optional(),
-        streetNumber: z.string().optional(),
-        boxNumber: z.string().optional(),
-        city: z.string().min(1, "La ville est requise"),
-        country: z.string().min(1, "Le pays est requis"),
-    }),
-})
+import { useSession } from "next-auth/react"
+import { toast } from "sonner"
+import { ProfileDto } from "@/services/dtos"
+import { getUserProfileById, updateUserProfile } from "@/services/frontend-services/UserService"
+import { editProfileSchema } from "@/utils/validationSchema"
 
 export type EditProfileFormType = z.infer<typeof editProfileSchema>
 
-interface EditProfileFormProps {
-    initialData?: any
-}
+export default function EditProfileForm() {
+    const { data: session, update } = useSession()
+    const userId = session?.user?.id
 
-export default function EditProfileForm({ initialData }: EditProfileFormProps) {
     const [isPending, setIsPending] = useState(false)
     const [isEditing, setIsEditing] = useState(false)
+    const [isLoadingData, setIsLoadingData] = useState(true)
 
     const form = useForm<EditProfileFormType>({
         resolver: zodResolver(editProfileSchema),
         defaultValues: {
-            firstName: initialData?.firstName || "",
-            lastName: initialData?.lastName || "",
-            birthDate: initialData?.birthDate ? new Date(initialData.birthDate).toISOString().split("T")[0] : "",
-            phoneNumber: initialData?.phoneNumber || "",
-            email: initialData?.email || "",
+            firstName: "",
+            lastName: "",
+            birthDate: "",
+            phoneNumber: "",
+            email: "",
             address: {
-                street: initialData?.userAddresses?.street || "",
-                complement: initialData?.userAddresses?.complement || "",
-                streetNumber: initialData?.userAddresses?.streetNumber || "",
-                boxNumber: initialData?.userAddresses?.boxNumber || "",
-                city: initialData?.userAddresses?.city?.name || "",
-                country: initialData?.userAddresses?.city?.country?.name || "",
+                street: "",
+                complement: "",
+                streetNumber: "",
+                boxNumber: "",
+                city: "",
+                country: "",
             },
         },
     })
 
+    useEffect(() => {
+        const fetchUserProfileData = async () => {
+            if (!userId) {
+                setIsLoadingData(false)
+                return
+            }
+            try {
+                const userData = await getUserProfileById(Number(userId))
+
+                if (userData) {
+                    form.reset({
+                        firstName: userData.firstName || "",
+                        lastName: userData.lastName || "",
+                        birthDate: userData.birthDate ? new Date(userData.birthDate).toISOString().split("T")[0] : "",
+                        phoneNumber: userData.phoneNumber || "",
+                        email: userData.email || "",
+                        address: {
+                            street: userData.userAddresses?.street || "",
+                            complement: userData.userAddresses?.complement || "",
+                            streetNumber: userData.userAddresses?.streetNumber || "",
+                            boxNumber: userData.userAddresses?.boxNumber || "",
+                            city: userData.userAddresses?.city?.name || "",
+                            country: userData.userAddresses?.city?.country?.name || "",
+                        },
+                    })
+                }
+            } catch (error) {
+                console.error("Error fetching user profile:", error)
+                toast.error("Erreur lors du chargement des données du profil.")
+            } finally {
+                setIsLoadingData(false)
+            }
+        }
+
+        fetchUserProfileData()
+    }, [userId, form])
+
     async function handleSubmit(formValues: EditProfileFormType) {
         setIsPending(true)
         try {
-            // Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 2000))
-            console.log("Profile updated:", formValues)
-            setIsEditing(false)
+            const updatedProfile = await updateUserProfile(Number(userId), formValues)
+            if (updatedProfile) {
+                toast.success("Profil mis à jour avec succès !")
+                setIsEditing(false)
+                // Optionally, update session if needed
+                update({
+                    firstName: updatedProfile.firstName,
+                    lastName: updatedProfile.lastName,
+                    email: updatedProfile.email,
+                    phoneNumber: updatedProfile.phoneNumber,
+                })
+            } else {
+                toast.error("Échec de la mise à jour du profil.")
+            }
         } catch (error) {
             console.error("Error updating profile:", error)
+            toast.error("Une erreur est survenue lors de la mise à jour du profil.")
         } finally {
             setIsPending(false)
         }
+    }
+
+    if (isLoadingData) {
+        return <div className="text-center py-8">Chargement du profil...</div> // Or a proper skeleton loader
     }
 
     return (
@@ -84,9 +125,9 @@ export default function EditProfileForm({ initialData }: EditProfileFormProps) {
                 <CardContent>
                     <div className="flex items-center gap-6">
                         <Avatar className="h-24 w-24">
-                            <AvatarImage src="/placeholder.svg?height=96&width=96" alt="Profile" />
+                            <AvatarImage src={session?.user?.image || "/placeholder.svg?height=96&width=96"} alt="Profile" />
                             <AvatarFallback className="text-2xl bg-indigo-500 text-white">
-                                {initialData?.firstName?.charAt(0) || "U"}
+                                {session?.user?.firstName?.charAt(0) || "U"}
                             </AvatarFallback>
                         </Avatar>
                         <div className="space-y-2">

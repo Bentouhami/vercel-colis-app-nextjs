@@ -221,6 +221,133 @@ export class UserRepository implements IUserRepository {
       .filter((ac) => ac.client.role === "CLIENT")
       .map((ac) => mapUserToProfileDto(ac.client));
   }
+
+  async updateUserProfile(
+    userId: number,
+    data: UpdateProfileRequestDto
+  ): Promise<ProfileDto | null> {
+    try {
+      const updatedUser = await prisma.$transaction(async (tx) => {
+        // Update user's personal information
+        const user = await tx.user.update({
+          where: { id: userId },
+          data: {
+            firstName: data.firstName,
+            lastName: data.lastName,
+            name: `${data.firstName} ${data.lastName}`,
+            birthDate: new Date(data.birthDate), // Assuming data.birthDate is a valid date string
+            phoneNumber: data.phoneNumber,
+            email: data.email,
+          },
+          include: {
+            userAddresses: {
+              include: {
+                address: {
+                  include: {
+                    city: {
+                      include: {
+                        country: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        // Update user's address
+        if (user.userAddresses && user.userAddresses.length > 0) {
+          const userAddressPivot = user.userAddresses[0];
+          await tx.address.update({
+            where: { id: userAddressPivot.addressId },
+            data: {
+              street: data.address.street,
+              complement: data.address.complement,
+              streetNumber: data.address.streetNumber,
+              boxNumber: data.address.boxNumber,
+              city: {
+                connectOrCreate: {
+                  where: { name: data.address.city },
+                  create: {
+                    name: data.address.city,
+                    country: {
+                      connectOrCreate: {
+                        where: { name: data.address.country },
+                        create: { name: data.address.country },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          });
+        } else {
+          // If no address exists, create a new one and link it
+          const newAddress = await tx.address.create({
+            data: {
+              street: data.address.street,
+              complement: data.address.complement,
+              streetNumber: data.address.streetNumber,
+              boxNumber: data.address.boxNumber,
+              city: {
+                connectOrCreate: {
+                  where: { name: data.address.city },
+                  create: {
+                    name: data.address.city,
+                    country: {
+                      connectOrCreate: {
+                        where: { name: data.address.country },
+                        create: { name: data.address.country },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          });
+
+          await tx.userAddress.create({
+            data: {
+              userId: userId,
+              addressId: newAddress.id,
+            },
+          });
+        }
+
+        // Re-fetch the user with updated address details to return a complete ProfileDto
+        const updatedUserWithAddress = await tx.user.findUnique({
+          where: { id: userId },
+          include: {
+            userAddresses: {
+              include: {
+                address: {
+                  include: {
+                    city: {
+                      include: {
+                        country: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        if (!updatedUserWithAddress) {
+          return null;
+        }
+
+        return mapUserToProfileDto(updatedUserWithAddress);
+      });
+
+      return updatedUser;
+    } catch (error) {
+      console.error("Error updating user profile:", error);
+      throw error;
+    }
+  }
 }
 
 // Export a single instance of the UserRepository for use throughout the application

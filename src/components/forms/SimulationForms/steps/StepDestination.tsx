@@ -1,70 +1,62 @@
-// src/components/forms/SimulationForms/steps/StepDestination.tsx
+"use client"
 
-
-import React from 'react';
-import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
-import CountrySelect from '@/components/forms/SimulationForms/CountrySelectForm';
-import CitySelect from '@/components/forms/SimulationForms/CitySelectForm';
-import AgencySelect from '@/components/forms/SimulationForms/AgencySelectForm';
-
-export interface DestinationState {
-    country: string;
-    city: string;
-    agencyName: string;
-}
+import type React from "react"
+import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card"
+import { Truck } from "lucide-react"
+import CountrySelect from "../CountrySelectForm"
+import CitySelect from "../CitySelectForm"
+import AgencySelect from "../AgencySelectForm"
 
 interface Props {
-    destination: DestinationState;
-    countries: { id: number; name: string }[];
-    cities: { id: number; name: string }[];
-    agencies: { id: number; name: string }[];
-    onChange: (field: keyof DestinationState, value: string) => void;
-    /** 
-     * Désactive entièrement l’étape tant qu’une agence de départ n’est pas sélectionnée.
-     */
-    disabled?: boolean;
+    destination: {
+        country: string
+        city: string
+        agencyName: string
+    }
+    countries: { id: number; name: string }[]
+    cities: { id: number; name: string }[]
+    agencies: { id: number; name: string }[]
+    onChange: (field: "country" | "city" | "agencyName", value: string) => void
+    disabled: boolean
 }
 
-const StepDestination: React.FC<Props> = ({
-    destination,
-    countries,
-    cities,
-    agencies,
-    onChange,
-    disabled,
-}) => (
-    <Card>
-        <CardHeader>
-            <CardTitle>Informations de Destination</CardTitle>
-        </CardHeader>
+const StepDestination: React.FC<Props> = ({ destination, countries, cities, agencies, onChange, disabled }) => {
+    return (
+        <Card className="w-full transition-all duration-300 hover:shadow-lg">
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <Truck className="h-5 w-5 text-blue-600" />
+                    Informations de Destination
+                </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <CountrySelect
+                    label="Pays de destination"
+                    value={destination.country}
+                    onChange={(e) => onChange("country", e.target.value)}
+                    countries={countries}
+                    disabled={disabled}
+                    placeholder={disabled ? "Sélectionnez d'abord une agence de départ" : "Sélectionnez un pays de destination"}
+                />
 
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <CountrySelect
-                label="Pays de destination"
-                value={destination.country}
-                onChange={(e) => onChange('country', e.target.value)}
-                countries={countries}
-                disabled={disabled}
-                placeholder="Sélectionnez d’abord une agence de départ"
-            />
+                <CitySelect
+                    label="Ville de destination"
+                    value={destination.city}
+                    onChange={(e) => onChange("city", e.target.value)}
+                    cities={cities}
+                    disabled={!destination.country}
+                />
 
-            <CitySelect
-                label="Ville de destination"
-                value={destination.city}
-                onChange={(e) => onChange('city', e.target.value)}
-                cities={cities}
-                disabled={!destination.country}
-            />
+                <AgencySelect
+                    label="Agence de destination"
+                    value={destination.agencyName}
+                    onChange={(e) => onChange("agencyName", e.target.value)}
+                    agencies={agencies}
+                    disabled={!destination.city}
+                />
+            </CardContent>
+        </Card>
+    )
+}
 
-            <AgencySelect
-                label="Agence d'arrivée"
-                value={destination.agencyName}
-                onChange={(e) => onChange('agencyName', e.target.value)}
-                agencies={agencies}
-                disabled={!destination.city}
-            />
-        </CardContent>
-    </Card>
-);
-
-export default StepDestination;
+export default StepDestination

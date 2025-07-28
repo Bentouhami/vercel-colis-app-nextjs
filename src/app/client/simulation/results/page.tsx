@@ -1,163 +1,197 @@
-// path: src/app/client/simulation/[id]/page.tsx
+"use client"
 
-// import {Suspense} from "react";
-// import SimulationResults from "@/components/client-specific/simulation/SimulationResults";
-
-// export default function WrappedSimulationResults() {
-//     return (
-//         <Suspense fallback={<div>Loading...</div>}>
-//             <div className="d-flex justify-content-around">
-//                 <SimulationResults />
-//             </div>
-
-//         </Suspense>
-//     );
-// }
-
-
-// path: src/app/client/simulation/results/page.tsx
-"use client";
-
-import React, { useEffect, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import Link from "next/link";
-
-import ResultsSkeleton from "@/app/client/simulation/results/resultsSkeleton";
-import LoginPromptModal from "@/components/modals/LoginPromptModal";
-import {
-    deleteSimulationCookie,
-    getSimulation,
-} from "@/services/frontend-services/simulation/SimulationService";
-import { updateSimulationUserId } from "@/services/backend-services/Bk_SimulationService";
-import { checkAuthStatus } from "@/lib/auth-utils";
-import { SimulationResponseDto } from "@/services/dtos";
-import { SimulationStatus } from "@/services/dtos/enums/EnumsDto";
-
-import ResultsHeader from "@/components/client-specific/simulation/results/ResultsHeader";
-import ParcelGrid from "@/components/client-specific/simulation/results/ParcelGrid";
-import SummaryWidgets from "@/components/client-specific/simulation/results/SummaryWidgets";
-import PriceCard from "@/components/client-specific/simulation/results/PriceCard";
-import ActionsBar from "@/components/client-specific/simulation/results/ActionsBar";
-import InfoCard from "@/components/client-specific/simulation/results/InfoCard";
+import { useEffect, useState, useTransition } from "react"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
+import { PageLayout } from "@/components/ui/PageLayout"
+import { Button } from "@/components/ui/button"
+import ResultsSkeleton from "./resultsSkeleton"
+import LoginPromptModal from "@/components/modals/LoginPromptModal"
+import { deleteSimulationCookie, getSimulation } from "@/services/frontend-services/simulation/SimulationService"
+import { updateSimulationUserId } from "@/services/backend-services/Bk_SimulationService"
+import { checkAuthStatus } from "@/lib/auth-utils"
+import type { SimulationResponseDto } from "@/services/dtos"
+import SimulationResultsLayout from "@/components/client-specific/simulation/results/SimulationResultsLayout"
+import { PackageSearch, Share2, Download } from "lucide-react"
 
 export default function SimulationResultsPage() {
-    const router = useRouter();
-    const [loading, setLoading] = useState(true);
-    const [isPending, startTransition] = useTransition();
-    const [isActionInProgress, setIsActionInProgress] = useState(false);
-    const [results, setResults] = useState<SimulationResponseDto | null>(null);
-
-    const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-    const [userId, setUserId] = useState<string | number | null>(null);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const router = useRouter()
+    const [loading, setLoading] = useState(true)
+    const [isPending, startTransition] = useTransition()
+    const [isActionInProgress, setIsActionInProgress] = useState(false)
+    const [results, setResults] = useState<SimulationResponseDto | null>(null)
+    const [showLoginPrompt, setShowLoginPrompt] = useState(false)
+    const [userId, setUserId] = useState<string | number | null>(null)
+    const [isAuthenticated, setIsAuthenticated] = useState(false)
 
     /* ------------------- Auth ------------------- */
     useEffect(() => {
-        (async () => {
-            const auth = await checkAuthStatus(false);
-            setIsAuthenticated(auth.isAuthenticated);
-            setUserId(auth.userId || null);
-        })();
-    }, []);
+        ; (async () => {
+            const auth = await checkAuthStatus(false)
+            setIsAuthenticated(auth.isAuthenticated)
+            setUserId(auth.userId || null)
+        })()
+    }, [])
 
     /* -------- Fetch simulation results ---------- */
     useEffect(() => {
-        (async () => {
-            setLoading(true);
-            const data = await getSimulation();
-            if (!data) {
-                toast.error("Simulation introuvable.");
-                router.push("/client/simulation");
-                return;
+        ; (async () => {
+            setLoading(true)
+            try {
+                const data = await getSimulation()
+                if (!data) {
+                    toast.error("Simulation introuvable.")
+                    router.push("/client/simulation")
+                    return
+                }
+                toast.success("Résultats chargés avec succès !")
+                setResults(data)
+            } catch (error) {
+                console.error("Error fetching simulation:", error)
+                toast.error("Erreur lors du chargement des résultats.")
+                router.push("/client/simulation")
+            } finally {
+                setLoading(false)
             }
-            toast.success("Résultats chargés.");
-            setResults(data);
-            setLoading(false);
-        })();
-    }, [router]);
+        })()
+    }, [router])
 
     /* ---------------- Handlers ------------------ */
     const handleValidate = async () => {
-        setIsActionInProgress(true);
-        if (!results) return;
-        if (isAuthenticated) {
-            if (userId && !results.userId) {
-                await updateSimulationUserId(results.id, Number(userId));
+        setIsActionInProgress(true)
+        try {
+            if (!results) return
+            if (isAuthenticated) {
+                if (userId && !results.userId) {
+                    await updateSimulationUserId(results.id, Number(userId))
+                }
+                toast.success("Redirection vers l'ajout du destinataire...")
+                router.push("/client/simulation/ajouter-destinataire")
+            } else {
+                setShowLoginPrompt(true)
             }
-            router.push("/client/simulation/ajouter-destinataire");
-        } else {
-            setShowLoginPrompt(true);
+        } catch (error) {
+            console.error("Error validating simulation:", error)
+            toast.error("Erreur lors de la validation.")
+        } finally {
+            setIsActionInProgress(false)
         }
-        setIsActionInProgress(false);
-    };
+    }
 
     const handleCancel = () => {
-        setIsActionInProgress(true);
+        setIsActionInProgress(true)
         startTransition(async () => {
-            await deleteSimulationCookie();
-            router.push("/client/simulation");
-        });
-    };
+            try {
+                await deleteSimulationCookie()
+                toast.success("Simulation annulée.")
+                router.push("/client/simulation")
+            } catch (error) {
+                console.error("Error canceling simulation:", error)
+                toast.error("Erreur lors de l'annulation.")
+            }
+        })
+    }
 
     const handleEdit = () => {
-        setIsActionInProgress(true);
-        router.push("/client/simulation/edit");
-    };
+        setIsActionInProgress(true)
+        toast.info("Redirection vers l'édition...")
+        router.push("/client/simulation/edit")
+    }
 
-    if (loading || !results) return <ResultsSkeleton />;
+    const handleShare = async () => {
+        try {
+            if (navigator.share) {
+                await navigator.share({
+                    title: `Simulation d'envoi #${results?.id}`,
+                    text: `Découvrez ma simulation d'envoi de ${results?.parcels.length} colis`,
+                    url: window.location.href,
+                })
+            } else {
+                await navigator.clipboard.writeText(window.location.href)
+                toast.success("Lien copié dans le presse-papiers !")
+            }
+        } catch (error) {
+            console.error("Error sharing:", error)
+            toast.error("Erreur lors du partage.")
+        }
+    }
+
+    const handleExport = () => {
+        if (!results) return
+        const data = {
+            simulationId: results.id,
+            departure: {
+                country: results.departureCountry,
+                city: results.departureCity,
+                agency: results.departureAgency,
+            },
+            destination: {
+                country: results.destinationCountry,
+                city: results.destinationCity,
+                agency: results.destinationAgency,
+            },
+            parcels: results.parcels,
+            totalWeight: results.totalWeight,
+            totalPrice: results.totalPrice,
+            dates: {
+                departure: results.departureDate,
+                arrival: results.arrivalDate,
+            },
+        }
+
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement("a")
+        a.href = url
+        a.download = `simulation-${results.id}.json`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
+        toast.success("Simulation exportée !")
+    }
+
+    if (loading || !results) return <ResultsSkeleton />
+
+    const headerActions = (
+        <>
+            <Button variant="outline" size="sm" onClick={handleShare}>
+                <Share2 className="h-4 w-4 mr-2" />
+                Partager
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleExport}>
+                <Download className="h-4 w-4 mr-2" />
+                Exporter
+            </Button>
+        </>
+    )
 
     return (
-        <div className="max-w-5xl mx-auto space-y-10 pb-32">
-            <ResultsHeader
-                simulationId={results.id}
-                status={results.simulationStatus ?? SimulationStatus.DRAFT}
-            />
-
-            <div className="grid sm:grid-cols-2 gap-6">
-                <InfoCard
-                    type="departure"
-                    country={results.departureCountry}
-                    city={results.departureCity}
-                    agency={results.departureAgency}
-                />
-                <InfoCard
-                    type="destination"
-                    country={results.destinationCountry}
-                    city={results.destinationCity}
-                    agency={results.destinationAgency}
-                />
-            </div>
-
-            <ParcelGrid parcels={results.parcels} />
-
-            <SummaryWidgets
-                totalWeight={results.totalWeight}
-                departureDate={results.departureDate}
-                arrivalDate={results.arrivalDate}
-            />
-
-            <PriceCard totalPrice={results.totalPrice ?? null} />
-
-            <ActionsBar
+        <PageLayout
+            title="Résultats de simulation"
+            subtitle={`Simulation #${results.id} - ${results.parcels.length} colis`}
+            icon={<PackageSearch className="h-6 w-6 text-primary" />}
+            headerActions={headerActions}
+            maxWidth="full"
+        >
+            <SimulationResultsLayout
+                results={results}
                 isActionInProgress={isActionInProgress || isPending}
                 onValidate={handleValidate}
                 onCancel={handleCancel}
                 onEdit={handleEdit}
+                onShare={handleShare}
+                onExport={handleExport}
             />
 
             <LoginPromptModal
                 show={showLoginPrompt}
                 handleClose={() => setShowLoginPrompt(false)}
                 handleLoginRedirect={() => {
-                    setShowLoginPrompt(false);
-                    router.push(
-                        `/client/auth/login?redirect=${encodeURIComponent(
-                            "/client/simulation/results",
-                        )}`,
-                    );
+                    setShowLoginPrompt(false)
+                    router.push(`/client/auth/login?redirect=${encodeURIComponent("/client/simulation/results")}`)
                 }}
             />
-        </div>
-    );
+        </PageLayout>
+    )
 }

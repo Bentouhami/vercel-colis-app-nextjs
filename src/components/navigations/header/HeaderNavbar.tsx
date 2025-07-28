@@ -117,11 +117,11 @@ const HeaderNavbar: React.FC<NavbarProps> = ({
                     </Link>
                     <Link href={clientPath("contact-us")}
                         className="hover:text-primary text-gray-700 dark:text-gray-300">
-                        Contact-nous
+                        Contactez-nous
                     </Link>
                     <Link href={clientPath("tracking")}
                         className="hover:text-primary text-gray-700 dark:text-gray-300">
-                        Suivi Envois
+                        Suivi envois
                     </Link>
                 </nav>
 

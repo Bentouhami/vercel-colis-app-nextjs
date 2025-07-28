@@ -1,18 +1,17 @@
-// src/components/forms/AuthForms/LoginForm.tsx
-
 "use client"
 
-import { useState, useTransition } from "react"
+import { useState, useTransition, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { motion } from "framer-motion"
 import Image from "next/image"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
+import Link from "next/link"
+import { Eye, EyeOff, Lock, Mail, LogIn, ArrowRight, Sparkles } from "lucide-react"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Eye, EyeOff, Lock, Mail } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { loginUserSchema } from "@/utils/validationSchema"
 import { login } from "@/actions/UserActions"
 
@@ -27,6 +26,13 @@ export default function LoginForm() {
     const [showPassword, setShowPassword] = useState(false)
     const [isDisabled, setIsDisabled] = useState(false)
     const [isPending, startTransition] = useTransition()
+    const [isVisible, setIsVisible] = useState(false)
+
+    // Déclencher les animations après le montage
+    useEffect(() => {
+        const timer = setTimeout(() => setIsVisible(true), 100)
+        return () => clearTimeout(timer)
+    }, [])
 
     const form = useForm<LoginUserDto>({
         resolver: zodResolver(loginUserSchema),
@@ -41,7 +47,6 @@ export default function LoginForm() {
         startTransition(async () => {
             try {
                 const result = await login(data.email, data.password)
-
                 if (result?.error) {
                     toast.error(result.error)
                 } else if (result?.success) {
@@ -59,115 +64,205 @@ export default function LoginForm() {
     }
 
     return (
-        <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}
-            className="mx-auto mt-10 flex max-w-4xl flex-col items-center justify-center space-y-8 rounded-lg bg-white dark:bg-gray-900 p-6 shadow-lg md:mt-20 md:flex-row md:space-x-8 md:space-y-0"
-        >
-            {/* Image Section */}
-            <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5 }}
-                className="flex-shrink-0"
-            >
-                <Image src="/svg/login/login.svg" alt="Welcome" width={300} height={300} priority className="rounded-md" />
-            </motion.div>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 relative overflow-hidden">
+            {/* Particules décoratives en arrière-plan */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div
+                    className="absolute top-20 left-10 w-2 h-2 bg-blue-400/30 rounded-full animate-bounce"
+                    style={{ animationDelay: "0s" }}
+                ></div>
+                <div
+                    className="absolute top-40 right-20 w-1 h-1 bg-purple-400/30 rounded-full animate-bounce"
+                    style={{ animationDelay: "1s" }}
+                ></div>
+                <div
+                    className="absolute bottom-40 left-20 w-1.5 h-1.5 bg-blue-500/30 rounded-full animate-bounce"
+                    style={{ animationDelay: "2s" }}
+                ></div>
+                <div
+                    className="absolute bottom-20 right-10 w-2 h-2 bg-purple-500/30 rounded-full animate-bounce"
+                    style={{ animationDelay: "0.5s" }}
+                ></div>
+            </div>
 
-            {/* Form Section */}
-            <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="w-full max-w-md"
-            >
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-                        {/* Email Field */}
-                        <FormField
-                            control={form.control}
-                            name="email"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="text-gray-700 dark:text-gray-200 font-medium">Adresse Email</FormLabel>
-                                    <div className="relative">
-                                        <Mail className="absolute left-2 top-2.5 h-5 w-5 text-muted-foreground dark:text-gray-400" />
-                                        <FormControl>
-                                            <Input placeholder="Entrez votre email" disabled={isPending} className="pl-8" {...field} />
-                                        </FormControl>
-                                    </div>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        {/* Password Field */}
-                        <FormField
-                            control={form.control}
-                            name="password"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="text-gray-700 dark:text-gray-200 font-medium">Mot de Passe</FormLabel>
-                                    <div className="relative">
-                                        <Lock className="absolute left-2 top-2.5 h-5 w-5 text-muted-foreground dark:text-gray-400" />
-                                        <FormControl>
-                                            <Input
-                                                type={showPassword ? "text" : "password"}
-                                                placeholder="Entrez votre mot de passe"
-                                                disabled={isPending}
-                                                className="pl-8 pr-10"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowPassword(!showPassword)}
-                                            className="absolute right-2 top-2.5 inline-flex h-5 w-5 items-center justify-center text-muted-foreground dark:text-gray-400"
-                                            tabIndex={-1}
-                                        >
-                                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                        </button>
-                                    </div>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        {/* Submit Button */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.6, delay: 0.3 }}
-                        >
-                            <Button
-                                type="submit"
-                                disabled={isDisabled || isPending}
-                                className="w-full py-2 font-semibold shadow-sm transition duration-150 ease-in-out"
-                            >
-                                {isPending ? "Connexion en cours..." : "Se connecter"}
-                            </Button>
-                        </motion.div>
-                    </form>
-                </Form>
-
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.6, delay: 0.5 }}
-                    className="mt-6 text-center text-sm text-gray-500 dark:text-gray-300"
+            <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                {/* Image Section */}
+                <div
+                    className={`flex justify-center lg:justify-end transition-all duration-700 ease-out transform ${isVisible ? "opacity-100 translate-x-0 scale-100" : "opacity-0 -translate-x-12 scale-95"
+                        }`}
+                    style={{ transitionDelay: "200ms" }}
                 >
-                    <a
-                        href="/client/auth/forgot-password"
-                        className="block mb-2 text-blue-600 dark:text-blue-400 hover:underline"
-                    >
-                        Vous avez oublié votre mot de passe ?
-                    </a>
-                    <a href="/client/auth/register" className="text-blue-600 dark:text-blue-400 hover:underline">
-                        Pas encore inscrit ? Créez un compte
-                    </a>
-                </motion.div>
-            </motion.div>
-        </motion.div>
+                    <div className="relative">
+                        <Image
+                            src="/svg/login/login.svg"
+                            alt="Welcome to ColisApp"
+                            width={400}
+                            height={400}
+                            priority
+                            className="rounded-2xl transition-all duration-500 hover:scale-105 hover:rotate-1"
+                        />
+                        {/* Effet de halo autour de l'image */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-2xl blur-xl -z-10 opacity-0 hover:opacity-100 transition-opacity duration-500"></div>
+                    </div>
+                </div>
+
+                {/* Form Section */}
+                <div
+                    className={`flex justify-center lg:justify-start transition-all duration-700 ease-out transform ${isVisible ? "opacity-100 translate-x-0 scale-100" : "opacity-0 translate-x-12 scale-95"
+                        }`}
+                    style={{ transitionDelay: "400ms" }}
+                >
+                    <div className="w-full max-w-md">
+                        <Card className="border-0 shadow-2xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm hover:shadow-3xl transition-all duration-300">
+                            <CardHeader className="text-center pb-6">
+                                <div
+                                    className={`transition-all duration-500 ease-out transform ${isVisible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-4 scale-95"
+                                        }`}
+                                    style={{ transitionDelay: "600ms" }}
+                                >
+                                    <div className="relative inline-block">
+                                        <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 hover:scale-110 hover:rotate-12 transition-all duration-300">
+                                            <LogIn className="h-8 w-8 text-white" />
+                                        </div>
+                                        <Sparkles className="absolute -top-1 -right-2 h-4 w-4 text-purple-500 animate-pulse" />
+                                    </div>
+                                    <CardTitle className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                                        Se connecter
+                                    </CardTitle>
+                                    <p className="text-gray-600 dark:text-gray-400 mt-2">Accédez à votre espace ColisApp</p>
+                                </div>
+                            </CardHeader>
+
+                            <CardContent className="space-y-6">
+                                <Form {...form}>
+                                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                                        {/* Email Field */}
+                                        <div
+                                            className={`space-y-2 transition-all duration-500 ease-out transform ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                                                }`}
+                                            style={{ transitionDelay: "700ms" }}
+                                        >
+                                            <FormField
+                                                control={form.control}
+                                                name="email"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel className="text-sm font-medium">Adresse email</FormLabel>
+                                                        <div className="relative group">
+                                                            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200" />
+                                                            <FormControl>
+                                                                <Input
+                                                                    type="email"
+                                                                    placeholder="votre@email.com"
+                                                                    className="pl-10 h-11 bg-white/50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:scale-105 transition-all duration-200"
+                                                                    disabled={isPending}
+                                                                    {...field}
+                                                                />
+                                                            </FormControl>
+                                                        </div>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </div>
+
+                                        {/* Password Field */}
+                                        <div
+                                            className={`space-y-2 transition-all duration-500 ease-out transform ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                                                }`}
+                                            style={{ transitionDelay: "800ms" }}
+                                        >
+                                            <FormField
+                                                control={form.control}
+                                                name="password"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel className="text-sm font-medium">Mot de passe</FormLabel>
+                                                        <div className="relative group">
+                                                            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 group-hover:text-purple-500 transition-colors duration-200" />
+                                                            <FormControl>
+                                                                <Input
+                                                                    type={showPassword ? "text" : "password"}
+                                                                    placeholder="Votre mot de passe"
+                                                                    className="pl-10 pr-10 h-11 bg-white/50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:scale-105 transition-all duration-200"
+                                                                    disabled={isPending}
+                                                                    {...field}
+                                                                />
+                                                            </FormControl>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setShowPassword(!showPassword)}
+                                                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:scale-110 transition-all duration-200"
+                                                            >
+                                                                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                                            </button>
+                                                        </div>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </div>
+
+                                        {/* Submit Button */}
+                                        <div
+                                            className={`transition-all duration-500 ease-out transform ${isVisible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-4 scale-95"
+                                                }`}
+                                            style={{ transitionDelay: "900ms" }}
+                                        >
+                                            <Button
+                                                type="submit"
+                                                disabled={isDisabled || isPending}
+                                                className="w-full h-11 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium transition-all duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none relative overflow-hidden group"
+                                            >
+                                                {/* Effet de brillance qui traverse */}
+                                                <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+
+                                                {isPending ? (
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                        Connexion en cours...
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex items-center gap-2">
+                                                        <LogIn className="h-4 w-4 group-hover:rotate-12 transition-transform duration-200" />
+                                                        Se connecter
+                                                        <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-200" />
+                                                    </div>
+                                                )}
+                                            </Button>
+                                        </div>
+                                    </form>
+                                </Form>
+
+                                {/* Register Links */}
+                                <div
+                                    className={`text-center pt-4 border-t border-gray-200 dark:border-gray-700 space-y-3 transition-all duration-500 ease-out ${isVisible ? "opacity-100" : "opacity-0"
+                                        }`}
+                                    style={{ transitionDelay: "1000ms" }}
+                                >
+                                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                                        <Link
+                                            href="/client/auth/forgot-password"
+                                            className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors hover:underline"
+                                        >
+                                            Vous avez oublié votre mot de passe ?
+                                        </Link>
+                                    </p>
+                                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                                        Pas encore inscrit ?{" "}
+                                        <Link
+                                            href="/client/auth/register"
+                                            className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors hover:underline"
+                                        >
+                                            Créez un compte
+                                        </Link>
+                                    </p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
+            </div>
+        </div>
     )
 }

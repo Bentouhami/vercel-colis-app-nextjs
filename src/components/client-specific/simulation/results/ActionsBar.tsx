@@ -1,24 +1,21 @@
-// path: src/components/client-specific/simulation/results/ActionsBar.tsx
-import React from "react";
-import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
-import { cn } from "@/lib/utils";
+// src/components/client-specific/simulation/results/ActionsBar.tsx
+
+"use client"
+
+import type React from "react"
+import { Button } from "@/components/ui/button"
+import { ArrowRight } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface Props {
-    isActionInProgress: boolean;
-    onValidate: () => void;
-    onCancel: () => void;
-    onEdit: () => void;
-    className?: string;
+    isActionInProgress: boolean
+    onValidate: () => void
+    onCancel: () => void
+    onEdit: () => void
+    className?: string
 }
 
-const ActionsBar: React.FC<Props> = ({
-    isActionInProgress,
-    onValidate,
-    onCancel,
-    onEdit,
-    className,
-}) => (
+const ActionsBar: React.FC<Props> = ({ isActionInProgress, onValidate, onCancel, onEdit, className }) => (
     <div
         className={cn(
             "flex flex-col sm:flex-row gap-4 justify-center",
@@ -26,36 +23,23 @@ const ActionsBar: React.FC<Props> = ({
             className,
         )}
     >
-        <Button
-            disabled={isActionInProgress}
-            size="lg"
-            className="sm:flex-1"
-            onClick={onValidate}
-        >
+        <Button disabled={isActionInProgress} size="lg" className="sm:flex-1" onClick={onValidate}>
             Valider la Simulation
         </Button>
-
-        <Button
-            disabled={isActionInProgress}
-            variant="destructive"
-            size="lg"
-            className="sm:flex-1"
-            onClick={onCancel}
-        >
+        <Button disabled={isActionInProgress} variant="destructive" size="lg" className="sm:flex-1" onClick={onCancel}>
             Annuler
         </Button>
-
         <Button
             disabled={isActionInProgress}
             variant="outline"
             size="lg"
-            className="sm:flex-1"
+            className="sm:flex-1 bg-transparent"
             onClick={onEdit}
         >
             Modifier ma simulation
             <ArrowRight className="h-4 w-4 ml-1 text-primary" />
         </Button>
     </div>
-);
+)
 
-export default ActionsBar;
+export default ActionsBar

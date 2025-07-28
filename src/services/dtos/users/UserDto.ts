@@ -172,3 +172,19 @@ export interface ProfileDto {
     isVerified: boolean;
 }
 
+export interface UpdateProfileRequestDto {
+    firstName: string;
+    lastName: string;
+    birthDate: string;
+    phoneNumber: string;
+    email: string;
+    address: {
+        street: string;
+        complement?: string;
+        streetNumber?: string;
+        boxNumber?: string;
+        city: string;
+        country: string;
+    };
+}
+

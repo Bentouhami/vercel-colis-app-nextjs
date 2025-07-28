@@ -19,13 +19,11 @@ export async function POST(req: NextRequest) {
 
     try {
         // Parse and validate the request body
-        const { newUser } = (await req.json()) as { newUser: CreateDestinataireDto };
+        const newUser = (await req.json()) as CreateDestinataireDto;
 
         if (!newUser) {
             return NextResponse.json({error: "Missing required fields"}, {status: 400});
         }
-
-
 
         const validationResult = destinataireSchema.safeParse(newUser);
         if (!validationResult.success) {
