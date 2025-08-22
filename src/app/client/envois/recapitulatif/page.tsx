@@ -38,9 +38,13 @@ import {
     Copy,
     Shield,
     FileText,
+    UserX,
+    LogIn,
 } from "lucide-react"
 import { type CreateDestinataireDto, RoleDto, type SimulationResponseDto } from "@/services/dtos"
 import RequireAuth from "@/components/auth/RequireAuth"
+import { useSession } from "next-auth/react"
+import { isAdminRole } from "@/lib/auth-utils"
 
 interface SimulationDataType extends SimulationResponseDto {
     sender: CreateDestinataireDto
@@ -65,6 +69,12 @@ export default function EnvoiRecapPage() {
     const [currentStep, setCurrentStep] = useState(0)
     const router = useRouter()
     const [isPending, startTransition] = useTransition()
+    const { data: session } = useSession()
+
+    // Check if current user is admin role
+    const isCurrentUserAdmin = useMemo(() => {
+        return session?.user?.role ? isAdminRole(session.user.role as RoleDto) : false
+    }, [session?.user?.role])
 
     // Memoized loading status
     const isLoading = useMemo(() => {
@@ -106,12 +116,10 @@ export default function EnvoiRecapPage() {
         console.log(`🔄 Loading simulation data (attempt ${currentRetryCount + 1})...`)
         setError(null)
         setCurrentStep(0)
-
         setLoadingState((prev) => ({ ...prev, simulation: true }))
 
         try {
             setCurrentStep(1)
-
             const simulation = await getSimulation()
             if (!simulation) {
                 throw new Error("Impossible de trouver les données de simulation. Réessayez ou contactez le support.")
@@ -135,7 +143,6 @@ export default function EnvoiRecapPage() {
             }
 
             setCurrentStep(3)
-
             const completeData: SimulationDataType = {
                 ...simulation,
                 sender: senderData,
@@ -161,7 +168,7 @@ export default function EnvoiRecapPage() {
 
     useEffect(() => {
         loadSimulationData(0)
-    }, [])
+    }, [loadSimulationData])
 
     const handlePaymentRedirect = useCallback(async () => {
         if (!simulationData?.totalPrice) {
@@ -169,8 +176,13 @@ export default function EnvoiRecapPage() {
             return
         }
 
-        setLoadingState((prev) => ({ ...prev, payment: true }))
+        // Check if user is admin - prevent payment
+        if (isCurrentUserAdmin) {
+            toast.error("Les comptes administrateurs ne peuvent pas effectuer de paiements personnels.")
+            return
+        }
 
+        setLoadingState((prev) => ({ ...prev, payment: true }))
         try {
             await new Promise((resolve) => setTimeout(resolve, 1500))
             toast.success("Redirection vers le paiement sécurisé...")
@@ -180,7 +192,7 @@ export default function EnvoiRecapPage() {
         } finally {
             setLoadingState((prev) => ({ ...prev, payment: false }))
         }
-    }, [simulationData, router])
+    }, [simulationData, router, isCurrentUserAdmin])
 
     const handleRetry = useCallback(() => {
         const newRetryCount = retryCount + 1
@@ -196,11 +208,20 @@ export default function EnvoiRecapPage() {
         router.push("/client/simulation/edit")
     }, [router])
 
+    const handleSwitchToPersonalAccount = useCallback(() => {
+        toast.info("Veuillez vous connecter avec votre compte personnel pour effectuer des paiements.")
+        router.push("/auth/login?returnUrl=" + encodeURIComponent(window.location.href))
+    }, [router])
+
+    const handleCreatePersonalAccount = useCallback(() => {
+        toast.info("Créez un compte personnel pour effectuer des envois.")
+        router.push("/auth/register?returnUrl=" + encodeURIComponent(window.location.href))
+    }, [router])
+
     const handleDownload = useCallback(() => {
         if (!simulationData) return
 
-        const summary = `
-═══════════════════════════════════════════════════════════════
+        const summary = `═══════════════════════════════════════════════════════════════
                     RÉCAPITULATIF D'ENVOI
 ═══════════════════════════════════════════════════════════════
 
@@ -347,12 +368,10 @@ Ce document a été généré automatiquement le ${new Date().toLocaleString("fr
                             <div className="w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center mx-auto">
                                 <AlertTriangle className="h-8 w-8 text-destructive" />
                             </div>
-
                             <div>
-                                <h3 className="text-lg font-semibold mb-2">Oups ! Une erreur s'est produite</h3>
+                                <h3 className="text-lg font-semibold mb-2">Oups ! Une erreur s&apos;est produite</h3>
                                 <p className="text-muted-foreground">{error}</p>
                             </div>
-
                             <div className="flex flex-col sm:flex-row gap-3 justify-center">
                                 <Button onClick={handleRetry}>
                                     <RefreshCw className="h-4 w-4 mr-2" />
@@ -363,7 +382,6 @@ Ce document a été généré automatiquement le ${new Date().toLocaleString("fr
                                     Retour à la simulation
                                 </Button>
                             </div>
-
                             {retryCount > 1 && (
                                 <Badge variant="secondary" className="text-xs">
                                     Tentative #{retryCount}
@@ -389,14 +407,12 @@ Ce document a été généré automatiquement le ${new Date().toLocaleString("fr
                             <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto">
                                 <Package className="h-8 w-8 text-muted-foreground" />
                             </div>
-
                             <div>
                                 <h3 className="text-lg font-semibold mb-2">Aucune donnée trouvée</h3>
                                 <p className="text-muted-foreground">
-                                    Aucune simulation n'a été trouvée. Veuillez créer une nouvelle simulation pour continuer.
+                                    Aucune simulation n&apos;a été trouvée. Veuillez créer une nouvelle simulation pour continuer.
                                 </p>
                             </div>
-
                             <Button onClick={handleGoBack}>
                                 <ArrowLeft className="h-4 w-4 mr-2" />
                                 Nouvelle simulation
@@ -455,6 +471,34 @@ Ce document a été généré automatiquement le ${new Date().toLocaleString("fr
                         </Badge>
                     )}
                 </div>
+
+                {/* Alert pour les comptes administrateurs */}
+                {isCurrentUserAdmin && (
+                    <Alert className="border-orange-200 bg-orange-50/50 mb-6">
+                        <UserX className="h-4 w-4 text-orange-600" />
+                        <AlertDescription className="text-orange-800">
+                            <div className="space-y-3">
+                                <div>
+                                    <strong>Compte administrateur détecté.</strong> Les comptes professionnels ne peuvent pas effectuer de
+                                    paiements personnels.
+                                </div>
+                                <div className="text-sm">
+                                    Pour procéder au paiement, vous devez utiliser un compte personnel (CLIENT).
+                                </div>
+                                <div className="flex gap-2 mt-3">
+                                    <Button size="sm" variant="outline" onClick={handleSwitchToPersonalAccount}>
+                                        <LogIn className="h-4 w-4 mr-2" />
+                                        Compte personnel
+                                    </Button>
+                                    <Button size="sm" variant="outline" onClick={handleCreatePersonalAccount}>
+                                        <User className="h-4 w-4 mr-2" />
+                                        Créer un compte
+                                    </Button>
+                                </div>
+                            </div>
+                        </AlertDescription>
+                    </Alert>
+                )}
 
                 {/* Contenu principal */}
                 <div className="grid lg:grid-cols-3 gap-6">
@@ -541,7 +585,7 @@ Ce document a été généré automatiquement le ${new Date().toLocaleString("fr
                                         B
                                     </div>
                                     <div className="flex-1 space-y-2">
-                                        <h4 className="font-medium">Point d'arrivée</h4>
+                                        <h4 className="font-medium">Point d&apos;arrivée</h4>
                                         <div className="text-sm text-muted-foreground space-y-1">
                                             <div className="flex justify-between">
                                                 <span>Pays:</span>
@@ -619,7 +663,6 @@ Ce document a été généré automatiquement le ${new Date().toLocaleString("fr
                                         </div>
                                     )}
                                 </div>
-
                                 <div className="text-xs text-muted-foreground">
                                     <div className="flex items-center justify-center gap-1">
                                         <Euro className="h-3 w-3" />
@@ -646,20 +689,26 @@ Ce document a été généré automatiquement le ${new Date().toLocaleString("fr
                 <ActionBar>
                     <Button variant="outline" onClick={handleGoBack} disabled={loadingState.payment}>
                         <XCircle className="h-4 w-4 mr-2" />
-                        Annuler l'envoi
+                        Annuler l&apos;envoi
                     </Button>
-
                     <div className="flex gap-2">
                         <Button variant="outline" onClick={handleEdit} disabled={loadingState.payment}>
                             <Edit3 className="h-4 w-4 mr-2" />
                             Modifier
                         </Button>
-
-                        <Button onClick={handlePaymentRedirect} disabled={!simulationData.totalPrice || loadingState.payment}>
+                        <Button
+                            onClick={handlePaymentRedirect}
+                            disabled={!simulationData.totalPrice || loadingState.payment || isCurrentUserAdmin}
+                        >
                             {loadingState.payment ? (
                                 <>
                                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                                     Redirection...
+                                </>
+                            ) : isCurrentUserAdmin ? (
+                                <>
+                                    <UserX className="h-4 w-4 mr-2" />
+                                    Compte admin
                                 </>
                             ) : (
                                 <>

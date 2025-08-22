@@ -355,6 +355,7 @@ const SimulationFormWizard = ({ isEditMode = false }: { isEditMode?: boolean }) 
     const handlePackageCountChange = (e: ChangeEvent<HTMLInputElement>) => {
         const newCount = Number.parseInt(e.target.value, 10)
         if (newCount > COLIS_MAX_PER_ENVOI) return
+
         setPackageCount(newCount)
         const newParcels = Array.from(
             { length: newCount },
@@ -463,7 +464,6 @@ const SimulationFormWizard = ({ isEditMode = false }: { isEditMode?: boolean }) 
     // submit
     const handleSubmit = async () => {
         setLoading(true)
-
         if (isEditMode && existingSimulation) {
             // Mode édition
             try {
@@ -488,6 +488,7 @@ const SimulationFormWizard = ({ isEditMode = false }: { isEditMode?: boolean }) 
                     setLoading(false)
                     return
                 }
+
                 startTransition(() => {
                     toast.success("Simulation mise à jour avec succès !")
                     router.push("/client/simulation/results")
@@ -524,6 +525,7 @@ const SimulationFormWizard = ({ isEditMode = false }: { isEditMode?: boolean }) 
                     setLoading(false)
                     return
                 }
+
                 startTransition(() => {
                     toast.success("Simulation envoyée avec succès !")
                     router.push("/client/simulation/results")
@@ -555,13 +557,13 @@ const SimulationFormWizard = ({ isEditMode = false }: { isEditMode?: boolean }) 
     if (loading || isPending) return <SimulationSkeleton />
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4 md:space-y-6">
             {/* Indicateur d'étapes */}
-            <StepIndicator steps={STEPS} currentStep={currentStep} />
+            <StepIndicator steps={STEPS} currentStep={currentStep + 1} />
 
             {/* Contenu des étapes */}
             <Card>
-                <CardContent className="p-6">
+                <CardContent className="p-4 md:p-6">
                     {currentStep === 0 && (
                         <StepDeparture
                             departure={departure}
@@ -571,7 +573,6 @@ const SimulationFormWizard = ({ isEditMode = false }: { isEditMode?: boolean }) 
                             onChange={handleDepartureChange}
                         />
                     )}
-
                     {currentStep === 1 && (
                         <StepDestination
                             destination={destination}
@@ -582,7 +583,6 @@ const SimulationFormWizard = ({ isEditMode = false }: { isEditMode?: boolean }) 
                             disabled={!departure.agencyName}
                         />
                     )}
-
                     {currentStep === 2 && (
                         <StepParcels
                             packageCount={packageCount}
@@ -597,7 +597,6 @@ const SimulationFormWizard = ({ isEditMode = false }: { isEditMode?: boolean }) 
                             isEditMode={isEditMode}
                         />
                     )}
-
                     {currentStep === 3 && (
                         <StepConfirmation departure={departure} destination={destination} parcels={parcels} options={options} />
                     )}
@@ -605,23 +604,23 @@ const SimulationFormWizard = ({ isEditMode = false }: { isEditMode?: boolean }) 
             </Card>
 
             {/* Navigation */}
-            <div className="flex justify-between">
+            <div className="flex flex-col sm:flex-row justify-between gap-3">
                 {currentStep > 0 ? (
-                    <Button variant="outline" onClick={prev}>
+                    <Button variant="outline" onClick={prev} className="w-full sm:w-auto bg-transparent">
                         <ArrowLeft className="h-4 w-4 mr-2" />
                         Précédent
                     </Button>
                 ) : (
-                    <div />
+                    <div className="hidden sm:block" />
                 )}
 
                 {currentStep < 3 ? (
-                    <Button onClick={next}>
+                    <Button onClick={next} className="w-full sm:w-auto">
                         Suivant
                         <ArrowRight className="h-4 w-4 ml-2" />
                     </Button>
                 ) : (
-                    <Button onClick={handleSubmit}>
+                    <Button onClick={handleSubmit} className="w-full sm:w-auto">
                         {isEditMode ? (
                             <>
                                 <Edit className="h-4 w-4 mr-2" />

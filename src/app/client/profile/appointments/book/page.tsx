@@ -36,7 +36,7 @@ export default function BookAppointmentPage() {
                     router.push("/client/profile/appointments")
                 }
             })
-    }, [])
+    }, [router])
 
     const handleSubmit = async () => {
         if (!date || !envoi) return

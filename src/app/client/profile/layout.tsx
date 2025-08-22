@@ -11,7 +11,7 @@ export default async function ProfileLayout({ children }: { children: ReactNode 
     // 1. Check for session existence
     if (!session?.user) {
         const callbackUrl = encodeURIComponent("/client/profile")
-        redirect(`/client/auth/login?callbackUrl=${callbackUrl}`)
+        redirect(`/auth/login?callbackUrl=${callbackUrl}`)
     }
 
     // 2. Check for the correct role

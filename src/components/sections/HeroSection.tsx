@@ -40,7 +40,7 @@ const HeroSection = () => {
                             className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed animate-slide-up"
                             style={{ animationDelay: "300ms" }}
                         >
-                            La solution la plus simple et la plus rapide pour gérer vos colis. Profitez d'une expérience optimisée et
+                            La solution la plus simple et la plus rapide pour gérer vos colis. Profitez d&apos;une expérience optimisée et
                             sécurisée avec ColisApp.
                         </p>
 

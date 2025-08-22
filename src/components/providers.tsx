@@ -1,4 +1,4 @@
-// E:\fullstack_project\NextJs_Projects\newColiApp\src\components\providers.tsx
+// src\components\providers.tsx
 "use client";
 
 import { SessionProvider } from "next-auth/react";

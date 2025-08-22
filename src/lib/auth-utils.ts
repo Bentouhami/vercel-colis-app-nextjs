@@ -59,7 +59,7 @@ export async function getCurrentUserId(): Promise<string | number | null> {
 export async function requireAuth() {
   const session = await auth();
   if (!session) {
-    redirect("/client/auth/login");
+    redirect("/auth/login");
   }
   return session;
 }

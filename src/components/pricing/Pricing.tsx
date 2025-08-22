@@ -104,7 +104,7 @@ export default function Pricing() {
                         Choisissez votre plan
                     </h1>
                     <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-                        Des tarifs transparents et flexibles pour tous vos besoins d'expédition. Commencez gratuitement et évoluez
+                        Des tarifs transparents et flexibles pour tous vos besoins d&apos;expédition. Commencez gratuitement et évoluez
                         selon vos besoins.
                     </p>
                 </div>
@@ -234,7 +234,7 @@ export default function Pricing() {
                 {/* Bottom CTA */}
                 <div className="text-center mt-20 animate-slide-up" style={{ animationDelay: "800ms" }}>
                     <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl p-8 max-w-2xl mx-auto border border-blue-100 dark:border-blue-800">
-                        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Besoin d'un plan personnalisé ?</h3>
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Besoin d&apos;un plan personnalisé ?</h3>
                         <p className="text-gray-600 dark:text-gray-300 mb-6">
                             Contactez notre équipe pour une solution sur mesure adaptée à votre entreprise
                         </p>

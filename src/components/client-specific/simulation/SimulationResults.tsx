@@ -101,7 +101,7 @@ export default function SimulationResults() {
     const handleLoginRedirect = () => {
         setShowLoginPrompt(false);
         const redirectUrl = encodeURIComponent("/client/simulation/results");
-        router.push(`/client/auth/login?redirect=${redirectUrl}`);
+        router.push(`/auth/login?redirect=${redirectUrl}`);
     };
 
     // Cancel the simulation and clean up

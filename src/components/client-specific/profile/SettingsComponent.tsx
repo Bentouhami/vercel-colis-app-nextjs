@@ -15,7 +15,7 @@ const mockUserData = {
     lastName: "Bentouhami",
     email: "bentouhami.faisal@gmail.com",
     phoneNumber: "+32456222054",
-    birthDate: "1990-05-15",
+    birthDate: "1986-08-15",
     userAddresses: {
         street: "Rue des Martyrs",
         streetNumber: "28",
@@ -58,31 +58,31 @@ export default function SettingsComponent({ /* onNavigateBack */ }: SettingsComp
                 </CardHeader>
                 <CardContent>
                     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 bg-gray-100 dark:bg-gray-800 border dark:border-gray-700 h-auto p-1 rounded-lg">
-                    <TabsTrigger value="profile" className="text-sm py-2 data-[state=active]:bg-white data-[state=active]:text-indigo-600 data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-900 dark:data-[state=active]:text-indigo-400">
-                        Profil
-                    </TabsTrigger>
-                    <TabsTrigger value="security" className="text-sm py-2 data-[state=active]:bg-white data-[state=active]:text-indigo-600 data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-900 dark:data-[state=active]:text-indigo-400">
-                        Sécurité
-                    </TabsTrigger>
-                    <TabsTrigger value="notifications" className="text-sm py-2 data-[state=active]:bg-white data-[state=active]:text-indigo-600 data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-900 dark:data-[state=active]:text-indigo-400">
-                        Notifications
-                    </TabsTrigger>
-                </TabsList>
+                        <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 bg-gray-100 dark:bg-gray-800 border dark:border-gray-700 h-auto p-1 rounded-lg">
+                            <TabsTrigger value="profile" className="text-sm py-2 data-[state=active]:bg-white data-[state=active]:text-indigo-600 data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-900 dark:data-[state=active]:text-indigo-400">
+                                Profil
+                            </TabsTrigger>
+                            <TabsTrigger value="security" className="text-sm py-2 data-[state=active]:bg-white data-[state=active]:text-indigo-600 data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-900 dark:data-[state=active]:text-indigo-400">
+                                Sécurité
+                            </TabsTrigger>
+                            <TabsTrigger value="notifications" className="text-sm py-2 data-[state=active]:bg-white data-[state=active]:text-indigo-600 data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-900 dark:data-[state=active]:text-indigo-400">
+                                Notifications
+                            </TabsTrigger>
+                        </TabsList>
 
-                <TabsContent value="profile" className="mt-6 p-4 border rounded-lg bg-white dark:bg-gray-800">
-                    <EditProfileForm initialData={mockUserData} />
-                </TabsContent>
+                        <TabsContent value="profile" className="mt-6 p-4 border rounded-lg bg-white dark:bg-gray-800">
+                            <EditProfileForm />
+                        </TabsContent>
 
-                <TabsContent value="security" className="mt-6 p-4 border rounded-lg bg-white dark:bg-gray-800">
-                    <SecuritySettings />
-                </TabsContent>
+                        <TabsContent value="security" className="mt-6 p-4 border rounded-lg bg-white dark:bg-gray-800">
+                            <SecuritySettings />
+                        </TabsContent>
 
-                <TabsContent value="notifications" className="mt-6 p-4 border rounded-lg bg-white dark:bg-gray-800">
-                    <NotificationSettings />
-                </TabsContent>
-            </Tabs>
-        </CardContent>
+                        <TabsContent value="notifications" className="mt-6 p-4 border rounded-lg bg-white dark:bg-gray-800">
+                            <NotificationSettings />
+                        </TabsContent>
+                    </Tabs>
+                </CardContent>
             </Card>
         </div>
     )

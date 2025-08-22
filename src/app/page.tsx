@@ -1,3 +1,5 @@
+// path: src/app/page.tsx
+
 import { Building, User, Shield, ArrowRight, Package, Zap, Globe, Users } from "lucide-react"
 import Link from "next/link"
 import { adminPath } from "@/utils/constants"
@@ -101,7 +103,7 @@ export default async function Home() {
                                     </div>
                                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Suivi Envois</h3>
                                     <p className="text-sm text-gray-600 dark:text-gray-300 text-center mb-4">
-                                        Suivez l'état de votre colis en temps réel
+                                        Suivez l&apos;état de votre colis en temps réel
                                     </p>
                                     <div className="flex items-center text-orange-600 group-hover:translate-x-1 transition-transform">
                                         <span className="text-sm font-medium mr-1">Accéder</span>
@@ -130,7 +132,7 @@ export default async function Home() {
                     <div className="text-center mb-16 animate-fade-in">
                         <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Nos fonctionnalités</h2>
                         <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                            Une solution complète pour tous vos besoins d'expédition
+                            Une solution complète pour tous vos besoins d&apos;expédition
                         </p>
                     </div>
 

@@ -321,7 +321,7 @@ export default function SimulationResultsLayout({
                                                 <CardContent className="p-4">
                                                     <div className="flex items-center gap-2 mb-3">
                                                         <Building2 className="h-4 w-4 text-red-600" />
-                                                        <span className="font-semibold text-red-700 dark:text-red-400">Agence d'arrivée</span>
+                                                        <span className="font-semibold text-red-700 dark:text-red-400">Agence d&apos;arrivée</span>
                                                         <Badge variant="outline" className="ml-auto text-xs">
                                                             {new Date(results.arrivalDate).toLocaleDateString("fr-FR")}
                                                         </Badge>

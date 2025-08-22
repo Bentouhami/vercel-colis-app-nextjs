@@ -30,7 +30,7 @@ const VerifyEmailContent = () => {
 
     useEffect(() => {
         if (countdown === 0 && status === 'success') {
-            router.push('/client/auth/login');
+            router.push('/auth/login');
         }
     }, [countdown, status, router]);
 

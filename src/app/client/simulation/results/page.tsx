@@ -189,7 +189,7 @@ export default function SimulationResultsPage() {
                 handleClose={() => setShowLoginPrompt(false)}
                 handleLoginRedirect={() => {
                     setShowLoginPrompt(false)
-                    router.push(`/client/auth/login?redirect=${encodeURIComponent("/client/simulation/results")}`)
+                    router.push(`/auth/login?redirect=${encodeURIComponent("/client/simulation/results")}`)
                 }}
             />
         </PageLayout>

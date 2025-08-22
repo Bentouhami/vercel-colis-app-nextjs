@@ -95,7 +95,7 @@ export default function ForgotPasswordForm() {
                             Renvoyer un email
                         </Button>
                         <Button asChild size="sm" className="bg-green-600 hover:bg-green-700 text-white">
-                            <a href="/client/auth/login">
+                            <a href="/auth/login">
                                 <ArrowLeft className="w-4 h-4 mr-1" />
                                 Retour à la connexion
                             </a>
@@ -115,9 +115,9 @@ export default function ForgotPasswordForm() {
             <div className="flex items-start space-x-3">
                 <AlertCircle className="w-6 h-6 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-red-800 dark:text-red-200 mb-2">Erreur lors de l'envoi</h3>
+                    <h3 className="text-lg font-semibold text-red-800 dark:text-red-200 mb-2">Erreur lors de l&apos;envoi</h3>
                     <p className="text-red-700 dark:text-red-300 text-sm mb-4">
-                        Nous n'avons pas pu envoyer l'email de réinitialisation. Veuillez réessayer.
+                        Nous n&apos;avons pas pu envoyer l&apos;email de réinitialisation. Veuillez réessayer.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-2">
                         <Button onClick={resetForm} size="sm" className="bg-red-600 hover:bg-red-700 text-white">
@@ -129,7 +129,7 @@ export default function ForgotPasswordForm() {
                             size="sm"
                             className="text-red-700 dark:text-red-300 border-red-300 dark:border-red-600 bg-transparent"
                         >
-                            <a href="/client/auth/login">
+                            <a href="/auth/login">
                                 <ArrowLeft className="w-4 h-4 mr-1" />
                                 Retour à la connexion
                             </a>
@@ -258,7 +258,7 @@ export default function ForgotPasswordForm() {
                         }`}
                 >
                     <a
-                        href="/client/auth/login"
+                        href="/auth/login"
                         className="inline-flex items-center text-sm text-blue-600 dark:text-blue-400 hover:underline transition-colors duration-200 hover:text-blue-700 dark:hover:text-blue-300"
                     >
                         <ArrowLeft className="w-4 h-4 mr-1" />

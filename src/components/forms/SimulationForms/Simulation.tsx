@@ -502,7 +502,7 @@ const SimulationFormMultiStep = () => {
                                 </div>
 
                                 {parcels.map((pkg, idx) => idx === currentPackage && (
-                                    <PackageForm key={idx} index={idx} pkg={pkg} onChange={handlePackageChange} />
+                                    <PackageForm key={idx} index={idx} parcel={pkg} onParcelChange={handlePackageChange} />
                                 ))}
 
                                 {/* pagination intra-step */}

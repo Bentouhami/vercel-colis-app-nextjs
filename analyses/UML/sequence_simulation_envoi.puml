@@ -1,0 +1,28 @@
+@startuml
+actor Client
+participant "UI Client (Next.js)" as UI
+participant "API Simulation (Next.js)" as API
+participant "Bk_SimulationService" as Service
+participant "Prisma ORM" as Prisma
+
+Client -> UI: Accède à la page de simulation
+activate UI
+UI -> UI: Affiche le formulaire de simulation
+Client -> UI: Saisit les détails de l'envoi (origine, destination, poids, volume, etc.)
+UI -> API: Requête de simulation (POST /api/v1/simulations)
+activate API
+API -> Service: Appelle calculerSimulation(detailsEnvoi)
+activate Service
+Service -> Prisma: Requête tarifs, agences, etc.
+activate Prisma
+Prisma --> Service: Retourne données
+deactivate Prisma
+Service -> Service: Calcule le prix et les options de livraison
+Service --> API: Retourne les résultats de simulation
+deactivate Service
+API --> UI: Retourne les résultats (JSON)
+deactivate API
+UI -> UI: Affiche les résultats de simulation
+Client -> UI: Consulte les résultats
+deactivate UI
+@enduml

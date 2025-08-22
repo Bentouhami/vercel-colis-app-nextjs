@@ -1,24 +1,20 @@
-// components/buttons/LoginButton.tsx
-"use client";
+"use client"
 
-import * as React from "react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { LogInIcon } from "lucide-react";
-import { cn } from "@/lib/utils";          // shadcn helper for class merge
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
+import { LogIn } from "lucide-react"
 
-type LoginButtonProps = React.ComponentPropsWithoutRef<typeof Button>;
+interface LoginButtonProps {
+    className?: string
+}
 
-const LoginButton: React.FC<LoginButtonProps> = ({ className, ...props }) => (
-    <Link href="/client/auth/login" className="w-full sm:w-auto">
-        <Button
-            {...props}
-            className={cn("w-full hover:bg-gray-700 hover:text-gray-200", className)}
-        >
-            <LogInIcon className="mr-2 h-4 w-4" />
-            Se connecter
+export default function LoginButton({ className }: LoginButtonProps) {
+    return (
+        <Button asChild variant="outline" className={className}>
+            <Link href="/auth/login" className="flex items-center gap-2">
+                <LogIn className="w-4 h-4" />
+                Se connecter
+            </Link>
         </Button>
-    </Link>
-);
-
-export default LoginButton;
+    )
+}

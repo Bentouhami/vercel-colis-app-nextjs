@@ -1,0 +1,328 @@
+@startuml MPD_ColisApp
+!theme vibrant
+title MPD ColisApp - Modèle Physique de Données (PostgreSQL)
+
+entity users {
+  + id: UUID <<PK>>
+  --
+  first_name: VARCHAR(255) NOT NULL
+  last_name: VARCHAR(255) NOT NULL
+  email: VARCHAR(255) NOT NULL UNIQUE
+  phone_number: VARCHAR(20)
+  password: VARCHAR(255) NOT NULL
+  role: VARCHAR(50) NOT NULL ' CLIENT, SUPER_ADMIN, DESTINATAIRE, AGENCY_ADMIN, ACCOUNTANT
+  is_verified: BOOLEAN DEFAULT FALSE
+  is_enterprise: BOOLEAN DEFAULT FALSE
+  birth_date: DATE
+}
+
+entity accounts {
+  + id: UUID <<PK>>
+  --
+  type: VARCHAR(255) NOT NULL
+  provider: VARCHAR(255) NOT NULL
+  provider_account_id: VARCHAR(255) NOT NULL
+  refresh_token: TEXT
+  access_token: TEXT
+  user_id: UUID NOT NULL <<FK>>
+}
+
+entity sessions {
+  + id: UUID <<PK>>
+  --
+  session_token: VARCHAR(255) NOT NULL UNIQUE
+  expires: TIMESTAMPTZ NOT NULL
+  user_id: UUID NOT NULL <<FK>>
+}
+
+entity password_reset_tokens {
+  + id: UUID <<PK>>
+  --
+  token: VARCHAR(255) NOT NULL UNIQUE
+  expires_at: TIMESTAMPTZ NOT NULL
+  user_id: UUID NOT NULL <<FK>>
+}
+
+entity addresses {
+  + id: UUID <<PK>>
+  --
+  street: VARCHAR(255) NOT NULL
+  complement: VARCHAR(255)
+  street_number: VARCHAR(10)
+  box_number: VARCHAR(10)
+  city_id: UUID NOT NULL <<FK>>
+}
+
+entity cities {
+  + id: UUID <<PK>>
+  --
+  name: VARCHAR(255) NOT NULL
+  latitude: NUMERIC(10,7)
+  longitude: NUMERIC(10,7)
+  country_id: UUID NOT NULL <<FK>>
+}
+
+entity countries {
+  + id: UUID <<PK>>
+  --
+  name: VARCHAR(255) NOT NULL
+  iso2: VARCHAR(2) NOT NULL UNIQUE
+  iso3: VARCHAR(3) NOT NULL UNIQUE
+  phone_code: VARCHAR(10)
+  capital: VARCHAR(255)
+  currency: VARCHAR(10)
+}
+
+entity timezones {
+  + id: UUID <<PK>>
+  --
+  zone_name: VARCHAR(255) NOT NULL
+  gmt_offset: INTEGER
+  abbreviation: VARCHAR(10)
+  country_id: UUID NOT NULL <<FK>>
+}
+
+entity vat_rates {
+  + id: UUID <<PK>>
+  --
+  vat_percent: NUMERIC(5,2) NOT NULL
+  vat_type: VARCHAR(50) NOT NULL ' REDUCED, STANDARD, EXEMPT
+  country_id: UUID NOT NULL <<FK>>
+}
+
+entity agencies {
+  + id: UUID <<PK>>
+  --
+  name: VARCHAR(255) NOT NULL
+  location: VARCHAR(255)
+  phone_number: VARCHAR(20)
+  email: VARCHAR(255)
+  vat_number: VARCHAR(50)
+  capacity: INTEGER
+  available_slots: INTEGER
+  created_by_id: UUID <<FK>>
+  address_id: UUID NOT NULL <<FK>>
+}
+
+entity agency_staffs {
+  + id: UUID <<PK>>
+  --
+  staff_role: VARCHAR(50) NOT NULL
+  user_id: UUID NOT NULL UNIQUE <<FK>>
+  agency_id: UUID NOT NULL <<FK>>
+}
+
+entity activity_logs {
+  + id: UUID <<PK>>
+  --
+  activity_type: VARCHAR(50) NOT NULL ' AGENCY_CREATED, AGENCY_UPDATED, CLIENT_LINKED, ENVOI_CREATED, PAYMENT_CREATED
+  details: TEXT
+  staff_role: VARCHAR(50)
+  user_id: UUID <<FK>>
+  agency_id: UUID <<FK>>
+}
+
+entity envois {
+  + id: UUID <<PK>>
+  --
+  tracking_number: VARCHAR(255) NOT NULL UNIQUE
+  qr_code_url: VARCHAR(255)
+  simulation_status: VARCHAR(50) NOT NULL ' DRAFT, CONFIRMED, COMPLETED, CANCELLED
+  envoi_status: VARCHAR(50) NOT NULL ' PENDING, SENT, DELIVERED, CANCELLED, RETURNED
+  total_weight: NUMERIC(10,2)
+  total_volume: NUMERIC(10,2)
+  total_price: NUMERIC(10,2)
+  paid: BOOLEAN DEFAULT FALSE
+  departure_date: TIMESTAMPTZ
+  arrival_date: TIMESTAMPTZ
+  comment: TEXT
+  sender_id: UUID NOT NULL <<FK>>
+  receiver_id: UUID NOT NULL <<FK>>
+  departure_agency_id: UUID NOT NULL <<FK>>
+  arrival_agency_id: UUID NOT NULL <<FK>>
+  transport_id: UUID <<FK>>
+}
+
+entity parcels {
+  + id: UUID <<PK>>
+  --
+  height: NUMERIC(10,2)
+  weight: NUMERIC(10,2)
+  width: NUMERIC(10,2)
+  length: NUMERIC(10,2)
+  envoi_id: UUID NOT NULL <<FK>>
+}
+
+entity payments {
+  + id: UUID <<PK>>
+  --
+  method: VARCHAR(50) NOT NULL ' CARD, CASH
+  status: VARCHAR(50) NOT NULL ' PENDING, PAID, FAILED
+  amount: NUMERIC(10,2) NOT NULL
+  transaction_id: VARCHAR(255)
+  envoi_id: UUID NOT NULL UNIQUE <<FK>>
+}
+
+entity tracking_events {
+  + id: UUID <<PK>>
+  --
+  event_status: VARCHAR(50) NOT NULL ' CREATED, COLLECTED, IN_TRANSIT, ARRIVED_AT_AGENCY, OUT_FOR_DELIVERY, DELIVERED, FAILED
+  location: VARCHAR(255)
+  description: TEXT
+  envoi_id: UUID NOT NULL <<FK>>
+}
+
+entity transports {
+  + id: UUID <<PK>>
+  --
+  number: VARCHAR(50)
+  base_volume: NUMERIC(10,2)
+  base_weight: NUMERIC(10,2)
+  current_volume: NUMERIC(10,2)
+  current_weight: NUMERIC(10,2)
+  is_available: BOOLEAN DEFAULT TRUE
+  agency_id: UUID <<FK>>
+}
+
+entity transport_schedules {
+  + id: UUID <<PK>>
+  --
+  departure_date: TIMESTAMPTZ NOT NULL
+  arrival_date: TIMESTAMPTZ NOT NULL
+  is_holiday: BOOLEAN DEFAULT FALSE
+  transport_id: UUID NOT NULL <<FK>>
+}
+
+entity appointments {
+  + id: UUID <<PK>>
+  --
+  date: TIMESTAMPTZ NOT NULL
+  status: VARCHAR(50) NOT NULL ' PENDING, CONFIRMED, CANCELLED, RESCHEDULED, COMPLETED, MISSED, IN_PROGRESS
+  envoi_id: UUID NOT NULL <<FK>>
+  agency_id: UUID NOT NULL <<FK>>
+}
+
+entity tarifs {
+  + id: UUID <<PK>>
+  --
+  weight_rate: NUMERIC(10,2)
+  volume_rate: NUMERIC(10,2)
+  base_rate: NUMERIC(10,2)
+  fixed_rate: NUMERIC(10,2)
+  agency_id: UUID <<FK>>
+}
+
+entity coupons {
+  + id: UUID <<PK>>
+  --
+  coupon_code: VARCHAR(50) NOT NULL UNIQUE
+  discount_amount: NUMERIC(10,2)
+  discount_percentage: NUMERIC(5,2)
+  number_of_uses: INTEGER DEFAULT 0
+  start_date: TIMESTAMPTZ
+  expiration_date: TIMESTAMPTZ
+}
+
+entity notifications {
+  + id: UUID <<PK>>
+  --
+  message: TEXT NOT NULL
+  is_read: BOOLEAN DEFAULT FALSE
+  user_id: UUID <<FK>>
+  envoi_id: UUID <<FK>>
+  agency_id: UUID <<FK>>
+}
+
+entity authenticators {
+  + id: UUID <<PK>>
+  --
+  credential_id: VARCHAR(255) NOT NULL UNIQUE
+  credential_public_key: TEXT NOT NULL
+  counter: INTEGER NOT NULL
+  user_id: UUID NOT NULL <<FK>>
+}
+
+' Associative Entities / Junction Tables
+entity user_addresses {
+  + user_id: UUID <<PK>> <<FK>>
+  + address_id: UUID <<PK>> <<FK>>
+  --
+  address_type: VARCHAR(50) NOT NULL ' HOME, OFFICE, BILLING, SHIPPING, OTHER
+  created_at: TIMESTAMPTZ DEFAULT NOW()
+  updated_at: TIMESTAMPTZ DEFAULT NOW()
+  is_deleted: BOOLEAN DEFAULT FALSE
+}
+
+entity agency_clients {
+  + user_id: UUID <<PK>> <<FK>>
+  + agency_id: UUID <<PK>> <<FK>>
+  --
+  created_at: TIMESTAMPTZ DEFAULT NOW()
+}
+
+entity user_coupons {
+  + user_id: UUID <<PK>> <<FK>>
+  + coupon_id: UUID <<PK>> <<FK>>
+  --
+  ' No specific attributes for this association
+}
+
+entity envoi_coupons {
+  + envoi_id: UUID <<PK>> <<FK>>
+  + coupon_id: UUID <<PK>> <<FK>>
+  --
+  ' No specific attributes for this association
+}
+
+' Relationships (Foreign Keys) with labels and classic cardinalities
+users "1" -- "0,n" accounts : a pour compte
+users "1" -- "0,n" sessions : a pour session
+users "1" -- "0,n" password_reset_tokens : a pour token de réinitialisation
+users "1" -- "0,n" authenticators : a pour authentificateur
+
+users "1,n" -- "0,n" user_addresses : habite à
+addresses "0,n" -- "1,n" user_addresses : est une adresse de
+
+addresses "1,n" -- "1" cities : se trouve dans
+cities "1,n" -- "1" countries : fait partie de
+countries "1" -- "0,n" timezones : a pour fuseau horaire
+countries "1" -- "0,n" vat_rates : applique TVA
+
+agencies "0,n" -- "0,1" users : crée
+users "0,n" -- "0,n" agency_clients : est client de
+agencies "0,n" -- "0,n" agency_clients : a pour client
+
+users "0,n" -- "0,n" agency_staffs : travaille pour
+agency_staffs "1,n" -- "1" agencies : gère
+
+users "0,1" -- "0,n" activity_logs : effectue activité
+agencies "0,1" -- "0,n" activity_logs : concerne activité
+
+users "1" -- "0,n" envois : envoie
+users "1" -- "0,n" envois : reçoit
+agencies "1" -- "0,n" envois : part de
+agencies "1" -- "0,n" envois : arrive à
+envois "0,n" -- "0,1" transports : utilise
+
+envois "1" -- "1,n" parcels : contient
+envois "1" -- "0,1" payments : règle
+envois "1" -- "0,n" tracking_events : a pour historique
+envois "1" -- "0,1" appointments : a rendez-vous
+agencies "1" -- "0,1" appointments : gère rendez-vous
+
+users "0,n" -- "0,n" user_coupons : bénéficie
+coupons "0,n" -- "0,n" user_coupons : est bénéficié par
+
+envois "0,n" -- "0,n" envoi_coupons : utilise
+coupons "0,n" -- "0,n" envoi_coupons : est utilisé par
+
+users "0,1" -- "0,n" notifications : reçoit
+envois "1" -- "0,n" notifications : concerne envoi
+agencies "1" -- "0,n" notifications : concerne agence
+
+agencies "1" -- "1" addresses : localisée à
+agencies "0,1" -- "1,n" tarifs : applique
+agencies "0,1" -- "0,n" transports : gère
+transports "1" -- "0,n" transport_schedules : a pour planning
+
+@enduml

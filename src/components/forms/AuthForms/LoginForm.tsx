@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { loginUserSchema } from "@/utils/validationSchema"
 import { login } from "@/actions/UserActions"
+import { useSession } from "next-auth/react"
 
 interface LoginUserDto {
     email: string
@@ -23,6 +24,7 @@ interface LoginUserDto {
 export default function LoginForm() {
     const router = useRouter()
     const searchParams = useSearchParams()
+    const { data: session, update } = useSession()
     const [showPassword, setShowPassword] = useState(false)
     const [isDisabled, setIsDisabled] = useState(false)
     const [isPending, startTransition] = useTransition()
@@ -47,12 +49,60 @@ export default function LoginForm() {
         startTransition(async () => {
             try {
                 const result = await login(data.email, data.password)
+
                 if (result?.error) {
                     toast.error(result.error)
                 } else if (result?.success) {
                     toast.success("Connexion réussie !")
-                    router.push(searchParams.get("redirect") || "/client/profile")
-                    router.refresh()
+
+                    // 🔄 Update session to get fresh user data
+                    await update()
+
+                    // Small delay to ensure session is updated
+                    setTimeout(async () => {
+                        // Get fresh session data
+                        const updatedSession = await fetch("/api/auth/session").then((res) => res.json())
+
+                        if (updatedSession?.user?.role) {
+                            const userRole = updatedSession.user.role
+
+                            // 🚀 ROLE-BASED REDIRECTS: Determine redirect based on role
+                            let redirectUrl: string
+
+                            if (["SUPER_ADMIN", "AGENCY_ADMIN", "ACCOUNTANT"].includes(userRole)) {
+                                redirectUrl = "/admin"
+                            } else {
+                                redirectUrl = "/client/profile"
+                            }
+
+                            // Override with custom redirect if provided and appropriate
+                            const customRedirect = searchParams.get("redirect")
+                            if (customRedirect) {
+                                // For admin users, only allow admin redirects
+                                if (["SUPER_ADMIN", "AGENCY_ADMIN", "ACCOUNTANT"].includes(userRole)) {
+                                    if (customRedirect.startsWith("/admin")) {
+                                        redirectUrl = customRedirect
+                                    }
+                                    // Keep default /admin for non-admin redirects
+                                }
+                                // For client users, allow client redirects
+                                else if (["CLIENT", "DESTINATAIRE"].includes(userRole)) {
+                                    if (customRedirect.startsWith("/client") || customRedirect === "/") {
+                                        redirectUrl = customRedirect
+                                    }
+                                }
+                            }
+
+                            console.log("🔄 Login redirect:", { userRole, customRedirect, redirectUrl })
+                            router.push(redirectUrl)
+                        } else {
+                            // Fallback if no role detected
+                            const fallbackRedirect = searchParams.get("redirect") || "/client/profile"
+                            router.push(fallbackRedirect)
+                        }
+
+                        router.refresh()
+                    }, 500)
                 }
             } catch (error) {
                 console.error("Login error:", error)
@@ -216,7 +266,6 @@ export default function LoginForm() {
                                             >
                                                 {/* Effet de brillance qui traverse */}
                                                 <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
-
                                                 {isPending ? (
                                                     <div className="flex items-center gap-2">
                                                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />

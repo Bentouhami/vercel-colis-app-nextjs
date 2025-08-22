@@ -28,7 +28,7 @@ const PaymentCancelPage = () => {
                         </div>
                         <h1 className="text-4xl font-bold text-red-600 mb-4">Paiement Annulé</h1>
                         <p className="text-xl text-gray-600 dark:text-gray-400">
-                            Votre transaction a été annulée. Aucun montant n'a été débité.
+                            Votre transaction a été annulée. Aucun montant n&apos;a été débité.
                         </p>
                     </div>
 
@@ -64,7 +64,7 @@ const PaymentCancelPage = () => {
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
                                     <HelpCircle className="w-5 h-5 text-orange-600" />
-                                    Besoin d'aide ?
+                                    Besoin d&apos;aide ?
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
@@ -96,7 +96,7 @@ const PaymentCancelPage = () => {
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <AlertTriangle className="w-5 h-5 text-yellow-600" />
-                                Raisons possibles de l'annulation
+                                Raisons possibles de l&apos;annulation
                             </CardTitle>
                         </CardHeader>
                         <CardContent>

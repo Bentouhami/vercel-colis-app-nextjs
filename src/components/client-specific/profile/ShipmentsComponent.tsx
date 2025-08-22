@@ -29,6 +29,7 @@ import { getCurrentUserId } from "@/lib/auth-utils"
 import { fetchUserDeliveries } from "@/services/frontend-services/envoi/EnvoiService"
 import type { EnvoisListDto } from "@/services/dtos"
 import ShipmentDetailsModal from "./ShipmentDetailsModal"
+import Link from "next/link"
 
 const statusConfig = {
     DELIVERED: {
@@ -183,14 +184,21 @@ export default function ShipmentsComponent() {
     return (
         <div className="w-full h-full">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-                <div>
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Mes Envois</h1>
-                    <p className="text-gray-600 dark:text-gray-400 mt-1">Suivez l&apos;historique de vos envois et colis</p>
+            <div className="space-y-4 sm:space-y-0 sm:flex sm:items-center sm:justify-between mb-6">
+                <div className="text-center sm:text-left">
+                    <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-gray-100">
+                        Mes Envois
+                    </h1>
+                    <p className="text-sm text-muted-foreground">
+                        Suivez l&apos;historique de vos envois et colis
+                    </p>
                 </div>
-                <Button className="flex items-center gap-2 shrink-0">
-                    <Plus className="h-4 w-4" />
-                    Nouvel envoi
+
+                <Button asChild className="w-full sm:w-auto">
+                    <Link href="/client/simulation">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Créer un nouvel envoi
+                    </Link>
                 </Button>
             </div>
 

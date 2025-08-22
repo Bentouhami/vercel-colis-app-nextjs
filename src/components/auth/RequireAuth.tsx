@@ -1,3 +1,5 @@
+// path: src/components/auth/RequireAuth.tsx
+
 "use client"
 
 import type React from "react"
@@ -59,7 +61,7 @@ export default function RequireAuth({
                 setIsRedirecting(true)
 
                 const callbackUrl = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : "")
-                const redirectUrl = redirectTo || `/client/auth/login?callbackUrl=${encodeURIComponent(callbackUrl)}`
+                const redirectUrl = redirectTo || `/auth/login?callbackUrl=${encodeURIComponent(callbackUrl)}`
 
                 setTimeout(() => {
                     router.push(redirectUrl)

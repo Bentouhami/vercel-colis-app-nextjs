@@ -106,8 +106,8 @@ const ParcelFormStep: React.FC<ParcelFormStepProps> = ({
                         <PackageForm
                             key={index}
                             index={index}
-                            pkg={pkg}
-                            onChange={handlePackageChange}
+                            parcel={pkg}
+                            onParcelChange={handlePackageChange}
                         />
                     )
                 )}

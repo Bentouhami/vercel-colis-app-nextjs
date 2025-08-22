@@ -7,6 +7,7 @@ import {
   UserAddressDto,
   UserLoginDto,
   UserLoginResponseDto,
+  UpdateProfileRequestDto,
 } from "@/services/dtos";
 import { mapUserToProfileDto } from "@/services/mappers/user.mapper";
 import { prisma } from "@/utils/db";
@@ -256,6 +257,18 @@ export class UserRepository implements IUserRepository {
           },
         });
 
+        // Ensure the 'country' variable is properly awaited and accessible
+        const country = await prisma.country.findUnique({
+          where: { iso2: data.address.countryIso2 },
+        });
+
+        if (!country) {
+          throw new Error(`Country not found: ${data.address.country}`);
+        }
+
+        // Use the 'country' variable safely
+        const countryId = country.id;
+
         // Update user's address
         if (user.userAddresses && user.userAddresses.length > 0) {
           const userAddressPivot = user.userAddresses[0];
@@ -268,13 +281,23 @@ export class UserRepository implements IUserRepository {
               boxNumber: data.address.boxNumber,
               city: {
                 connectOrCreate: {
-                  where: { name: data.address.city },
+                  where: {
+                    name_countryId: {
+                      name: data.address.city,
+                      countryId: country.id,
+                    },
+                  }, // Use name_countryId
                   create: {
                     name: data.address.city,
                     country: {
                       connectOrCreate: {
-                        where: { name: data.address.country },
-                        create: { name: data.address.country },
+                        where: { iso2: data.address.countryIso2 }, // Use iso2 as unique identifier
+                        create: {
+                          name: data.address.country,
+                          iso2: data.address.countryIso2, // Ensure required fields are provided
+                          iso3: data.address.countryIso3,
+                          phonecode: data.address.countryPhoneCode,
+                        },
                       },
                     },
                   },
@@ -292,13 +315,23 @@ export class UserRepository implements IUserRepository {
               boxNumber: data.address.boxNumber,
               city: {
                 connectOrCreate: {
-                  where: { name: data.address.city },
+                  where: {
+                    name_countryId: {
+                      name: data.address.city,
+                      countryId: country.id,
+                    },
+                  }, // Use name_countryId
                   create: {
                     name: data.address.city,
                     country: {
                       connectOrCreate: {
-                        where: { name: data.address.country },
-                        create: { name: data.address.country },
+                        where: { iso2: data.address.countryIso2 }, // Use iso2 as unique identifier
+                        create: {
+                          name: data.address.country,
+                          iso2: data.address.countryIso2, // Ensure required fields are provided
+                          iso3: data.address.countryIso3,
+                          phonecode: data.address.countryPhoneCode,
+                        },
                       },
                     },
                   },
@@ -311,6 +344,7 @@ export class UserRepository implements IUserRepository {
             data: {
               userId: userId,
               addressId: newAddress.id,
+              addressType: "HOME", // Add required field
             },
           });
         }

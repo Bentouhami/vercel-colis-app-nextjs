@@ -5,7 +5,6 @@
 import type { LoginUserDto } from "@/services/dtos/users/UserDto";
 import { loginUserSchema } from "@/utils/validationSchema";
 import { signIn } from "@/auth/auth";
-import { redirect } from "next/navigation";
 
 const login = async (email: string, password: string, redirectUrl?: string) => {
   // ✅ Empêche l'exécution pendant le build Vercel

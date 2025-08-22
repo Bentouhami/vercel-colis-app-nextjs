@@ -1,0 +1,48 @@
+@startuml
+!theme vibrant
+
+title Diagramme d'Architecture - ColisApp (avec flux de réponse)
+
+actor "Utilisateur" as user
+
+cloud "Hébergement Vercel" {
+    package "Frontend (Navigateur Client)" <<Browser>> {
+        [React Components\n(App Router, Pages, UI)] as frontend_comps
+        [Frontend Services\n(ex: useApi hook, formatage données)] as frontend_services
+    }
+
+    package "Backend (Node.js Serverless)" <<Server>> {
+        [API Routes\n(Next.js /api)] as api
+        [Backend Services\n(Logique Métier)] as backend_services
+        [Prisma Client\n(ORM)] as prisma
+    }
+
+    ' Flux de la requête (flèches pleines)
+    user --> frontend_comps : 1. Requête HTTPS
+    frontend_comps --> frontend_services : 2. Appel de fonction
+    frontend_services --> api : 3. Requête HTTP (fetch)
+    api --> backend_services : 4. Appel de fonction
+    backend_services --> prisma : 5. Requête de données
+    
+    ' Flux de la réponse (flèches pointillées)
+    prisma .-> backend_services : 6. Objets de la base de données
+    backend_services .-> api : 7. Données/DTOs traités
+    api .--> frontend_services : 8. Réponse JSON
+    frontend_services .-> frontend_comps : 9. Données formatées pour l'UI
+    frontend_comps .-> user : 10. Rendu HTML/CSS (UI mise à jour)
+}
+
+database "Base de Données" as db <<PostgreSQL>>
+prisma <--> db : Connexion TCP/IP (SQL)
+
+package "Services Externes" {
+    [Auth.js (NextAuth.js)\nGestion de l'authentification] as nextauth
+    [Stripe\nGestion des paiements] as stripe
+    [Resend / Nodemailer\nEnvoi d'emails] as mailer
+}
+
+backend_services ..> nextauth
+backend_services ..> stripe
+backend_services ..> mailer
+
+@enduml

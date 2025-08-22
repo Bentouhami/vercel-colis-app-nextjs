@@ -326,3 +326,8 @@ To ensure high-quality development, maintainability, and collaboration, the foll
 - **System Design**: Plan the architecture and design of the system, considering scalability, maintainability, and future extensibility.
 - **UML Diagrams**: Use UML diagrams (as seen in `analyses/UML/`) to visualize system components, interactions, and data flows.
 - **Use Case Analysis**: Document use cases to define system behavior from the user's perspective (as seen in `analyses/CAS_UTILISATION.md`).
+
+---
+## User Preferences
+
+- **Language**: Respond in French, even if the user writes in English.
