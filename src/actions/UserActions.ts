@@ -8,12 +8,13 @@ import { signIn } from "@/auth/auth";
 
 const login = async (email: string, password: string, redirectUrl?: string) => {
   // ✅ Empêche l'exécution pendant le build Vercel
-  if (process.env.NEXT_PUBLIC_VERCEL_ENV) {
-    console.warn(
-      "⛔ Tentative d'authentification bloquée (environnement Vercel)."
-    );
+  if (
+    process.env.NEXT_PUBLIC_VERCEL_ENV &&
+    process.env.NEXT_PUBLIC_VERCEL_ENV !== "production"
+  ) {
     return {
-      error: "Connexion temporairement désactivée sur cet environnement.",
+      error:
+        "Connexion désactivée temporairement sur les environnements de prévisualisation.",
     };
   }
 
