@@ -296,4 +296,21 @@ export type RegisterUserFrontendFormType = z.infer<typeof registerUserFrontendSc
 export type RegisterUserBackendType = z.infer<typeof registerUserBackendSchema>;
 export type FrontendAddressType = z.infer<typeof addressSchema>;
 
+// Schema for editing user profile
+export const editProfileSchema = z.object({
+    firstName: z.string().min(2, "Le prénom doit contenir au moins 2 caractères"),
+    lastName: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
+    birthDate: z.string().min(1, "La date de naissance est requise"),
+    phoneNumber: z.string().min(9, "Le numéro de téléphone doit contenir au moins 9 caractères"),
+    email: z.string().email("Adresse email invalide"),
+    address: z.object({
+        street: z.string().min(1, "La rue est requise"),
+        complement: z.string().optional(),
+        streetNumber: z.string().optional(),
+        boxNumber: z.string().optional(),
+        city: z.string().min(1, "La ville est requise"),
+        country: z.string().min(1, "Le pays est requis"),
+    }),
+});
+
 

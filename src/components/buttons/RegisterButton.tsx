@@ -10,11 +10,11 @@ import { cn } from "@/lib/utils";
 type RegisterButtonProps = React.ComponentPropsWithoutRef<typeof Button>;
 
 const RegisterButton: React.FC<RegisterButtonProps> = ({
-                                                           className,
-                                                           variant = "default",
-                                                           ...props
-                                                       }) => (
-    <Link href="/client/auth/register" className="w-full sm:w-auto">
+    className,
+    variant = "default",
+    ...props
+}) => (
+    <Link href="/auth/register" className="w-full sm:w-auto">
         <Button
             {...props}
             variant={variant}

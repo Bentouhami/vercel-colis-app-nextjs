@@ -1,15 +1,20 @@
-// path: src/app/client/simulation/edit
-import {Suspense} from "react";
+import { Suspense } from "react"
+import SimulationFormWizard from "@/components/forms/SimulationForms/SimulationFormWizard"
+import SimulationSkeleton from "@/components/skeletons/SimulationSkeleton"
+import { PageLayout } from "@/components/ui/PageLayout"
+import { Edit } from "lucide-react"
 
-import SimulationEditForm from "@/components/forms/SimulationForms/SimulationEditForm";
-
-export default function WrappedSimulationResults() {
+export default function EditSimulationPage() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
-            <div className="d-flex justify-content-around">
-                <SimulationEditForm/>
-            </div>
-
-        </Suspense>
-    );
+        <PageLayout
+            title="Modifier la simulation"
+            subtitle="Modifiez les détails de votre simulation d'envoi"
+            icon={<Edit className="h-6 w-6 text-primary" />}
+            maxWidth="2xl"
+        >
+            <Suspense fallback={<SimulationSkeleton />}>
+                <SimulationFormWizard isEditMode={true} />
+            </Suspense>
+        </PageLayout>
+    )
 }

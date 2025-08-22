@@ -1,0 +1,30 @@
+@startuml uc_gerer_utilisateurs
+
+title Diagramme Détaillé - UC: Gérer les utilisateurs
+
+actor "Super Admin" as SuperAdmin
+
+rectangle "Système ColisApp" {
+  usecase "Gérer les utilisateurs" as UC_Manage
+
+  ' Cas étendus (les différentes opérations CRUD)
+  usecase "Consulter la liste des utilisateurs" as UC_Read
+  usecase "Créer un nouvel utilisateur" as UC_Create
+  usecase "Modifier un utilisateur existant" as UC_Update
+  usecase "Changer le rôle d'un utilisateur" as UC_ChangeRole
+  usecase "Bloquer/Débloquer un utilisateur" as UC_ToggleStatus
+}
+
+' L'acteur principal initie la gestion
+SuperAdmin -r- UC_Manage
+
+' Le cas de gestion principal est étendu par les différentes actions possibles
+UC_Manage <.d. UC_Read : <<extend>>
+UC_Manage <.d. UC_Create : <<extend>>
+UC_Manage <.d. UC_Update : <<extend>>
+UC_Manage <. UC_ToggleStatus : <<extend>>
+
+' La modification d'un utilisateur peut inclure le changement de son rôle
+UC_Update .d.> UC_ChangeRole : <<include>>
+
+@enduml

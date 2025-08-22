@@ -1,0 +1,1684 @@
+﻿
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+      INF-C
+
+
+
+EPREUVE INTEGREE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Nom du Professeur EI : 
+(à mentionner si autorisation)
+
+
+
+
+
+
+
+Remerciements
+Je tiens à remercier toutes les personnes qui m’ont aidé tout au long de ce projet, en particulier :
+- Mon professeur encadrant, pour ses conseils et son suivi.
+- Mes collègues et amis, pour leurs retours et tests utilisateurs.
+- Ma famille, pour le soutien et l’encouragement.
+
+
+
+Table des matières
+1.	Introduction	6
+1.1.	Contexte Problématique	6
+1.2.	Bénéficiaires	6
+2.	Cahier des charges	7
+2.1.	Résumé du projet	7
+2.2.	Objectifs du projet	7
+2.2.1.	Objectifs stratégiques	7
+2.2.2.	Objectifs fonctionnels	7
+2.3.	Périmètre du projet	9
+2.3.1.	Fonctionnalités incluses	9
+2.3.2.	Fonctionnalités hors périmètre	9
+2.4.	Hypothèses et contraintes	9
+2.4.1.	Hypothèses	9
+2.4.2.	Contraintes techniques	9
+2.5.	Étude de l’existant	10
+2.5.1.	Amélioration d’une application existante	10
+2.5.2.	Analyse SWOT	10
+2.6.	Potentiel de mise en production et étude commerciale	11
+2.6.1.	Solution proposée	11
+2.6.2.	Sources de revenus envisagées	11
+2.6.3.	Marché cible	11
+2.6.4.	Avantage compétitif	12
+2.6.5.	Plan de croissance	12
+2.6.6.	Prévisions de revenus	12
+2.7.	Planning du projet	14
+3.	Analyse fonctionnelle	17
+3.1.	Parties prenantes	17
+3.1.1.	Parties Prenantes Humaines	17
+3.1.2.	Parties Prenantes Techniques (Non-Humaines)	17
+3.2.	User Stories	18
+3.3.	Demandes fonctionnelles	20
+3.4.	Demandes techniques	22
+3.5.	Demandes de sécurité	22
+3.6.	Demandes non-fonctionnelles	22
+3.7.	Modélisations des traitements	23
+3.7.1.	Liste des acteurs humains et non-humains	23
+3.7.2.	Cas d’utilisation	23
+3.7.2.1.	Plans général des diagrammes de cas d’utilisation	24
+3.7.3.	Cas d’utilisation détaillés	27
+3.7.3.1.	Processus de simulation	27
+3.7.3.2.	Paiement via Stripe	27
+3.7.3.3.	Mettre à jour le statut d’un envoi	28
+3.7.3.4.	Gérer les utilisateurs (Super Admin)	28
+3.7.3.5.	Cas d’utilisation d’inscription	29
+3.7.3.6.	Se connecter	31
+3.7.3.7.	Modifier  les informations de profil	32
+3.7.3.8.	Réinitialisation du mot de passe	33
+3.7.3.9.	Simulation d’envoi	34
+3.7.3.10.	Confirmation et paiement	36
+3.7.3.11.	Historique des envois	37
+3.7.3.12.	Suivi colis envois:  ( à refaire )	38
+3.7.3.13.	 Demande de fermeture de compte : ( à refaire )	39
+3.7.4.	Diagramme de séquence :	40
+3.7.4.1.	Diagramme de séquence Simulation d’un Envoi : ( à refaire	40
+3.7.4.2.	Diagramme de Séquence – Suivi d’un Envoi : ( à refaire )	41
+4.	Analyse technique	42
+4.1.	Modélisation des données	42
+4.1.1.	Diagramme Entité-Relation global	42
+4.1.2.	Modèle Conceptuelle de Données (MCD)	43
+4.1.3.	Modèle Logique de Données (MLD)	44
+4.1.4.	Modèle Physique de Données (MPD)	45
+4.1.5.	Diagramme de Classe : parti Entities ( mise ajours  à vérifier )	46
+4.1.6.	Partie Address ( à refaire pour notre projet en NextJS 15 )	47
+4.1.7.	Partie Agence ( à refaire pour notre projet en NextJS 15 )	49
+4.1.8.	Partie Auth ( à refaire pour notre projet en NextJS 15 )	51
+4.1.9.	Partie Colis ( à refaire pour notre projet en NextJS 15 )	54
+4.1.10.	Partie Envois ( à refaire pour notre projet en NextJS 15 )	56
+4.1.11.	Partie Simulation ( à refaire pour notre projet en NextJS 15 )	60
+4.1.12.	Partie Transport ( à refaire pour notre projet en NextJS 15 )	63
+4.1.13.	Partie Security ( à refaire pour notre projet en NextJS 15 )	66
+4.1.14.	Frontend ( à générer  le nouveau diagramme des pages frontend de NextJS)	69
+4.2.	Architecture logicielle & technologique	70
+4.2.1.	Vue d'ensemble et Choix Technologiques	70
+4.2.2.	Diagramme de l'Architecture	71
+4.2.3.	Fonctionnement de notre architecture	72
+5.	Répartition des tâches	74
+6.	Problèmes Rencontrés et Solutions Apportées	75
+6.1.	Adaptation à l'Architecture de l’App Router de Next.js	75
+6.2.	Authentification sur l'Edge Runtime avec NextAuth.js	75
+6.3.	Modélisation et Requêtes Complexes avec Prisma	77
+7.	Wireframes	78
+8.	Glossaire	96
+9.	Annexes	97
+9.1.	A.1 Documentation des cas d’utilisation détaillés	97
+9.1.1.	A.1.1 Espace Public, Destinataire et Client	97
+9.1.2.	A.1.2 Administration Interne	97
+9.1.3.	Dictionnaire des abréviations utilisées	98
+9.2.	Annexes : A.2 – Documentation des cas d’utilisation détaillés	98
+9.2.1.	A.2.1 Processus de simulation	98
+9.2.2.	A.2.2 Paiement de l’envoi via Stripe	99
+9.2.3.	A.2.3 Mise à jour du statut d’un envoi	99
+9.2.4.	A.2.4 Gestion des utilisateurs (Super Admin)	99
+9.2.5.	A.2.5 Inscription	99
+9.2.6.	A.2.5 Réinitialisation du mot de passe client	100
+9.3.	Documentation du MPD	101
+9.4.	Documentation d’API backend endpoints ( a refaire complètement pour remplacer l’ancien api avec notre Nextjs 15 API routes.)	109
+9.4.1.	Classe AddressController	109
+9.4.2.	Classe EnvoisController	113
+9.4.3.	Classe SimulationController	114
+9.4.4.	Classe TransportController	117
+9.4.5.	Classe AuthController	118
+9.4.6.	Classe AgenceController	120
+9.5.	Plan de Test par classe	121
+9.5.1.	SimulationService	121
+9.5.2.	TransportService	122
+9.5.3.	SimulationService	123
+10.	Références	124
+10.1.1.	Documentation des produits utilisés dans la solution	124
+11.	Code	126
+
+1. Introduction
+ColisApp est un projet d’application web, visant à simplifier et moderniser les envois de colis entre la Belgique et le Maroc. Elle répond aux besoins des particuliers souhaitant envoyer des colis de manière pratique et transparente, ainsi qu’aux agences de transport cherchant à optimiser leurs opérations. L’objectif est de concevoir une plateforme évolutive et modulaire, basée sur des technologies modernes, tout en assurant la sécurité des données.
+Ce dossier d’analyse sert à définir les bases techniques et fonctionnelles nécessaires à la conception et au développement de ColisApp, avec une vision d'expansion future vers d'autres pays.
+1.1. Contexte Problématique
+Le projet ColisApp trouve son origine dans une problématique personnelle liée à l’envoi de colis entre le Maroc et la Belgique. Les défis suivants ont été identifiés :
+* Manque de transparence sur les coûts : Les clients ne peuvent pas estimer les prix avant de se rendre à l’agence.
+* Absence de suivi en temps réel : Les clients ne savent pas où se trouvent leurs colis après l’envoi.
+* Notifications inexistantes : Les étapes importantes (réception, expédition, livraison) ne sont pas communiquées automatiquement.
+* Paiements peu pratiques : Les transactions doivent souvent être effectuées en espèces à l’agence.
+Ces limitations inspirent le développement de ColisApp, une solution numérique visant à :
+• Améliorer l’expérience client.
+• Moderniser la gestion des colis pour les agences de transport.
+• Offrir une plateforme technologique évolutive adaptée à de futurs marchés.
+Actuellement, les agences de transport non centralisées présentent les limitations suivantes :
+* Accès difficile aux tarifs : Les clients doivent appeler ou se déplacer pour obtenir des informations.
+* Gestion manuelle et informelle : Le suivi des colis repose sur des communications peu fiables.
+* Absence de solutions de paiement en ligne : Les clients sont obligés de payer sur place, souvent en espèces.
+* Manque de transparence : Les processus internes des agences ne sont pas clairs pour les utilisateurs.
+1.2. Bénéficiaires
+ColisApp cible plusieurs types d’utilisateurs :
+* Particuliers : Ceux qui souhaitent envoyer des colis de manière simple, rapide et transparente.
+* Petites agences de transport : Celles qui cherchent à moderniser leurs services sans disposer des ressources pour développer leur propre plateforme.
+* Commerces locaux : Entreprises souhaitant offrir des services d’expédition à leurs clients.
+
+2. Cahier des charges
+Cette section décrit les objectifs à atteindre pour que ColisApp réponde aux besoins identifiés. Elle détaille les fonctionnalités, les limites du projet, ainsi que les hypothèses et contraintes qui pourraient impacter le développement.
+2.1. Résumé du projet
+ColisApp est une application web permettant aux particuliers et aux agences de transport de gérer facilement l’envoi et le suivi des colis entre la Belgique et le Maroc. Actuellement, l’expédition de colis entre ces deux pays présente plusieurs difficultés :
+- Un manque de transparence sur les coûts d’envoi, obligeant les utilisateurs à se déplacer ou à faire des appels téléphoniques pour obtenir une estimation.
+- Pas de suivi des colis, donc pas de visibilité aux clients et destinataires.
+- Des paiements totalement effectués en espèces et que sur place, rendant la gestion comptable plus complexe et peu sécurisée et le plus de déplacement des clients.
+ColisApp propose une solution numérique centralisée permettant aux utilisateurs de simuler leurs envois, de payer en ligne de manière sécurisée et de suivre les statuts de leurs colis.
+L’application vise à améliorer l’expérience utilisateur en simplifiant les processus d’expédition et de suivi, tout en offrant aux agences un outil de gestion optimisé et sécurisé.
+2.2. Objectifs du projet
+Les objectifs du projet sont structurés en deux catégories :
+2.2.1. Objectifs stratégiques
+- Faciliter l’expédition des colis en proposant une interface intuitive.
+- Améliorer la gestion des agences de transport en automatisant le suivi et la gestion des paiements.
+- Offrir une transparence sur les coûts d’expédition grâce à un simulateur de tarifs.
+- Assurer la sécurité des transactions financières par l’intégration d’un système de paiement en ligne.
+- Développer une solution évolutive pouvant être adaptée à d’autres pays et modes de transport.
+2.2.2. Objectifs fonctionnels
+- Permettre aux utilisateurs d’effectuer une simulation de prix en fonction du poids, de la destination et des options d’envoi.
+- Générer un numéro de suivi unique pour chaque envoi.
+- Offrir aux clients et destinataires un suivi en temps réel du statut de leurs colis.
+- Envoyer des notifications automatiques aux utilisateurs lors de changements de statut.
+- Intégrer une solution de paiement en ligne sécurisée via Stripe.
+- Fournir aux administrateurs d’agence un tableau de bord de gestion des envois et paiements.
+- Permettre aux comptables d’accéder aux transactions, d’exporter les données et de gérer la comptabilité des agences.
+- Garantir un accès différencié selon les profils utilisateurs : clients, administrateurs d’agence, comptables et super administrateurs.
+
+
+2.3. Périmètre du projet
+Cette section définit les fonctionnalités couvertes par ColisApp ainsi que celles qui ne seront pas prises en charge dans la version actuelle du projet.
+2.3.1. Fonctionnalités incluses
+* Simulation du coût d’envoi.
+* Génération de numéros de suivi.
+* Paiement en ligne via Stripe.
+* Suivi des colis avec mises à jour de statut.
+* Gestion des comptes utilisateurs et des rôles.
+* Accès aux transactions et reporting comptable pour les agences.
+* Notifications automatiques par email.
+2.3.2. Fonctionnalités hors périmètre
+* Suivi GPS en temps réel des colis.
+* Personnalisation des tarifs par les agences (les prix sont définis en base de données par l’administrateur général).
+* Développement d’une application mobile native (ColisApp est une application web responsive).
+2.4. Hypothèses et contraintes
+2.4.1. Hypothèses
+* Les utilisateurs disposeront d’une connexion Internet stable pour accéder à l’application.
+* Les clients accepteront d’effectuer leurs paiements en ligne via Stripe.
+* Les notifications seront bien reçues et consultées par les utilisateurs.
+* L’infrastructure technique sera dimensionnée pour gérer une montée en charge progressive.
+2.4.2. Contraintes techniques
+* Respect des normes de sécurité pour le traitement des paiements et des données personnelles (RGPD).
+* Architecture logicielle adaptée à une évolution future.
+* Base de données optimisée pour la gestion d’un grand volume de transactions.
+* Application conçue pour être hébergée sur Vercel avec une base de données PostgreSQL.
+
+
+2.5. Étude de l’existant
+2.5.1. Amélioration d’une application existante
+Mon projet ColisApp est issu d’une première application développée lors d’un projet précédent, utilisant Spring Boot pour le backend et ReactJS pour le frontend. Cette application initiale répondait à un besoin de simulation du coût d’un envoi de colis entre la Belgique et le Maroc, mais elle présentait des limites :
+* Pas de gestion d’utilisateurs: seul le calcul de prix et l’affichage des informations de base étaient possibles.
+* Aucun suivi de colis: impossible pour un expéditeur ou un destinataire de vérifier l’état de la livraison.
+* Absence de gestion multi-agences: aucune vue consolidée pour plusieurs agences ou pays.
+* Système de paiement inexistant: la validation restait manuelle, et les paiements s’effectuaient exclusivement en liquide sur place.
+Ces lacunes ont motivé la refonte complète de l’application vers une architecture plus moderne basée sur Next.js. L’objectif est désormais de proposer une solution centralisée et évolutive comprenant :
+* Un accès multi-profil (client, administrateur d’agence, etc.).
+* Un suivi détaillé des statuts de colis.
+* Un système de paiement en ligne (Stripe).
+* Un tableau de bord pour les agences (gestion des envois, reporting financier, etc.).
+2.5.2. Analyse SWOT
+Dans la mesure où ColisApp ambitionne de s’étendre à d’autres liaisons et de concurrencer d’autres plateformes d’envoi, une analyse SWOT permet de mieux cerner les avantages et les risques liés au projet.
+FacteursForcesFaiblessesOpportunitésMenacesProduitInterface web moderne et intuitive ; suivi détaillé des colis ; possibilité de gérer plusieurs agences via un tableau de bord unique.Limité pour l’instant à la liaison Belgique-Maroc ; dépendance à la connexion internet.Extensible à d’autres pays et d’autres modes de transport ; intégration de services additionnels (colis express, assurance, etc.).Concurrence de plateformes déjà établies (chronopost, DHL, etc.) ; réticence de certaines agences au numérique.PrixTransparence tarifaire via un simulateur en ligne ; paiement via Stripe sécurisé.Frais de transaction Stripe pouvant impacter la marge ; coûts de maintenance technique.Possibilité de proposer des offres Premium pour les envois fréquents ; partenariats avec des services de logistique.D’autres concurrents pourraient proposer des offres plus compétitives ou un paiement simplifié.TechnologieStack Next.js / Prisma simple à maintenir ; bonne performance grâce au rendu côté serveur (SSR).Dépendance à l’hébergement cloud (Vercel, base de données externe) ; besoin d’une bonne expertise en Node.js/TypeScript.Montée en charge facilitée ; intégrations possibles avec des APIs de tracking, ERP, etc.Risques liés à la scalabilité si le nombre d’utilisateurs explose ; incidents cloud hors de contrôle.MarchéBesoin réel pour les expatriés et PME ; niche encore peu digitalisée (courtiers, petites agences).Adoption progressive (certaines habitudes manuelles à changer) ; dépend de la confiance des utilisateurs.Collaboration possible avec des transporteurs ou services existants ; conquérir d’autres flux d’envoi (pays européens, Afrique du Nord, etc.).Concurrence avec des plateformes internationales ayant un budget marketing conséquent ; évolution rapide des attentes utilisateur.2.6.  Potentiel de mise en production et étude commerciale
+Après avoir identifié les besoins utilisateurs et les limites des solutions existantes, il est important d'étudier le potentiel de mise en production de ColisApp. Cette section présente la solution proposée, les sources de revenus envisagées, le marché cible, les avantages concurrentiels, ainsi que les opportunités de croissance et une simulation financière initiale.
+2.6.1. Solution proposée
+ColisApp est une plateforme web moderne permettant aux particuliers et aux agences de transport de simuler, payer et suivre des envois de colis entre la Belgique et le Maroc.
+Les principales fonctionnalités proposées sont :
+* Simulation de coût d’envoi sans inscription.
+* Paiement en ligne sécurisé via Stripe.
+* Génération automatique d’un numéro de suivi.
+* Suivi des statuts du colis tout au long de son acheminement.
+* Notifications automatiques aux utilisateurs à chaque étape clé.
+* Outil de gestion pour les agences : gestion des clients, des envois et des rendez-vous.
+* Reporting financier pour le suivi des paiements et de la comptabilité des agences.
+La solution est conçue pour être évolutive, rapide à utiliser, et accessible via un simple navigateur web, sans nécessiter d'installation d'application mobile.
+2.6.2. Sources de revenus envisagées
+Plusieurs sources de revenus sont envisagées pour assurer la viabilité économique de ColisApp :
+Ces modèles sont complémentaires et permettent de combiner revenus ponctuels (commissions) et revenus récurrents (abonnements).
+
+ModèleDescriptionCommission par envoiPrélèvement d'un pourcentage de 2 à 5 % sur chaque envoi payé via la plateforme.Abonnement pour agencesAbonnement mensuel (29€/mois) pour les agences afin d’accéder au tableau de bord de gestion et aux fonctionnalités avancées.Options PremiumVente de services additionnels tels que l'assurance colis, l'envoi express, ou des remises pour fidélité.Marketplace (évolution future)Mise en place d'une boutique en ligne pour la vente d’accessoires d’envoi (cartons, étiquettes, protections).2.6.3. Marché cible
+ColisApp vise principalement deux segments de marché :
+* Particuliers :
+o Les expatriés et diasporas vivant en Belgique souhaitant envoyer des colis vers leurs familles au Maroc.
+o Les clients recherchant un service rapide, transparent et accessible en ligne sans déplacement en agence.
+* Petites agences de transport :
+o Les agences locales souhaitant moderniser leur système de gestion sans investir dans une solution informatique interne.
+o Les nouveaux acteurs du transport de colis souhaitant disposer rapidement d'un outil clé en main.
+À moyen terme, ColisApp pourra également s’adresser à des commerces locaux souhaitant proposer des services d’envoi à leurs clients.
+2.6.4.  Avantage compétitif
+ColisApp se distingue de ses concurrents par plusieurs avantages compétitifs :
+* Simplicité d'utilisation : Interface intuitive et rapide d’accès, même pour les utilisateurs non techniques.
+* Transparence totale : Simulation en ligne du coût d’envoi sans besoin de contact humain préalable.
+* Paiement sécurisé : Intégration Stripe garantissant une sécurité maximale des transactions.
+* Flexibilité : Plateforme évolutive, prévue pour intégrer de nouveaux pays, devises, et services sans refonte complète.
+* Support aux agences : Tableaux de bord spécifiques pour la gestion des clients, envois et rendez-vous.
+Ces éléments permettent de répondre aux besoins précis du marché cible tout en offrant une expérience utilisateur optimale.
+2.6.5. Plan de croissance
+Le développement de ColisApp est pensé en plusieurs phases :
+* Phase 1 :
+o Lancement opérationnel entre la Belgique et le Maroc.
+o Signature de premiers partenariats avec quelques agences pilotes.
+* Phase 2 :
+o Extension des services vers d'autres pays européens (France, Allemagne) et nord-africains (Algérie, Tunisie).
+o Adaptation de l'application à d'autres devises et langues.
+* Phase 3 :
+o Développement d'une application mobile dédiée (React Native ou Flutter) pour améliorer l’accessibilité.
+o Mise en place de partenariats avec des transporteurs privés ou des sociétés d’emballage.
+Chaque phase sera accompagnée d'une stratégie d’acquisition d’utilisateurs basée sur le bouche-à-oreille, des promotions ciblées, et des accords B2B.
+2.6.6. Prévisions de revenus
+Une simulation rapide basée sur des hypothèses réalistes donne une première idée du potentiel économique :
+En augmentant progressivement le nombre d’envois et d’agences partenaires, ces revenus pourraient croître significativement. À terme, avec l’ouverture à d'autres marchés (France, Allemagne), l’objectif est d’atteindre plusieurs milliers d’euros par mois.
+
+HypothèseRésultat100 envois/mois à 2% de commission sur un prix moyen de 50€100€ / mois10 agences abonnées à 29€/mois chacune290€ / moisTotal estimé (phase 1)390€ / mois minimum
+2.7. Planning du projet
+Pour passer de l’analyse à la mise en production, voici un planning provisoire, représenté sous forme d’un diagramme de Gantt. Les dates et durées sont indicatives et peuvent être ajustées selon la charge de travail ou les imprévus.
+- Structure de projet :
+
+
+- Laisse des tâches :
+
+
+
+- Liste de ressources :
+
+
+
+- Budget de projet :
+
+3. Analyse fonctionnelle
+3.1. Parties prenantes
+Pour mieux structurer l’implémentation de notre application, nous définissons les parties prenantes, qui sont les entités humaines et non humaines interagissant avec ColisApp. Ces parties prenantes peuvent être utilisatrices ou techniques, et elles jouent un rôle essentiel dans le fonctionnement du système.
+3.1.1. Parties Prenantes Humaines
+Partie PrenanteDescriptionVisiteurs non-inscritsPeuvent utiliser l’application pour simuler un envoi et suivre un colis via un numéro de suivi, sans avoir besoin de créer un compte.Clients inscritsPeuvent simuler un envoi, payer un envoi, gérer leurs informations personnelles et suivre l’historique de leurs envois.DestinatairesPeuvent consulter l’état de livraison d’un colis via un lien ou un numéro de suivi envoyé par email.Administrateurs d’AgenceGèrent les clients et envois de leur agence. Peuvent modifier les statuts des envois et consulter les paiements effectués.Super AdministrateursSupervise l’ensemble du système, gère les agences et peut modifier les paramètres généraux de ColisApp.ComptablesConsultent les transactions et paiements effectués pour assurer la gestion financière des agences.Développeurs / Équipe techniqueResponsable du développement et de la maintenance technique de l’application. Veille à la sécurité et aux mises à jour.3.1.2. Parties Prenantes Techniques (Non-Humaines)
+Partie PrenanteDescriptionSystème de Paiement (Stripe)Gère les transactions financières des utilisateurs et permet le paiement sécurisé des envois.Système de SuiviFournit les informations sur l’état des colis et met à jour les clients en temps réel.Base de donnéesStocke les informations sur les clients, envois et transactions.Système de Messagerie ÉlectroniqueEnvoie les confirmations d’envoi, notifications et informations de suivi.
+
+
+3.2. User Stories
+- Rôles des Utilisateurs :
+o Super Administrateur : Supervise l’ensemble du système, gère les agences, les administrateurs, et les clients.
+o Administrateur d’Agence : Gère les clients et les envois associés à son agence.
+o Client : Simule des envois, suit les colis et gère son profil.
+o Destinataire : Suit les colis qu’il doit recevoir via un numéro unique.
+o Comptable : Vérifie les transactions, contrôle les paiements et génère des rapports financiers.
+- Gestion des Envois
+US1 En tant que client, je veux consulter la liste de mes envois et leur statut actuel pour suivre facilement toutes mes expéditions.
+US2 En tant qu’administrateur, je veux mettre à jour manuellement le statut des envois (ex. « En transit », « Livré », etc.) pour refléter leur progression dans le système et informer les clients.
+US3 En tant que destinataire, je veux entrer un numéro de suivi pour consulter le statut actuel de mon envoi, afin de savoir où il se trouve et quand il arrivera.
+- Simulation d’Envoi
+US4 En tant qu'utilisateur, je veux simuler le prix d’un envoi en saisissant les détails des colis (nombre de colis, poids, dimensions, date départ et destination) sans avoir besoin de m’inscrire, afin d’évaluer les coûts avant de décider d’utiliser le service.
+US5 En tant qu'utilisateur, je veux pouvoir réaliser autant de simulations que je le souhaite pour explorer différentes options d’envoi sans restriction.
+US6 En tant qu'utilisateur, je veux modifier une simulation après l'avoir réalisée en ajustant les paramètres (poids, dimensions, départ, destination) et en recalculant les coûts, afin de voir les nouvelles estimations de prix.
+US7  En tant qu'utilisateur, je veux pouvoir recommencer une simulation à zéro pour explorer différentes options.
+US8  En tant qu'utilisateur, je veux que ma simulation soit conservée pendant 2 heures pour que je puisse y revenir, la modifier ou la finaliser sans devoir tout recommencer.
+- Paiement Sécurisé
+US9 En tant que client inscrit, je veux finaliser l’envoi de mon envoi après simulation en procédant au paiement en ligne de manière sécurisée.
+US10 En tant qu’administrateur, je veux accéder à une liste des paiements effectués pour m’assurer que les transactions ont été correctement enregistrées.
+- Notifications Automatiques
+US11 En tant que client, je veux recevoir des notifications automatiques à chaque étape clé de l’envoi pour être informé en temps réel de l’état de mes colis.
+US12 En tant qu’administrateur, je veux que le système génère des notifications automatiques pour informer les clients lorsque le statut de leur colis change.
+- Gestion des Utilisateurs
+US13 En tant que client, je veux m’inscrire pour accéder à des fonctionnalités supplémentaires comme le suivi détaillé, l’historique des envois, et les notifications automatiques.
+US14 En tant que client, je veux me connecter pour gérer mes envois, consulter l’historique, et mettre à jour mes informations personnelles.
+US15 En tant que client, je veux ajouter le destinataire à mon envoi avant passer au paiement. 
+US16 En tant que développeur, je veux un accès sécurisé à la base de données pour corriger des bugs, ajouter de nouvelles fonctionnalités et maintenir l’application.
+- Super Administrateurs
+US17 En tant que Super Administrateur, je veux pouvoir créer un nouvel Administrateur d’Agence pour qu’il puisse gérer les agences.
+US18 En tant que Super Administrateur, je veux pouvoir mettre à jour les informations des Administrateurs d’Agence pour qu’elles soient correctes et à jour.
+US19 En tant que Super Administrateur, je veux pouvoir supprimer un Administrateur d’Agence pour garantir une gestion efficace des accès.
+US20 En tant que Super Administrateur, je veux avoir un accès complet à toutes les agences, clients, envois, et simulations pour superviser le système global.
+- Administrateurs d’Agence
+US21 En tant qu’Administrateur d’Agence, je veux gérer les informations des clients de mon agence (ajouter, modifier, supprimer) pour maintenir une base de données client à jour.
+US22 En tant qu’Administrateur d’Agence, je veux gérer les envois de mon agence pour m’assurer qu’ils sont correctement suivis et traités.
+US23 En tant qu’Administrateur d’Agence, je veux pouvoir voir les statistiques et les rapports sur les envois et paiements de mon agence pour analyser les performances.
+US24 En tant que comptable, je veux accéder à un tableau récapitulatif des paiements effectués afin de vérifier les transactions et assurer la comptabilité.
+US25 En tant que comptable, je veux pouvoir filtrer les transactions par date, agence et méthode de paiement afin d’analyser les flux financiers.
+US26 En tant que comptable, je veux exporter les données des transactions sous format CSV ou PDF pour les intégrer à un logiciel de comptabilité.
+US27 En tant que comptable, je veux recevoir des alertes en cas de paiement échoué ou de remboursement effectué pour assurer un suivi rigoureux des finances.
+
+
+3.3. Demandes fonctionnelles
+DF 1. Simulation du Coût d'Envoi
+Permettre aux utilisateurs (inscrits ou non) de simuler le coût total d'un envoi en fonction des détails saisis (poids, nombre de colis, destination). Cette simulation doit être simple et rapide, sans nécessiter de création de compte.
+DF 2. Inscription et Gestion de Compte
+Offrir aux utilisateurs la possibilité de s'inscrire et de gérer leur compte, incluant l’enregistrement et la mise à jour des informations personnelles (nom, prénom, date de naissance, adresse, numéro de téléphone, email).
+DF 3. Authentification Sécurisée
+Implémenter des mécanismes d'authentification sécurisés pour l'accès aux comptes, incluant la connexion, la réinitialisation de mot de passe, et la vérification de l'identité via email ou fournisseurs tiers comme Google.
+DF 4. Gestion des Envois
+Permettre aux utilisateurs inscrits de créer, visualiser et gérer leurs envois. Cela inclut l'enregistrement des détails nécessaires (poids, nombre de colis, nom et coordonnées du destinataire) et la génération d’un numéro de suivi unique.
+DF 5. Suivi des Statuts d'Envoi
+Fournir un suivi des statuts des colis pour les clients et destinataires, incluant des étapes clés telles que "À l'agence", "En transit", "Livré". La localisation géographique n'est pas incluse.
+DF 6. Paiement Sécurisé
+Intégrer une plateforme de paiement en ligne pour sécuriser les transactions financières, permettant aux utilisateurs de finaliser leurs envois après simulation.
+DF 7. Notifications Automatiques
+Automatiser l’envoi de notifications par email ou SMS pour informer les utilisateurs des étapes clés de leur envoi, comme la confirmation, les mises à jour de statut, et la livraison.
+DF 8. Interface Utilisateur Intuitive
+Concevoir une interface ergonomique et réactive permettant aux utilisateurs de naviguer facilement, de simuler les coûts, de gérer leurs envois, et de suivre leurs colis.
+DF 9. Historique des Envois
+Offrir aux utilisateurs inscrits la possibilité de consulter l’historique de leurs envois passés, y compris les détails des colis et les simulations effectuées.
+DF 10.  Support Client
+Mettre en place un système de support client accessible pour fournir une assistance technique, répondre aux questions, et résoudre les problèmes liés aux envois ou aux comptes utilisateurs.
+DF 11. Gestion Comptable et Finances
+Mettre en place un module dédié aux comptables pour consulter, filtrer et exporter les transactions. Ce module doit inclure :
+1.1. Accès sécurisé aux transactions et paiements effectués.
+1.2. Filtrage avancé par date, agence et méthode de paiement.
+1.3. Exportation des données sous format CSV ou PDF.
+1.4. Notifications automatiques en cas de paiement échoué ou remboursement.
+
+
+3.4. Demandes techniques
+1.5. L’application sera déployée sur Vercel, une plateforme cloud optimisée pour les applications basées sur Next.js.
+1.6. La gestion des serveurs sera automatisée par Vercel, offrant une infrastructure évolutive, fiable et performante.
+1.7. La sécurité est une priorité, avec des mesures avancées comme :
+1.8. Authentification sécurisée via Auth.js avec gestion des tokens et cryptage des mots de passe via bcrypt.
+1.9. Protection des données utilisateur grâce à un chiffrement des communications (SSL/TLS).
+1.10. Les systèmes utilisés pour le développement incluront Windows 11 pour les postes de travail des développeurs.
+1.11. La base de données PostgreSQL sera hébergée sur une plateforme cloud compatible avec Prisma.
+3.5. Demandes de sécurité
+Dans cette section, nous récapitulons les exigences de sécurité imposées à ColisApp :
+* Authentification sécurisée
+o Gestion des rôles et autorisations (super admin, admin d’agence, comptable, client et destinataire).
+o Cryptage des mots de passe (bcrypt) et validation des tokens (via Auth.js).
+* Protection du transport des données
+o Communication chiffrée en HTTPS (SSL/TLS) pour toutes les pages et toutes les API.
+o Respect des bonnes pratiques PCI-DSS pour la partie paiement Stripe.
+* Protection des données personnelles (RGPD)
+o Limiter la collecte de données personnelles au strict nécessaire.
+o Offrir un mécanisme de suppression / anonymisation des comptes inactifs.
+o Définir une politique de confidentialité claire.
+* Intégrité et traçabilité
+o Journaux d’événements (logs) pour détecter d’éventuels accès non autorisés.
+o Sauvegardes régulières de la base de données (restaurables en cas de sinistre).
+* Sécurité de l’hébergement
+o Hébergement sur Vercel, incluant des mesures de sécurité au niveau infrastructure.
+o Mises à jour régulières du framework Next.js et des dépendances.
+* Gestion des sessions
+o Invalidations des tokens après déconnexion ou délai d’inactivité.
+o Politique de renouvellement / expiration sécurisée.
+3.6. Demandes non-fonctionnelles
+* Performance : L'application doit charger rapidement et traiter les simulations, enregistrements, et mises à jour des statuts avec un temps de réponse inférieur à 2 secondes pour offrir une expérience fluide.
+* Disponibilité : Le système doit être disponible 24/7 avec un taux de disponibilité supérieur à 99,5 %, en minimisant les interruptions dues à la maintenance.
+* Sécurité : Mettre en œuvre des protocoles robustes pour protéger les données sensibles (informations personnelles, mots de passe, transactions financières) contre les cyberattaques et accès non autorisés.
+* Scalabilité : Concevoir une architecture capable de gérer une augmentation significative du nombre d’utilisateurs et des charges de travail sans dégradation des performances.
+* Compatibilité Multi-Plateforme : L'application doit être compatible avec les principaux navigateurs et appareils (ordinateurs, tablettes, smartphones) pour garantir une large accessibilité.
+* Facilité de Maintenance : Le code et l’architecture doivent être organisés de manière modulaire et bien documentés, permettant des mises à jour simples et rapides, ainsi que l’ajout de nouvelles fonctionnalités.
+* Conformité Réglementaire : Assurer la conformité avec les lois et réglementations locales et internationales applicables, notamment pour la protection des données personnelles (exemple : RGPD).
+* Internationalisation : Supporter plusieurs langues, comme le français, l’anglais et l’arabe, ainsi que différentes devises, pour répondre aux besoins des utilisateurs dans divers contextes géographiques.
+* Documentation et Assistance : Fournir une documentation claire et concise pour les utilisateurs finaux et le personnel technique, incluant des guides d’utilisation et un support client en ligne pour résoudre les problèmes.
+* Expérience Utilisateur : L’interface doit être intuitive, cohérente et agréable à utiliser, permettant une navigation fluide à travers toutes les fonctionnalités.
+3.7. Modélisations des traitements
+3.7.1.  Liste des acteurs humains et non-humains
+
+ActeurTypeRôle principalClientHumainUtilise la plate-forme pour expédier, payer et suivre ses colis.DestinataireHumainConsulte le suivi d’un colis reçu.Super AdminHumainSupervise tout le système : agences, utilisateurs, envois.Admin d’agenceHumainGère les clients et envois de son agence.ComptableHumainVérifie et valide les transactions financières.Plate-forme ColisAppTechniqueOrchestration des processus (inscription, simulation, suivi…).Services techniques externesTechniqueBD + e-mail + Stripe : stockage, notifications, paiements sécurisés.
+Le tableau détaillé (colonnes « Description complète ») est disponible en Annexe 8.1 : Dictionnaire des acteurs.
+3.7.2. Cas d’utilisation
+Cette section est dédiée à la présentation et à l'organisation des cas d'utilisation du système ColisApp. Les cas d'utilisation constituent une pierre angulaire de l’analyse fonctionnelle, offrant une vue d’ensemble des interactions entre les utilisateurs (acteurs) et le système. Ils décrivent les fonctionnalités offertes par l’application du point de vue de l’utilisateur, sans entrer dans les détails techniques d’implémentation.
+Dans le cadre du projet ColisApp, plusieurs types d’acteurs ont été identifiés, chacun interagissant avec le système de manière distincte :
+1.12. Visiteur : utilisateur non authentifié pouvant consulter des informations ou simuler un envoi.
+1.13. Client : utilisateur authentifié pouvant gérer ses envois et son profil.
+1.14. Destinataire : personne pouvant suivre un colis sans compte.
+1.15. Admin d’Agence : responsable des opérations au sein d’une agence spécifique.
+1.16. Comptable : profil orienté vers la gestion financière.
+1.17. Super Admin : administrateur global du système.
+Afin d’assurer une clarté et une lisibilité optimales, les diagrammes de cas d’utilisation ont été regroupés par rôle ou domaine fonctionnel. Cette organisation permet de visualiser facilement les fonctionnalités accessibles à chaque catégorie d’utilisateur, tout en facilitant la compréhension des périmètres d’action de chacun.
+Les diagrammes présentés dans cette section constituent une référence visuelle essentielle. Ils seront approfondis dans les sections suivantes du dossier d’analyse, où chaque cas d’utilisation significatif sera décrit en détail, avec ses flux principaux, flux alternatifs et scénarios d’exception.
+3.7.2.1. Plans général des diagrammes de cas d’utilisation
+1.18. Espace Public, Destinataire et Client
+Ce diagramme montre la transition progressive d’un visiteur vers un client authentifié, en passant par les étapes clés telles que l’inscription, la simulation, la gestion de compte et les actions sur les envois. Il illustre également les interactions spécifiques au rôle de Destinataire qui, sans compte, peut suivre l’état d’un colis. L’objectif est de rendre visible la continuité du parcours utilisateur sur ColisApp, depuis la consultation publique jusqu’à la gestion complète d’un envoi et son paiement.
+
+
+
+1.19. Administration Interne
+Ce diagramme présente les fonctionnalités accessibles aux utilisateurs ayant des rôles de gestion interne sur la plateforme ColisApp : l’administrateur d’agence, le comptable et le super administrateur. Chacun accède à un espace dédié (dashboard) depuis lequel il peut réaliser des actions spécifiques à ses responsabilités. Le diagramme permet de visualiser clairement les domaines fonctionnels séparés tout en mettant en évidence leur point d’entrée commun via l’authentification.
+
+3.7.3. Cas d’utilisation détaillés
+3.7.3.1. Processus de simulation
+Ce diagramme modélise le parcours d’un utilisateur (visiteur ou client) qui souhaite simuler le coût d’un envoi. Il couvre les différentes étapes du formulaire, la récupération ou la création d’une simulation, la saisie des informations d’expédition, le calcul et la validation des données, jusqu’à l’affichage du résultat. Ce processus constitue l’entrée principale dans l’écosystème de ColisApp.
+3.7.3.2. Paiement via Stripe
+Ce diagramme illustre les étapes que suit un client pour effectuer le paiement d’un envoi via Stripe.
+Après validation du récapitulatif, le client est redirigé vers une session sécurisée générée via Stripe. Le système attend la réponse du service externe, traite le résultat et met à jour le statut de l’envoi. En cas de succès, une confirmation est automatiquement envoyée au client.
+
+
+
+3.7.3.3. Mettre à jour le statut d’un envoi
+Ce diagramme présente le processus permettant à un administrateur d’agence ou à un super administrateur de mettre à jour manuellement le statut d’un envoi. Le système permet d’identifier l’envoi concerné, de sélectionner un nouveau statut, et de journaliser cette action dans l’historique de suivi. Une notification automatique peut ensuite être déclenchée vers le client.
+
+3.7.3.4. Gérer les utilisateurs (Super Admin)
+Ce diagramme modélise les actions disponibles pour le Super Administrateur dans la gestion des utilisateurs. Depuis une interface centralisée, il peut consulter, créer, modifier ou désactiver des utilisateurs. La modification d’un utilisateur permet aussi de modifier son rôle, selon les besoins de la plateforme.
+
+
+
+3.7.3.5. Cas d’utilisation d’inscription 
+⇒ Documentation :
+Cas d'utilisationDescriptionEntréesSortiesCréer un compte (Register)L'utilisateur commence le processus d'inscription en saisissant ses informations.Informations personnelles comme nom, prénom, date de naissance, email, téléphone, adresse.Les données saisies sont transférées pour valValider les données saisiesLe système vérifie que les données entrées respectent les contraintes (format, champs obligatoires).Données saisies par l'utilisateur.Retour d'une validation positive ou des erreurs identifiées.Vérifier email/téléphoneVérifie si l'email ou le numéro de téléphone sont déjà enregistrés dans le système.Email et téléphone fournis par l'utilisateur.Retourne une confirmation ou une erreur si les données existent déjà.Gérer l'adresseVérifie si l'adresse existe déjà ou enregistre une nouvelle adresse dans le système.Adresse fournie par l'utilisateur (rue, numéro, ville, code postal, pays).Adresse liée au compte utilisateur ou nouvelle adresse créée.Enregistrer les données utilisateurSauvegarde les données validées dans la base de données.Données validées (personnelles et adresse).Données de l'utilisateur et adresse sauvegardées.Envoyer email de confirmationEnvoi d'un email à l'utilisateur pour valider son inscription.Email de l'utilisateur.Email envoyé avec un lien d'activation contenant un token.Activer le compteL'utilisateur clique sur le lien d'activation pour valider son compte.Token reçu dans l'email de confirmation.Statut du compte mis à jour comme actif dans la base de données.
+
+
+3.7.3.6. Se connecter
+
+
+⇒ Documentation  :
+Cas d'utilisationDescriptionEntréesSortiesSe connecter (Login)L'utilisateur entre ses informations de connexion (email et mot de passe).Email et mot de passe fournis par l'utilisateur.Données transférées au système d'authentification Auth V5 pour traitement.Authentifier via Auth V5Authentification de l'utilisateur via le système Auth V5. Vérification des informations dans la base de données.Email et mot de passe fournis, gérés par Auth V5.Résultat de l'authentification (succès ou échec), gestion de session et génération de token.Charger le profil utilisateurRécupère les données du profil utilisateur à partir de la base de données après une authentification réussie.Email validé ou ID utilisateur.Données du profil utilisateur récupérées et prêtes à être affichées ou utilisées dans l'application.1.20. 
+
+3.7.3.7. Modifier  les informations de profil 
+
+
+1.21. Documentation :
+Cas d'utilisationDescriptionEntréesSortiesAccéder la page de compteL'utilisateur se rend sur la page de son compte pour voir ou modifier ses informations.Aucune entrée requise depuis l'utilisateur à cette étape.La page de compte est affichée.Sélectionner 'Modifier profil'L'utilisateur choisit l'option pour modifier son profil.Clic sur l'option 'Modifier profil'.Le formulaire de modification des informations personnelles est affiché.Modifier les informations personnellesL'utilisateur met à jour les informations de son profil.Informations personnelles mises à jour (par exemple : adresse, numéro de téléphone).Les nouvelles informations sont enregistrées dans la base de données.Sauvegarder les changementsL'utilisateur sauvegarde les modifications apportées à son profil.Clic sur 'Sauvegarder', avec toutes les nouvelles informations entrées.Confirmation de la mise à jour est envoyée à l'utilisateur, et les données sont mises à jour dans la base de données.Recevoir confirmation de mise à jourUne confirmation est envoyée à l'utilisateur pour indiquer que les changements ont été sauvegardés.Aucune entrée nécessaire (se déclenche après la sauvegarde des changements).L'utilisateur reçoit une notification par le système de messagerie électronique confirmant la mise à jour des informations.
+
+
+
+
+
+
+
+
+
+
+3.7.3.8. Réinitialisation du mot de passe 
+Ce diagramme modélise le processus complet de réinitialisation du mot de passe par un client. Il commence par une demande de lien via l’email, se poursuit par la réception du lien, la saisie d’un nouveau mot de passe, et la confirmation de la mise à jour. Il inclut également les cas d’erreur liés à un lien invalide ou à une mauvaise saisie du mot de passe.
+
+
+1.1. 
+3.7.3.9. Simulation d’envoi
+1.1.1.1. 
+1.22. Documentation :
+Cas d'utilisationDescriptionEntréesSortiesFaire une simulationL'utilisateur initie une simulation d'envoi.Aucun (action déclenchée par l'utilisateur).Interface pour entrer les détails de l'envoi.Entrer les détails de l'envoiL'utilisateur saisit les informations nécessaires pour l'envoi, comme le poids, dimensions, destination.Poids, dimensions, adresse de départ et d'arrivée.Données collectées pour calculer les coûts.Calculer les coûtsLe système calcule les frais d'envoi en fonction des détails saisis.Détails de l'envoi fournis par l'utilisateur.Coût estimé récupéré de la base de données en fonction des tarifs.Afficher les résultatsLes résultats de la simulation, incluant le coût et les options, sont affichés à l'utilisateur.Résultats du calcul des coûts.Résumé des détails de l'envoi avec les options de modification, validation ou annulation.Modifier la SimulationPermet à l'utilisateur de modifier les détails de la simulation si nécessaire.Données existantes de la simulation.Mise à jour des informations, recalcul des coûts et retour aux résultats.Valider SimulationL'utilisateur confirme la simulation pour passer à l'étape suivante.Résumé des données de la simulation.Enregistrement de la simulation validée dans le système, nécessite une connexion ou inscription.Annuler SimulationL'utilisateur annule la simulation.Aucun (action déclenchée par l'utilisateur).Statut de la simulation mis à jour comme "annulée" dans la base de données et retour à la page de simulation initiale.
+
+
+3.7.3.10. Confirmation et paiement 
+
+1.23. Documentation :
+Cas d’utilisationDescriptionEntréesSortiesAfficher récapitulatif simulationPrésente au client tous les détails calculés (poids, prix, options) avant validation finale.Aucune (appel direct depuis UC_client_utilisateur_simulation).Écran de récapitulatif visible.Valider simulationLe client accepte le devis et lance la procédure de paiement.Clic « Valider ».Déclenche l’obligation de login puis l’écran d’ajout destinataire.Se connecter / S’inscrireGarantit que le client est authentifié avant tout paiement.Identifiants (login) ou données d’inscription.Session ouverte ; retour au flux.Ajouter destinataireLe client saisit les coordonnées du destinataire (nom, adresse, téléphone).Formulaire destinataire.Données validées et persistées ; appel à la création du PaymentIntent.Initier paiement (create PaymentIntent)Le serveur ColisApp appelle Stripe pour créer un PaymentIntent avec montant + success/cancel URLs.ID simulation, montant, e-mail client.clientSecret retourné ; front-end affiche la page Stripe Checkout ou Elements.Recevoir webhook paiement réussiStripe notifie ColisApp que le paiement est « succeeded ».Webhook payment_intent.succeeded (JSON).Déclenche la mise à jour de l’envoi.Mettre à jour statut envoi = PAYÉPasse le statut de l’envoi à PAYÉ et stocke l’ID Stripe pour audit.Données du webhook (paymentIntentId) + ID envoi.Enregistrement BD mis à jour.Générer code suivi & notifierCrée un code de suivi unique, l’enregistre puis informe le client (e-mail + notification).Aucune (automatique).Code suivi stocké & message envoyé via Mail.Rediriger vers profil + toast succèsUX : le client voit « Paiement réussi » et est redirigé vers Mon Profil > Mes envois.Aucune (automatique après succès).Toast « Paiement effectué » + page profil affichée.3.7.3.11.  Historique des envois 
+
+
+⇒ Documentation:
+Cas d’utilisationDescriptionEntrées côté clientSortie visibleOuvrir le menu « Mes Envois »Depuis Mon Profil, l’utilisateur sélectionne l’option du menu latéral.Simple clic de navigation.La page Mes Envois se charge avec un indicateur de chargement.Afficher la liste des envois (page 1)L’application récupère auprès de la BD les 5 premiers envois du client et les affiche dans un tableau.userId présent dans la session.Tableau rempli (colis, dates, statut, bouton Voir).Chercher / Changer de pageL’utilisateur tape un mot-clé ou clique sur page suivante.Mot-clé OU n° page (1 → n).Tableau actualisé selon le filtre / la pagination.Voir les détails d’un envoi (popup)Clic sur l’icône Voir ➜ la fiche détaillée apparaît dans une modale (poids, volume, prix, QR, suivi).Id de l’envoi sélectionné.Fenêtre modale avec toutes les données de l’envoi.
+
+
+
+
+1.24. 
+
+3.7.3.12. Suivi colis envois:  ( à refaire )
+
+⇒ Documentation
+Cas d'utilisationDescriptionEntréesSortiesAccéder au suiviLe client ou le destinataire accède à la fonctionnalité de suivi de l'envoi.Requête de l'utilisateur pour suivre un envoi.Interface de suivi présentée à l'utilisateur.Entrer numéro de suiviL'utilisateur entre le numéro de suivi de l'envoi qu'il souhaite suivre.Numéro de suivi entré par l'utilisateur.Validation du numéro et requête de suivi envoyée à la base de données.Consulter statut et localisationLe système affiche le statut actuel et la localisation de l'envoi.Requête de statut basée sur le numéro de suivi.Statut actuel et localisation de l'envoi extraits de la base de données et affichés à l'utilisateur.
+
+
+
+
+
+3.7.3.13.  Demande de fermeture de compte : ( à refaire )
+
+⇒ Documentation :
+Cas d'utilisationDescriptionEntréesSortiesDemander la fermeture de compteLe client initie la procédure de fermeture de son compte.Demande de fermeture initiée par le client.Formulaire de fermeture de compte présenté au client.Entrer le mot de passe pour confirmerLe client doit confirmer son identité en entrant son mot de passe pour procéder.Saisie du mot de passe par le client.Vérification du mot de passe dans la base de données.AnnulerLe client décide d'annuler la demande de fermeture de compte avant de la soumettre.Action d'annulation par le client.Annulation de la demande de fermeture et retour à l'écran précédent.Soumettre la demande de fermetureAprès vérification, le client peut choisir de soumettre sa demande de fermeture de compte.Confirmation du mot de passe et soumission de la demande par le client.Traitement de la fermeture du compte dans la base de données.Recevoir confirmation de la fermetureLe client reçoit une confirmation que son compte a été fermé.Aucune entrée requise pour cette étape.Notification de fermeture envoyée au client via le système de messagerie électronique.
+
+1.25. 
+
+3.7.4. Diagramme de séquence :
+3.7.4.1. Diagramme de séquence Simulation d’un Envoi : ( à refaire
+Acteur principal : "Client"
+Objets : "Envoi" / "Camionnette" / "Base de données"
+• Le client crée un nouvel envoi.
+• Il choisit la destination de cet envoi.
+• Dans une boucle, le client peut ajouter un ou plusieurs colis :
+• Le client ajoute des colis à l'envoi.
+• Pour chaque colis ajouté, le système vérifie la disponibilité de l'espace dans la camionnette.
+• La camionnette calcule les dimensions nécessaires.
+• Les résultats de ces calculs sont renvoyés au système d'envoi.
+• Le système reçoit les informations de disponibilité de l'espace.
+• Selon la disponibilité :
+• Si de l'espace est disponible, le client ajoute le(s) destinataire(s) à l'envoi.
+• Le colis est ajouté à l'envoi.
+• Les détails du prix total sont affichés au client.
+• Si l'espace n'est pas disponible :
+• Le client doit modifier les détails du colis.
+
+3.7.4.2. Diagramme de Séquence – Suivi d’un Envoi : ( à refaire )
+
+
+Acteur principal : "Client"
+Acteur secondaire : "Destinataire"
+Objets : "Application" / "Base de données"
+
+• Le client initie le suivi en sélectionnant l'option correspondante dans l'application.
+• Le client entre le numéro de suivi qui lui a été fourni lors de l'expédition du colis.
+• La requête est envoyée par l'application pour obtenir des informations sur l'envoi.
+• La base de données fournit les informations actuelles sur l'envoi, y compris sa localisation.
+• Le client reçoit les informations mises à jour concernant son envoi.
+• Le destinataire, comme acteur secondaire, suit un processus similaire pour suivre l'envoi.
+4. Analyse technique
+4.1. Modélisation des données 
+4.1.1. Diagramme Entité-Relation global
+4.1.2. Modèle Conceptuelle de Données (MCD)
+4.1.3. Modèle Logique de Données (MLD)	
+4.1.4. Modèle Physique de Données (MPD)
+
+
+4.1.5. Diagramme de Classe : parti Entities ( mise ajours  à vérifier )
+4.1.6. Partie Address ( à refaire pour notre projet en NextJS 15 )
+
+
+
+Classe Address
+PropriétéDescriptionidIdentifiant unique de l'adresse.rueNom de la rue de l'adresse.numeroNuméro de l'adresse.villeNom de la ville de l'adresse.codepostalCode postal de l'adresse.paysNom du pays de l'adresse.
+Classe AddressDTO
+PropriétéDescriptionrueNom de la rue de l'adresse.numeroNuméro de l'adresse.villeNom de la ville de l'adresse.codepostalCode postal de l'adresse.paysNom du pays de l'adresse.
+Classe AddressController
+MéthodeDescriptiongetAllAddress()Récupère la liste de toutes les adresses sous forme de DTO.getCountries()Récupère la liste de tous les pays.getCitiesByCountry()Récupère la liste des villes pour un pays donné.
+
+Interface AddressRepository
+MéthodeDescriptionfindAddressByRueAndNumeroAndVilleAndCodepostalAndPays()Recherche une adresse spécifique.existsAddressByRueAndNumeroAndVilleAndCodepostalAndPays()Vérifie si une adresse spécifique existe.findAllPaysWithAgences() Récupère la liste de tous les pays avec des agences.findCitiesWithAgencesByCountry()Récupère la liste des villes pour un pays donné avec des agences.
+Classe AddressService
+MéthodeDescriptiongetAllAddresses()Récupère la liste de toutes les adresses.getAddressById()Récupère une adresse spécifique par son identifiant.createAddress()Crée une nouvelle adresse.updateAddress()Met à jour une adresse existante.deleteAddress()Supprime une adresse par son identifiant.getCountries() Récupère la liste de tous les pays.getCitiesByCountry(Récupère la liste des villes pour un pays donné.
+4.1.7. Partie Agence ( à refaire pour notre projet en NextJS 15 )
+
+
+Classe Agence
+Propriété/MéthodeDescriptionid: IntegerIdentifiant unique de l'agence.idAddress: AddressAdresse de l'agence (relation 1 -> *).nomAgence: StringNom de l'agence.localisation: StringLocalisation de l'agence.
+Classe AgenceDTO
+Propriété/MéthodeDescriptionidAddress: AddressDTOAdresse de l'agence sous forme de DTO.nomAgence: StringNom de l'agence.localisation: StringLocalisation de l'agence.
+Interface AgenceRepository
+Propriété/MéthodeDescriptionfindAgencesByVille(String ville): List<String>Récupère la liste des noms d'agences pour une ville donnée.
+Classe AgenceService
+Propriété/MéthodeDescriptionagenceRepository: AgenceRepositoryRéférentiel pour accéder aux données des agences.getAgencesByVille(String ville): ResponseEntity<List<String>>Récupère la liste des noms d'agences pour une ville donnée.
+Classe AgenceController
+Propriété/MéthodeDescriptionagenceService: AgenceServiceService pour gérer la logique métier liée aux agences.getAgencesByVille(String ville): ResponseEntity<List<String>>Point d'entrée pour récupérer la liste des noms d'agences pour une ville donnée.
+
+
+
+4.1.8. Partie Auth ( à refaire pour notre projet en NextJS 15 )
+1.1.1. 
+AuthController
+
+Propriété/MéthodeDescriptionregisterMéthode pour enregistrer un utilisateur.loginMéthode pour connecter un utilisateur.checkEmailMéthode pour vérifier l'existence d'un email.
+EmailRequest
+
+Propriété/MéthodeDescriptionemailEmail de l'utilisateur.getEmailRetourne l'email de l'utilisateur.setEmailDéfinit l'email de l'utilisateur.
+UserLoginRequest
+
+Propriété/MéthodeDescriptionemailEmail de l'utilisateur pour la connexion.passwordMot de passe de l'utilisateur pour la connexion.
+UserLoginResponse
+
+Propriété/MéthodeDescriptionnomNom de l'utilisateur.prenomPrénom de l'utilisateur.dateDeNaissanceDate de naissance de l'utilisateur.sexeSexe de l'utilisateur.telephoneTéléphone de l'utilisateur.emailEmail de l'utilisateur.rueRue de l'adresse de l'utilisateur.numeroNuméro de l'adresse de l'utilisateur.villeVille de l'adresse de l'utilisateur.codepostalCode postal de l'adresse de l'utilisateur.paysPays de l'adresse de l'utilisateur.
+
+
+UserRegisterRequest
+
+Propriété/MéthodeDescriptionnomNom de l'utilisateur pour l'enregistrement.prenomPrénom de l'utilisateur pour l'enregistrement.dateDeNaissanceDate de naissance de l'utilisateur pour l'enregistrement.sexeSexe de l'utilisateur pour l'enregistrement.telephoneTéléphone de l'utilisateur pour l'enregistrement.emailEmail de l'utilisateur pour l'enregistrement.rueRue de l'adresse pour l'enregistrement.numeroNuméro de l'adresse pour l'enregistrement.villeVille de l'adresse pour l'enregistrement.codepostalCode postal de l'adresse pour l'enregistrement.paysPays de l'adresse pour l'enregistrement.passwordMot de passe pour l'enregistrement.
+ClientDTO
+
+Propriété/MéthodeDescriptionnomNom du client.prenomPrénom du client.dateDeNaissanceDate de naissance du client.sexeSexe du client.telephoneTéléphone du client.emailEmail du client.idAddressAdresse du client.motDePasseMot de passe du client.
+Client
+
+Propriété/MéthodeDescriptionidIdentifiant unique du client.nomNom du client.prenomPrénom du client.dateDeNaissanceDate de naissance du client.sexeSexe du client.telephoneTéléphone du client.emailEmail du client.idAddressAdresse du client.motDePasseMot de passe du client.
+ClientRepository
+
+Propriété/MéthodeDescriptionexistsClientByEmailVérifie l'existence d'un client par email.findClientByEmailTrouve un client par email.findAddressIdByClientIDTrouve l'identifiant d'adresse par l'identifiant du client.
+AuthService
+
+Propriété/MéthodeDescriptionregisterEnregistre un nouvel utilisateur.loginConnecte un utilisateur existant.existsClientByEmailVérifie l'existence d'un client par email.findAddressTrouve une adresse par DTO.exitsAddressVérifie l'existence d'une adresse par DTO.getClientDTOCrée un ClientDTO à partir d'un UserRegisterRequest et AddressDTO.
+4.1.9. Partie Colis ( à refaire pour notre projet en NextJS 15 )
+
+
+ColisService
+
+Propriété/MéthodeDescriptionvalidateColisValide la liste des colis en fonction des critères spécifiques.calculatePrixTotalCalcule le prix total des colis en fonction de leur poids total et des tarifs appliqués.
+ColisDTO
+
+Propriété/MéthodeDescriptionidEnvoiIdentifiant de l'envoi associé au colis.hauteurHauteur du colis.largeurLargeur du colis.longueurLongueur du colis.poidsColisPoids du colis.volumeColisVolume du colis.
+ColisController
+
+Propriété/MéthodeDescriptionvalidateColisValide les colis en fonction des données fournies.calculatePriceCalcule le prix total des colis en fonction des données fournies.
+Colis
+
+Propriété/MéthodeDescriptionidIdentifiant unique du colis.idEnvoiIdentifiant de l'envoi associé au colis.hauteurHauteur du colis.largeurLargeur du colis.longueurLongueur du colis.poidsColisPoids du colis.volumeColisVolume du colis.
+ColisRepository
+
+Propriété/MéthodeDescription-Gère les opérations CRUD sur les entités Colis.
+
+
+4.1.10. Partie Envois ( à refaire pour notre projet en NextJS 15 )
+
+
+
+EnvoisController
+Propriété/MéthodeDescriptionPropriétés- EnvoisService envoisServiceDépendance vers le service des envois pour gérer les opérations métier.Méthodes+ validerEnvoi(envoisDTO: EnvoisRequestDTO, user: User): ResponseEntity<String>Valide un envoi en utilisant les informations fournies dans le DTO et l'utilisateur authentifié.
+EnvoisService
+Propriété/MéthodeDescriptionPropriétés- EnvoisRepository envoisRepositoryDépendance vers le repository des envois pour les opérations de persistance.- ColisRepository colisRepositoryDépendance vers le repository des colis pour les opérations de persistance.- TransportService transportServiceDépendance vers le service de transport pour gérer les mises à jour du transport.- ClientRepository clientRepositoryDépendance vers le repository des clients pour accéder aux informations des clients.- AgenceRepository agenceRepositoryDépendance vers le repository des agences pour accéder aux informations des agences.- DestinataireRepository destinataireRepositoryDépendance vers le repository des destinataires pour accéder aux informations des destinataires.- AuthService authServiceDépendance vers le service d'authentification pour vérifier les adresses et les utilisateurs.- AddressRepository addressRepositoryDépendance vers le repository des adresses pour les opérations de persistance des adresses.- TarifRepository tarifRepositoryDépendance vers le repository des tarifs pour accéder aux informations des tarifs.- TransportRepository transportRepositoryDépendance vers le repository des transports pour accéder aux informations des transports.Méthodes+ validerEnvoi(envoisDTO: EnvoisRequestDTO, userEmail: String): booleanValide un envoi en utilisant les informations fournies dans le DTO et l'adresse e-mail de l'utilisateur.- getDestinataireAddress(envoisRequestDTO: EnvoisRequestDTO): AddressObtient l'adresse du destinataire à partir du DTO de la demande d'envoi.- generateTrackingCode(simulationData: EnvoisRequestDTO, client: Client): StringGénère un code de suivi pour l'envoi en utilisant les informations fournies.- generateAlphanumCode(length: int): StringGénère un code alphanumérique de la longueur spécifiée.
+EnvoisRepository
+Propriété/MéthodeDescriptionMéthodes+ findAll(): List<Envois>Récupère toutes les entités d'envois de la base de données.+ findById(id: Integer): EnvoisRécupère une entité d'envoi par son identifiant.+ save(envois: Envois): EnvoisSauvegarde une entité d'envoi dans la base de données.
+Envois
+Propriété/MéthodeDescriptionPropriétés+ Integer idIdentifiant unique de l'envoi.+ String codeDeSuiviCode de suivi de l'envoi.+ LocalDate dateEnvoiDate d'envoi.+ LocalDate dateLivraisonPrevuDate de livraison prévue.+ BigDecimal poidsTotalPoids total de l'envoi.+ BigDecimal volumeTotalVolume total de l'envoi.+ BigDecimal prixTotalPrix total de l'envoi.+ String statutStatut de l'envoi.+ Agence idAgenceArriveeAgence d'arrivée de l'envoi.+ Agence idAgenceDepartAgence de départ de l'envoi.+ Client idClientClient qui envoie le colis.+ Coupon idCouponCoupon utilisé pour l'envoi (s'il y en a un).+ Destinataire idDestinataireDestinataire de l'envoi.+ Tarif idTarifTarif appliqué à l'envoi.+ Transport idTransportTransport utilisé pour l'envoi.Méthodes+ getCodeDeSuivi(): StringObtient le code de suivi de l'envoi.+ getDateEnvoi(): LocalDateObtient la date d'envoi.+ getDateLivraisonPrevu(): LocalDateObtient la date de livraison prévue.+ getPoidsTotal(): BigDecimalObtient le poids total de l'envoi.+ getVolumeTotal(): BigDecimalObtient le volume total de l'envoi.+ getPrixTotal(): BigDecimalObtient le prix total de l'envoi.+ getStatut(): StringObtient le statut de l'envoi.
+
+EnvoisDTO
+Propriété/MéthodeDescriptionPropriétés+ String codeDeSuiviCode de suivi de l'envoi.+ LocalDate dateEnvoiDate d'envoi.+ LocalDate dateLivraisonPrevuDate de livraison prévue.+ BigDecimal poidsTotalPoids total de l'envoi.+ BigDecimal volumeTotalVolume total de l'envoi.+ BigDecimal prixTotalPrix total de l'envoi.+ String statutStatut de l'envoi.+ AgenceDTO idAgenceArriveeAgence d'arrivée de l'envoi.+ AgenceDTO idAgenceDepartAgence de départ de l'envoi.+ ClientDTO idClientClient qui envoie le colis.+ CouponDTO idCouponCoupon utilisé pour l'envoi (s'il y en a un).+ DestinataireDTO idDestinataireDestinataire de l'envoi.+ TarifDTO idTarifTarif appliqué à l'envoi.+ TransportDTO idTransportTransport utilisé pour l'envoi.+ List<ColisDTO> colisListe des colis inclus dans l'envoi.
+
+
+
+
+4.1.11. Partie Simulation ( à refaire pour notre projet en NextJS 15 )
+
+
+SimulationController
+Propriété/MéthodeDescriptionPropriétés- SimulationService simulationServiceDépendance vers le service de simulation pour gérer les opérations métier.Méthodes+ calculateSimulation(request: SimulationRequest): ResponseEntity<SimulationResponse>Calcule la simulation d'envoi en utilisant les informations fournies dans la requête.
+SimulationService
+Propriété/MéthodeDescriptionPropriétés- TarifRepository tarifRepositoryDépendance vers le repository des tarifs pour accéder aux informations des tarifs.Méthodes+ calculateSimulation(request: SimulationRequest): SimulationResponseCalcule la simulation d'envoi en utilisant les informations fournies dans la requête.- getNextTuesday(currentDate: LocalDate): LocalDateObtient le prochain mardi à partir de la date actuelle.- getPrixTotal(poidsTotal: BigDecimal): TarifResultCalcule le prix total en fonction du poids total des colis.- getVolumeTotal(colisList: List<ColisDTO>): BigDecimalCalcule le volume total des colis.- getPoidsTotal(colisList: List<ColisDTO>): BigDecimalCalcule le poids total des colis.
+SimulationRequest
+Propriété/MéthodeDescriptionPropriétés+ String paysDepartPays de départ.+ String villeDepartVille de départ.+ String agenceDepartAgence de départ.+ String paysDestinationPays de destination.+ String villeDestinationVille de destination.+ String agenceArriveAgence d'arrivée.+ LocalDate currentDateDate actuelle pour calculer les dates d'envoi et de livraison.+ List<ColisDTO> colisListe des colis inclus dans la simulation.
+SimulationResponse
+Propriété/MéthodeDescriptionPropriétés+ String paysDepartPays de départ.+ String villeDepartVille de départ.+ String agenceDepartAgence de départ.+ LocalDate dateEnvoiPrevuDate d'envoi prévue.+ String paysDestinationPays de destination.+ String villeDestinationVille de destination.+ String agenceArriveAgence d'arrivée.+ LocalDate dateLivraisonPrevuDate de livraison prévue.+ BigDecimal poidsTotalPoids total des colis.+ BigDecimal volumeTotalVolume total des colis.+ BigDecimal prixTotalPrix total de l'envoi.+ String statutStatut de l'envoi.+ List<ColisDTO> colisListe des colis inclus dans l'envoi.+ Integer idTarifIdentifiant du tarif appliqué à l'envoi.SimulationDTO
+Propriété/MéthodeDescriptionPropriétés+ String paysDepartPays de départ.+ String villeDepartVille de départ.+ String agenceDepartAgence de départ.+ String paysDestinationPays de destination.+ String villeDestinationVille de destination.+ String agenceArriveAgence d'arrivée.+ LocalDate currentDateDate actuelle pour calculer les dates d'envoi et de livraison.+ LocalDate dateEnvoiPrevuDate d'envoi prévue.+ LocalDate dateLivraisonPrevuDate de livraison prévue.+ BigDecimal poidsTotalPoids total des colis.+ BigDecimal volumeTotalVolume total des colis.+ BigDecimal prixTotalPrix total de l'envoi.+ String statutStatut de l'envoi.+ List<ColisDTO> colisListe des colis inclus dans la simulation.
+
+
+4.1.12. Partie Transport ( à refaire pour notre projet en NextJS 15 )
+
+
+
+
+TransportController
+Propriété/MéthodeDescriptionPropriétés- TransportService transportServiceDépendance vers le service de transport pour gérer les opérations métier.Méthodes+ checkTransportAvailability(poidsTotal: BigDecimal, volumeTotal: BigDecimal): ResponseEntity<Boolean>Vérifie la disponibilité du transport en fonction du poids et du volume total.+ calculateNextAvailableDate(): ResponseEntity<LocalDate>Calcule la prochaine date disponible pour le transport.+ updateTransport(poidsTotal: BigDecimal, volumeTotal: BigDecimal): ResponseEntity<Void>Met à jour les informations du transport en ajoutant le poids et le volume total.
+TransportService
+Propriété/MéthodeDescriptionPropriétés- TransportRepository transportRepositoryDépendance vers le repository des transports pour accéder aux informations des transports.Méthodes+ checkTransportAvailability(poidsTotal: BigDecimal, volumeTotal: BigDecimal): booleanVérifie la disponibilité du transport en fonction du poids et du volume total.+ calculateNextAvailableDate(): LocalDateCalcule la prochaine date disponible pour le transport.+ updateTransport(poidsTotal: BigDecimal, volumeTotal: BigDecimal): voidMet à jour les informations du transport en ajoutant le poids et le volume total.- getNextTuesday(currentDate: LocalDate): LocalDateObtient le prochain mardi à partir de la date actuelle.
+TransportRepository
+Propriété/MéthodeDescriptionMéthodes+ findById(id: Integer): Optional<Transport>Récupère une entité de transport par son identifiant.+ save(transport: Transport): TransportSauvegarde une entité de transport dans la base de données.
+Transport
+Propriété/MéthodeDescriptionPropriétés+ Integer idIdentifiant unique du transport.+ Boolean estDisponibleIndique si le transport est disponible.+ String plaqueMatriculationPlaque d'immatriculation du transport.+ BigDecimal poidsActuelPoids actuel du transport.+ BigDecimal poidsDeBasePoids de base du transport.+ BigDecimal volumeActuelVolume actuel du transport.+ BigDecimal volumeDeBaseVolume de base du transport.Méthodes+ getEstDisponible(): BooleanObtient la disponibilité du transport.+ getPlaqueMatriculation(): StringObtient la plaque d'immatriculation du transport.+ getPoidsActuel(): BigDecimalObtient le poids actuel du transport.+ getPoidsDeBase(): BigDecimalObtient le poids de base du transport.+ getVolumeActuel(): BigDecimalObtient le volume actuel du transport.+ getVolumeDeBase(): BigDecimalObtient le volume de base du transport.
+TransportDTO
+Propriété/MéthodeDescriptionPropriétés+ Integer idIdentifiant unique du transport.+ Boolean estDisponibleIndique si le transport est disponible.+ String plaqueMatriculationPlaque d'immatriculation du transport.+ BigDecimal poidsActuelPoids actuel du transport.+ BigDecimal poidsDeBasePoids de base du transport.+ BigDecimal volumeActuelVolume actuel du transport.+ BigDecimal volumeDeBaseVolume de base du transport.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+4.1.13. Partie Security ( à refaire pour notre projet en NextJS 15 )
+
+
+
+CustomUserDetailsService
+Propriété/MéthodeDescriptionloadUserByUsernameCharge les détails d'un utilisateur par email.
+JwtRequestFilter
+Propriété/MéthodeDescriptiondoFilterInternalFiltre les requêtes pour vérifier la présence et la validité du token JWT.
+JwtUtil
+Propriété/MéthodeDescriptionextractUsernameExtrait le nom d'utilisateur du token JWT.extractExpirationExtrait la date d'expiration du token JWT.generateTokenGénère un nouveau token JWT pour un utilisateur.validateTokenValide le token JWT par rapport au nom d'utilisateur.
+PasswordEncoderConfig
+Propriété/MéthodeDescriptionpasswordEncoderConfigure et retourne un encodeur de mots de passe BCrypt.
+SecurityConfig
+Propriété/MéthodeDescriptionuserDetailsServiceRetourne le service de détails utilisateur personnalisé.securityFilterChainConfigure les règles de sécurité pour les requêtes HTTP.corsConfigurerConfigure les règles CORS pour les requêtes.
+ClientRepository
+Propriété/MéthodeDescriptionfindClientByEmailTrouve un client par email.existsClientByEmailVérifie l'existence d'un client par email.
+Client
+Propriété/MéthodeDescriptionidIdentifiant unique du client.nomNom du client.prenomPrénom du client.dateDeNaissanceDate de naissance du client.sexeSexe du client.telephoneTéléphone du client.emailEmail du client.idAddressAdresse du client.motDePasseMot de passe du client.
+
+
+
+Controller – Service – Repository
+
+4.1.14. Frontend ( à générer  le nouveau diagramme des pages frontend de NextJS)
+4.2. Architecture logicielle & technologique
+4.2.1. Vue d'ensemble et Choix Technologiques
+L'architecture de ColisApp repose sur une stack technique moderne, cohérente et entièrement basée sur l'écosystème TypeScript, choisie pour sa performance, sa sécurité et sa maintenabilité.
+Framework Full-Stack : Next.js 15 a été sélectionné pour son approche intégrée (frontend et backend), son système de rendu hybride (Server et Client Components) et ses performances optimisées pour le web.
+Interface Utilisateur (Frontend) : React, via Next.js, a été utilisé pour construire une interface utilisateur dynamique et réactive. Tailwind CSS a permis de styliser les composants de manière rapide et cohérente.
+Base de Données et ORM : Une base de données relationnelle PostgreSQL a été choisie pour sa robustesse. L'interaction avec la base de données est entièrement gérée par l'ORM Prisma, qui garantit un sécurit de type de bout en bout entre la base de données et le code TypeScript.
+Authentification : La gestion des utilisateurs et des sessions est assurée par Auth.js (v5), une solution flexible et sécurisée qui a permis d'intégrer facilement une authentification par identifiants ainsi que des fournisseurs OAuth (Google, GitHub).
+Validation des Données : La bibliothèque Zod est utilisée pour valider les schémas de données, en particulier pour les requêtes entrantes sur les API Routes. Cela assure que seules des données conformes et sécurisées sont traitées par la logique métier.
+Déploiement : L'application est déployée sur Vercel, la plateforme conçue par les créateurs de Next.js, garantissant une intégration parfaite, un déploiement continu et des performances optimales grâce à son infrastructure Edge.
+4.2.2. Diagramme de l'Architecture 
+4.2.3. Fonctionnement de notre architecture 
+L'application ColisApp est développée sur la base d'une architecture full-stack moderne et intégrée, en s'appuyant sur le framework Next.js 15. Cette approche permet de gérer à la fois le frontend et le backend au sein d'un même projet, garantissant une cohérence et une rapidité de développement optimales.
+L'architecture peut être décomposée en plusieurs couches logiques interdépendantes :
+1. Couche de Présentation (Frontend) :
+* Technologies : Next.js, React 18, TypeScript, Tailwind CSS.
+* Rôle : Cette couche est responsable de tout ce que l'utilisateur voit et avec quoi il interagit dans son navigateur.
+* Fonctionnement : L'interface est construite grâce à l’App Router de Next.js (src/app). Elle exploite pleinement le modèle des React Server Components (RSC) :
+• Les pages et les composants principaux sont des Server Components. Ils s'exécutent côté serveur pour récupérer les données rapidement (via Prisma), ce qui améliore les performances au chargement et le référencement (SEO).
+• L'interactivité (formulaires, boutons, menus) est gérée par des Client Components, identifiés par la directive 'use client'.
+• Cette couche communique avec le backend via des appels fetch aux API Routes internes du projet.
+2. Couche Logique / API (Backend) :
+* Technologies : Next.js API Routes, TypeScript.
+* Rôle : C'est le pont entre le frontend et la logique métier. Elle expose des points d'accès (endpoints)       sécurisés que le frontend peut interroger pour récupérer ou modifier des données.
+* Fonctionnement : Le backend est implémenté sous forme d'API Routes situées dans le dossier (src/app/api/v1/). Ces routes suivent une convention de type RESTful. Chaque fichier route.ts exporte des      fonctions correspondant aux méthodes HTTP (GET, POST, PUT, DELETE). Leur rôle est de : 
+• Recevoir la requête HTTP du client.
+• Valider les données entrantes (parfois à l'aide de schémas de validation).
+• Vérifier l'authentification et les autorisations de l'utilisateur.
+• Appeler la couche de service appropriée pour exécuter la logique métier.
+• Retourner une réponse au client au format JSON.
+3. Couche de Services :
+* Technologies : Modules TypeScript.
+* Rôle : C'est le cœur de l'application. Elle contient toute la logique métier complexe, totalement découplée de l'interface et des routes d'API.
+* Fonctionnement : Des fichiers comme Bk_UserService.ts ou Bk_EnvoiService.ts (situés dans src/services/backend-services/) encapsulent des logiques spécifiques. Par exemple, Bk_EnvoiService contiendra les fonctions pour créer un envoi, calculer son prix, ou mettre à jour son statut. Cette      séparation des préoccupations rend le code plus propre, plus facile à tester et à maintenir. C'est la couche de service qui appelle la couche d'accès aux données.
+4. Couche d'Accès aux Données (Data Access Layer) :
+* Technologies : Prisma ORM.
+* Rôle : Assurer la communication avec la base de données de manière simple, sécurisée et typée.
+* Fonctionnement : Prisma est utilisé comme un pont entre le code TypeScript et la base de données PostgreSQL. Toutes les interactions avec la base de données (lecture, écriture, mise à jour, suppression) passent par le Prisma Client. Le fichier prisma/schema.prisma sert de source de vérité unique pour définir les modèles de données, leurs relations et leurs contraintes. L'utilisation de Prisma depuis la couche de services garantit des requêtes optimisées et sécurisées contre les injections SQL.
+5. Couche de Persistance (Base de Données) :
+* Technologies : PostgreSQL.
+* Rôle : Stocker de manière durable toutes les données de l'application.
+* Fonctionnement : Une base de données relationnelle PostgreSQL hébergée sur une plateforme cloud (comme Vercel Postgres, Neon, ou Supabase) stocke les tables (users, envois, agencies, etc.) définies par le schéma Prisma.
+6. Services Transversaux :
+* Authentification : Gérée par NextAuth.js (Auth.js). Le fichier src/auth/auth.ts configure les différentes stratégies d'authentification (identifiants, Google, GitHub). Le middleware.ts intercepte les requêtes pour protéger les pages et les API, en s'exécutant sur l'Edge Runtime pour une performance maximale.
+* Sécurité : Outre l'authentification, la sécurité est assurée par le hachage des mots de passe (bcrypt) et la validation systématique des permissions basées sur les rôles des utilisateurs.
+
+5. Répartition des tâches
+
+
+
+
+ 
+
+
+6. Problèmes Rencontrés et Solutions Apportées
+Le passage d'une architecture traditionnelle à un framework full-stack moderne comme Next.js 15 a présenté plusieurs défis techniques qui ont nécessité une analyse approfondie et la mise en place de solutions spécifiques. Cette section détaille les trois difficultés majeures rencontrées durant le développement de ColisApp.
+6.1. Adaptation à l'Architecture de l’App Router de Next.js
+Problème : La transition vers le "App Router" de Next.js, qui utilise les "React Server Components" (RSC) par défaut, a représenté le premier défi majeur. La principale difficulté était conceptuelle : abandonner le modèle où tout composant est interactif par défaut ('use client') pour une approche où le rendu se fait majoritairement côté serveur. Il était complexe de déterminer quand un composant devait rester sur le serveur pour la performance et la sécurité, et quand il devait être transformé en composant client pour gérer l'interactivité (par exemple, un formulaire ou un bouton).
+Solution : La solution a été d'adopter une approche structurée et rigoureuse.
+1. Stratégie de "feuilles" interactives : Nous avons conçu l'architecture de sorte que les pages principales et les composants de haut niveau soient des Server Components. Ils se chargent de récupérer les données (data fetching) de manière asynchrone. Seuls les composants les plus bas dans l'arborescence, ceux qui nécessitent une interaction directe de l'utilisateur (comme les champs de formulaire, les boutons, les menus déroulants), ont été déclarés avec la directive 'use client'. 
+2. Utilisation des Server Actions : Pour les mutations de données (création, mise à jour), nous avons utilisé les "Server Actions". Cela nous a permis de déclencher des fonctions s'exécutant sur le serveur directement depuis nos formulaires, réduisant ainsi la quantité de code JavaScript côté client et simplifiant la gestion de l'état.
+6.2. Authentification sur l'Edge Runtime avec NextAuth.js
+Problème : Pour garantir une performance optimale, le middleware.ts de Next.js, qui gère la protection des routes, s'exécute sur "l'Edge Runtime". Cet environnement est un sous-ensemble de Node.js, plus léger mais aussi plus limité. Le principal obstacle est qu'il ne permet pas d'accéder directement à une base de données via Prisma, car Prisma Client n'est pas compatible avec l'Edge par défaut. Il était donc impossible de vérifier le rôle d'un utilisateur en base de données directement depuis le middleware, ce qui est pourtant crucial pour sécuriser l'accès à l'espace /admin.
+Solution : Nous avons mis en place une solution en deux temps, qui respecte les contraintes de l'Edge : 
+6.1. Un middleware "léger" : Le fichier middleware.ts (utilisant auth-edge.ts) se contente de vérifier la validité du cookie de session (JWT). Son seul rôle est de déterminer si l'utilisateur est connecté ou non. Si l'utilisateur n'est pas connecté et tente d'accéder à une page protégée, le middleware le redirige vers la page de connexion. Il ne touche jamais à la base de données.
+6.2. Vérification des rôles au niveau de l'API et des pages : La vérification fine des permissions (par exemple, "cet utilisateur est-il un SUPER_ADMIN ?") est effectuée au début de chaque route d'API ou de page sensible de l'espace /admin. Ces composants s'exécutant dans l'environnement Node.js standard, ils peuvent librement interroger la base de données avec Prisma pour récupérer le rôle de l'utilisateur et autoriser ou refuser l'accès. Cette approche garantit à la fois la performance du middleware et la sécurité des données.
+
+
+6.3.  Modélisation et Requêtes Complexes avec Prisma
+Problème : Le schéma de données de ColisApp est riche et fortement relationnel (utilisateurs, envois, agences, colis, paiements, etc.). Le défi était double : d'abord, concevoir un schéma dans schema.prisma qui soit à la fois normalisé et performant. Ensuite, effectuer des requêtes complexes sans tomber dans le piège du "N+1 problem" (multiplier les requêtes inutiles). Par exemple, afficher une liste d'envois pour un client, avec pour chaque envoi les détails du destinataire et les noms des agences de départ et d'arrivée, aurait pu nécessiter de nombreuses requêtes.
+Solution : Nous avons pleinement exploité la puissance de Prisma Client.
+6.3. Modélisation : L'utilisation de relations explicites (@relation) et d'index (@@index) dans le schema.prisma a permis de garantir l'intégrité et la performance des données. L'outil Prisma Migrate a également été essentiel pour gérer l'évolution du schéma de manière versionnée et sécurisée.
+6.4. Requêtes optimisées : Pour les requêtes complexes, nous avons systématiquement utilisé les opérateurs include et select de Prisma. Par exemple, pour récupérer un envoi et ses données liées, une seule requête a suffi :
+
+ 1. // Exemple de requête optimisée
+ 2.             const envoi = await prisma.envoi.findUnique({
+ 3.               where: { id: envoiId },
+ 4.               include: {
+ 5.                 destinataire: { select: { name: true, email: true } },
+ 6.                 departureAgency: { select: { name: true } },
+ 7.                 arrivalAgency: { select: { name: true } }
+ 8.               }
+ 9.             });
+10.  
+Cette approche a permis de construire des réponses d'API riches avec un minimum de requêtes à la base de données, assurant ainsi la réactivité de l'application.
+
+7. Wireframes
+6.5. Accueil :
+
+
+
+
+
+
+
+
+
+
+
+6.6. Client Accueil :
+6.7. Login
+
+
+
+
+
+
+
+
+
+
+
+
+
+6.8. Inscription
+
+6.9. Simulation
+
+
+6.10. Contactez-nous 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+6.11. Profile - information
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+6.12. Profile – Sécurité
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+6.13. List des envois du client 
+
+
+
+
+
+
+
+
+
+
+
+
+
+6.14. Envoi détails
+
+
+6.15. Profile popup
+
+6.16. Admin Dashboard
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+6.17. List des agences pour le Super Admin
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+6.18. Ajouter une nouvelle Agence pour le Super Admin
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+6.19. Liste des utilisateurs pour le Super Admin
+
+6.20. Ajouter un client étape 1/3
+6.21. Ajouter un client étape 2/3
+
+
+6.22. Ajouter un client étape 3/3
+
+8. Glossaire
+6.23. mots-clés Stripe / Paiement
+TermeSignificationPourquoi c’est important dans ColisApp3-D Secure (3-DS)Three-Domain Secure : protocole d’authentification renforcée imposé par la directive PSD2/SCA.Quand la banque l’exige, Stripe affiche un challenge (OTP, app bancaire, etc.) pour que le titulaire confirme la transaction. Si le challenge réussit, le risque de fraude et la responsabilité passent à la banque (liability shift).ColisApp n’a pas à implémenter la logique SCA : Stripe prend tout en charge côté front-end. Vous devez simplement prévoir le flux « challenge → succès/échec » pour afficher le toast approprié et permettre un nouveau paiement en cas d’échec.WebhookAppel HTTPS envoyé par Stripe vers votre backend pour notifier un événement asynchrone (ex. payment_intent.succeeded).Il garantit que le backend reçoit la confirmation de paiement même si l’utilisateur ferme l’onglet après avoir payé.Le backend ColisApp écoute le webhook ; dès réception il :1. Vérifie la signature Stripe.2. Met à jour la commande à PAYÉ (idempotent – ignorera les doublons).3. Déclenche l’e-mail de confirmation et le code de suivi.clientSecretJeton opaque renvoyé par Stripe lors de la création d’un PaymentIntent ou SetupIntent. Il s’utilise uniquement côté frontend pour initialiser Stripe.js ou Checkout et confirmer le paiement.- Le serveur Next.js crée le PaymentIntent, récupère le clientSecret et l’envoie au navigateur.- Ce jeton ne donne pas accès aux fonds ni aux données carte ; il autorise seulement cet Intent à être confirmé.- S’il est perdu, un attaquant ne peut rien payer de plus : il est lié à l’Intent, au montant et expirerait vite.
+
+
+
+
+
+
+
+
+
+
+9. Annexes
+9.1. A.1 Documentation des cas d’utilisation détaillés
+9.1.1. A.1.1 Espace Public, Destinataire et Client
+Cas d'utilisationDescriptionConsulter pages infoLire les pages Accueil, Tarifs, Services, etc.Simuler tarif envoiUtiliser l’outil de simulation sans compteInitier inscriptionDéclencher la création de compte depuis la page publiqueInitier connexionAccéder au formulaire de connexionEnvoyer message contactRemplir et soumettre un formulaire de contactSuivre envoi par N°Accéder au suivi d’un colis par son numéroConsulter historique événementsVoir le détail des étapes de livraison d’un envoiS'inscrire & créer compteCréer un compte client avec identifiantsValider emailCliquer sur le lien de confirmation reçu par e-mailSe connecterSe connecter avec ses identifiantsSe déconnecterFermer sa sessionRéinitialiser mot de passeDemander un lien de réinitialisation par mailConsulter profilVisualiser ses informations personnellesModifier infos persosModifier nom, téléphone, etc.Gérer carnet adressesAjouter/supprimer des adressesGérer notificationsActiver/désactiver les notificationsFermer compteClôturer son compteCréer nouvel envoiDébuter un envoi depuis l’espace clientAjouter/Sélectionner destinataireChoisir ou ajouter un destinataireConsulter récap envoiVoir les détails avant paiementConsulter historique envoisListe de tous les envois effectuésConsulter détails envoiVoir les données précises d’un envoiSuivre statut détailléSuivi étape par étape d’un colisAnnuler envoiAnnuler un colis encore modifiablePayer envoiPaiement en ligne sécurisé (via Stripe). L’application initie la session Stripe, gère les statuts de paiement et redirige l’utilisateur après confirmation.Consulter historique paiementsAffichage des transactions traitées (retour Stripe ou paiements cash).Recevoir confirmation paiementEnvoi automatique de la confirmation de paiement après retour de Stripe.9.1.2. A.1.2 Administration Interne
+Cas d'utilisationDescriptionSe connecter adminAuthentification admin d’agenceConsulter dashboard agenceVoir les stats et données de l’agenceGérer personnel agenceAjouter, modifier ou supprimer du personnelGérer envois agenceSuivre les envois liés à l’agenceGérer clients agenceLister et modifier les clients de l’agenceConsulter journaux activité agenceVoir les actions enregistrées pour l’agenceSe connecter comptableAuthentification pour espace financierConsulter dashboard financierVue synthétique des chiffres clésGérer & valider paiementsTraiter les paiements manuelsGérer facturationGérer les factures généréesExporter données financièresGénérer des rapports comptablesConsulter & gérer tarifsGérer les grilles tarifairesSe connecter super adminAuthentification complèteConsulter dashboard globalVue d’ensemble de toute l’applicationCréer agenceAjouter une nouvelle agenceModifier agenceModifier les infos d’une agenceConsulter liste agencesListe complète des agencesActiver/Désactiver agenceChanger l’état d’une agenceCréer utilisateur (tous rôles)Ajouter un utilisateur manuellementModifier infos & rôle utilisateurModifier son profil et son rôleConsulter liste utilisateursListe globale des utilisateursBloquer/Débloquer utilisateurGérer les accèsGérer tous les envoisSuperviser tous les colisConsulter tous journaux activitéVoir les logs de toute l’applicationGérer paramètres générauxModifier les paramètres système9.1.3. Dictionnaire des abréviations utilisées
+Ce tableau répertorie les préfixes utilisés pour identifier rapidement les cas d’utilisation selon le rôle de l’utilisateur concerné. Cela facilite la lecture des diagrammes et des tableaux, tout en évitant la répétition.
+SignifieType d’acteurVisiteurUtilisateur non connectéDestinatairePersonne recevant un colisClientUtilisateur connectéAdmin d’agenceResponsable d’une agence localeComptableResponsable des financesSuper AdminAdministrateur global du système9.2. Annexes : A.2 – Documentation des cas d’utilisation détaillés
+9.2.1. A.2.1 Processus de simulation
+Acteur principal
+ActeurTypeRôleUtilisateurHumainInitie la simulation, saisit les données d’envoi, peut relancer une simulation existante ou en créer une nouvelle.Description des cas d’utilisation
+Cas d'utilisation visibleDescription fonctionnelleLancer le processus de simulationPoint d’entrée du scénario. L’utilisateur démarre depuis l’accueil ou le tableau de bord.Gérer une simulation existanteCas facultatif : si une simulation précédente existe, le système propose de la reprendre.Continuer la simulationPermet à l’utilisateur de reprendre une simulation incomplète.Créer une nouvelle simulationRéinitialise les données pour démarrer une nouvelle simulation.Saisir les informations de l'envoiÉtape principale : l’utilisateur renseigne les données de base.Définir le lieu de départLieu (ville, agence) d’enlèvement du colis.Définir le lieu de destinationLieu d’arrivée du colis (ville, pays).Définir les détails des colisNombre de colis, poids, dimensions, valeur déclarée, etc.Soumettre la simulation pour calculL’utilisateur envoie le formulaire pour traitement.Valider les données saisiesVérification côté système de la cohérence des informations fournies.Consulter les résultatsAffichage du tarif estimé, des options disponibles, et des délais de livraison.Relations entre cas d'utilisation
+RelationExplication<include>Le cas cible est obligatoire pour exécuter le cas principal. (ex. : pour lancer une simulation, la saisie d’informations est incluse.)<exclude>Le cas cible est optionnel selon une condition (ex. : existence d’une simulation précédente).
+9.2.2. A.2.2 Paiement de l’envoi via Stripe
+Cas d'utilisationDescriptionPayer l’envoiLe client initie le paiement depuis la page de récapitulatif.Créer une session de paiement StripeLe système communique avec Stripe pour générer une session sécurisée.Rediriger vers StripeRedirection automatique vers l’interface de paiement Stripe.Traiter le résultat du paiementRécupération du résultat (succès ou échec) depuis Stripe.Mettre à jour le statut de l’envoiL’envoi passe au statut "PAYÉ" ou "ÉCHEC" selon le retour.Recevoir la confirmation de l’envoiUn e-mail est automatiquement envoyé pour confirmer le paiement.9.2.3. A.2.3 Mise à jour du statut d’un envoi
+Cas d'utilisationDescriptionMettre à jour le statut d’un envoiPermet de modifier manuellement le statut d’un envoi (ex. : “En transit”).Saisir le nouveau statutL’agent sélectionne un nouveau statut dans une liste prédéfinie.Enregistrer le changementLe système sauvegarde la mise à jour.Notifier le clientLe système peut déclencher une notification par e-mail.9.2.4. A.2.4 Gestion des utilisateurs (Super Admin)
+Cas d'utilisationDescriptionAccéder à la gestion des utilisateursLe super admin accède à l’interface de gestion.Rechercher un utilisateurPossibilité de filtrer la liste (nom, rôle, statut).Modifier les informations d’un utilisateurModifier nom, email, rôle, agence associée.Bloquer ou débloquer un utilisateurSuspension ou réactivation de l’accès.Supprimer un utilisateurSuppression permanente ou désactivation logique du compte.9.2.5. A.2.5 Inscription
+6.24. Acteurs et composants impliqués
+ÉlémentTypeDescriptionClientActeur humainUtilisateur qui souhaite créer un compte sur ColisApp.Système de messagerie électroniqueSystème externeEnvoie l'email de confirmation contenant le lien d'activation.Base de donnéesSystème techniqueStocke les informations saisies par le client et met à jour le statut du compte.6.25. Cas d'utilisation détaillés
+Cas d'utilisationDescriptionCréer un compteÉtape initiale où le client soumet le formulaire d’inscription.Valider les données saisiesVérifie la complétude, le format, et la cohérence des champs (email, mot de passe, etc.).Enregistrer les données utilisateurInsère les données valides dans la base de données.Envoyer email de confirmationEnvoie un email contenant un lien unique d’activation.Activer le compteSe produit lorsque le client clique sur le lien reçu par email ; le système met à jour le statut dans la base de données.6.26. Relations entre éléments
+SourceCibleType de relationDescriptionClientCréer un compteAssociation directeLe client initie l'inscription.Créer un compteValider les données saisies<>La validation est obligatoire pour poursuivre.Valider les données saisiesEnregistrer les données utilisateur<>Nécessaire si validation réussie.Enregistrer les données utilisateurBase de donnéesAppel techniqueInsertion des données client.Enregistrer les données utilisateurEnvoyer email de confirmation<>Déclenche l’envoi du mail après enregistrement.Envoyer email de confirmationSystème de messagerie électroniqueAppel techniqueLe mail est transmis par un système SMTP.ClientActiver le compteInteractionLe client clique sur le lien reçu.Activer le compteBase de donnéesAppel techniqueLe statut du compte passe à "activé".
+
+6.27. Ce diagramme suit les conventions UML standard :
+• ellipses : cas d’utilisation
+• flèches pleines : interactions directes
+• flèches en pointillé : déclenchements internes ou inclusions <<include>>
+• composants externes : représentés par des pictogrammes (cloud, base de données)
+6.28. Notes complémentaires
+o Le lien d'activation contient un token sécurisé généré à l'enregistrement.
+o Ce processus garantit que seuls les comptes confirmés peuvent accéder à l'application.
+Voir aussi : chapitre 3.7.1.x pour la version fonctionnelle dans le corps du dossier.
+9.2.6. A.2.5 Réinitialisation du mot de passe client
+Cas d'utilisationDescriptionRéinitialiser mot de passeProcessus principal déclenché par l’utilisateur depuis la page d’oubli.Demander réinitialisationSaisie de l’adresse email pour initier le processus.Recevoir lien de réinitialisationRéception d’un email contenant un lien temporaire.Saisir nouveau mot de passeL’utilisateur entre un nouveau mot de passe via le formulaire.Confirmer réinitialisationLe système enregistre le nouveau mot de passe et confirme la mise à jour.Lien invalide ou expiréCas d’échec si le lien est obsolète ou incorrect.Erreur de saisie du nouveau mot de passeCas d’échec si les champs sont mal remplis (ex: confirmation différente).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+9.3. Documentation du MPD 
+Entité : users
+La table users représente les utilisateurs de l'application. Ces utilisateurs peuvent avoir différents rôles (client, administrateur d'agence, destinataire, etc.). Elle stocke des informations personnelles, des données d'authentification et des relations avec d'autres entités comme les agences et les envois.
+AttributsTypesDescriptionsidIntClé primaire unique, identifie chaque utilisateur.addressIdIntClé étrangère vers la table addresses, représente l'adresse de l'utilisateur.firstNameString(50)Prénom de l'utilisateur.lastNameString(50)Nom de famille de l'utilisateur.nameStringNom complet de l'utilisateur, peut être utilisé comme alternative à firstName et lastName.birthDateDateTimeDate de naissance de l'utilisateur.emailString(150)Adresse email unique de l'utilisateur, utilisée pour l'authentification et les notifications.phoneNumberString(50)Numéro de téléphone unique de l'utilisateur.passwordString(255)Mot de passe de l'utilisateur, utilisé pour l'authentification avec des credentials.imageString(255)URL de l'image de profil de l'utilisateur.rolesString[]Tableau de rôles attribués à l'utilisateur (CLIENT, ADMIN, etc.).isVerifiedBooleanIndique si l'email de l'utilisateur a été vérifié.emailVerifiedDateTimeDate à laquelle l'email de l'utilisateur a été vérifié.verificationTokenString(255)Token unique utilisé pour vérifier l'email de l'utilisateur.verificationTokenExpiresDateTimeDate d'expiration du token de vérification.createdAtDateTimeDate de création de l'utilisateur, générée automatiquement.updatedAtDateTimeDernière date de mise à jour de l'utilisateur, mise à jour automatiquement.
+
+
+Entité : accounts
+La table accounts représente les méthodes d'authentification utilisées par les utilisateurs. Elle est particulièrement utile pour les connexions via OAuth (par exemple, Google, GitHub) ou toute autre méthode externe. Chaque enregistrement est associé à un utilisateur unique et stocke des informations spécifiques au fournisseur d'authentification.
+AttributsTypesDescriptionsidIntClé primaire unique pour identifier chaque compte.userIdIntClé étrangère vers la table users, identifie l'utilisateur auquel le compte est associé.typeString(50)Type de connexion (par exemple, oauth ou credentials).providerString(50)Nom du fournisseur d'authentification (par exemple, google, github).providerAccountIdString(150)Identifiant unique de l'utilisateur chez le fournisseur.refresh_tokenString(255)Token de rafraîchissement pour les connexions OAuth, utilisé pour obtenir un nouveau token d'accès.access_tokenString(255)Token d'accès pour les connexions OAuth.expires_atIntTimestamp représentant l'expiration du token d'accès (en secondes depuis l'époque Unix).token_typeString(50)Type de token pour les connexions OAuth (par exemple, Bearer).scopeString(255)Portée des permissions associées au token d'accès.id_tokenString(255)Token d'identité pour les connexions OAuth, contenant des informations sur l'utilisateur.session_stateString(255)État de session pour certaines connexions OAuth.createdAtDateTimeDate de création de l'enregistrement, générée automatiquement.updatedAtDateTimeDernière date de mise à jour de l'enregistrement, mise à jour automatiquement.
+Entité : sessions
+La table sessions est utilisée pour gérer les sessions actives des utilisateurs dans l'application. Elle stocke des informations sur les sessions, comme le token d'identification, l'utilisateur associé et la date d'expiration. Cette table est importante pour assurer la persistance de l'authentification et la gestion des connexions.
+AttributsTypesDescriptionsidIntIdentifiant unique de la session. Clé primaire.userIdIntRéférence à l'utilisateur associé à cette session. Clé étrangère.sessionTokenString(255)Token unique pour identifier la session.expiresDateTimeDate et heure d'expiration de la session.createdAtDateTimeDate et heure de création de la session.updatedAtDateTimeDate et heure de la dernière mise à jour de la session.
+
+
+Entité : addresses
+La table addresses stocke les informations liées aux adresses physiques utilisées dans l'application. Ces adresses peuvent être associées à des utilisateurs ou à des agences, fournissant des informations de localisation détaillées.
+AttributsTypesDescriptionsidIntIdentifiant unique de l'adresse. Clé primaire.streetString(255)Rue de l'adresse.numberString(50)Numéro du bâtiment ou de l'appartement.cityString(50)Ville de l'adresse.zipCodeString(20)Code postal de l'adresse.countryString(50)Pays de l'adresse.latitudeFloatLatitude géographique de l'adresse.longitudeFloatLongitude géographique de l'adresse.createdAtDateTimeDate et heure de création de l'adresse.updatedAtDateTimeDate et heure de la dernière mise à jour de l'adresse.
+Entité : agencies
+La table agencies représente les agences dans le système, qui peuvent servir de points de départ ou d’arrivée pour les envois. Chaque agence est liée à une adresse unique et peut avoir plusieurs administrateurs et clients.
+AttributsTypesDescriptionsidIntIdentifiant unique de l'agence. Clé primaire.addressIdIntRéférence à l'adresse associée. Clé étrangère vers addresses.nameString(50)Nom de l'agence.locationString(250)Description ou détails supplémentaires sur la localisation.capacityIntCapacité totale de stockage de l'agence.availableSlotsIntNombre de créneaux disponibles pour les rendez-vous ou envois.createdAtDateTimeDate et heure de création de l'agence.updatedAtDateTimeDate et heure de la dernière mise à jour de l'agence.
+Entité : authenticators
+La table authenticators contient des informations sur les moyens d’authentification utilisés par les utilisateurs pour sécuriser leur compte, tels que des clés publiques ou des données biométriques.
+AttributsTypesDescriptionsidIntIdentifiant unique de l'authenticator. Clé primaire.userIdIntRéférence à l'utilisateur associé. Clé étrangère vers users.credentialPublicKeyString(255)Clé publique utilisée pour l'authentification.counterIntCompteur pour suivre les tentatives d'authentification.credentialDeviceTypeString(50)Type de périphérique d'authentification (ex. téléphone, clé USB).credentialBackedUpBooleanIndique si la clé est sauvegardée.transportsString(255)Modes de transport autorisés pour la clé (ex. USB, NFC).createdAtDateTimeDate et heure de création de l'authenticator.updatedAtDateTimeDate et heure de la dernière mise à jour de l'authenticator.
+
+Entité : notifications
+La table notifications gère les notifications envoyées aux utilisateurs ou liées aux envois. Ces notifications peuvent informer les utilisateurs sur le statut de leur envoi ou d’autres mises à jour.
+AttributsTypesDescriptionsidIntIdentifiant unique de la notification. Clé primaire.envoiIdIntRéférence à l'envoi associé. Clé étrangère vers envois.userIdIntRéférence à l'utilisateur recevant la notification.messageString(255)Contenu de la notification.isReadBooleanIndique si la notification a été lue par l'utilisateur.createdAtDateTimeDate et heure de création de la notification.updatedAtDateTimeDate et heure de la dernière mise à jour de la notification.
+Entité : envois
+La table envois représente les envois effectués par les utilisateurs. Chaque envoi contient des informations détaillées telles que l'expéditeur, le destinataire, les agences de départ et d'arrivée, et le statut de l'envoi.
+AttributsTypesDescriptionsidIntIdentifiant unique de l'envoi. Clé primaire.userIdIntRéférence à l'utilisateur ayant initié l'envoi. Clé étrangère vers users.destinataireIdIntRéférence au destinataire de l'envoi. Clé étrangère vers users.transportIdIntRéférence au transport associé. Clé étrangère vers transports.departureAgencyIdIntRéférence à l'agence de départ. Clé étrangère vers agencies.arrivalAgencyIdIntRéférence à l'agence d'arrivée. Clé étrangère vers agencies.trackingNumberString(50)Numéro de suivi unique pour l'envoi.qrCodeUrlString(255)URL pour accéder au code QR de l'envoi.simulationStatusString(20)Statut de simulation de l'envoi (ex. DRAFT, CONFIRMED).statusString(20)Statut de l'envoi (ex. PENDING, SENT).totalWeightFloatPoids total des colis dans l'envoi.totalVolumeFloatVolume total des colis dans l'envoi.totalPriceFloatPrix total calculé pour l'envoi.departureDateDateTimeDate de départ prévue de l'envoi.arrivalDateDateTimeDate d'arrivée prévue de l'envoi.verificationTokenString(255)Jeton unique pour vérifier l'envoi.commentTextCommentaire ou remarque lié à l'envoi.createdAtDateTimeDate et heure de création de l'envoi.updatedAtDateTimeDate et heure de la dernière mise à jour de l'envoi.
+
+
+Entité : parcels
+La table parcels représente les colis inclus dans un envoi. Chaque colis contient des détails sur ses dimensions et son poids.
+AttributsTypesDescriptionsidIntIdentifiant unique du colis. Clé primaire.envoiIdIntRéférence à l'envoi auquel le colis appartient. Clé étrangère vers envois.heightDecimal(5,2)Hauteur du colis en centimètres.weightDecimal(5,2)Poids du colis en kilogrammes.widthDecimal(5,2)Largeur du colis en centimètres.lengthDecimal(5,2)Longueur du colis en centimètres.createdAtDateTimeDate et heure de création du colis.updatedAtDateTimeDate et heure de la dernière mise à jour du colis.
+Entité : appointments
+La table appointments gère les rendez-vous planifiés pour déposer ou récupérer des envois dans les agences.
+AttributsTypesDescriptionsidIntIdentifiant unique du rendez-vous. Clé primaire.envoiIdIntRéférence à l'envoi associé au rendez-vous. Clé étrangère vers envois.agencyIdIntRéférence à l'agence associée au rendez-vous. Clé étrangère vers agencies.dateDateTimeDate et heure du rendez-vous.statusString(20)Statut du rendez-vous (ex. PENDING, CONFIRMED).createdAtDateTimeDate et heure de création du rendez-vous.updatedAtDateTimeDate et heure de la dernière mise à jour du rendez-vous.
+Entité : coupons
+La table coupons représente les bons de réduction ou avantages qui peuvent être appliqués à des envois ou utilisés par des utilisateurs.
+AttributsTypesDescriptionsidIntIdentifiant unique du coupon. Clé primaire.couponCodeString(50)Code unique du coupon.discountAmountDecimal(10,2)Montant fixe de la réduction.discountPercentageDecimal(5,2)Pourcentage de réduction.numberOfUsesIntNombre de fois où le coupon peut être utilisé.startDateDateTimeDate de début de validité du coupon.expirationDateDateTimeDate d'expiration du coupon.termsAndConditionsTextTermes et conditions applicables au coupon.createdAtDateTimeDate et heure de création du coupon.updatedAtDateTimeDate et heure de la dernière mise à jour du coupon.
+
+
+Entité : tarifs
+La table tarifs contient les informations tarifaires associées aux agences, comme les tarifs pour le poids ou le volume des envois.
+AttributsTypesDescriptionsidIntIdentifiant unique du tarif. Clé primaire.agencyIdIntRéférence à l'agence associée au tarif. Clé étrangère vers agencies.weightRateDecimal(10,2)Tarif basé sur le poids des colis.volumeRateDecimal(10,2)Tarif basé sur le volume des colis.baseRateDecimal(10,2)Tarif de base pour un envoi.fixedRateDecimal(10,2)Tarif fixe additionnel.createdAtDateTimeDate et heure de création du tarif.updatedAtDateTimeDate et heure de la dernière mise à jour du tarif.
+Entité : transport_schedules
+La table transport_schedules gère les horaires de transport des envois entre agences.
+AttributsTypesDescriptionsidIntIdentifiant unique de l'horaire de transport. Clé primaire.transportIdIntRéférence au transport associé. Clé étrangère vers transports.departureDateDateTimeDate et heure de départ du transport.arrivalDateDateTimeDate et heure d'arrivée du transport.isHolidayBooleanIndique si le transport a lieu pendant une période fériée.createdAtDateTimeDate et heure de création de l'horaire de transport.updatedAtDateTimeDate et heure de la dernière mise à jour de l'horaire.
+Entité : transports
+La table transports représente les moyens de transport utilisés pour déplacer les envois entre les agences.
+AttributsTypesDescriptionsidIntIdentifiant unique du transport. Clé primaire.numberString(15)Numéro ou identifiant du transport.baseVolumeDecimal(12,2)Volume maximal supporté par le transport.baseWeightDecimal(10,2)Poids maximal supporté par le transport.currentVolumeDecimal(12,2)Volume actuellement utilisé par le transport.currentWeightDecimal(10,2)Poids actuellement supporté par le transport.isAvailableBooleanIndique si le transport est disponible.createdAtDateTimeDate et heure de création du transport.updatedAtDateTimeDate et heure de la dernière mise à jour du transport.
+
+
+Entité : agency_admins
+La table de jointure agency_admins gère la relation entre les administrateurs et les agences qu'ils gèrent.
+AttributsTypesDescriptionsidIntIdentifiant unique pour chaque relation. Clé primaire.userIdIntRéférence à l'utilisateur administrateur. Clé étrangère vers users.agencyIdIntRéférence à l'agence gérée par l'utilisateur. Clé étrangère vers agencies.createdAtDateTimeDate et heure de création de la relation.
+Entité : agency_clients
+La table de jointure agency_clients gère la relation entre les agences et les utilisateurs en tant que clients.
+AttributsTypesDescriptionsidIntIdentifiant unique pour chaque relation. Clé primaire.userIdIntRéférence à l'utilisateur client. Clé étrangère vers users.agencyIdIntRéférence à l'agence associée au client. Clé étrangère vers agencies.createdAtDateTimeDate et heure de création de la relation.
+Entité : clients_destinataires
+La table de jointure clients_destinataires gère la relation entre les clients et leurs destinataires.
+AttributsTypesDescriptionsidIntIdentifiant unique pour chaque relation. Clé primaire.clientIdIntRéférence au client. Clé étrangère vers users.destinataireIdIntRéférence au destinataire. Clé étrangère vers users.createdAtDateTimeDate et heure de création de la relation.
+Entité : envois_coupons
+La table de jointure envois_coupons relie les envois avec les coupons qui leur sont appliqués. Un envoi peut être associé à plusieurs coupons, et un coupon peut être appliqué à plusieurs envois.
+AttributsTypesDescriptionsidIntIdentifiant unique pour chaque relation. Clé primaire.envoiIdIntRéférence à l'envoi concerné. Clé étrangère vers envois.couponIdIntRéférence au coupon utilisé. Clé étrangère vers coupons.createdAtDateTimeDate et heure de création de la relation.
+Entité : user_coupons
+La table de jointure user_coupons relie les utilisateurs avec les coupons qu’ils ont utilisés. Un utilisateur peut utiliser plusieurs coupons, et un coupon peut être utilisé par plusieurs utilisateurs.
+AttributsTypesDescriptionsidIntIdentifiant unique pour chaque relation. Clé primaire.userIdIntRéférence à l'utilisateur. Clé étrangère vers users.couponIdIntRéférence au coupon utilisé. Clé étrangère vers coupons.createdAtDateTimeDate et heure de création de la relation.
+
+
+Enum : SimulationStatus
+Cet enum est utilisé pour définir le statut de simulation d'un envoi. Il permet de gérer les différentes étapes d'une simulation avant la confirmation finale.
+ValeursDescriptionsDRAFTLa simulation est en cours de création.CONFIRMEDLa simulation a été confirmée par l'utilisateur.COMPLETEDLa simulation a été finalisée.CANCELLEDLa simulation a été annulée.
+Enum : EnvoiStatus
+Cet enum est utilisé pour définir le statut d'un envoi. Il permet de suivre son état depuis sa création jusqu'à sa livraison ou son retour.
+ValeursDescriptionsPENDINGL'envoi est en attente de traitement.SENTL'envoi a été envoyé.DELIVEREDL'envoi a été livré au destinataire.CANCELLEDL'envoi a été annulé.RETURNEDL'envoi a été retourné à l'expéditeur.
+Enum : Role
+Cet enum est utilisé pour attribuer des rôles spécifiques aux utilisateurs dans l'application. Un utilisateur peut avoir un ou plusieurs rôles.
+ValeursDescriptionsCLIENTUtilisateur standard qui utilise l'application.ADMINAdministrateur global du système.DESTINATAIREUtilisateur désigné pour recevoir un envoi.AGENCY_ADMINAdministrateur d'une ou plusieurs agences spécifiques.
+Enum : AppointmentStatus
+Cet enum est utilisé pour définir le statut des rendez-vous dans l'application. Il permet de gérer l'état d'un rendez-vous de la planification à la réalisation.
+ValeursDescriptionsPENDINGRendez-vous en attente de confirmation.CONFIRMEDRendez-vous confirmé par l'agence ou le client.CANCELLEDRendez-vous annulé par l'agence ou le client.RESCHEDULEDRendez-vous reprogrammé à une autre date.COMPLETEDRendez-vous terminé avec succès.MISSEDRendez-vous manqué par le client ou l'agence.IN_PROGRESSRendez-vous en cours de réalisation.
+
+
+9.4. Documentation d’API backend endpoints ( a refaire complètement pour remplacer l’ancien api avec notre Nextjs 15 API routes.) 
+9.4.1. Classe AddressController
+EndpointMéthode HTTPDescriptionDTO UtiliséRéponse/api/v1/addressesGETRécupérer toutes les adressesAddressDTOList<AddressDTO>/api/v1/addresses/paysGETRécupérer tous les paysN/AList<String>/api/v1/addresses/{pays}/villesGETRécupérer les villes par paysN/AList<String>
+Exemples de Requêtes et Réponses :
+Endpoint: /api/v1/addresses
+• Méthode HTTP: GET
+• Description: Récupérer toutes les adresses
+• Requête:
+http
+GET /api/v1/addresses
+Host: localhost:8081
+• Réponse:
+// http://localhost:8081/api/v1/addresses
+
+[
+  {
+    "rue": "rue de Bruxelles 1",
+    "numero": "1",
+    "ville": "Bruxelles",
+    "codepostal": "2000",
+    "pays": "Belgique"
+  },
+  {
+    "rue": "rue de Anvers 1",
+    "numero": "1",
+    "ville": "Anvers",
+    "codepostal": "2000",
+    "pays": "Belgique"
+  },
+  {
+    "rue": "rue de Mons 1",
+    "numero": "1",
+    "ville": "Mons",
+    "codepostal": "7000",
+    "pays": "Belgique"
+  },
+  {
+    "rue": "rue de Casablanca 1",
+    "numero": "1",
+    "ville": "Casablanca",
+    "codepostal": "20000",
+    "pays": "Maroc"
+  },
+  {
+    "rue": "rue de Marrakech 1",
+    "numero": "1",
+    "ville": "Marrakech",
+    "codepostal": "40000",
+    "pays": "Maroc"
+  },
+  {
+    "rue": "Rue des Martyrs",
+    "numero": "28",
+    "ville": "Frameries",
+    "codepostal": "7080",
+    "pays": "Belgique"
+  },
+  {
+    "rue": "rue des toto",
+    "numero": "25",
+    "ville": "Mons",
+    "codepostal": "7000",
+    "pays": "Belgique"
+  },
+  {
+    "rue": "rue jessie",
+    "numero": "25",
+    "ville": "Estinnes",
+    "codepostal": "7120",
+    "pays": "Belgique"
+  },
+  {
+    "rue": "rue toto test",
+    "numero": "88",
+    "ville": "Mons",
+    "codepostal": "7000",
+    "pays": "Belgique"
+  },
+  {
+    "rue": "rue toto1",
+    "numero": "1",
+    "ville": "Paris",
+    "codepostal": "10000",
+    "pays": "France"
+  },
+  {
+    "rue": "rue destinataire1",
+    "numero": "1",
+    "ville": "Frameries",
+    "codepostal": "7080",
+    "pays": "Belgique"
+  },
+  {
+    "rue": "rue destinataire2",
+    "numero": "2",
+    "ville": "Frameries",
+    "codepostal": "7080",
+    "pays": "Belgique"
+  },
+  {
+    "rue": "rue destinataire3",
+    "numero": "3",
+    "ville": "Frameries",
+    "codepostal": "7080",
+    "pays": ""
+  },
+  {
+    "rue": "rue destinataire4",
+    "numero": "4",
+    "ville": "Frameries",
+    "codepostal": "7080",
+    "pays": ""
+  },
+  {
+    "rue": "rue des3",
+    "numero": "3",
+    "ville": "Mons",
+    "codepostal": "7000",
+    "pays": "Belgique"
+  },
+  {
+    "rue": "rue des4",
+    "numero": "4",
+    "ville": "Mons",
+    "codepostal": "7000",
+    "pays": "Belgique"
+  },
+  {
+    "rue": "des5",
+    "numero": "5",
+    "ville": "Mons",
+    "codepostal": "7000",
+    "pays": "Belgique"
+  },
+  {
+    "rue": "rue des6",
+    "numero": "6",
+    "ville": "Mons",
+    "codepostal": "7000",
+    "pays": "Belgique"
+  },
+  {
+    "rue": "rue des7",
+    "numero": "7",
+    "ville": "Mons",
+    "codepostal": "7000",
+    "pays": "Belgique"
+  },
+  {
+    "rue": "rue des9",
+    "numero": "9",
+    "ville": "Mons",
+    "codepostal": "7000",
+    "pays": "Belgique"
+  },
+  {
+    "rue": "rue dess",
+    "numero": "10",
+    "ville": "Mons",
+    "codepostal": "7000",
+    "pays": "Belgique"
+  },
+  {
+    "rue": "rue",
+    "numero": "88",
+    "ville": "Frameries",
+    "codepostal": "7080",
+    "pays": "Belgique"
+  }
+]
+
+Endpoint: /api/v1/addresses/pays
+6.29. Méthode HTTP: GET
+6.30. Description: Récupérer tous les pays
+6.31. Requête:
+http
+GET /api/v1/addresses/pays
+Host: localhost:8081
+6.32. Réponse:
+json
+// http://localhost:8081/api/v1/addresses/pays
+
+[
+  "Belgique",
+  "Maroc"
+]
+
+
+Endpoint: /api/v1/addresses/{pays}/villes
+• Méthode HTTP: GET
+• Description: Récupérer les villes par pays
+• Requête:
+http
+GET /api/v1/addresses/Maroc/villes 
+Host: localhost:8081
+• Réponse:
+// http://localhost:8081/api/v1/addresses/Maroc/villes
+
+[
+  "Casablanca",
+  "Marrakech"
+]
+9.4.2. Classe EnvoisController
+
+EndpointMéthode HTTPDescriptionDTO UtiliséRéponse/api/v1/envois/validerPOSTValider un envoiEnvoisRequestDTOString
+Exemples de Requêtes et Réponses :
+Endpoint: /api/v1/envois/valider
+• Méthode HTTP: POST
+• Description: Valider un envoi
+• Requête:
+http
+POST /api/v1/envois/valider
+Host: localhost:8081
+Content-Type: application/json
+Authorization: Bearer <token>
+
+{
+  "paysDepart": "France",
+  "villeDepart": "Paris",
+  "agenceDepart": "Agence 1",
+  "dateEnvoiPrevu": "2024-06-25",
+  "paysDestination": "Maroc",
+  "villeDestination": "Marrakech",
+  "agenceArrive": "Agence 2",
+  "dateLivraisonPrevu": "2024-07-01",
+  "poidsTotal": "50",
+  "volumeTotal": "1000000",
+  "prixTotal": "80",
+  "statut": "En Attente de Confirmation d'envoi",
+  "colis": [
+    {
+      "hauteur": 100,
+      "largeur": 100,
+      "longueur": 100,
+      "poidsColis": 50,
+      "volumeColis": 1000000
+    }
+  ],
+  "idTarif": 3,
+  "idDestinataire": {
+    "nomPrenom": "John Doe",
+    "telephone": "+32123456789",
+    "email": "john.doe@mail.com",
+    "idAddress": {
+      "rue": "123 Elm St",
+      "numero": "3",
+      "ville": "Bruxelles",
+      "codepostal": "1000",
+      "pays": "Belgique"
+    }
+  }
+}
+
+• Réponse:
+json
+"Envoi validé avec succès"
+9.4.3. Classe SimulationController
+EndpointMéthode HTTPDescriptionDTO UtiliséRéponse/api/v1/simulation/calculatePOSTCalculer la simulation d'envoiSimulationRequestSimulationResponse
+Endpoint: /api/v1/simulation/calculate
+• Méthode HTTP: POST
+• Description: Calculer la simulation d'envoi
+• Requête:
+http
+POST /api/v1/simulation/calculate
+Host: localhost:8081
+Content-Type: application/json
+
+{
+  "paysDepart": "Belgique",
+  "villeDepart": "Mons",
+  "agenceDepart": "Agence 1",
+  "paysDestination": "Maroc",
+  "villeDestination": "Marrakech",
+  "agenceArrive": "Agence 2",
+  "currentDate": "2024-06-20",
+  "colis": [
+    {
+      "hauteur": 50,
+      "largeur": 50,
+      "longueur": 50,
+      "poidsColis": 20
+    },
+    {
+      "hauteur": 60,
+      "largeur": 60,
+      "longueur": 60,
+      "poidsColis": 30
+    }
+  ]
+}
+
+• Réponse:
+json
+{
+    "paysDepart": "Belgique",
+    "villeDepart": "Mons",
+    "agenceDepart": "Agence 1",
+    "dateEnvoiPrevu": "2024-06-25",
+    "paysDestination": "Maroc",
+    "villeDestination": "Marrakech",
+    "agenceArrive": "Agence 2",
+    "dateLivraisonPrevu": "2024-07-01",
+    "poidsTotal": 50,
+    "volumeTotal": 341000,
+    "prixTotal": 80.00,
+    "statut": "En Attente de Confirmation d'envoi",
+    "colis": [
+        {
+            "hauteur": 50,
+            "largeur": 50,
+            "longueur": 50,
+            "poidsColis": 20,
+            "volumeColis": null
+        },
+        {
+            "hauteur": 60,
+            "largeur": 60,
+            "longueur": 60,
+            "poidsColis": 30,
+            "volumeColis": null
+        }
+    ],
+    "idTarif": 3
+}
+
+
+9.4.4. Classe TransportController
+EndpointMéthode HTTPDescriptionDTO UtiliséRéponse/api/v1/transports/verify-spacePOSTVérifier la disponibilité du transportTransportDTODisponibilité (Boolean) et date du prochain transport (LocalDate)
+Endpoint: /api/v1/transports/verify-space
+• Méthode HTTP: POST
+• Description: Vérifier la disponibilité du transport besoin le login
+• Requête:
+http
+POST /api/v1/transports/verify-space 
+Host: localhost:8081
+Content-Type: application/json
+
+{
+  "poidsTotal": 50,
+  "volumeTotal": 300000
+}
+
+• Réponse:
+json
+
+{
+  "available": true,
+  "nextAvailableDate": "2024-07-09"
+}
+
+
+9.4.5. Classe AuthController
+EndpointMéthode HTTPDescriptionDTO UtiliséRéponse/api/v1/users/auth/registerPOSTEnregistrer un nouvel utilisateurUserRegisterDTOString/api/v1/users/auth/loginPOSTConnecter un utilisateurUserLoginDTOToken (String)/api/v1/users/auth/check-emailPOSTVérifier l'existence d'un emailCheckEmailDTOBooleanEndpoint: /api/v1/users/auth/register
+• Méthode HTTP: POST
+• Description: Enregistrer un nouvel utilisateur
+• Requête:
+http
+POST /api/v1/users/auth/register 
+Host: localhost:8081
+Content-Type: application/json
+
+{
+  "nom": "John",
+  "prenom": "Doe",
+  "dateDeNaissance": "1990-01-01",
+  "sexe": true,
+  "telephone": "+32123456789",
+  "email": "john.doe@mail.com",
+  "rue": "123 Elm St",
+  "numero": "3",
+  "ville": "Bruxelles",
+  "codepostal": "1000",
+  "pays": "Belgique",
+  "password": "password123",
+  "confirmPassword": "password123"
+}
+
+• Réponse:
+json
+"User created"
+Endpoint: /api/v1/users/auth/login
+• Méthode HTTP: POST
+• Description: Connecter un utilisateur
+• Requête:
+http
+POST /api/v1/users/auth/login
+Host: localhost:8081
+Content-Type: application/json
+
+{
+  "email": "toto.mail@mail.com",
+  "password": "Azerty123"
+}
+
+• Réponse:
+json
+{
+    "data": {
+        "nom": "toto",
+        "prenom": "tata",
+        "dateDeNaissance": "1986-08-05",
+        "sexe": "female",
+        "telephone": "+3265986532",
+        "email": "toto.mail@mail.com",
+        "rue": "rue des toto",
+        "numero": "25",
+        "ville": "Mons",
+        "codepostal": "7000",
+        "pays": "Belgique"
+    },
+    "success": true,
+    "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0b3RvLm1haWxAbWFpbC5jb20iLCJpYXQiOjE3MTg4MTY0MTEsImV4cCI6MTcxODgyMDAxMX0.7fsHKFD63GNsk4PwtqVNANBCm7V9-QFDYKRpjr9MlD0"
+}
+
+
+Endpoint: /api/v1/users/auth/check-email
+• Méthode HTTP: POST
+• Description: Vérifier l'existence d'un email
+• Requête:
+http
+POST /api/v1/users/auth/check-email 
+Host: localhost:8081
+Content-Type: application/json
+
+{
+  "email": "toto.mail@mail.com"
+}
+Réponse:
+json
+{
+  "exists": true
+}
+
+9.4.6. Classe AgenceController
+
+EndpointMéthode HTTPDescriptionDTO UtiliséRéponse/api/v1/agences/{ville}GETRécupérer les agences par villeN/AList<AgenceDTO>
+Endpoint: /api/v1/agences/{ville}
+• Méthode HTTP: GET
+• Description: Récupérer les agences par ville
+• Requête:
+http
+GET /api/v1/agences/Mons
+
+
+
+
+
+
+
+9.5. Plan de Test par classe
+9.5.1. SimulationService
+
+Méthode: calculateSimulation
+Rôle : Calculer les détails d'une simulation d'envoi, incluant le poids total, le volume total, le tarif, et les dates d'envoi et de livraison prévues.
+Test CaseInputExpected OutputDescriptionCas valideSimulationRequest: { paysDepart: "Belgique", villeDepart: "Bruxelles", agenceDepart: "Agence 1", paysDestination: "France", villeDestination: "Paris", agenceArrive: "Agence 2", colis: [{ hauteur: 30, largeur: 30, longueur: 30, poidsColis: 10 }], currentDate: "2023-06-01" }SimulationResponse avec poids, volume et prix calculésCalculer une simulation avec des données valides.Cas invalideSimulationRequest: { paysDepart: "", villeDepart: "Bruxelles", agenceDepart: "Agence 1", paysDestination: "France", villeDestination: "Paris", agenceArrive: "Agence 2", colis: [{ hauteur: 30, largeur: 30, longueur: 30, poidsColis: 10 }], currentDate: "2023-06-01" }Exception ou message d'erreurTester avec des données incomplètes.
+
+
+Méthode: getNextTuesday
+Rôle : Calculer la date du prochain mardi à partir de la date actuelle.
+Test CaseInputExpected OutputDescriptionCas validecurrentDate: "2023-06-01" (jeudi)"2023-06-06" (mardi)Calculer le prochain mardi à partir d'une date donnée.Cas de limitescurrentDate: "2023-12-31" (dimanche)"2024-01-02" (mardi)Calculer le prochain mardi en traversant la fin d'année.
+Méthode: getPrixTotal
+Rôle : Calculer le prix total de l'envoi en fonction du poids total et des tarifs disponibles.
+Test CaseInputExpected OutputDescriptionCas validepoidsTotal: 8Prix fixe pour poids ≤ 10 kgCalculer le prix avec un poids inférieur ou égal à 10 kg.Cas de limitespoidsTotal: 15Prix variable pour poids > 10 kgCalculer le prix avec un poids supérieur à 10 kg.Cas invalidepoidsTotal: -5Exception ou prix zéroTester avec un poids négatif.
+Méthode: getVolumeTotal
+Rôle : Calculer le volume total des colis dans une simulation d'envoi.
+Test CaseInputExpected OutputDescriptionCas validecolisList: [{ hauteur: 30, largeur: 30, longueur: 30 }]27000 cm³Calculer le volume total pour un colis donné.Cas de limitescolisList: [{ hauteur: 100, largeur: 100, longueur: 100 }]1000000 cm³Calculer le volume total pour un colis avec de grandes dimensions.Cas invalidecolisList: [{ hauteur: -30, largeur: 30, longueur: 30 }]Exception ou volume zéroTester avec une hauteur négative.
+Méthode: getPoidsTotal
+Rôle : Calculer le poids total des colis dans une simulation d'envoi.
+Test CaseInputExpected OutputDescriptionCas validecolisList: [{ poidsColis: 10 }]10 kgCalculer le poids total pour un colis donné.Cas de limitescolisList: [{ poidsColis: 70 }]70 kgCalculer le poids total pour un colis avec le poids maximum.Cas invalidecolisList: [{ poidsColis: -10 }]Exception ou poids zéroTester avec un poids négatif.9.5.2. TransportService
+Méthode: calculateNextAvailableDate
+Rôle : Calculer la prochaine date disponible pour le transport, qui est deux mardis après la date actuelle.
+Test CaseInputExpected OutputDescriptionCas validecurrentDate: "2023-06-01" (jeudi)"2023-06-13" (deux mardis plus tard)Calculer la prochaine date disponible en sautant deux mardis.Cas de limitescurrentDate: "2023-12-31" (dimanche)"2024-01-16" (deux mardis plus tard)Calculer la prochaine date disponible en traversant la fin d'année.
+
+Méthode: updateTransport
+Rôle : Mettre à jour le poids et le volume actuels du transport après l'ajout d'un nouvel envoi.
+Test CaseInputExpected OutputDescriptionCas validepoidsTotal: 100, volumeTotal: 20000Transport mis à jour avec poids et volume ajoutésMettre à jour les valeurs du transport avec de nouvelles valeurs valides.Cas de limitespoidsTotal: 0, volumeTotal: 0Transport inchangéTester avec des valeurs zéro pour poids et volume.Cas invalidepoidsTotal: -100, volumeTotal: -20000Exception ou transport non mis à jourTester avec des valeurs négatives pour poids et volume.
+Méthode: getNextTuesday
+Rôle : Calculer la date du prochain mardi à partir de la date actuelle.
+Test CaseInputExpected OutputDescriptionCas validecurrentDate: "2023-06-01" (jeudi)"2023-06-06" (mardi)Calculer le prochain mardi à partir d'une date donnée.Cas de limitescurrentDate: "2023-12-31" (dimanche)"2024-01-02" (mardi)Calculer le prochain mardi en traversant la fin d'année.
+9.5.3. SimulationService
+Méthode: getPoidsTotal
+Rôle : Calculer le poids total des colis dans une simulation d'envoi.
+Test CaseInputExpected OutputDescriptionCas validecolisList: [{ poidsColis: 10 }]10 kgCalculer le poids total pour un colis donné.Cas de limitescolisList: [{ poidsColis: 70 }]70 kgCalculer le poids total pour un colis avec le poids maximum.Cas invalidecolisList: [{ poidsColis: -10 }]Exception ou poids zéroTester avec un poids négatif.
+Méthode: getVolumeTotal
+Rôle : Calculer le volume total des colis dans une simulation d'envoi.
+Test CaseInputExpected OutputDescriptionCas validecolisList: [{ hauteur: 30, largeur: 30, longueur: 30 }]27000 cm³Calculer le volume total pour un colis donné.Cas de limitescolisList: [{ hauteur: 100, largeur: 100, longueur: 100 }]1000000 cm³Calculer le volume total pour un colis avec de grandes dimensions.Cas invalidecolisList: [{ hauteur: -30, largeur: 30, longueur: 30 }]Exception ou volume zéroTester avec une hauteur négative.
+Méthode: getPrixTotal
+Rôle : Calculer le prix total de l'envoi en fonction du poids total et des tarifs disponibles.
+Test CaseInputExpected OutputDescriptionCas validepoidsTotal: 8Prix fixe pour poids ≤ 10 kgCalculer le prix avec un poids inférieur ou égal à 10 kg.Cas de limitespoidsTotal: 15Prix variable pour poids > 10 kgCalculer le prix avec un poids supérieur à 10 kg.Cas invalidepoidsTotal: -5Exception ou prix zéroTester avec un poids négatif.
+10. Références
+10.1.1. Documentation des produits utilisés dans la solution
+6.33. Serveur
+6.34. Chatgpt
+6.35. Stackflow
+6.36. Youtube
+
+
+
+11. Code
+
+
+Gestion de transport de colis à l'InternationalBentouhami Faisal INF BProjet de fin d’étude en Bachelier Informatique de gestion
+
+2
+
+

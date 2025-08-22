@@ -1,0 +1,161 @@
+@startuml MCD_ColisApp_Conceptuel
+!theme vibrant
+title MCD ColisApp - Modèle Conceptuel de Données (Notation Merise)
+
+allowmixing
+
+skinparam entity {
+  backgroundColor White
+  borderColor Black
+}
+skinparam usecase {
+  BorderColor Black
+  BackgroundColor LightYellow
+  FontSize 12
+}
+
+' --- ENTITIES ---
+entity User {
+  firstName
+  lastName
+  email
+  phoneNumber
+  role
+}
+
+entity Address {
+  street
+  streetNumber
+  complement
+  city
+  country
+}
+
+entity City {
+  name
+}
+
+entity Country {
+  name
+  iso2
+  phonecode
+}
+
+entity Agency {
+  name
+  location
+  email
+}
+
+entity Envoi {
+  trackingNumber
+  envoiStatus
+  simulationStatus
+  totalPrice
+  departureDate
+  arrivalDate
+}
+
+entity Parcel {
+  height
+  weight
+  width
+  length
+}
+
+entity Payment {
+  method
+  status
+  amount
+  transactionId
+}
+
+entity TrackingEvent {
+  eventStatus
+  location
+  description
+}
+
+entity Transport {
+  number
+  baseVolume
+  baseWeight
+  isAvailable
+}
+
+entity Tarifs {
+  weightRate
+  volumeRate
+  baseRate
+}
+
+entity Coupon {
+  couponCode
+  discountAmount
+  expirationDate
+}
+
+' --- ASSOCIATIONS (ovales) ---
+usecase "(Est client de)" as ClientDe
+usecase "(Est destinataire de)" as DestinataireDe
+usecase "(Part de)" as PartDe
+usecase "(Arrive à)" as ArriveA
+usecase "(Contient)" as Contient
+usecase "(Règle)" as Regle
+usecase "(A pour historique)" as Historique
+usecase "(Utilise)" as Utilise
+usecase "(Bénéficie de)" as BeneficieDe
+usecase "(Gère)" as Gere
+usecase "(Est localisée à)" as LocaliseeA
+usecase "(Applique)" as Applique
+usecase "(Se trouve dans)" as SeTrouveDans
+usecase "(Fait partie de)" as FaitPartieDe
+usecase "(Possède)" as Possede
+
+' --- RELATIONSHIPS ---
+User "(1,1)" -- ClientDe : est client
+ClientDe -- "(0,n)" Envoi
+
+User "(1,1)" -- DestinataireDe : est destinataire
+DestinataireDe -- "(0,n)" Envoi
+
+Agency "(1,1)" -- PartDe : part de
+PartDe -- "(0,n)" Envoi
+
+Agency "(1,1)" -- ArriveA : arrive à
+ArriveA -- "(0,n)" Envoi
+
+Envoi "(1,1)" -- Contient : contient
+Contient -- "(1,n)" Parcel
+
+Envoi "(1,1)" -- Regle : est réglé par
+Regle -- "(1,1)" Payment
+
+Envoi "(1,1)" -- Historique : a pour historique
+Historique -- "(0,n)" TrackingEvent
+
+Envoi "(0,n)" -- Utilise : utilise
+Utilise -- "(0,1)" Transport
+
+Envoi "(0,n)" -- BeneficieDe : bénéficie de
+BeneficieDe -- "(0,1)" Coupon
+
+User "(0,n)" -r- Gere : gère
+Gere -- "(0,n)" Agency
+
+Agency "(1,1)" -l- LocaliseeA : est localisée à
+LocaliseeA -- "(1,1)" Address
+
+Agency "(0,n)" -- Applique : applique
+Applique -- "(1,1)" Tarifs
+
+Address "(1,n)" -- SeTrouveDans : se trouve dans
+SeTrouveDans -- "(1,1)" City
+
+City "(1,n)" -- FaitPartieDe : fait partie de
+FaitPartieDe -- "(1,1)" Country
+
+User "(1,1)" -l- Possede : possède
+Possede -l- "(0,n)" Address
+
+@enduml

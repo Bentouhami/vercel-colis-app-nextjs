@@ -17,7 +17,7 @@ interface ProtectedRouteProps {
 export default function ProtectedRoute({
                                            children,
                                            requiredRoles,
-                                           fallbackUrl = "/client/auth/login",
+                                           fallbackUrl = "/auth/login",
                                            showLoading = true,
                                        }: ProtectedRouteProps) {
     const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null)

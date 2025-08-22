@@ -30,14 +30,14 @@ export default function ResetPasswordForm() {
     useEffect(() => {
         if (!token) {
             toast.error("Lien invalide ou expiré")
-            router.replace("/client/auth/login")
+            router.replace("/auth/login")
             return
         }
 
         checkResetToken(token).then((isValid) => {
             if (!isValid) {
                 toast.error("Ce lien a expiré ou a déjà été utilisé.")
-                router.replace("/client/auth/login")
+                router.replace("/auth/login")
             } else {
                 setTokenValid(true)
             }
@@ -58,7 +58,7 @@ export default function ResetPasswordForm() {
             resetPassword(token, data.password)
                 .then(() => {
                     toast.success("Mot de passe mis à jour")
-                    setTimeout(() => router.replace("/client/auth/login"), 800)
+                    setTimeout(() => router.replace("/auth/login"), 800)
                 })
                 .catch((err) => toast.error(err.message || "Erreur inconnue"))
         })

@@ -1,3 +1,5 @@
+// src/components/navigations/header/HeaderWrapper.tsx
+
 "use client"
 
 import type { Session } from "next-auth"

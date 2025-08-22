@@ -1,0 +1,71 @@
+@startuml sequence_creation_envoi
+
+title Diagramme de Séquence - Création et Finalisation d'un Envoi
+
+actor "Utilisateur\n(Visiteur/Client)" as User
+participant "ColisApp (Système)" as App
+participant "Stripe (Service Externe)" as Stripe
+
+autonumber
+
+group Phase de Simulation (en tant que Visiteur)
+    User -> App: Demande de simulation (poids, dimensions, adresses)
+    activate App
+    App --> User: Affiche le tarif estimé
+    deactivate App
+end
+
+User -> App: Clique sur "Finaliser l'envoi"
+activate App
+note right of User
+  À cette étape, le système gère la **connexion**
+  ou l'**inscription** de l'utilisateur.
+  L'acteur devient "Client".
+end note
+
+group Phase de Finalisation (en tant que Client)
+    App -> User: Affiche le formulaire d'envoi complet
+    User -> App: Soumet les détails finaux (expéditeur, destinataire)
+    App --> User: Affiche le récapitulatif complet pour validation
+    deactivate App
+end
+
+User -> App: Clique sur "Procéder au paiement"
+activate App
+
+group Phase de Paiement (via Stripe)
+    App --> User: Redirige le navigateur vers l'interface de paiement Stripe
+    deactivate App
+
+    User -> Stripe: Saisit les informations de paiement et valide
+    activate Stripe
+
+    alt Scénario Nominal : Paiement Réussi
+        Stripe ->> App: **[Webhook]** Notifie le succès du paiement
+        activate App
+        note right of App
+          **Actions internes du système :**
+          1. Met à jour le statut de l'Envoi (ex: PENDING)
+          2. Met à jour le statut du Paiement (PAID)
+          3. Génère le N° de suivi et le QR code
+        end note
+        App --> User: Affiche la page de confirmation de commande
+        App -> User: Envoie l'email de confirmation (avec N° de suivi)
+        deactivate App
+
+    else Scénario Alternatif : Paiement Échoué
+        Stripe --> User: Affiche une erreur de paiement sur son interface
+        Stripe ->> App: **[Webhook]** Notifie l'échec du paiement
+        activate App
+        note right of App
+          **Action interne du système :**
+          Met à jour le statut de l'Envoi
+          (ex: PENDING_PAYMENT)
+        end note
+        App --> User: Affiche une page informant de l'échec
+        deactivate App
+    end
+    deactivate Stripe
+end
+
+@enduml

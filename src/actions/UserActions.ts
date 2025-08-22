@@ -1,21 +1,31 @@
-"use server"
+// src/actions/UserActions.ts
 
-import type { LoginUserDto } from "@/services/dtos/users/UserDto"
-import { loginUserSchema } from "@/utils/validationSchema"
-import { signIn } from "@/auth/auth"
-import { redirect } from "next/navigation"
+"use server";
 
+import type { LoginUserDto } from "@/services/dtos/users/UserDto";
+import { loginUserSchema } from "@/utils/validationSchema";
+import { signIn } from "@/auth/auth";
 
 const login = async (email: string, password: string, redirectUrl?: string) => {
-  if (!email || !password) {
-    return { error: "Veuillez fournir un email et un mot de passe." }
+  // ✅ Empêche l'exécution pendant le build Vercel
+  if (process.env.NEXT_PUBLIC_VERCEL_ENV) {
+    console.warn(
+      "⛔ Tentative d'authentification bloquée (environnement Vercel)."
+    );
+    return {
+      error: "Connexion temporairement désactivée sur cet environnement.",
+    };
   }
 
-  const loginData: LoginUserDto = { email, password }
-  const validated = loginUserSchema.safeParse(loginData)
+  if (!email || !password) {
+    return { error: "Veuillez fournir un email et un mot de passe." };
+  }
+
+  const loginData: LoginUserDto = { email, password };
+  const validated = loginUserSchema.safeParse(loginData);
 
   if (!validated.success) {
-    return { error: "Les données saisies sont invalides." }
+    return { error: "Les données saisies sont invalides." };
   }
 
   try {
@@ -24,29 +34,26 @@ const login = async (email: string, password: string, redirectUrl?: string) => {
       redirect: false,
       email: loginData.email.toLowerCase().trim(),
       password: loginData.password,
-    })
+    });
 
     if (result?.error) {
-      return { error: "Email ou mot de passe incorrect." }
+      return { error: "Email ou mot de passe incorrect." };
     }
-
-    // 🚀 Let middleware handle role-based redirects automatically
-    // Just redirect to root - middleware will redirect to appropriate dashboard
-    redirect(redirectUrl || "/")
+    return { success: true };
   } catch (error) {
     // If it's a redirect, let it propagate
     if (
-        typeof error === "object" &&
-        error !== null &&
-        "digest" in error &&
-        typeof error.digest === "string" &&
-        error.digest.startsWith("NEXT_REDIRECT")
+      typeof error === "object" &&
+      error !== null &&
+      "digest" in error &&
+      typeof error.digest === "string" &&
+      error.digest.startsWith("NEXT_REDIRECT")
     ) {
-      throw error
+      throw error;
     }
-    console.error("Login error:", error)
-    return { error: "Erreur inattendue lors de la connexion." }
+    console.error("Login error:", error);
+    return { error: "Erreur inattendue lors de la connexion." };
   }
-}
+};
 
-export { login }
+export { login };

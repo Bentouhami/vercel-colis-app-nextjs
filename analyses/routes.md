@@ -1,0 +1,102 @@
+<!-- Path: E:\TFE Project files\DEV\colisapp_project\analyses\routes.md -->
+
+# Project Routes
+
+## Page Routes
+
+* `/`
+* `/admin`
+* `/admin/agencies`
+* `/admin/agencies/new`
+* `/admin/agencies/[id]/edit`
+* `/admin/customers`
+* `/admin/envois`
+* `/admin/export`
+* `/admin/reports`
+* `/admin/settings`
+* `/admin/stats`
+* `/admin/users`
+* `/admin/users/new`
+* `/admin/users/[id]/edit`
+* `/auth/forgot-password`
+* `/auth/login`
+* `/auth/register`
+* `/auth/reset-password`
+* `/auth/verify-email`
+* `/client`
+* `/client/about`
+* `/client/contact-us`
+* `/client/envois/recapitulatif`
+* `/client/payment`
+* `/client/payment/payment-cancel`
+* `/client/payment/payment-success`
+* `/client/profile`
+* `/client/profile/appointments`
+* `/client/profile/appointments/book`
+* `/client/profile/deliveries`
+* `/client/profile/mes-destinataires`
+* `/client/profile/notifications`
+* `/client/profile/payments`
+* `/client/profile/settings`
+* `/client/services`
+* `/client/simulation`
+* `/client/simulation/ajouter-destinataire`
+* `/client/simulation/edit`
+* `/client/simulation/results`
+* `/client/tarifs`
+* `/client/tracking`
+* `/client/tracking/[trackingNum]`
+* `/client/unauthorized`
+
+## API Routes
+
+* `/api/auth/[...nextauth]`
+* `/api/auth/status`
+* `/api/auth/verify-credentials`
+* `/api/send-email`
+* `/api/v1/(auth)/check-reset-token`
+* `/api/v1/(auth)/forgot-password`
+* `/api/v1/(auth)/reset-password`
+* `/api/v1/addresses`
+* `/api/v1/addresses/[id]`
+* `/api/v1/admin/dashboard`
+* `/api/v1/agencies`
+* `/api/v1/agencies/admin-agencies`
+* `/api/v1/agencies/create-agency`
+* `/api/v1/agencies/findAgency`
+* `/api/v1/agencies/get-agency-by-id`
+* `/api/v1/agencies/get-agency-by-id/[id]`
+* `/api/v1/agencies/light`
+* `/api/v1/agencies/summary`
+* `/api/v1/agencies/update-agency`
+* `/api/v1/agencies/[agency]`
+* `/api/v1/cities`
+* `/api/v1/cities/[countryId]`
+* `/api/v1/contact`
+* `/api/v1/countries/all`
+* `/api/v1/countries`
+* `/api/v1/dashboard/super-admin`
+* `/api/v1/envois/cancel`
+* `/api/v1/envois/user/[userId]`
+* `/api/v1/envois/[id]`
+* `/api/v1/payment`
+* `/api/v1/payment/complete-payment`
+* `/api/v1/simulations`
+* `/api/v1/simulations/delete-cookies`
+* `/api/v1/simulations/edit`
+* `/api/v1/simulations/[id]`
+* `/api/v1/tarifs`
+* `/api/v1/tracking`
+* `/api/v1/tracking/[trackingNumber]`
+* `/api/v1/transports`
+* `/api/v1/users`
+* `/api/v1/users/appointments/book`
+* `/api/v1/users/appointments/envoi-paye`
+* `/api/v1/users/destinataires`
+* `/api/v1/users/list`
+* `/api/v1/users/login`
+* `/api/v1/users/logout`
+* `/api/v1/users/register`
+* `/api/v1/users/verify`
+* `/api/v1/users/[id]`
+* `/api/v1/users/[id]/profile`

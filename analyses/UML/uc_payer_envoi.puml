@@ -1,0 +1,40 @@
+@startuml uc_payer_envoi
+
+title Diagramme Détaillé - UC: Payer l'envoi via Stripe
+
+
+actor Client
+actor Stripe <<système externe>>
+
+rectangle "Système ColisApp" {
+  usecase "Payer l'envoi" as UC_Pay
+
+  ' Cas inclus
+  usecase "Créer une session de paiement Stripe" as UC_CreateSession
+  usecase "Rediriger vers Stripe" as UC_Redirect
+  usecase "Traiter le résultat du paiement" as UC_HandleResult
+  usecase "Mettre à jour le statut de l'envoi" as UC_UpdateStatus
+
+  ' Cas étendu
+  usecase "Recevoir la confirmation de l'envoi" as UC_Confirm
+}
+
+' L'acteur principal initie le paiement
+Client -down- UC_Pay
+
+' Le paiement interagit avec le système externe Stripe
+UC_Pay -up- Stripe
+
+' Le cas principal inclut plusieurs étapes techniques
+UC_Pay .down.> UC_CreateSession : <<include>>
+UC_Pay .down.> UC_Redirect : <<include>>
+UC_Pay .> UC_HandleResult : <<include>>
+
+' Le traitement du résultat inclut la mise à jour du statut
+UC_HandleResult .> UC_UpdateStatus : <<include>>
+
+' Un paiement réussi étend le cas pour déclencher la confirmation
+UC_Pay <.down. UC_Confirm : <<extend>>
+note on link: En cas de succès
+
+@enduml

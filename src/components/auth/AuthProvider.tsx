@@ -1,3 +1,5 @@
+// src/components/auth/AuthProvider.tsx
+
 "use client"
 
 import type React from "react"
@@ -5,7 +7,7 @@ import { createContext, useContext, useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter, usePathname } from "next/navigation"
 import type { RoleDto } from "@/services/dtos"
-import {getRoleRedirectUrl, isAdminRole, isClientRole} from "@/lib/auth-utils";
+import { getRoleRedirectUrl, isAdminRole, isClientRole } from "@/lib/auth-utils";
 
 
 interface User {
@@ -47,7 +49,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     // Check if current path is a public route that doesn't require auth
     const isPublicAuthRoute =
-        pathname?.startsWith("/client/auth/") ||
+        pathname?.startsWith("/auth/") ||
         pathname === "/" ||
         pathname?.startsWith("/client/about") ||
         pathname?.startsWith("/client/services") ||
@@ -60,7 +62,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             setUser(session.user as User)
 
             // Handle role-based redirects for authenticated users on auth pages
-            if (pathname?.startsWith("/client/auth/") && session.user.role) {
+            if (pathname?.startsWith("/auth/") && session.user.role) {
                 const redirectUrl = getRoleRedirectUrl(session.user.role as RoleDto)
                 router.push(redirectUrl)
             }
@@ -69,7 +71,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
             // Only redirect to login if not on a public route
             if (!isPublicAuthRoute) {
-                const loginUrl = `/client/auth/login${pathname ? `?redirect=${encodeURIComponent(pathname)}` : ""}`
+                const loginUrl = `/auth/login${pathname ? `?redirect=${encodeURIComponent(pathname)}` : ""}`
                 router.push(loginUrl)
             }
         }

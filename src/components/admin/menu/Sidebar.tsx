@@ -21,6 +21,7 @@ import {
     Settings,
     Sun,
     Users,
+    X,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -49,7 +50,6 @@ const Sidebar = ({ session }: SidebarProps) => {
     const [isCollapsed, setIsCollapsed] = useState(false)
     const [isMobileOpen, setIsMobileOpen] = useState(false)
     const [mounted, setMounted] = useState(false)
-
     const pathname = usePathname()
     const { theme, setTheme } = useTheme()
     const router = useRouter()
@@ -144,7 +144,7 @@ const Sidebar = ({ session }: SidebarProps) => {
     ]
 
     const handleSignOut = async () => {
-        await signOut({ redirectTo: "/client/auth/login" })
+        await signOut({ redirectTo: "/auth/login" })
     }
 
     const getRoleDisplayName = (role: RoleDto) => {
@@ -169,88 +169,127 @@ const Sidebar = ({ session }: SidebarProps) => {
 
     return (
         <div>
-            {/* Mobile Navbar */}
-            <div className="md:hidden fixed top-0 left-0 w-full bg-background z-50 border-b px-4 py-3 flex items-center justify-between backdrop-blur-lg bg-opacity-90">
-                <Button variant="ghost" size="icon" onClick={toggleMobileSidebar} className="hover:bg-secondary">
-                    <Menu size={20} />
-                </Button>
-                <div className="flex items-center space-x-4">
-                    <Link href="/">
-                        <h1 className="font-bold text-xl bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                            Colis App Gestion
+            {/* Mobile Header */}
+            <div className="lg:hidden fixed top-0 left-0 w-full bg-background/95 backdrop-blur-lg z-50 border-b shadow-sm">
+                <div className="px-4 py-3 flex items-center justify-between">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={toggleMobileSidebar}
+                        className="hover:bg-secondary transition-colors duration-200"
+                    >
+                        <Menu size={20} />
+                    </Button>
+
+                    <Link href="/admin" className="animate-in zoom-in duration-300">
+                        <h1 className="font-bold text-lg bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                            ColisApp Admin
                         </h1>
                     </Link>
+
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="relative">
+                                <Bell size={20} />
+                                <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full animate-pulse"></span>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-64">
+                            <DropdownMenuItem>
+                                <span>Nouvelle notification</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                            <Bell size={20} />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-64">
-                        <DropdownMenuItem>
-                            <span>New notification</span>
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
             </div>
 
-            {/* Desktop Sidebar */}
+            {/* Desktop/Mobile Sidebar */}
             <div
                 className={cn(
-                    "fixed md:relative z-40 h-screen border-r bg-background/60 backdrop-blur-xl",
+                    "fixed lg:relative z-40 h-screen border-r bg-background/95 backdrop-blur-xl shadow-xl lg:shadow-none",
                     "transition-all duration-300 ease-in-out",
                     isCollapsed ? "w-20" : "w-72",
-                    isMobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
+                    isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
                     "flex flex-col",
                 )}
             >
                 {/* Sidebar Header */}
-                <div className="p-6 flex justify-between items-center border-b">
+                <div className="p-6 flex justify-between items-center border-b bg-gradient-to-r from-primary/5 to-primary/10">
                     <div
                         className={cn(
                             "flex items-center space-x-3 transition-all duration-300",
                             isCollapsed && "opacity-0 w-0 hidden",
                         )}
                     >
-                        <Link href="/">
+                        <Link href="/admin" className="animate-in zoom-in duration-300">
                             <h1 className="font-bold text-xl bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                                Colis App Gestion
+                                ColisApp Admin
                             </h1>
                         </Link>
                     </div>
-                    <Button variant="ghost" size="icon" onClick={toggleSidebar} className="hidden md:flex hover:bg-secondary">
-                        {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
-                    </Button>
+
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={toggleSidebar}
+                            className="hidden lg:flex hover:bg-secondary transition-all duration-200 hover:scale-110"
+                        >
+                            {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+                        </Button>
+
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={toggleMobileSidebar}
+                            className="lg:hidden hover:bg-secondary transition-all duration-200"
+                        >
+                            <X size={16} />
+                        </Button>
+                    </div>
                 </div>
 
                 {/* User Profile Section */}
-                <div className={cn("p-6 border-b", isCollapsed ? "flex justify-center" : "")}>
+                <div
+                    className={cn(
+                        "p-6 border-b bg-gradient-to-r from-secondary/20 to-secondary/10",
+                        isCollapsed ? "flex justify-center" : "",
+                    )}
+                >
                     {session ? (
-                        <div className={cn("flex items-center space-x-4", isCollapsed && "flex-col space-x-0 space-y-2")}>
-                            <Avatar className="h-10 w-10 border-2 border-primary/20">
+                        <div
+                            className={cn(
+                                "flex items-center space-x-4 animate-in slide-in-from-left-4 duration-500",
+                                isCollapsed && "flex-col space-x-0 space-y-2",
+                            )}
+                        >
+                            <Avatar className="h-12 w-12 border-2 border-primary/20 shadow-lg transition-all duration-300 hover:scale-110">
                                 <AvatarImage src={session.user.image || undefined} />
-                                <AvatarFallback>{session.user.name?.[0] || "U"}</AvatarFallback>
+                                <AvatarFallback className="bg-gradient-to-br from-primary to-primary/60 text-white font-bold">
+                                    {session.user.name?.[0] || "U"}
+                                </AvatarFallback>
                             </Avatar>
                             {!isCollapsed && (
                                 <div className="space-y-1">
-                                    <h2 className="text-sm font-semibold">{session.user.name || "User"}</h2>
-                                    <p className="text-xs text-muted-foreground">{session.user.email?.toLowerCase()}</p>
-                                    <p className="text-xs text-muted-foreground capitalize">
-                                        {getRoleDisplayName(session.user.role as RoleDto)}
+                                    <h2 className="text-sm font-semibold text-foreground">{session.user.name || "User"}</h2>
+                                    <p className="text-xs text-muted-foreground truncate max-w-[180px]">
+                                        {session.user.email?.toLowerCase()}
                                     </p>
+                                    <div className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                                        {getRoleDisplayName(session.user.role as RoleDto)}
+                                    </div>
                                 </div>
                             )}
                         </div>
                     ) : (
                         <div className={cn("flex items-center space-x-4", isCollapsed && "flex-col space-x-0 space-y-2")}>
-                            <div className="h-10 w-10 flex items-center justify-center rounded-full bg-primary/10">
+                            <div className="h-12 w-12 flex items-center justify-center rounded-full bg-primary/10 border-2 border-primary/20">
                                 <LogIn size={20} className="text-primary" />
                             </div>
                             {!isCollapsed && (
                                 <div className="space-y-1">
-                                    <h2 className="text-sm font-semibold">Welcome!</h2>
-                                    <p className="text-xs text-muted-foreground">Please log in to continue.</p>
+                                    <h2 className="text-sm font-semibold">Bienvenue!</h2>
+                                    <p className="text-xs text-muted-foreground">Veuillez vous connecter.</p>
                                 </div>
                             )}
                         </div>
@@ -259,91 +298,117 @@ const Sidebar = ({ session }: SidebarProps) => {
 
                 {/* Navigation Links */}
                 {session?.user?.role && (
-                    <nav className="flex-1 p-4 space-y-1 overflow-y-auto scrollbar-none">
-                        {finalMenuItems.map((item) => {
+                    <nav className="flex-1 p-4 space-y-2 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
+                        {finalMenuItems.map((item, index) => {
                             const Icon = item.icon
                             const isActive = item.path === "/admin" ? pathname === item.path : pathname.startsWith(item.path)
-
                             return (
-                                <Link key={item.name} href={item.path} onClick={toggleMobileSidebar}>
-                                    <Button
-                                        variant={isActive ? "active_primary" : "ghost"}
-                                        className={cn(
-                                            "w-full group relative",
-                                            isCollapsed ? "justify-center" : "justify-start",
-                                            "transition-all duration-200",
-                                            isActive && "font-semibold",
-                                        )}
-                                    >
-                                        <Icon
-                                            size={20}
+                                <div
+                                    key={item.name}
+                                    className="animate-in slide-in-from-left-4 duration-500"
+                                    style={{ animationDelay: `${index * 50}ms` }}
+                                >
+                                    <Link href={item.path} onClick={toggleMobileSidebar}>
+                                        <Button
+                                            variant={isActive ? "default" : "ghost"}
                                             className={cn(
-                                                "transition-transform duration-200",
-                                                isActive ? "" : "text-muted-foreground",
-                                                "group-hover:scale-110",
+                                                "w-full group relative transition-all duration-300",
+                                                isCollapsed ? "justify-center px-2" : "justify-start px-4",
+                                                isActive
+                                                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25 scale-105"
+                                                    : "hover:bg-secondary/80 hover:scale-105 hover:shadow-md",
+                                                "mb-1",
                                             )}
-                                        />
-                                        {!isCollapsed && <span className="ml-3">{item.name}</span>}
-                                    </Button>
-                                </Link>
+                                        >
+                                            <Icon
+                                                size={20}
+                                                className={cn(
+                                                    "transition-all duration-300",
+                                                    isActive ? "text-primary-foreground" : "text-muted-foreground group-hover:text-foreground",
+                                                    "group-hover:scale-110",
+                                                )}
+                                            />
+                                            {!isCollapsed && (
+                                                <span className="ml-3 font-medium transition-all duration-300">{item.name}</span>
+                                            )}
+                                            {isActive && !isCollapsed && (
+                                                <div className="absolute right-2 w-2 h-2 bg-primary-foreground rounded-full animate-pulse" />
+                                            )}
+                                        </Button>
+                                    </Link>
+                                </div>
                             )
                         })}
                     </nav>
                 )}
 
-                {/* Theme Toggle & Logout */}
-                <div className="p-4 border-t space-y-4">
+                {/* Theme Toggle & Settings */}
+                <div className="p-4 border-t space-y-3 bg-gradient-to-r from-secondary/10 to-secondary/5">
+                    {/* Theme Selector */}
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className={cn("w-full", isCollapsed ? "justify-center" : "justify-start")}>
-                                {theme === "dark" ? <Moon size={20} /> : theme === "light" ? <Sun size={20} /> : <Laptop size={20} />}
-                                {!isCollapsed && <span className="ml-3">Theme</span>}
+                            <Button
+                                variant="ghost"
+                                className={cn(
+                                    "w-full transition-all duration-300 hover:bg-secondary/80 hover:scale-105",
+                                    isCollapsed ? "justify-center px-2" : "justify-start px-4",
+                                )}
+                            >
+                                <div className="flex items-center">
+                                    {theme === "dark" ? <Moon size={20} /> : theme === "light" ? <Sun size={20} /> : <Laptop size={20} />}
+                                    {!isCollapsed && <span className="ml-3 font-medium">Thème</span>}
+                                </div>
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align={isCollapsed ? "center" : "start"}>
+                        <DropdownMenuContent align={isCollapsed ? "center" : "start"} className="w-48">
                             {themeOptions.map((option) => {
                                 const Icon = option.icon
                                 return (
                                     <DropdownMenuItem
                                         key={option.value}
                                         onClick={() => setTheme(option.value)}
-                                        className="cursor-pointer"
+                                        className="cursor-pointer transition-colors duration-200"
                                     >
                                         <Icon size={16} className="mr-2" />
                                         <span>{option.label}</span>
+                                        {theme === option.value && <div className="ml-auto w-2 h-2 bg-primary rounded-full" />}
                                     </DropdownMenuItem>
                                 )
                             })}
                         </DropdownMenuContent>
                     </DropdownMenu>
 
-                    <div>
-                        <ThemeColorSelector />
-                    </div>
+                    {/* Color Theme Selector */}
+                    {!isCollapsed && (
+                        <div className="animate-in fade-in duration-300">
+                            <ThemeColorSelector />
+                        </div>
+                    )}
 
+                    {/* Logout Button */}
                     {session ? (
                         <Button
                             variant="ghost"
                             className={cn(
-                                "w-full hover:bg-destructive/10 hover:text-destructive",
-                                isCollapsed ? "justify-center" : "justify-start",
+                                "w-full hover:bg-destructive/10 hover:text-destructive transition-all duration-300 hover:scale-105",
+                                isCollapsed ? "justify-center px-2" : "justify-start px-4",
                             )}
                             onClick={handleSignOut}
                         >
                             <LogOut size={20} />
-                            {!isCollapsed && <span className="ml-3">Logout</span>}
+                            {!isCollapsed && <span className="ml-3 font-medium">Déconnexion</span>}
                         </Button>
                     ) : (
                         <Button
                             variant="ghost"
                             className={cn(
-                                "w-full hover:bg-primary/10 hover:text-primary",
-                                isCollapsed ? "justify-center" : "justify-start",
+                                "w-full hover:bg-primary/10 hover:text-primary transition-all duration-300 hover:scale-105",
+                                isCollapsed ? "justify-center px-2" : "justify-start px-4",
                             )}
-                            onClick={() => router.push("/client/auth/login")}
+                            onClick={() => router.push("/auth/login")}
                         >
                             <LogIn size={20} />
-                            {!isCollapsed && <span className="ml-3">Log in</span>}
+                            {!isCollapsed && <span className="ml-3 font-medium">Connexion</span>}
                         </Button>
                     )}
                 </div>
@@ -351,7 +416,10 @@ const Sidebar = ({ session }: SidebarProps) => {
 
             {/* Mobile Overlay */}
             {isMobileOpen && (
-                <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-30 md:hidden" onClick={toggleMobileSidebar} />
+                <div
+                    className="fixed inset-0 bg-background/80 backdrop-blur-sm z-30 lg:hidden animate-in fade-in duration-300"
+                    onClick={toggleMobileSidebar}
+                />
             )}
         </div>
     )

@@ -1,3 +1,5 @@
+// src/components/client-specific/profile/ProfileSideMenu.tsx
+
 "use client"
 
 import React from "react"
@@ -22,10 +24,11 @@ const menuItems = [
         description: "Informations personnelles",
     },
     {
-        label: "Mes Adresses",
-        href: "/client/profile/addresses",
+        label: "Mes Destinataires",
+        href: "/client/profile/mes-destinataires",
         icon: MapPin,
-        description: "Gérer mes adresses",
+        description: "Gérer mes destinataires",
+        badge: "Nouveau",
     },
     {
         label: "Mes Envois",

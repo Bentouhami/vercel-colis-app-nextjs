@@ -1,0 +1,339 @@
+@startuml MLD_ColisApp
+!theme vibrant
+title MLD ColisApp - Modèle Logique de Données
+
+entity User {
+  + id: Int <<PK>>
+  --
+  firstName: VARCHAR(255)
+  lastName: VARCHAR(255)
+  email: VARCHAR(255) <<Unique>>
+  phoneNumber: VARCHAR(20)
+  password: VARCHAR(255)
+  role: VARCHAR(50) ' Enum: CLIENT, SUPER_ADMIN, DESTINATAIRE, AGENCY_ADMIN, ACCOUNTANT
+  isVerified: BOOLEAN
+  isEnterprise: BOOLEAN
+  birthDate: DATE
+}
+
+entity Account {
+  + id: Int <<PK>>
+  --
+  type: VARCHAR(255)
+  provider: VARCHAR(255)
+  providerAccountId: VARCHAR(255)
+  refresh_token: TEXT
+  access_token: TEXT
+  userId: Int <<FK>>
+}
+
+entity Session {
+  + id: Int <<PK>>
+  --
+  sessionToken: VARCHAR(255) <<Unique>>
+  expires: DATETIME
+  userId: Int <<FK>>
+}
+
+entity PasswordResetToken {
+  + id: Int <<PK>>
+  --
+  token: VARCHAR(255) <<Unique>>
+  expiresAt: DATETIME
+  userId: Int <<FK>>
+}
+
+entity Address {
+  + id: Int <<PK>>
+  --
+  street: VARCHAR(255)
+  complement: VARCHAR(255)
+  streetNumber: VARCHAR(10)
+  boxNumber: VARCHAR(10)
+  cityId: Int <<FK>>
+}
+
+entity City {
+  + id: Int <<PK>>
+  --
+  name: VARCHAR(255)
+  latitude: DECIMAL(10,7)
+  longitude: DECIMAL(10,7)
+  countryId: Int <<FK>>
+}
+
+entity Country {
+  + id: Int <<PK>>
+  --
+  name: VARCHAR(255)
+  iso2: VARCHAR(2) <<Unique>>
+  iso3: VARCHAR(3) <<Unique>>
+  phonecode: VARCHAR(10)
+  capital: VARCHAR(255)
+  currency: VARCHAR(10)
+}
+
+entity Timezone {
+  + id: Int <<PK>>
+  --
+  zoneName: VARCHAR(255)
+  gmtOffset: INTEGER
+  abbreviation: VARCHAR(10)
+  countryId: Int <<FK>>
+}
+
+entity VatRate {
+  + id: Int <<PK>>
+  --
+  vatPercent: DECIMAL(5,2)
+  vatType: VARCHAR(50) ' Enum: REDUCED, STANDARD, EXEMPT
+  countryId: Int <<FK>>
+}
+
+entity Agency {
+  + id: Int <<PK>>
+  --
+  name: VARCHAR(255)
+  location: VARCHAR(255)
+  phoneNumber: VARCHAR(20)
+  email: VARCHAR(255)
+  vatNumber: VARCHAR(50)
+  capacity: INTEGER
+  availableSlots: INTEGER
+  createdById: Int <<FK>>
+  addressId: Int <<FK>>
+}
+
+entity ActivityLog {
+  + id: Int <<PK>>
+  --
+  activityType: VARCHAR(50) ' Enum: AGENCY_CREATED, AGENCY_UPDATED, CLIENT_LINKED, ENVOI_CREATED, PAYMENT_CREATED
+  details: TEXT
+  staffRole: VARCHAR(50)
+  userId: Int <<FK>>
+  agencyId: Int <<FK>>
+}
+
+entity Envoi {
+  + id: Int <<PK>>
+  --
+  trackingNumber: VARCHAR(255) <<Unique>>
+  qrCodeUrl: VARCHAR(255)
+  simulationStatus: VARCHAR(50) ' Enum: DRAFT, CONFIRMED, COMPLETED, CANCELLED
+  envoiStatus: VARCHAR(50) ' Enum: PENDING, SENT, DELIVERED, CANCELLED, RETURNED
+  totalWeight: DECIMAL(10,2)
+  totalVolume: DECIMAL(10,2)
+  totalPrice: DECIMAL(10,2)
+  paid: BOOLEAN
+  departureDate: DATETIME
+  arrivalDate: DATETIME
+  comment: TEXT
+  senderId: Int <<FK>>
+  receiverId: Int <<FK>>
+  departureAgencyId: Int <<FK>>
+  arrivalAgencyId: Int <<FK>>
+  transportId: Int <<FK>>
+}
+
+entity Parcel {
+  + id: Int <<PK>>
+  --
+  height: DECIMAL(10,2)
+  weight: DECIMAL(10,2)
+  width: DECIMAL(10,2)
+  length: DECIMAL(10,2)
+  envoiId: Int <<FK>>
+}
+
+entity Payment {
+  + id: Int <<PK>>
+  --
+  method: VARCHAR(50) ' Enum: CARD, CASH
+  status: VARCHAR(50) ' Enum: PENDING, PAID, FAILED
+  amount: DECIMAL(10,2)
+  transactionId: VARCHAR(255)
+  envoiId: Int <<FK>> <<Unique>> ' Assuming 1-1 with Envoi
+}
+
+entity TrackingEvent {
+  + id: Int <<PK>>
+  --
+  eventStatus: VARCHAR(50) ' Enum: CREATED, COLLECTED, IN_TRANSIT, ARRIVED_AT_AGENCY, OUT_FOR_DELIVERY, DELIVERED, FAILED
+  location: VARCHAR(255)
+  description: TEXT
+  envoiId: Int <<FK>>
+}
+
+entity Transport {
+  + id: Int <<PK>>
+  --
+  number: VARCHAR(50)
+  baseVolume: DECIMAL(10,2)
+  baseWeight: DECIMAL(10,2)
+  currentVolume: DECIMAL(10,2)
+  currentWeight: DECIMAL(10,2)
+  isAvailable: BOOLEAN
+  agencyId: Int <<FK>>
+}
+
+entity TransportSchedule {
+  + id: Int <<PK>>
+  --
+  departureDate: DATETIME
+  arrivalDate: DATETIME
+  isHoliday: BOOLEAN
+  transportId: Int <<FK>>
+}
+
+entity Appointment {
+  + id: Int <<PK>>
+  --
+  date: DATETIME
+  status: VARCHAR(50) ' Enum: PENDING, CONFIRMED, CANCELLED, RESCHEDULED, COMPLETED, MISSED, IN_PROGRESS
+  envoiId: Int <<FK>>
+  agencyId: Int <<FK>>
+}
+
+entity Tarifs {
+  + id: Int <<PK>>
+  --
+  weightRate: DECIMAL(10,2)
+  volumeRate: DECIMAL(10,2)
+  baseRate: DECIMAL(10,2)
+  fixedRate: DECIMAL(10,2)
+  agencyId: Int <<FK>>
+}
+
+entity Coupon {
+  + id: Int <<PK>>
+  --
+  couponCode: VARCHAR(50) <<Unique>>
+  discountAmount: DECIMAL(10,2)
+  discountPercentage: DECIMAL(5,2)
+  numberOfUses: INTEGER
+  startDate: DATETIME
+  expirationDate: DATETIME
+}
+
+entity Notification {
+  + id: Int <<PK>>
+  --
+  message: TEXT
+  isRead: BOOLEAN
+  userId: Int <<FK>>
+  envoiId: Int <<FK>>
+  agencyId: Int <<FK>>
+}
+
+entity Authenticator {
+  + id: Int <<PK>>
+  --
+  credentialID: VARCHAR(255) <<Unique>>
+  credentialPublicKey: TEXT
+  counter: INTEGER
+  userId: Int <<FK>>
+}
+
+' Associative Entities / Junction Tables
+entity UserAddress {
+  + userId: Int <<PK>> <<FK>>
+  + addressId: Int <<PK>> <<FK>>
+  --
+  addressType: VARCHAR(50) ' Enum: HOME, OFFICE, BILLING, SHIPPING, OTHER
+  createdAt: DATETIME
+  updatedAt: DATETIME
+  isDeleted: BOOLEAN
+}
+
+entity AgencyClient {
+  + userId: Int <<PK>> <<FK>>
+  + agencyId: Int <<PK>> <<FK>>
+  --
+  createdAt: DATETIME
+}
+
+entity UserCoupon {
+  + userId: Int <<PK>> <<FK>>
+  + couponId: Int <<PK>> <<FK>>
+  --
+  ' No specific attributes for this association
+}
+
+entity EnvoiCoupon {
+  + envoiId: Int <<PK>> <<FK>>
+  + couponId: Int <<PK>> <<FK>>
+  --
+  ' No specific attributes for this association
+}
+
+entity ClientDestinataire {
+  + id: Int <<PK>>
+  --
+  clientId: Int <<FK>>
+  destinataireId: Int <<FK>>
+  createdAt: DATETIME
+}
+
+entity AgencyStaff {
+  + id: Int <<PK>>
+  --
+  userId: Int <<FK>>
+  agencyId: Int <<FK>>
+  staffRole: VARCHAR(50)
+}
+
+' Relationships (Foreign Keys) with labels and classic cardinalities
+User "1" -- "0,n" Account : a pour compte
+User "1" -- "0,n" Session : a pour session
+User "1" -- "0,n" PasswordResetToken : a pour token de réinitialisation
+User "1" -- "0,n" Authenticator : a pour authentificateur
+
+User "1,n" -- "0,n" UserAddress : habite à
+Address "0,n" -- "1,n" UserAddress : est une adresse de
+
+Address "1,n" -- "1" City : se trouve dans
+City "1,n" -- "1" Country : fait partie de
+Country "1" -- "0,n" Timezone : a pour fuseau horaire
+Country "1" -- "0,n" VatRate : applique TVA
+
+User "0,1" -- "0,n" Agency : crée
+User "0,n" -- "0,n" AgencyClient : est client de
+Agency "0,n" -- "0,n" AgencyClient : a pour client
+
+User "0,n" -- "0,n" ClientDestinataire : est client/destinataire de
+ClientDestinataire "0,n" -- "0,n" User : a pour client/destinataire
+
+User "0,n" -- "0,n" AgencyStaff : est membre du personnel
+AgencyStaff "0,n" -- "0,n" Agency : a pour agence
+
+User "0,1" -- "0,n" ActivityLog : effectue activité
+Agency "0,1" -- "0,n" ActivityLog : concerne activité
+
+User "1" -- "0,n" Envoi : envoie
+User "1" -- "0,n" Envoi : reçoit
+Agency "1" -- "0,n" Envoi : part de
+Agency "1" -- "0,n" Envoi : arrive à
+Envoi "0,n" -- "0,1" Transport : utilise
+
+Envoi "1" -- "1,n" Parcel : contient
+Envoi "1" -- "0,1" Payment : règle
+Envoi "1" -- "0,n" TrackingEvent : a pour historique
+Envoi "1" -- "0,1" Appointment : a rendez-vous
+Agency "1" -- "0,1" Appointment : gère rendez-vous
+
+User "0,n" -- "0,n" UserCoupon : bénéficie
+Coupon "0,n" -- "0,n" UserCoupon : est bénéficié par
+
+Envoi "0,n" -- "0,n" EnvoiCoupon : utilise
+Coupon "0,n" -- "0,n" EnvoiCoupon : est utilisé par
+
+User "0,1" -- "0,n" Notification : reçoit
+Envoi "1" -- "0,n" Notification : concerne envoi
+Agency "1" -- "0,n" Notification : concerne agence
+
+Agency "1" -- "1" Address : localisée à
+Agency "0,1" -- "1,n" Tarifs : applique
+Agency "0,1" -- "0,n" Transport : gère
+Transport "1" -- "0,n" TransportSchedule : a pour planning
+
+@enduml

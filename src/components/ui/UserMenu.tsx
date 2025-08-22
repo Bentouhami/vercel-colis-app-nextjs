@@ -20,13 +20,13 @@ export default function UserMenu() {
     if (!isAuthenticated || !user) {
         return (
             <Button asChild variant="outline">
-                <Link href="/client/auth/login">Se connecter</Link>
+                <Link href="/auth/login">Se connecter</Link>
             </Button>
         )
     }
 
     const handleSignOut = async () => {
-        await signOut({ callbackUrl: "/client/auth/login" })
+        await signOut({ callbackUrl: "/auth/login" })
     }
 
     const getInitials = () => {

@@ -1,0 +1,61 @@
+﻿UE : 1110
+
+Code UE : 71 11 01 U32 D2
+
+Unité Epreuve Intégrée : OuiNom et prénom de l’étudiant.e : Titre de l’EI :
+Date de la présentation :
+
+SEUIL DE REUSSITE : ACQUIS D’APPRENTISSAGE
+Si tous les acquis d’apprentissage sont atteints, la note attribuée est de 50%. Les acquis d’apprentissage sont acquis à condition que, pour AA1, au moins 2 critères soient atteints, au moins 5 pour AA2, au moins 3 pour AA3, au moins 2 pour AA4, au moins 3 pour AA5 et au moins 3 pour AA6.  Acquis / Non acquisPour atteindre le seuil de réussite, l’étudiant sera capable à partir d’un projet initié dans l’entreprise en s’appuyant sur ses différents stages
+et/ou à partir d’un nouveau cahier des charges d’un projet réel d’entreprise, dans le respect des normes en vigueur, des consignes complémentaires données et des aspects de la démarche qualité :AA1 : de mettre en œuvre une recherche cohérente sur un sujet validé par le chargé de cours Acquis / Non acquisCritère 1 : Présenter la problématique de manière pertinente (pourquoi est-il important d’étudier ce problème)
+            et critique (présenter les différents points de vue et questionner les évidences)	Atteint / Non atteint Critère 2 : Présenter une étude de l’existant (à l’aide d’une revue de la littérature ou d’une compilation
+            des solutions proposées par les principaux acteurs du marché)	 Atteint / Pas atteint Critère 3 : Justifier le choix de la mise en œuvre d’une solution (expliquer le choix et l’argumenter)	Atteint / Pas atteintAA2 : d’en rédiger un rapport circonstancié mettant en évidence sa maîtrise de l’analyse, de l’implémentation de la base de données si nécessaire et du développement réalisé ainsi que de leur cohérence, Acquis / Non acquisCritère 1 : Présenter, selon la problématique choisie, l’analyse :
+            utiliser les techniques de modélisation adéquates en respectant la notation propre à ces méthodes	Atteint / Non atteint Critère 2 : Présenter selon la problématique choisie, le développement :
+            présenter des extraits de codes significatifs accompagnés d’explications, et éventuellement d’algorithmes Atteint / Non atteint Critère 3 : Présenter, selon la problématique choisie, I’implémentation :
+            présenter l’intégration de l’application dans les environnements techniques	Atteint / Non atteint Critère 4 : Présenter, selon la problématique choisie, la base de données :
+            présenter les techniques de persistance de données mises en œuvre	Atteint / Non atteint Critère 5 : Présenter, selon la problématique choisie et s’il échet, le réseau et télécommunication :
+            présenter de manière explicite la solution réseau choisie	 Atteint / Pas atteint Critère 6 : Respecter, le cas échéant, aux normes de sécurité informatique et à l’état de l’art en cette matière	Atteint / Pas atteint
+Critère 7 : Rédiger en utilisant un vocabulaire professionnel précis et en respectant les conventions
+des langages de programmation et d’environnements techniques	Atteint / Pas atteintAA3 : d’en rédiger un rapport circonstancié mettant en évidence sa capacité de réfléchir sur les difficultés rencontrées lors des différentes étapes du travail Acquis / Non acquisCritère 1 : Identifier les difficultés rencontrées lors des différentes étapes du travail	Atteint / Pas atteint
+Critère 2 : Analyser de manière critique les difficultés rencontrées	Atteint / Pas atteint
+Critère 3 : Proposer des solutions appropriées aux solutions rencontrées	Atteint / Pas atteint
+Critère 4 : Justifier les choix technologiques opérés	Atteint / Pas atteintAA4 : d’évaluer, s’il échet, financièrement le projet présentéCritère 1 : Evaluer budgétairement les ressources matérielles nécessaires à la réalisation du projet	Atteint / Pas atteint Critère 2 : Evaluer budgétairement les ressources humaines nécessaires à la réalisation du projet	 Atteint / Pas atteint Critère 3 : Présenter un planning simplifié en utilisant les outils adéquats (diagramme de Gantt ou
+Tableau Excel)	Atteint / Pas atteint
+Critère 4 : Présenter les éléments du Business Model dans lequel le projet s’inscrit
+(Exemple : proposition de valeur)	Atteint / Pas atteintAA5 : de défendre oralement son rapport en utilisant des techniques de communication adéquates Acquis / Non acquisCritère 1 : Présenter un exposé oral structuré et clair	Atteint / Pas atteint
+Critère 2 : Illustrer l’exposé à l’aide d’un support	Atteint / Pas atteint
+Critère 3 : Respecter le temps imparti	Atteint / Pas atteint
+Critère 4 : Répondre de manière claire et pertinente aux questions du jury	Atteint / Pas atteintAA6 : de présenter un dossier respectant les consignes du chargé de cours Acquis / Non acquisCritère 1 : Respecter un plan structuré (introduction, cahier des charges, analyse fonctionnelle,
+             analyse technique, implémentation, conclusion, bibliographie et annexes)		Atteint / Pas atteint Critère 2 : Présenter des illustrations (figures, schémas, graphiques, diagrammes et tableaux)	 Atteint / Pas atteint Critère 4 : Respecter les rendez-vous de la feuille de route	Atteint / Pas atteint
+Critère 5 : Respecter les confidentialités nécessaires	Atteint / Pas atteintSeuil de réussite atteint ?Oui - Non
+DEGRE DE MAITRISE
+Le degré de maîtrise est la note entre 50 et 100 % attribuée à l’UE lorsque tous les AA sont atteints%Pour la détermination du degré de maîtrise, il sera tenu compte des critères suivants :La précision et la clarté de l’expression orale et écrite,
+1. Le sujet est difficilement compréhensible
+2. Le sujet est compréhensible
+3. Le sujet est très clair
+Le degré de cohérence de l’analyse, de l’implémentation de la base de données si nécessaire et du développement réalisé,
+1. Le travail de l’étudiant contient de nombreuses incohérences
+2. Le travail de l’étudiant contient quelques incohérences
+3. Le travail ne contient pas ou peu d’incohérences
+Le niveau de sens critique de l’étudiant,
+1. L’étudiant reproduit les points de vue généraux ou dominants
+2. L’étudiant apporte des points de vue variés ou alternatifs
+3. L’étudiant apporte des points de vue critiques, aussi sur ses propres points de vue
+La créativité et le degré d’autonomie atteint
+1. L’étudiant n’est pas autonome et ne fait pas preuve d’innovation
+2. L’étudiant fait preuve d’autonomie et d’innovation (p.ex. innovation incrémentale)
+3. L’étudiant est tout à fait autonome et fait preuve d’innovation (p. ex./ innovation de rupture)
+Degré de maîtrise
+/ 100Commentaires (y compris un feedback et / ou une remédiation)
+
+
+
+
+
+
+
+
+
+
+
+

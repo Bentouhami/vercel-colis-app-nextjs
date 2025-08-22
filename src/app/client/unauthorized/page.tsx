@@ -1,55 +1,132 @@
-// path: src/app/client/unauthorized/page.tsx
+import { Suspense } from "react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { AlertTriangle, Home, LogIn, Shield, User } from "lucide-react"
+import Link from "next/link"
+import { auth } from "@/auth/auth"
+import { RoleDto } from "@/services/dtos"
 
-'use client';
-import React, {useEffect, useState} from 'react';
-import {useRouter} from 'next/navigation';
-import Link from "next/link";
-import {FaHome} from 'react-icons/fa';
+interface UnauthorizedPageProps {
+    searchParams: Promise<{
+        reason?: string
+        attempted?: string
+        role?: string
+    }>
+}
 
-export default function UnauthorizedPage() {
-    const [countdown, setCountdown] = useState(5);
-    const router = useRouter();
+export default async function UnauthorizedPage({ searchParams }: UnauthorizedPageProps) {
+    const session = await auth()
+    const { reason, attempted, role } = await searchParams
 
-    useEffect(() => {
-        // Countdown logic
-        const timer = setInterval(() => {
-            setCountdown((prev) => prev - 1);
-        }, 1000);
+    const isAdmin =
+        session?.user?.role &&
+        [RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN, RoleDto.ACCOUNTANT].includes(session.user.role as RoleDto)
+    const isClient = session?.user?.role && [RoleDto.CLIENT, RoleDto.DESTINATAIRE].includes(session.user.role as RoleDto)
 
-        // Navigate when countdown reaches 0
-        if (countdown === 0) {
-            router.push('/');
+    const getContextualMessage = () => {
+        if (reason === "admin_blocked_from_client") {
+            return {
+                title: "Accès Administrateur Restreint",
+                description:
+                    "En tant qu'administrateur, vous n'avez pas accès aux fonctionnalités client. Utilisez votre tableau de bord administrateur.",
+                icon: Shield,
+                color: "text-purple-600",
+                bgColor: "bg-purple-50 dark:bg-purple-900/20",
+            }
+        } else if (reason === "client_blocked_from_admin") {
+            return {
+                title: "Accès Client Restreint",
+                description: "Cette section est réservée aux administrateurs. Vous pouvez accéder à votre espace client.",
+                icon: User,
+                color: "text-blue-600",
+                bgColor: "bg-blue-50 dark:bg-blue-900/20",
+            }
+        } else {
+            return {
+                title: "Accès Non Autorisé",
+                description: "Vous n'avez pas les permissions nécessaires pour accéder à cette page.",
+                icon: AlertTriangle,
+                color: "text-red-600",
+                bgColor: "bg-red-50 dark:bg-red-900/20",
+            }
         }
+    }
 
-        return () => clearInterval(timer);
-    }, [countdown, router]);
+    const contextualMessage = getContextualMessage()
+    const IconComponent = contextualMessage.icon
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 text-center p-6">
-            <div className="bg-white shadow-lg rounded-lg p-8 md:p-12 max-w-md w-full">
-                <h1 className="text-4xl font-bold text-red-600 mb-4">Accès refusé</h1>
-                <p className="text-gray-700 text-lg mb-6">
-                    Vous n&#39;avez pas les droits nécessaires pour accéder à cette page.
-                </p>
-                <p className="text-gray-600 mb-6">
-                    Vous serez redirigé vers la page d&#39;accueil dans <span
-                    className="font-semibold text-blue-600">{countdown}</span> secondes.
-                </p>
-                {/* Progress Bar */}
-                <div className="w-full bg-gray-300 h-2 rounded-full overflow-hidden mb-4">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
+            <Card className="w-full max-w-md">
+                <CardHeader className="text-center">
                     <div
-                        className="bg-blue-600 h-full transition-all duration-1000 ease-linear"
-                        style={{width: `${(countdown / 5) * 100}%`}}
-                    ></div>
-                </div>
-                <div className="flex justify-center mt-4">
-                    <Link href="/"
-                          className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 transition ease-in-out duration-150">
-                        <FaHome className="mr-2"/>
-                        Retourner à l&#39;accueil
-                    </Link>
-                </div>
-            </div>
+                        className={`mx-auto w-16 h-16 ${contextualMessage.bgColor} rounded-full flex items-center justify-center mb-4`}
+                    >
+                        <IconComponent className={`w-8 h-8 ${contextualMessage.color}`} />
+                    </div>
+                    <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white">
+                        {contextualMessage.title}
+                    </CardTitle>
+                    <CardDescription className="text-gray-600 dark:text-gray-400">
+                        {contextualMessage.description}
+                    </CardDescription>
+                    {attempted && (
+                        <div className="mt-2 p-2 bg-gray-100 dark:bg-gray-800 rounded text-sm text-gray-600 dark:text-gray-400">
+                            Page tentée: <code className="font-mono">{attempted}</code>
+                        </div>
+                    )}
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <Suspense fallback={<div>Chargement...</div>}>
+                        {session?.user ? (
+                            <div className="space-y-3">
+                                <div className="text-center text-sm text-gray-600 dark:text-gray-400">
+                                    Connecté en tant que: <strong>{session.user.name}</strong>
+                                    {role && <span className="block text-xs mt-1">Rôle: {role}</span>}
+                                </div>
+
+                                {isAdmin ? (
+                                    <Button asChild className="w-full">
+                                        <Link href="/admin" className="flex items-center gap-2">
+                                            <Shield className="w-4 h-4" />
+                                            Aller au Dashboard Admin
+                                        </Link>
+                                    </Button>
+                                ) : isClient ? (
+                                    <Button asChild className="w-full">
+                                        <Link href="/client" className="flex items-center gap-2">
+                                            <User className="w-4 h-4" />
+                                            Aller à l&apos;Espace Client
+                                        </Link>
+                                    </Button>
+                                ) : (
+                                    <Button asChild variant="outline" className="w-full bg-transparent">
+                                        <Link href="/" className="flex items-center gap-2">
+                                            <Home className="w-4 h-4" />
+                                            Retour à l&apos;Accueil
+                                        </Link>
+                                    </Button>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="space-y-3">
+                                <Button asChild className="w-full">
+                                    <Link href="/auth/login" className="flex items-center gap-2">
+                                        <LogIn className="w-4 h-4" />
+                                        Se Connecter
+                                    </Link>
+                                </Button>
+                                <Button asChild variant="outline" className="w-full bg-transparent">
+                                    <Link href="/" className="flex items-center gap-2">
+                                        <Home className="w-4 h-4" />
+                                        Retour à l&apos;Accueil
+                                    </Link>
+                                </Button>
+                            </div>
+                        )}
+                    </Suspense>
+                </CardContent>
+            </Card>
         </div>
-    );
+    )
 }

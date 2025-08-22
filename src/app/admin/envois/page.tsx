@@ -7,7 +7,7 @@
 // -----------------------------------------------------------------------------
 import { notFound } from "next/navigation";
 import { auth } from "@/auth/auth";
-import {prisma} from "@/utils/db";
+import { prisma } from "@/utils/db";
 import { RoleDto } from "@/services/dtos";
 import EnvoisListe from "@/components/admin/collections/EnvoisList";
 // import EnvoisTable from "@/components/admin/EnvoisTable";

@@ -1,3 +1,5 @@
+// src/components/auth/AuthGuard.tsx
+
 "use client"
 
 import type React from "react"
@@ -17,12 +19,12 @@ interface AuthGuardProps {
 }
 
 export default function AuthGuard({
-                                      children,
-                                      requireAuth = true,
-                                      allowedRoles,
-                                      redirectTo,
-                                      silent = false,
-                                  }: AuthGuardProps) {
+    children,
+    requireAuth = true,
+    allowedRoles,
+    redirectTo,
+    silent = false,
+}: AuthGuardProps) {
     const { data: session, status } = useSession()
     const router = useRouter()
 
@@ -30,7 +32,7 @@ export default function AuthGuard({
         if (status === "loading") return
 
         if (requireAuth && status === "unauthenticated") {
-            const loginUrl = redirectTo || "/client/auth/login"
+            const loginUrl = redirectTo || "/auth/login"
             router.push(loginUrl)
             return
         }

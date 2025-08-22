@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+
 @custom-variant dark (&:is(.dark *));
 
 /* NProgress custom style - remove hardcoded colors */
@@ -119,7 +120,7 @@ body {
 
 @layer base {
     * {
-        @apply border-border;
+        @apply border-border outline-ring/50;
     }
 
     body {
@@ -313,5 +314,108 @@ body {
 
     body {
         @apply bg-background text-foreground;
+    }
+}
+
+/* ========================================
+ ANIMATIONS PERSONNALISÉES TAILWIND
+ ======================================== */
+
+/* Animations personnalisées ajoutées à votre CSS existant */
+@layer utilities {
+
+    /* Fade In Animation */
+    .animate-fade-in {
+        animation: fadeIn 0.6s ease-out forwards;
+    }
+
+    /* Slide Up Animation */
+    .animate-slide-up {
+        animation: slideUp 0.6s ease-out forwards;
+    }
+
+    /* Scale In Animation */
+    .animate-scale-in {
+        animation: scaleIn 0.6s ease-out forwards;
+    }
+
+    /* Bounce Slow Animation */
+    .animate-bounce-slow {
+        animation: bounceSlow 2s infinite;
+    }
+
+    /* Shimmer Animation */
+    .animate-shimmer {
+        animation: shimmer 2s linear infinite;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes bounceSlow {
+
+    0%,
+    20%,
+    53%,
+    80%,
+    100% {
+        transform: translate3d(0, 0, 0);
+    }
+
+    40%,
+    43% {
+        transform: translate3d(0, -8px, 0);
+    }
+
+    70% {
+        transform: translate3d(0, -4px, 0);
+    }
+
+    90% {
+        transform: translate3d(0, -2px, 0);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200px 0;
+    }
+
+    100% {
+        background-position: calc(200px + 100%) 0;
     }
 }

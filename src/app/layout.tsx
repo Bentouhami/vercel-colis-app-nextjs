@@ -1,35 +1,36 @@
-// path: /src/app/layout.tsx
-import type { Metadata } from 'next';
-import './globals.css';
-import { Inter } from 'next/font/google';
+// path: src/app/layout.tsx
 
-import { LoadingProvider } from '@/contexts/LoadingContext';
-import GlobalLoadingOverlay from '@/components/ui/GlobalLoadingOverlay';
+import type { Metadata } from "next"
+import "./globals.css"
+import { Inter } from "next/font/google"
+import { LoadingProvider } from "@/contexts/LoadingContext"
+import GlobalLoadingOverlay from "@/components/ui/GlobalLoadingOverlay"
+import ProgressWrapper from "@/components/providers/ProgressWrapper"
+import type React from "react"
+import { Providers } from "@/components/providers"
 
-import ProgressWrapper from '@/components/providers/ProgressWrapper';
-import React from "react";
-import { Providers } from "@/components/providers"; // ✅ ici
-
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-    title: 'ColisApp',
-    description: 'ColisApp est un site web pour les particuliers et les agences de transport entre le Maroc et la Belgique.',
-};
+    title: "ColisApp - Transport de colis Maroc-Belgique",
+    description:
+        "ColisApp est la plateforme de référence pour le transport de colis entre le Maroc et la Belgique. Service rapide, sécurisé et professionnel.",
+    keywords: "colis, transport, Maroc, Belgique, expédition, livraison",
+}
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="fr" suppressHydrationWarning>
-            <body className={`${inter.className} transition-colors duration-300`}>
+            <body className={`${inter.className} transition-colors duration-300 antialiased`}>
                 <Providers>
                     <LoadingProvider>
                         <ProgressWrapper>
                             <GlobalLoadingOverlay />
-                            {children}
+                            <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors">{children}</div>
                         </ProgressWrapper>
                     </LoadingProvider>
                 </Providers>
             </body>
         </html>
-    );
+    )
 }

@@ -1,15 +1,18 @@
-// src/app/client/tarifs/page.tsx
+import { Suspense } from "react"
+import TarifsComponent from '@/components/tarifs/TarifsComponent';
 
-import TarifsComponent from "@/components/tarifs/TarifsComponent";
-
-const TarifsPage = async () => {
-    await new Promise(resolve => setTimeout(resolve, 2000)); // 2s de chargement artificiel
-
+const TarifsPage = () => {
     return (
-        <div className="min-h-screen flex items-center justify-center">
-            <TarifsComponent/>
-        </div>
-    );
-};
+        <Suspense
+            fallback={
+                <div className="min-h-screen flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                </div>
+            }
+        >
+            <TarifsComponent />
+        </Suspense>
+    )
+}
 
-export default TarifsPage;
+export default TarifsPage

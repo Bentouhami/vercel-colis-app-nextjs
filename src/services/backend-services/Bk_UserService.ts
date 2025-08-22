@@ -1,4 +1,6 @@
-"use server"
+// src/services/backend-services/Bk_UserService.ts
+
+"use server";
 
 import {
   type CreateDestinataireDto,
@@ -6,26 +8,27 @@ import {
   type DestinataireResponseWithRoleDto,
   type ProfileDto,
   RoleDto,
+  type UpdateProfileRequestDto,
   type UserLoginDto,
   type UserResponseDto,
-} from "@/services/dtos"
-import type { VerificationDataType } from "@/utils/types"
-import { userRepositories } from "@/services/repositories/users/UserRepository"
-import { capitalizeFirstLetter, toLowerCase } from "@/utils/stringUtils"
-import { prisma } from "@/utils/db"
+} from "@/services/dtos";
+import type { VerificationDataType } from "@/utils/types";
+import { userRepositories } from "@/services/repositories/users/UserRepository";
+import { capitalizeFirstLetter, toLowerCase } from "@/utils/stringUtils";
+import { prisma } from "@/utils/db";
 
 // 🔐 NEW: Dedicated function for login authentication only
 export async function getUserForAuthentication(email: string): Promise<{
-  id: number
-  firstName: string | null
-  lastName: string | null
-  name: string | null
-  email: string
-  phoneNumber: string | null
-  password: string | null
-  image: string | null
-  role: RoleDto
-  emailVerified: Date | null
+  id: number;
+  firstName: string | null;
+  lastName: string | null;
+  name: string | null;
+  email: string;
+  phoneNumber: string | null;
+  password: string | null;
+  image: string | null;
+  role: RoleDto;
+  emailVerified: Date | null;
 } | null> {
   try {
     const user = await prisma.user.findUnique({
@@ -48,28 +51,28 @@ export async function getUserForAuthentication(email: string): Promise<{
         // 🚫 NO user associations - not needed for auth
         // 🚫 NO other complex relations - not needed for auth
       },
-    })
+    });
 
     if (!user) {
-      return null
+      return null;
     }
 
     // ✅ Cast the Prisma Role to RoleDto
     return {
       ...user,
       role: user.role as RoleDto, // Type cast to match your RoleDto enum
-    }
+    };
   } catch (error) {
-    console.error("Error fetching user for authentication:", error)
-    throw error
+    console.error("Error fetching user for authentication:", error);
+    throw error;
   }
 }
 
 export async function handleDestinataire(
-    userId: number,
-    destinataireData: CreateDestinataireDto,
+  userId: number,
+  destinataireData: CreateDestinataireDto
 ): Promise<DestinataireResponseWithRoleDto | null> {
-  if (!userId || !destinataireData) return null
+  if (!userId || !destinataireData) return null;
 
   const destinataire = await prisma.$transaction(async (tx) => {
     // 1. Chercher un utilisateur avec l'email et le téléphone (peu importe les rôles)
@@ -88,7 +91,7 @@ export async function handleDestinataire(
         image: true,
         role: true,
       },
-    })
+    });
 
     // 2. Si l'utilisateur existe, mais ne possède pas le rôle DESTINATAIRE, on le met à jour
     if (!found) {
@@ -97,9 +100,9 @@ export async function handleDestinataire(
           firstName: capitalizeFirstLetter(destinataireData.firstName),
           lastName: capitalizeFirstLetter(destinataireData.lastName),
           name:
-              `${capitalizeFirstLetter(
-                  destinataireData.firstName,
-              )} ${capitalizeFirstLetter(destinataireData.lastName)}` || "",
+            `${capitalizeFirstLetter(
+              destinataireData.firstName
+            )} ${capitalizeFirstLetter(destinataireData.lastName)}` || "",
           email: toLowerCase(destinataireData.email),
           phoneNumber: destinataireData.phoneNumber,
           image: destinataireData.image || "",
@@ -115,7 +118,7 @@ export async function handleDestinataire(
           image: true,
           role: true,
         },
-      })
+      });
     }
 
     // Vérifier l'association entre le client et le destinataire
@@ -126,7 +129,7 @@ export async function handleDestinataire(
           destinataireId: found.id,
         },
       },
-    })
+    });
 
     // 5. Si l'association n'existe pas, la créer
     if (!existingAssociation) {
@@ -135,7 +138,7 @@ export async function handleDestinataire(
           clientId: userId,
           destinataireId: found.id,
         },
-      })
+      });
     }
 
     // Transform the result to ensure non-nullable fields are set
@@ -148,12 +151,12 @@ export async function handleDestinataire(
       phoneNumber: found.phoneNumber ?? "",
       image: found.image,
       role: found.role as RoleDto, // ✅ Cast to RoleDto
-    }
+    };
 
-    return safeFound
-  })
+    return safeFound;
+  });
 
-  return destinataire
+  return destinataire;
 }
 
 /**
@@ -162,7 +165,7 @@ export async function handleDestinataire(
  * @returns {Promise<DestinataireResponseDto>}
  */
 export async function createDestinataire(
-    newDestinataire: CreateDestinataireDto,
+  newDestinataire: CreateDestinataireDto
 ): Promise<DestinataireResponseWithRoleDto | null> {
   try {
     const destinataire = await prisma.user.create({
@@ -170,9 +173,9 @@ export async function createDestinataire(
         firstName: newDestinataire.firstName,
         lastName: newDestinataire.lastName,
         name:
-            newDestinataire.firstName && newDestinataire.lastName
-                ? `${newDestinataire.firstName} ${newDestinataire.lastName}`
-                : "", // Ensure name is never null
+          newDestinataire.firstName && newDestinataire.lastName
+            ? `${newDestinataire.firstName} ${newDestinataire.lastName}`
+            : "", // Ensure name is never null
         email: newDestinataire.email,
         phoneNumber: newDestinataire.phoneNumber,
         image: newDestinataire.image ?? "", // Default to empty string if null
@@ -188,19 +191,19 @@ export async function createDestinataire(
         image: true,
         role: true,
       },
-    })
+    });
 
     if (!destinataire) {
-      return null
+      return null;
     }
 
     return {
       ...destinataire,
       role: destinataire.role as RoleDto, // ✅ Cast to RoleDto
-    } as DestinataireResponseDto
+    } as DestinataireResponseDto;
   } catch (error) {
-    console.error("Error creating destinataire:", error)
-    throw error
+    console.error("Error creating destinataire:", error);
+    throw error;
   }
 }
 
@@ -209,7 +212,9 @@ export async function createDestinataire(
  * @param token
  * @returns {Promise<UserResponseDto>} user
  */
-export async function getUserByValidToken(token: string): Promise<UserResponseDto | null> {
+export async function getUserByValidToken(
+  token: string
+): Promise<UserResponseDto | null> {
   try {
     const user = await prisma.user.findFirst({
       where: {
@@ -228,19 +233,19 @@ export async function getUserByValidToken(token: string): Promise<UserResponseDt
         role: true,
         image: true,
       },
-    })
+    });
 
     if (!user) {
-      return null
+      return null;
     }
 
     return {
       ...user,
       role: user.role as RoleDto, // ✅ Cast to RoleDto
-    } as UserResponseDto
+    } as UserResponseDto;
   } catch (error) {
-    console.error("Error getting user by valid token:", error)
-    throw error
+    console.error("Error getting user by valid token:", error);
+    throw error;
   }
 }
 
@@ -248,7 +253,9 @@ export async function getUserByValidToken(token: string): Promise<UserResponseDt
  * Update user and reset token verification
  * @param userId
  */
-export async function updateUserAndResetTokenVerificationAfterVerification(userId: number) {
+export async function updateUserAndResetTokenVerificationAfterVerification(
+  userId: number
+) {
   try {
     await prisma.user.update({
       where: { id: userId },
@@ -269,10 +276,10 @@ export async function updateUserAndResetTokenVerificationAfterVerification(userI
         image: true,
         role: true,
       },
-    })
+    });
   } catch (error) {
-    console.error("Error updating user:", error)
-    throw error
+    console.error("Error updating user:", error);
+    throw error;
   }
 }
 
@@ -281,7 +288,10 @@ export async function updateUserAndResetTokenVerificationAfterVerification(userI
  * @param userId - user id
  * @param verificationData - verification data object
  */
-export async function updateVerificationTokenForOldUser(userId: number, verificationData: VerificationDataType) {
+export async function updateVerificationTokenForOldUser(
+  userId: number,
+  verificationData: VerificationDataType
+) {
   await prisma.user.update({
     where: { id: userId },
     data: {
@@ -289,12 +299,16 @@ export async function updateVerificationTokenForOldUser(userId: number, verifica
       isVerified: false,
       emailVerified: null,
       verificationToken: verificationData.verificationToken,
-      verificationTokenExpires: new Date(verificationData.verificationTokenExpires),
+      verificationTokenExpires: new Date(
+        verificationData.verificationTokenExpires
+      ),
     },
-  })
+  });
 }
 
-export async function getUserById(id: number): Promise<CreateDestinataireDto | null> {
+export async function getUserById(
+  id: number
+): Promise<CreateDestinataireDto | null> {
   try {
     const userByEmailFound = await prisma.user.findFirst({
       where: {
@@ -307,35 +321,35 @@ export async function getUserById(id: number): Promise<CreateDestinataireDto | n
         email: true,
         phoneNumber: true,
       },
-    })
+    });
 
     if (!userByEmailFound) {
-      return null
+      return null;
     }
 
-    return userByEmailFound as CreateDestinataireDto
+    return userByEmailFound as CreateDestinataireDto;
   } catch (error) {
-    console.error("Error getting user by email:", error)
-    throw error
+    console.error("Error getting user by email:", error);
+    throw error;
   }
 }
 
 export async function DeleteDestinataireById(id: number): Promise<boolean> {
   // ckeck id
   if (isNaN(id) || id <= 0) {
-    console.error("Invalid user ID:", id)
-    return false // Return false if the ID is invalid
+    console.error("Invalid user ID:", id);
+    return false; // Return false if the ID is invalid
   }
 
   try {
     // Check if user exists
     const userExists = await prisma.user.findUnique({
       where: { id: id },
-    })
+    });
 
     if (!userExists) {
-      console.error("User not found:", id)
-      return false // User does not exist
+      console.error("User not found:", id);
+      return false; // User does not exist
     }
 
     // Soft delete user
@@ -347,17 +361,17 @@ export async function DeleteDestinataireById(id: number): Promise<boolean> {
       data: {
         isDeleted: true,
       },
-    })
+    });
 
     if (!softDeleteUser) {
-      console.error("Failed to soft delete user:", id)
-      return false // Soft deletion failed
+      console.error("Failed to soft delete user:", id);
+      return false; // Soft deletion failed
     }
 
-    return true // User soft deleted successfully
+    return true; // User soft deleted successfully
   } catch (error) {
-    console.error("Error deleting user:", error)
-    throw error // Rethrow the error for further handling
+    console.error("Error deleting user:", error);
+    throw error; // Rethrow the error for further handling
   }
 }
 
@@ -366,23 +380,26 @@ export async function DeleteDestinataireById(id: number): Promise<boolean> {
  * @param clientId - client id
  * @param destinataireId - destinataire id
  */
-export async function checkExistingAssociation(clientId: number, destinataireId: number) {
+export async function checkExistingAssociation(
+  clientId: number,
+  destinataireId: number
+) {
   try {
     const association = await prisma.clientDestinataire.findFirst({
       where: {
         clientId: clientId,
         destinataireId: destinataireId,
       },
-    })
+    });
 
     if (association) {
-      return association
+      return association;
     }
 
-    return null
+    return null;
   } catch (error) {
-    console.error("Error association doesn't exists:", error)
-    throw error
+    console.error("Error association doesn't exists:", error);
+    throw error;
   }
 }
 
@@ -391,64 +408,89 @@ export async function checkExistingAssociation(clientId: number, destinataireId:
  * @param userId
  * @param destinataireId
  */
-export async function associateDestinataireToCurrentClient(userId: number, destinataireId: number) {
+export async function associateDestinataireToCurrentClient(
+  userId: number,
+  destinataireId: number
+) {
   try {
     const association = await prisma.clientDestinataire.create({
       data: {
         clientId: userId,
         destinataireId: destinataireId,
       },
-    })
+    });
 
     if (association) {
-      return association
+      return association;
     }
 
-    return null
+    return null;
   } catch (error) {
-    console.error("Error associating user as destinataire:", error)
-    throw error // Relancer l'erreur pour remonter jusqu'à l'appelant
+    console.error("Error associating user as destinataire:", error);
+    throw error; // Relancer l'erreur pour remonter jusqu'à l'appelant
   }
 }
 
 // 🔄 Keep the original function for other purposes (profile, etc.)
-export async function getUserByEmail(email: string): Promise<UserLoginDto | null> {
+export async function getUserByEmail(
+  email: string
+): Promise<UserLoginDto | null> {
   // 🔍 Debug: Track when this function is called
   if (process.env.NODE_ENV === "development") {
-    console.log("🚨 OLD getUserByEmail called for:", email)
-    console.trace("Call stack:") // This will show where it's being called from
+    console.log("🚨 OLD getUserByEmail called for:", email);
+    console.trace("Call stack:"); // This will show where it's being called from
   }
 
   try {
-    const user = await userRepositories.findUserByEmail(email)
+    const user = await userRepositories.findUserByEmail(email);
     if (!user) {
-      return null
+      return null;
     }
-    return user
+    return user;
   } catch (error) {
-    console.error("Error getting user from database:", error)
-    throw error
+    console.error("Error getting user from database:", error);
+    throw error;
   }
 }
 
-export async function getUserProfileById(userId: number): Promise<ProfileDto | null> {
+export async function getUserProfileById(
+  userId: number
+): Promise<ProfileDto | null> {
   try {
-    const response = await userRepositories.getUserProfileById(userId)
+    const response = await userRepositories.getUserProfileById(userId);
     if (!response) {
-      return null
+      return null;
     }
-    return response
+    return response;
   } catch (error) {
-    console.error("Error getting user profile:", error)
-    throw error
+    console.error("Error getting user profile:", error);
+    throw error;
   }
 }
 
-export async function getUsersByAgencyAdmin(adminId: number): Promise<ProfileDto[] | null> {
-  return await userRepositories.getUsersByAgencyAdmin(adminId) // Implémentation spécifique avec agencyId
+export async function getUsersByAgencyAdmin(
+  adminId: number
+): Promise<ProfileDto[] | null> {
+  return await userRepositories.getUsersByAgencyAdmin(adminId); // Implémentation spécifique avec agencyId
 }
 
 export async function getAllUsers(): Promise<ProfileDto[] | null> {
-  const users = userRepositories.getAllUsers()
-  return users
+  const users = userRepositories.getAllUsers();
+  return users;
+}
+
+export async function updateUserProfile(
+  userId: number,
+  data: UpdateProfileRequestDto
+): Promise<ProfileDto | null> {
+  try {
+    const updatedProfile = await userRepositories.updateUserProfile(
+      userId,
+      data
+    );
+    return updatedProfile;
+  } catch (error) {
+    console.error("Error updating user profile in service:", error);
+    throw error;
+  }
 }

@@ -1,13 +1,9 @@
-// Path: src/app/admin/not-found.tsx
+import NotFound from "@/components/not-found"
 
-import NotFound from '@/components/not-found';
-
-export default function AdminNotFound() {
+export default function ClientNotFound() {
     return (
-        <NotFound
-            redirectPath="/client" // Redirect to the admin section
-            message="Cette page dans la section client n'existe pas."
-            countdownSeconds={5} // Customize countdown duration
-        />
-    );
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 animate-fade-in">
+            <NotFound redirectPath="/client" message="Cette page dans la section client n'existe pas." countdownSeconds={5} />
+        </div>
+    )
 }
