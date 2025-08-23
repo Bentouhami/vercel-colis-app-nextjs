@@ -8,7 +8,7 @@ import { signIn } from "@/auth/auth";
 
 const login = async (email: string, password: string, redirectUrl?: string) => {
   // ✅ Empêche l'exécution pendant le build Vercel
-  if (process.env.NEXT_PUBLIC_VERCEL_ENV) {
+  if (process.env.NEXT_PUBLIC_VERCEL_ENV && process.env.NEXT_PUBLIC_VERCEL_ENV !== 'production') {
     console.warn(
       "⛔ Tentative d'authentification bloquée (environnement Vercel)."
     );
