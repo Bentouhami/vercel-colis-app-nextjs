@@ -1,5 +1,7 @@
 // Path: src/services/backend-services/Bk_EnvoiService.ts
 
+import { trackingRepository } from "@/services/repositories/tracking/TrackingRepository";
+import { TrackingEventStatus } from "@prisma/client";
 import { prisma } from "@/utils/db";
 import {
   EnvoiDto,
@@ -14,8 +16,6 @@ import { QR_CODES_FOLDER } from "@/utils/constants";
 import { envoiRepository } from "@/services/repositories/envois/EnvoiRepository";
 import { cookies } from "next/headers";
 import { PaymentSuccessDto } from "@/services/dtos/envois/PaymentSuccessDto";
-import { trackingRepository } from "@/services/repositories/tracking/TrackingRepository";
-import { TrackingEventStatus } from "@prisma/client";
 
 /**
  * Cancel a simulation
@@ -48,6 +48,13 @@ export async function cancelSimulation(envoiId: number): Promise<void> {
         },
       }),
     ]);
+
+    // Add this to create a tracking event for the cancellation
+    await trackingRepository.addEvent({
+      envoiId: envoiId,
+      status: TrackingEventStatus.FAILED, // Or CANCELLED if you add it to the enum
+      description: "Envoi annulé par l'utilisateur.",
+    });
   } catch (error) {
     console.error("Erreur lors de l'annulation de la simulation :", error);
     throw error;
@@ -355,9 +362,9 @@ export async function getAllEnvoisByUserId(
       departureDate: envoi.departureDate,
       envoiStatus: envoi.envoiStatus,
       paid: envoi.paid,
-      destinataire: envoi.destinataire?.name
-        ? `${envoi.destinataire?.lastName} ${envoi.destinataire?.firstName}`
-        : "",
+      destinataire: envoi.destinataire?.firstName && envoi.destinataire?.lastName
+        ? `${envoi.destinataire.firstName} ${envoi.destinataire.lastName}`
+        : envoi.destinataire?.name || "Non spécifié",
       trackingNumber: envoi.trackingNumber || "",
       createdAt: envoi.createdAt,
     }));

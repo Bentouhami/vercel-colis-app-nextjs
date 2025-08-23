@@ -104,7 +104,17 @@ const ROUTE_CONFIG = {
     "/api/v1/agencies/[agency]",
     "/api/v1/dashboard/super-admin",
     "/api/v1/users",
-    "/api/v1/users/list",
+    "/api/v1/envois/[id]/status",
+    "/api/v1/envois/[id]/tracking",
+    "/api/v1/envois/[id]/documents",
+    "/api/v1/envois/[id]/history",
+    "/api/v1/envois/[id]/summary",
+    "/api/v1/envois/[id]/update",
+    "/api/v1/envois/[id]/delete",
+    "/api/v1/envois/[id]/create",
+    "/api/v1/envois/[id]/edit",
+    "/api/v1/envois/[id]/duplicate",
+    "/api/v1/envois/[id]/status",
   ],
 
   // Special routes

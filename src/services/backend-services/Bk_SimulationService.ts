@@ -1,5 +1,7 @@
 // path: src/services/backend-services/Bk_SimulationService.ts
 "use server";
+import { trackingRepository } from "@/services/repositories/tracking/TrackingRepository";
+import { TrackingEventStatus } from "@prisma/client";
 import {
   CreatedSimulationResponseDto,
   CreateSimulationRequestDto,
@@ -188,6 +190,13 @@ export async function updatePaidEnvoi(
         simulationStatus: simulation.simulationStatus,
         paid: true,
       },
+    });
+
+    // Add this to create a tracking event for the status change
+    await trackingRepository.addEvent({
+      envoiId: Number(simulationIdAndToken.id),
+      status: simulation.envoiStatus as unknown as TrackingEventStatus, // Cast to TrackingEventStatus
+      description: `Statut de l'envoi mis à jour: ${simulation.envoiStatus}`,
     });
   } catch (error) {
     console.error("Error updating simulation", error);

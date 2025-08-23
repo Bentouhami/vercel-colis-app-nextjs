@@ -20,6 +20,11 @@ import {
     DropdownMenuContent,
     DropdownMenuLabel,
     DropdownMenuItem,
+    DropdownMenuSubTrigger,
+    DropdownMenuPortal,
+    DropdownMenuSubContent,
+    DropdownMenuSeparator,
+    DropdownMenuSub,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { API_DOMAIN } from "@/utils/constants";
@@ -76,6 +81,21 @@ export default function EnvoisList({ envois }: Props) {
     };
 
     const gotoTracking = (id: number) => router.push(`/admin/envois/${id}/tracking`);
+
+    const updateEnvoiStatus = async (id: number, newStatus: EnvoiStatus) => {
+        try {
+            const res = await fetch(`${API_DOMAIN}/envois/${id}/status`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: newStatus }),
+            });
+            if (!res.ok) throw new Error();
+            toast.success("Statut de l'envoi mis à jour");
+            router.refresh();
+        } catch {
+            toast.error("Erreur lors de la mise à jour du statut");
+        }
+    };
 
     return (
         <div className="space-y-4">
@@ -137,6 +157,23 @@ export default function EnvoisList({ envois }: Props) {
                                         <DropdownMenuItem onClick={() => gotoTracking(e.id)}>
                                             Suivi
                                         </DropdownMenuItem>
+                                        <DropdownMenuSub>
+                                            <DropdownMenuSubTrigger>Modifier Statut</DropdownMenuSubTrigger>
+                                            <DropdownMenuPortal>
+                                                <DropdownMenuSubContent>
+                                                    <DropdownMenuLabel>Nouveau Statut</DropdownMenuLabel>
+                                                    <DropdownMenuSeparator />
+                                                    {Object.values(EnvoiStatus).map((status) => (
+                                                        <DropdownMenuItem
+                                                            key={status}
+                                                            onClick={() => updateEnvoiStatus(e.id, status)}
+                                                        >
+                                                            {status.replaceAll("_", " ")}
+                                                        </DropdownMenuItem>
+                                                    ))}
+                                                </DropdownMenuSubContent>
+                                            </DropdownMenuPortal>
+                                        </DropdownMenuSub>
                                         <DropdownMenuItem onClick={() => deleteEnvoi(e.id)} className="text-destructive">
                                             Supprimer
                                         </DropdownMenuItem>
