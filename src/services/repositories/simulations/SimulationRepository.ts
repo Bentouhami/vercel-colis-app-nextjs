@@ -24,6 +24,27 @@ import { prisma } from "@/utils/db";
  * @implements {ISimulationRepository}
  */
 export class SimulationRepository implements ISimulationRepository {
+  async getAmountSimulationById(
+    id: number
+  ): Promise<{ amount: number } | null> {
+    if (!id) {
+      return null;
+    }
+    try {
+      const simulation = await prisma.envoi.findUnique({
+        where: { id },
+        select: {
+          totalPrice: true,
+        },
+      });
+
+      return simulation ? { amount: simulation.totalPrice } : null;
+    } catch (error) {
+      console.error("Error getting simulation amount:", error);
+      throw error;
+    }
+  }
+
   /**
      * getSimulationResponseById
      * @describe('id', () => {

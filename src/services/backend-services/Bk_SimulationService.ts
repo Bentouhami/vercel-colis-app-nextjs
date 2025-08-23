@@ -279,3 +279,18 @@ export async function updateSimulationTransportId(
     throw error;
   }
 }
+
+// get simulation amount by ID
+export async function getAmountSimulationById(
+  simulationId: number
+): Promise<number | null> {
+  if (!simulationId) return null;
+  try {
+    const amount =
+      await simulationRepository.getAmountSimulationById(simulationId);
+    return amount ? amount.amount : null;
+  } catch (error) {
+    console.error("Error getting simulation amount:", error);
+    throw error;
+  }
+}

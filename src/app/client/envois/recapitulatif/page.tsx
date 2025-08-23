@@ -171,12 +171,11 @@ export default function EnvoiRecapPage() {
     }, [loadSimulationData])
 
     const handlePaymentRedirect = useCallback(async () => {
-        if (!simulationData?.totalPrice) {
-            toast.error("Le prix total est manquant.")
+        if (!simulationData?.totalPrice || !simulationData?.id) {
+            toast.error("Données de simulation incomplètes.")
             return
         }
 
-        // Check if user is admin - prevent payment
         if (isCurrentUserAdmin) {
             toast.error("Les comptes administrateurs ne peuvent pas effectuer de paiements personnels.")
             return
@@ -186,7 +185,8 @@ export default function EnvoiRecapPage() {
         try {
             await new Promise((resolve) => setTimeout(resolve, 1500))
             toast.success("Redirection vers le paiement sécurisé...")
-            router.push(`/client/payment?amount=${simulationData.totalPrice}&simulation=${simulationData.id}`)
+            // ✅ SÉCURISÉ: Passer seulement l'ID de simulation
+            router.push(`/client/payment?simulationId=${simulationData.id}`)
         } catch (error) {
             toast.error("Erreur lors de la redirection vers le paiement.")
         } finally {

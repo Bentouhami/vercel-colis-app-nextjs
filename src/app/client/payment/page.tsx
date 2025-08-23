@@ -21,79 +21,114 @@ import {
 } from "lucide-react"
 import { RoleDto } from "@/services/dtos"
 import { toast } from "sonner"
+import axios from "axios"
+import { loadStripe } from '@stripe/stripe-js';
+import { API_DOMAIN } from "@/utils/constants"
+
+// Charger la clé publique Stripe depuis les variables d'environnement
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!);
+// Types for our API shape
+type PaymentAmountDto = {
+    simulationId: number
+    amount: number
+    currency: "EUR" | string
+    departureCity: string
+    destinationCity: string
+    totalWeight: number
+    parcelsCount: number
+    isValidForPayment: boolean
+}
+type PaymentAmountResponse = { success: boolean; data: PaymentAmountDto }
 
 export default function PaymentPage() {
     const { data: session, status } = useSession()
     const router = useRouter()
     const searchParams = useSearchParams()
+
     const [isLoading, setIsLoading] = useState(true)
     const [paymentStatus, setPaymentStatus] = useState<"idle" | "processing" | "success" | "error">("idle")
 
+    // Keep amount minimal, but you could store whole data if you want
+    const [amount, setAmount] = useState<number | null>(null)
+
     const simulationId = searchParams.get("simulationId")
-    const amount = searchParams.get("amount")
     const userRole = session?.user?.role as RoleDto
 
     useEffect(() => {
-        // Wait for session to load
+        // don’t run until session resolved
         if (status === "loading") return
 
-        setIsLoading(false)
-
-        // Check if user is authenticated
+        // redirect unauthenticated users
         if (status === "unauthenticated") {
             toast.error("Vous devez être connecté pour effectuer un paiement")
             router.push(`/auth/login?redirect=${encodeURIComponent("/client/payment")}`)
             return
         }
 
-        // Check if required parameters are present
-        if (!simulationId || !amount) {
+        // must have simulationId (we never pass amount in URL!)
+        if (!simulationId) {
             toast.error("Informations de paiement manquantes")
             router.push("/client/simulation")
             return
         }
-    }, [status, simulationId, amount, router])
 
+        // fetch server-verified amount (shape: { success, data: { amount, ... } })
+        ; (async () => {
+            try {
+                setIsLoading(true)
+
+                const response = await axios.get<PaymentAmountResponse>(
+                    `/api/v1/simulations/${simulationId}/payment-amount`,
+                    { withCredentials: true } // axios uses withCredentials (not credentials)
+                )
+
+                if (!response.data?.success || !response.data.data) {
+                    throw new Error("Failed to fetch simulation amount")
+                }
+
+                const serverData = response.data.data
+                setAmount(serverData.amount)
+            } catch (error) {
+                console.error("Error fetching simulation amount:", error)
+                toast.error("Erreur lors de la récupération du montant de la simulation.")
+                router.push("/client/simulation")
+            } finally {
+                setIsLoading(false)
+            }
+        })()
+    }, [status, simulationId, router])
+
+    // Server-side payment: we send ONLY the simulationId.
     const handlePayment = async () => {
-        if (!simulationId || !amount) return
-
-        setPaymentStatus("processing")
+        setIsLoading(true);
 
         try {
-            // Simulate payment processing
-            await new Promise((resolve) => setTimeout(resolve, 2000))
+            // Créer une session de paiement en appelant votre route API
+            const response = await axios.post(`${API_DOMAIN}/payment`,
+                { amount: amount },
+                {
+                    headers: { 'Content-Type': 'application/json' },
+                    withCredentials: true,
 
-            // Here you would integrate with your actual payment provider (Stripe, etc.)
-            const response = await fetch("/api/v1/payment/process", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    simulationId,
-                    amount: Number.parseFloat(amount),
-                }),
-            })
+                });
 
-            if (!response.ok) {
-                throw new Error("Payment processing failed")
+            const { id: sessionId } = response.data; // Extract sessionId from response
+
+            // Charger Stripe
+            const stripe = await stripePromise;
+            const result = await stripe?.redirectToCheckout({ sessionId });
+
+            if (result?.error) {
+                toast.error("Erreur lors de la redirection vers Stripe : " + result.error.message);
             }
-
-            const result = await response.json()
-
-            setPaymentStatus("success")
-            toast.success("Paiement effectué avec succès!")
-
-            // Redirect to success page
-            setTimeout(() => {
-                router.push(`/client/payment/payment-success?paymentId=${result.paymentId}`)
-            }, 1500)
         } catch (error) {
-            console.error("Payment error:", error)
-            setPaymentStatus("error")
-            toast.error("Erreur lors du paiement. Veuillez réessayer.")
+            console.error(error);
+            toast.error("Une erreur est survenue. Veuillez réessayer.");
+        } finally {
+            setIsLoading(false);
         }
-    }
+
+    };
 
     // Loading state
     if (isLoading || status === "loading") {
@@ -170,7 +205,7 @@ export default function PaymentPage() {
                                 <div>User Role: {userRole}</div>
                                 <div>Session ID: {session?.user?.id}</div>
                                 <div>Simulation ID: {simulationId}</div>
-                                <div>Amount: {amount}€</div>
+                                <div>Amount: {amount ?? "—"}€</div>
                             </div>
                         )}
                     </CardContent>
@@ -202,28 +237,22 @@ export default function PaymentPage() {
                                 </div>
                                 <div className="flex justify-between">
                                     <span>Montant:</span>
-                                    <span className="font-bold text-lg">{amount}€</span>
+                                    <span className="font-bold text-lg">
+                                        {amount != null
+                                            ? new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(amount)
+                                            : "—"}
+                                    </span>
                                 </div>
                                 <Separator />
                                 <div className="flex justify-between font-bold">
                                     <span>Total à payer:</span>
-                                    <span className="text-primary">{amount}€</span>
+                                    <span className="text-primary">
+                                        {amount != null
+                                            ? new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(amount)
+                                            : "—"}
+                                    </span>
                                 </div>
                             </div>
-                        </div>
-
-                        {/* User Info */}
-                        <div className="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                            <CheckCircle className="h-5 w-5 text-green-600" />
-                            <div>
-                                <p className="font-medium">Compte autorisé</p>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">
-                                    Connecté en tant que {session?.user?.firstName} {session?.user?.lastName}
-                                </p>
-                            </div>
-                            <Badge variant="outline" className="ml-auto">
-                                {userRole}
-                            </Badge>
                         </div>
 
                         {/* Payment Status */}
@@ -264,7 +293,7 @@ export default function PaymentPage() {
                         <div className="space-y-3">
                             <Button
                                 onClick={handlePayment}
-                                disabled={paymentStatus === "processing" || paymentStatus === "success"}
+                                disabled={paymentStatus === "processing" || paymentStatus === "success" || amount == null}
                                 className="w-full h-12 text-lg"
                             >
                                 {paymentStatus === "processing" ? (
@@ -280,7 +309,10 @@ export default function PaymentPage() {
                                 ) : (
                                     <>
                                         <CreditCard className="h-5 w-5 mr-2" />
-                                        Payer {amount}€
+                                        Payer{" "}
+                                        {amount != null
+                                            ? new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(amount)
+                                            : "—"}
                                     </>
                                 )}
                             </Button>
