@@ -8,9 +8,10 @@ import {
 } from "@/services/dtos/admins/DashboardSummaryDto";
 import { getDashboardSummaryForRole } from "./admin/DashboardSummaryService";
 
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient();
 
 import { SuperAdminStats } from "@/services/dtos/admins/DashboardSummaryDto";
+import { prisma } from "@/utils/db";
 
 export interface AgencyAdminStats {
   agencyName: string;

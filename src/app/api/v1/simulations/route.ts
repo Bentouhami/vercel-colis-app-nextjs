@@ -3,9 +3,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   CreateSimulationRequestDto,
-  EnvoiStatus,
+  EnvoiStatusDto,
   SimulationResponseDto,
-  SimulationStatus,
+  SimulationStatusDto,
 } from "@/services/dtos";
 import {
   createSimulation,
@@ -181,15 +181,15 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ data: null }, { status: 200 });
     }
 
-    let simulationStatus: SimulationStatus =
-      body.simulationStatus || SimulationStatus.DRAFT;
+    let simulationStatus: SimulationStatusDto =
+      body.simulationStatus || SimulationStatusDto.DRAFT;
 
-    if (simulationStatus === SimulationStatus.DRAFT) {
-      simulationStatus = SimulationStatus.CONFIRMED;
+    if (simulationStatus === SimulationStatusDto.DRAFT) {
+      simulationStatus = SimulationStatusDto.CONFIRMED;
     }
 
     body.simulationStatus = simulationStatus;
-    body.envoiStatus = body.envoiStatus || EnvoiStatus.PENDING;
+    body.envoiStatus = body.envoiStatus || EnvoiStatusDto.PENDING;
     body.id = Number(simulationIdAndToken.id);
     if (!body.id) {
       return NextResponse.json(

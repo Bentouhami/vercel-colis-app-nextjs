@@ -16,14 +16,14 @@ export enum AdminRoleDto {
   ACCOUNTANT = "ACCOUNTANT",
 }
 
-export enum SimulationStatus {
+export enum SimulationStatusDto {
   DRAFT = "DRAFT",
   CONFIRMED = "CONFIRMED",
   COMPLETED = "COMPLETED",
   CANCELLED = "CANCELLED",
 }
 
-export enum EnvoiStatus {
+export enum EnvoiStatusDto {
   PENDING = "PENDING",
   SENT = "SENT",
   DELIVERED = "DELIVERED",
@@ -31,7 +31,14 @@ export enum EnvoiStatus {
   RETURNED = "RETURNED",
 }
 
-export enum AppointmentStatus {
+export enum PaymentStatusDto {
+  PENDING = "PENDING",
+  PAID = "PAID",
+  FAILED = "FAILED",
+  REFUNDED = "REFUNDED",
+}
+
+export enum AppointmentStatusDto {
   PENDING = "PENDING",
   CONFIRMED = "CONFIRMED",
   CANCELLED = "CANCELLED",

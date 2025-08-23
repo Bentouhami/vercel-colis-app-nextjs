@@ -42,10 +42,10 @@ import { COLIS_MAX_PER_ENVOI } from '@/utils/constants';
 import { checkAuthStatus } from '@/lib/auth-utils';
 
 // ──────────────── skeleton & modal reused as‑is
-import SimulationSkeleton from '@/app/client/simulation/SimulationSkeleton';
 import SimulationConfirmationModal from '@/components/modals/SimulationConfirmationModal';
 import { getSimulationFromCookie } from '@/lib/simulationCookie';
 import { updateSimulationUserId } from '@/services/backend-services/Bk_SimulationService';
+import SimulationSkeleton from '@/components/skeletons/SimulationSkeleton';
 
 // ──────────────────────────────────────────────────────────────────────────────
 //                         ───  TYPES & CONSTANTS  ───                          

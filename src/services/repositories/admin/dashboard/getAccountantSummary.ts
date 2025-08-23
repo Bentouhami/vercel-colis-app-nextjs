@@ -1,6 +1,7 @@
 import { AccountantDashboardSummary } from "@/services/dtos/admins/DashboardSummaryDto";
-import { prisma } from "@/lib/prisma";
-import { PaymentStatus } from "@prisma/client";
+import { PaymentStatusDto } from "@/services/dtos/enums/EnumsDto";
+import { prisma } from "@/utils/db";
+// import { prisma } from "@/lib/prisma";
 
 export async function getAccountantSummary(): Promise<AccountantDashboardSummary> {
   const currentDate = new Date();
@@ -24,7 +25,7 @@ export async function getAccountantSummary(): Promise<AccountantDashboardSummary
       // Revenus totaux
       prisma.payment.aggregate({
         where: {
-          status: PaymentStatus.PAID,
+          status: PaymentStatusDto.PAID,
           isDeleted: false,
         },
         _sum: { amount: true },
@@ -42,7 +43,7 @@ export async function getAccountantSummary(): Promise<AccountantDashboardSummary
       ...monthsData.map((month) =>
         prisma.payment.aggregate({
           where: {
-            status: PaymentStatus.PAID,
+            status: PaymentStatusDto.PAID,
             isDeleted: false,
             createdAt: {
               gte: month.startDate,

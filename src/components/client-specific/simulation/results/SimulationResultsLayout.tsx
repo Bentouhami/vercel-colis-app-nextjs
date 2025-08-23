@@ -27,7 +27,7 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { SimulationResponseDto } from "@/services/dtos"
-import { SimulationStatus } from "@/services/dtos/enums/EnumsDto"
+import { SimulationStatusDto } from "@/services/dtos/enums/EnumsDto"
 
 interface Props {
     results: SimulationResponseDto
@@ -40,22 +40,22 @@ interface Props {
 }
 
 const statusConfig = {
-    [SimulationStatus.DRAFT]: {
+    [SimulationStatusDto.DRAFT]: {
         label: "Brouillon",
         color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
         icon: AlertCircle,
     },
-    [SimulationStatus.CONFIRMED]: {
+    [SimulationStatusDto.CONFIRMED]: {
         label: "Confirmé",
         color: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
         icon: CheckCircle2,
     },
-    [SimulationStatus.COMPLETED]: {
+    [SimulationStatusDto.COMPLETED]: {
         label: "Terminé",
         color: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
         icon: CheckCircle2,
     },
-    [SimulationStatus.CANCELLED]: {
+    [SimulationStatusDto.CANCELLED]: {
         label: "Annulé",
         color: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
         icon: AlertCircle,
@@ -74,7 +74,7 @@ export default function SimulationResultsLayout({
     const [isVisible, setIsVisible] = useState(false)
     const [activeTab, setActiveTab] = useState("overview")
 
-    const statusInfo = statusConfig[results.simulationStatus] || statusConfig[SimulationStatus.DRAFT]
+    const statusInfo = statusConfig[results.simulationStatus] || statusConfig[SimulationStatusDto.DRAFT]
     const StatusIcon = statusInfo.icon
 
     useEffect(() => {

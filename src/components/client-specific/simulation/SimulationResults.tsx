@@ -13,7 +13,7 @@ import { checkAuthStatus } from "@/lib/auth-utils";
 import ResultsSkeleton from "@/app/client/simulation/results/resultsSkeleton";
 import LoginPromptModal from "@/components/modals/LoginPromptModal";
 import { SimulationResponseDto } from "@/services/dtos";
-import { SimulationStatus } from "@/services/dtos/enums/EnumsDto";
+import { SimulationStatusDto } from "@/services/dtos/enums/EnumsDto";
 
 // Shadcn UI Components
 import { Button } from "@/components/ui/button";
@@ -143,7 +143,7 @@ export default function SimulationResults() {
                     // Only attempt to update userId if authenticated and simulation is not yet associated with a user
                     if (isAuthenticated && userId && !results.userId) {
                         results.userId = Number(userId);
-                        results.simulationStatus = SimulationStatus.CONFIRMED; // Consider if this status change is always desired here
+                        results.simulationStatus = SimulationStatusDto.CONFIRMED; // Consider if this status change is always desired here
                         const response = await updateSimulationUserId(results.id, results.userId);
                         if (!response) {
                             toast.error("Une erreur est survenue lors de la mise à jour de la simulation.");

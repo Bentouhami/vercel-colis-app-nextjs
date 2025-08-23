@@ -1,3 +1,6 @@
+// path: src\app\api\v1\dashboard\super-admin\route.ts
+export const runtime = "nodejs";
+
 import { NextResponse } from "next/server";
 import { AdminDashboardService } from "@/services/backend-services/AdminDashboardService";
 

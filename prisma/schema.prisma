@@ -1,21 +1,29 @@
-// path: src/lib/prisma/schema.prisma
+// // path: src/lib/prisma/schema.prisma
 
-datasource db {
-  provider  = "postgresql"
-  url       = env("POSTGRES_PRISMA_URL")
-  directUrl = env("POSTGRES_URL_NON_POOLING")
-}
-
-//
 // datasource db {
-//   provider = "postgresql"
-//   url      = env("DATABASE_URL")
+//   provider  = "postgres"
+//   url       = env("POSTGRES_PRISMA_URL")
 // }
+
+// // datasource db {
+// //   provider = "postgresql"
+// //   url      = env("DATABASE_URL")
+// // }
+
+// generator client {
+//   provider        = "prisma-client-js"
+//   previewFeatures = ["driverAdapters"]
+//   // output          = "app/generated/prisma/client"
+// }
+// prisma/schema.prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
 
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
-  // output          = "app/generated/prisma/client"
 }
 
 enum PaymentMethod {
@@ -150,8 +158,8 @@ model User {
   createdAt                DateTime  @default(now())
   updatedAt                DateTime  @updatedAt
   isDeleted                Boolean   @default(false)
-  deletedAt               DateTime? // Date de suppression (soft delete)
-  isActive                Boolean   @default(true) // Indique si le compte est actif
+  deletedAt                DateTime? // Date de suppression (soft delete)
+  isActive                 Boolean   @default(true) // Indique si le compte est actif
 
   isEnterprise Boolean   @default(false)
   lastLogin    DateTime?

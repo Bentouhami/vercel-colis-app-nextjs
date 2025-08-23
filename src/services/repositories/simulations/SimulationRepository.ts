@@ -7,10 +7,10 @@ import {
   CreatedSimulationResponseDto,
   CreateSimulationRequestDto,
   EnvoiDto,
-  EnvoiStatus,
+  EnvoiStatusDto,
   RoleDto,
   SimulationResponseDto,
-  SimulationStatus,
+  SimulationStatusDto,
   SimulationSummaryDto,
   UserAddressDto,
   UserDto,
@@ -116,8 +116,8 @@ export class SimulationRepository implements ISimulationRepository {
         id: simulation.id,
         userId: simulation.userId,
         destinataireId: simulation.destinataireId,
-        simulationStatus: simulation.simulationStatus as SimulationStatus,
-        envoiStatus: simulation.envoiStatus as EnvoiStatus,
+        simulationStatus: simulation.simulationStatus as SimulationStatusDto,
+        envoiStatus: simulation.envoiStatus as EnvoiStatusDto,
         totalWeight: simulation.totalWeight,
         totalVolume: simulation.totalVolume,
         totalPrice: simulation.totalPrice,
@@ -502,10 +502,11 @@ export class SimulationRepository implements ISimulationRepository {
       }));
 
       // prepare envoiStatus object to return as EnvoiStatusDto
-      const envoiStatus = simulation.envoiStatus as EnvoiStatus;
+      const envoiStatus = simulation.envoiStatus as EnvoiStatusDto;
 
       // prepare simulationStatus object to return as SimulationStatusDto
-      const simulationStatus = simulation.simulationStatus as SimulationStatus;
+      const simulationStatus =
+        simulation.simulationStatus as SimulationStatusDto;
 
       // prepare clientAddress object to return as AddressDto
       const clientUserAddress = simulation.client?.userAddresses[0].address;
@@ -724,8 +725,9 @@ export class SimulationRepository implements ISimulationRepository {
     const simulationSummaryObj: SimulationSummaryDto = {
       id: simulationSummary.id,
       transportId: simulationSummary.transportId,
-      simulationStatus: simulationSummary.simulationStatus as SimulationStatus,
-      envoiStatus: simulationSummary.envoiStatus as EnvoiStatus,
+      simulationStatus:
+        simulationSummary.simulationStatus as SimulationStatusDto,
+      envoiStatus: simulationSummary.envoiStatus as EnvoiStatusDto,
       totalWeight: simulationSummary.totalWeight,
       totalVolume: simulationSummary.totalVolume,
       totalPrice: simulationSummary.totalPrice,

@@ -1,6 +1,8 @@
 import { SuperAdminDashboardSummaryBackend } from "@/services/dtos/admins/DashboardSummaryDto";
-import { prisma } from "@/lib/prisma";
-import { PaymentStatus, Role } from "@prisma/client";
+import { PaymentStatusDto, RoleDto } from "@/services/dtos/enums/EnumsDto";
+import { prisma } from "@/utils/db";
+// import { prisma } from "@/lib/prisma";
+// import { PaymentStatus } from "@prisma/client";
 
 export async function getSuperAdminSummary(): Promise<SuperAdminDashboardSummaryBackend> {
   const currentDate = new Date();
@@ -25,7 +27,7 @@ export async function getSuperAdminSummary(): Promise<SuperAdminDashboardSummary
     // Total des clients
     prisma.user.count({
       where: {
-        role: Role.CLIENT,
+        role: RoleDto.CLIENT,
         isDeleted: false,
       },
     }),
@@ -33,7 +35,7 @@ export async function getSuperAdminSummary(): Promise<SuperAdminDashboardSummary
     // Revenus totaux via les paiements (utilise Payment.amount)
     prisma.payment.aggregate({
       where: {
-        status: PaymentStatus.PAID,
+        status: PaymentStatusDto.PAID,
         isDeleted: false,
       },
       _sum: { amount: true },
@@ -42,7 +44,7 @@ export async function getSuperAdminSummary(): Promise<SuperAdminDashboardSummary
     // Admins d'agence actifs
     prisma.user.count({
       where: {
-        role: Role.AGENCY_ADMIN,
+        role: RoleDto.AGENCY_ADMIN,
         isActive: true,
         isDeleted: false,
       },

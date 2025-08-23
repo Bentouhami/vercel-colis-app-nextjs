@@ -1,8 +1,10 @@
+// path: src\app\api\v1\admin\dashboard\route.ts
+export const runtime = "nodejs";
+
 import { NextRequest, NextResponse } from "next/server";
-import { Role } from "@prisma/client";
-import { auth } from "@/auth/auth";
 import { RoleDto } from "@/services/dtos/enums/EnumsDto";
 import { AdminDashboardBackendService } from "@/services/backend-services/AdminDashboardBackendService";
+import { auth } from "@/auth/auth";
 
 export async function GET(request: NextRequest) {
   try {
@@ -32,19 +34,19 @@ export async function GET(request: NextRequest) {
     let dashboardData;
 
     switch (userRole) {
-      case Role.SUPER_ADMIN:
+      case RoleDto.SUPER_ADMIN:
         dashboardData =
           await AdminDashboardBackendService.getSuperAdminDashboard();
         break;
 
-      case Role.AGENCY_ADMIN:
+      case RoleDto.AGENCY_ADMIN:
         dashboardData =
           await AdminDashboardBackendService.getAgencyAdminDashboard(
             Number(userId)
           );
         break;
 
-      case Role.ACCOUNTANT:
+      case RoleDto.ACCOUNTANT:
         dashboardData =
           await AdminDashboardBackendService.getAccountantDashboard();
         break;

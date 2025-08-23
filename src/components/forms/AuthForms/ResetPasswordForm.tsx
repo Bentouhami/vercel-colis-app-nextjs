@@ -1,4 +1,4 @@
-// path: src\components\forms\AuthForms\ResetPasswordForm.tsx
+// path: src/components/forms/AuthForms/ResetPasswordForm.tsx
 "use client"
 
 import React, { useState, useTransition, useEffect } from "react"
@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button"
 import { Eye, EyeOff, Lock } from "lucide-react"
 import { resetPasswordSchema } from "@/utils/validationSchema"
 import { ResetPasswordDto } from "@/services/dtos/auth/authDtos"
-import {checkResetToken, resetPassword} from "@/services/frontend-services/AuthService";
+import { checkResetToken, resetPassword } from "@/services/frontend-services/AuthService";
 
 export default function ResetPasswordForm() {
     const router = useRouter()

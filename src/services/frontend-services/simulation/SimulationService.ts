@@ -5,11 +5,11 @@ import { calculateEnvoiDetails } from "@/services/frontend-services/simulation/S
 import { getTarifs } from "@/services/frontend-services/TarifsService";
 import {
   CreateSimulationRequestDto,
-  EnvoiStatus,
+  EnvoiStatusDto,
   PartielUpdateSimulationDto,
   SimulationDtoRequest,
   SimulationResponseDto,
-  SimulationStatus,
+  SimulationStatusDto,
   UpdateEditedSimulationDto,
 } from "@/services/dtos";
 import { getAgencyId } from "@/services/frontend-services/AgencyService";
@@ -116,8 +116,8 @@ export async function submitSimulation(simulationData: SimulationDtoRequest) {
     departureAgencyId: departureAgencyId,
     arrivalAgencyId: arrivalAgencyId,
     parcels: parcels,
-    simulationStatus: SimulationStatus.DRAFT,
-    envoiStatus: EnvoiStatus.PENDING,
+    simulationStatus: SimulationStatusDto.DRAFT,
+    envoiStatus: EnvoiStatusDto.PENDING,
     totalWeight: calculationResults.totalWeight,
     totalVolume: calculationResults.totalVolume,
     totalPrice: calculationResults.totalPrice,
@@ -272,8 +272,8 @@ export async function updateSimulationEdited(
     departureAgencyId: departureAgencyId,
     arrivalAgencyId: arrivalAgencyId,
     parcels: simulationData.parcels,
-    simulationStatus: SimulationStatus.DRAFT,
-    envoiStatus: EnvoiStatus.PENDING,
+    simulationStatus: SimulationStatusDto.DRAFT,
+    envoiStatus: EnvoiStatusDto.PENDING,
     totalWeight: calculationResults.totalWeight,
     totalVolume: calculationResults.totalVolume,
     totalPrice: calculationResults.totalPrice,

@@ -1,6 +1,7 @@
 "use client"
+
 import { useEffect, useState } from "react"
-import { Package, CheckCircle2 } from "lucide-react"
+import { MapPin } from "lucide-react"
 
 const SimulationSkeleton = () => {
     const [isVisible, setIsVisible] = useState(false)
@@ -42,64 +43,34 @@ const SimulationSkeleton = () => {
             <div className={`transition-all duration-500 delay-200 transform ${isVisible ? "opacity-100" : "opacity-0"}`}>
                 <div className="h-2 w-full rounded animate-shimmer mb-4" />
                 <div className="flex justify-between text-sm px-1 md:px-2">
-                    {[1, 2, 3, 4].map((i) => (
+                    {["Départ", "Destination", "Colis", "Confirmation"].map((step, i) => (
                         <div key={i} className="h-4 w-20 rounded animate-shimmer" />
                     ))}
                 </div>
             </div>
 
-            {/* Contenu principal */}
-            <div className="w-full">
+            {/* Contenu principal - simule une étape */}
+            <div className="relative min-h-[400px]">
                 <div
-                    className={`transition-all duration-500 delay-300 transform ${isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8"
+                    className={`absolute inset-0 transition-all duration-500 delay-300 transform ${isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8"
                         }`}
                 >
                     {/* Card principale */}
-                    <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md border space-y-6">
+                    <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md border">
                         {/* Header avec icône */}
                         <div className="flex items-center gap-2 mb-6">
-                            <Package className="text-primary h-5 w-5" />
+                            <MapPin className="text-blue-500 h-5 w-5" />
                             <div className="h-6 w-48 rounded animate-shimmer" />
                         </div>
 
-                        {/* Section principale */}
-                        <div className="space-y-4">
-                            <div className="h-4 w-32 rounded animate-shimmer" />
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                {[1, 2, 3].map((i) => (
-                                    <div key={i} className="space-y-2">
-                                        <div className="h-4 w-20 rounded animate-shimmer" />
-                                        <div className="h-10 w-full rounded animate-shimmer" />
-                                        <div className="h-3 w-16 rounded animate-shimmer" />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Section secondaire */}
-                        <div className="pt-4 border-t space-y-4">
-                            <div className="h-4 w-24 rounded animate-shimmer" />
-                            <div className="max-w-xs space-y-2">
-                                <div className="h-4 w-20 rounded animate-shimmer" />
-                                <div className="h-10 w-full rounded animate-shimmer" />
-                                <div className="h-3 w-32 rounded animate-shimmer" />
-                            </div>
-                        </div>
-
-                        {/* Section informations */}
-                        <div className="pt-4 border-t bg-muted/30 p-4 rounded-lg space-y-3">
-                            <div className="flex items-center gap-2">
-                                <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
-                                <div className="h-4 w-40 rounded animate-shimmer" />
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                {[1, 2, 3].map((i) => (
-                                    <div key={i} className="space-y-1">
-                                        <div className="h-3 w-16 rounded animate-shimmer" />
-                                        <div className="h-4 w-20 rounded animate-shimmer" />
-                                    </div>
-                                ))}
-                            </div>
+                        {/* Grille de champs */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {[1, 2, 3].map((i) => (
+                                <div key={i} className="space-y-2">
+                                    <div className="h-4 w-24 rounded animate-shimmer" />
+                                    <div className="h-10 w-full rounded animate-shimmer" />
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>

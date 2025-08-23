@@ -18,7 +18,6 @@ import { simulationRequestSchema } from "@/utils/validationSchema";
 import { SimulationDtoRequest } from "@/services/dtos";
 import { useApi } from '@/hooks/useApi';
 import SimulationConfirmationModal from "@/components/modals/SimulationConfirmationModal";
-import SimulationSkeleton from "@/app/client/simulation/SimulationSkeleton";
 import { checkAuthStatus } from "@/lib/auth-utils";
 import { getSimulationFromCookie } from "@/lib/simulationCookie";
 import { updateSimulationUserId } from "@/services/backend-services/Bk_SimulationService";
@@ -28,6 +27,7 @@ import DepartureFormStep from './DepartureFormStep';
 import DestinationFormStep from './DestinationFormStep';
 import ParcelFormStep from './ParcelFormStep';
 import ReviewSubmitStep from './ReviewSubmitStep';
+import SimulationSkeleton from "@/components/skeletons/SimulationSkeleton";
 
 const MultiStepSimulationForm = () => {
     const router = useRouter();

@@ -1,10 +1,5 @@
-import { prisma } from "@/lib/prisma";
-import {
-  Role,
-  PaymentStatus,
-  EnvoiStatus,
-  AppointmentStatus,
-} from "@prisma/client";
+// import { prisma } from "@/lib/prisma";
+
 import {
   AgencyPerformanceDto,
   SystemAlertDto,
@@ -13,7 +8,13 @@ import {
   MonthlyRevenueDto,
   RecentTransactionDto,
 } from "@/services/dtos/admin/DashboardDto";
-
+import { prisma } from "@/utils/db";
+import {
+  AppointmentStatusDto,
+  EnvoiStatusDto,
+  PaymentStatusDto,
+  RoleDto,
+} from "@/services/dtos/enums/EnumsDto";
 export class AdminDashboardRepository {
   /**
    * SUPER_ADMIN - Méthodes globales
@@ -28,7 +29,7 @@ export class AdminDashboardRepository {
   static async getTotalClients(): Promise<number> {
     return await prisma.user.count({
       where: {
-        role: Role.CLIENT,
+        role: RoleDto.CLIENT,
         isDeleted: false,
       },
     });
@@ -37,7 +38,7 @@ export class AdminDashboardRepository {
   static async getTotalRevenue(): Promise<number> {
     const result = await prisma.payment.aggregate({
       where: {
-        status: PaymentStatus.PAID,
+        status: PaymentStatusDto.PAID,
         isDeleted: false,
       },
       _sum: { amount: true },
@@ -49,7 +50,7 @@ export class AdminDashboardRepository {
     return await prisma.user.count({
       where: {
         role: {
-          in: [Role.SUPER_ADMIN, Role.AGENCY_ADMIN, Role.ACCOUNTANT],
+          in: [RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN, RoleDto.ACCOUNTANT],
         },
         isActive: true,
         isDeleted: false,
@@ -104,7 +105,7 @@ export class AdminDashboardRepository {
           where: {
             isDeleted: false,
             payment: {
-              status: PaymentStatus.PAID,
+              status: PaymentStatusDto.PAID,
             },
           },
           include: { payment: true },
@@ -154,7 +155,7 @@ export class AdminDashboardRepository {
     // Vérifier les paiements échoués
     const failedPayments = await prisma.payment.count({
       where: {
-        status: PaymentStatus.FAILED,
+        status: PaymentStatusDto.FAILED,
         isDeleted: false,
       },
     });
@@ -185,7 +186,7 @@ export class AdminDashboardRepository {
     const agencyStaff = await prisma.agencyStaff.findFirst({
       where: {
         staffId: adminId,
-        staffRole: Role.AGENCY_ADMIN,
+        staffRole: RoleDto.AGENCY_ADMIN,
       },
       include: { agency: true },
     });
@@ -208,7 +209,7 @@ export class AdminDashboardRepository {
           departureAgencyId: agencyId,
           isDeleted: false,
         },
-        status: PaymentStatus.PAID,
+        status: PaymentStatusDto.PAID,
         isDeleted: false,
       },
       _sum: { amount: true },
@@ -236,7 +237,7 @@ export class AdminDashboardRepository {
         agencyId,
         date: { gte: new Date() },
         status: {
-          in: [AppointmentStatus.PENDING, AppointmentStatus.CONFIRMED],
+          in: [AppointmentStatusDto.PENDING, AppointmentStatusDto.CONFIRMED],
         },
         isDeleted: false,
       },
@@ -265,7 +266,7 @@ export class AdminDashboardRepository {
     return await prisma.envoi.count({
       where: {
         departureAgencyId: agencyId,
-        envoiStatus: EnvoiStatus.PENDING,
+        envoiStatus: EnvoiStatusDto.PENDING,
         isDeleted: false,
       },
     });
@@ -275,7 +276,7 @@ export class AdminDashboardRepository {
     return await prisma.envoi.count({
       where: {
         departureAgencyId: agencyId,
-        envoiStatus: EnvoiStatus.DELIVERED,
+        envoiStatus: EnvoiStatusDto.DELIVERED,
         isDeleted: false,
       },
     });
@@ -326,7 +327,7 @@ export class AdminDashboardRepository {
         agencyId,
         date: { gte: new Date() },
         status: {
-          in: [AppointmentStatus.PENDING, AppointmentStatus.CONFIRMED],
+          in: [AppointmentStatusDto.PENDING, AppointmentStatusDto.CONFIRMED],
         },
         isDeleted: false,
       },
@@ -406,7 +407,7 @@ export class AdminDashboardRepository {
 
       const result = await prisma.payment.aggregate({
         where: {
-          status: PaymentStatus.PAID,
+          status: PaymentStatusDto.PAID,
           isDeleted: false,
           createdAt: {
             gte: startOfMonth,
@@ -428,7 +429,7 @@ export class AdminDashboardRepository {
   static async getPendingPayments(): Promise<number> {
     return await prisma.payment.count({
       where: {
-        status: PaymentStatus.PENDING,
+        status: PaymentStatusDto.PENDING,
         isDeleted: false,
       },
     });
@@ -437,7 +438,7 @@ export class AdminDashboardRepository {
   static async getFailedPayments(): Promise<number> {
     return await prisma.payment.count({
       where: {
-        status: PaymentStatus.FAILED,
+        status: PaymentStatusDto.FAILED,
         isDeleted: false,
       },
     });

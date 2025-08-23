@@ -4,7 +4,10 @@
 import { UserDto } from "@/services/dtos/users/UserDto";
 import { AgencyDto } from "@/services/dtos/agencies/AgencyDto";
 import { ParcelDto } from "@/services/dtos/parcels/ParcelDto";
-import { EnvoiStatus, SimulationStatus } from "@/services/dtos/enums/EnumsDto";
+import {
+  EnvoiStatusDto,
+  SimulationStatusDto,
+} from "@/services/dtos/enums/EnumsDto";
 export interface EnvoiDto {
   id?: number;
   destinationId?: number;
@@ -19,8 +22,8 @@ export interface EnvoiDto {
   departureAgency?: AgencyDto | null; // Allow null
   arrivalAgencyId: number;
   arrivalAgency?: AgencyDto | null; // Allow null
-  simulationStatus: SimulationStatus;
-  envoiStatus: EnvoiStatus;
+  simulationStatus: SimulationStatusDto;
+  envoiStatus: EnvoiStatusDto;
   paid: boolean;
   totalWeight: number;
   totalVolume: number;
@@ -83,8 +86,8 @@ export interface EnvoiResponseDto {
   qrCodeUrl: string;
   arrivalAgencyId: number;
   departureAgencyId: number;
-  envoiStatus: EnvoiStatus;
-  simulationStatus: SimulationStatus;
+  envoiStatus: EnvoiStatusDto;
+  simulationStatus: SimulationStatusDto;
   userId: number;
   paid: boolean;
   transportId: number;

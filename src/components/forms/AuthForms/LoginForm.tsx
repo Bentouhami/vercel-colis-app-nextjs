@@ -1,3 +1,5 @@
+// path: src/components/forms/AuthForms/LoginForm.tsx
+
 "use client"
 
 import { useState, useTransition, useEffect } from "react"

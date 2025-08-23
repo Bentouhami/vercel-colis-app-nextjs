@@ -1,4 +1,4 @@
-// src/components/forms/AuthForms/ResetPasswordFormWrapper.tsx
+// path: src/components/forms/AuthForms/ResetPasswordFormWrapper.tsx
 'use client'
 
 import { Suspense } from 'react'
