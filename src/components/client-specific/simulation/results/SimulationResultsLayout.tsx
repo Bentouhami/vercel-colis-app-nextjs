@@ -165,7 +165,7 @@ export default function SimulationResultsLayout({
                                         className={`flex items-center gap-3 text-gray-600 dark:text-gray-300 transition-all duration-500 delay-100 transform ${isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"
                                             }`}
                                     >
-                                        <span className="text-lg font-medium">Simulation #{results.id}</span>
+                                        
                                         <Badge className={cn("font-medium flex items-center gap-1", statusInfo.color)}>
                                             <StatusIcon className="h-3 w-3" />
                                             {statusInfo.label}
@@ -614,10 +614,7 @@ export default function SimulationResultsLayout({
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent className="text-sm space-y-2">
-                                        <div className="flex justify-between">
-                                            <span className="text-muted-foreground">ID Client :</span>
-                                            <span className="font-medium">#{results.userId}</span>
-                                        </div>
+                                        
                                         <div className="flex justify-between">
                                             <span className="text-muted-foreground">Statut :</span>
                                             <Badge variant="outline" className="text-xs">

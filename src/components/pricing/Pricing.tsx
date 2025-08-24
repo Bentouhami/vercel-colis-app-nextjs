@@ -1,96 +1,103 @@
-"use client"
+// path: src/components/pricing/Pricing.tsx
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Check, Star, Zap, Crown, Gift, Sparkles } from "lucide-react"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Check, Star, Zap, Crown, Gift, Sparkles, Clock } from "lucide-react";
+import type { ComponentType } from "react";
 
 type Plan = {
-    name: string
-    price: string
-    originalPrice?: string
-    description: string
-    features: string[]
-    buttonLabel: string
-    popular?: boolean
-    icon: any
-    color: string
-    badge?: string
-}
+    name: string;
+    price: string;
+    originalPrice?: string;
+    description: string;
+    features: string[];
+    buttonLabel: string;
+    popular?: boolean;
+    icon: ComponentType<any>;
+    color: string;
+    badge?: string;
+};
+
+type PricingProps = {
+    /** Met l’UI en mode coming soon (désactive actions + bandeau d’info) */
+    comingSoon?: boolean;
+};
 
 const plans: Plan[] = [
     {
-        name: "Mensuel",
-        price: "20€",
-        description: "Parfait pour débuter avec 5 livraisons incluses.",
+        name: "Particulier",
+        price: "10€",
+        description: "Idéal pour les envois occasionnels avec des avantages exclusifs.",
         features: [
-            "5 livraisons incluses",
-            "Support standard",
-            "Notifications de suivi",
-            "Interface web",
+            "5% de réduction sur tous les envois",
             "Suivi en temps réel",
+            "Support par email",
+            "Historique des envois (30 jours)",
+            "Assurance de base incluse",
         ],
-        buttonLabel: "Commencer",
+        buttonLabel: "Choisir ce plan",
         icon: Gift,
         color: "from-green-500 to-green-600",
-        badge: "Starter",
+        badge: "Pour les particuliers",
     },
     {
-        name: "Trimestriel",
-        price: "50€",
-        originalPrice: "60€",
-        description: "Le plus populaire avec 15 livraisons incluses.",
+        name: "Agence Standard",
+        price: "29€",
+        description: "Pour les petites agences et professionnels qui expédient régulièrement.",
         features: [
-            "15 livraisons incluses",
-            "Support prioritaire",
-            "Notifications avancées",
-            "Statistiques détaillées",
-            "API access",
-            "Rapports mensuels",
+            "Accès au tableau de bord agence",
+            "Gestion des clients et envois",
+            "10% de réduction sur tous les envois",
+            "Support prioritaire (email & chat)",
+            "Statistiques de base",
+            "Accès à l'API (100 appels/mois)",
         ],
         buttonLabel: "Choisir ce plan",
         popular: true,
         icon: Star,
         color: "from-blue-500 to-blue-600",
-        badge: "Populaire",
+        badge: "Pour les agences",
     },
     {
-        name: "Annuel",
-        price: "180€",
-        originalPrice: "240€",
-        description: "Économisez 25% avec 60 livraisons incluses.",
+        name: "Agence Premium",
+        price: "150€",
+        originalPrice: "180€",
+        description: "La solution complète pour les agences à fort volume d'envoi.",
         features: [
-            "60 livraisons incluses",
-            "Support premium",
-            "Notifications temps réel",
-            "Rapports avancés",
-            "API illimitée",
-            "Formation personnalisée",
+            "Toutes les fonctionnalités Agence Standard",
+            "15% de réduction sur tous les envois",
+            "Support dédié 24/7 (téléphone)",
+            "Statistiques et rapports avancés",
+            "Accès à l'API illimité",
+            "Gestion multi-utilisateurs",
+            "Intégrations sur mesure",
         ],
-        buttonLabel: "Économiser 25%",
+        buttonLabel: "Choisir ce plan",
         icon: Zap,
         color: "from-purple-500 to-purple-600",
-        badge: "Économique",
+        badge: "Pour les grandes agences",
     },
     {
-        name: "Premium",
-        price: "100€",
-        description: "Solution complète avec livraisons illimitées.",
+        name: "Sur Mesure",
+        price: "Contact",
+        description: "Une solution entièrement personnalisée pour les besoins logistiques complexes.",
         features: [
-            "Livraisons illimitées",
-            "Support 24/7",
-            "Notifications temps réel",
-            "Livraison express",
-            "Manager dédié",
-            "Intégrations personnalisées",
+            "Tarifs et réductions personnalisés",
+            "Manager de compte dédié",
+            "Développement de fonctionnalités prioritaires",
+            "SLA (Service Level Agreement) garanti",
+            "Formation et onboarding complet",
+            "Solution en marque blanche",
         ],
-        buttonLabel: "Contacter",
+        buttonLabel: "Nous contacter",
         icon: Crown,
         color: "from-orange-500 to-orange-600",
-        badge: "Enterprise",
+        badge: "Agence & Grand Compte",
     },
-]
+];
 
-export default function Pricing() {
+export default function Pricing({ comingSoon = false }: PricingProps) {
     return (
         <section className="py-20 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 min-h-screen">
             <div className="container mx-auto px-4">
@@ -107,10 +114,22 @@ export default function Pricing() {
                         Des tarifs transparents et flexibles pour tous vos besoins d&apos;expédition. Commencez gratuitement et évoluez
                         selon vos besoins.
                     </p>
+
+                    {comingSoon && (
+                        <div className="mt-6 inline-flex items-center gap-2 px-4 py-2 rounded-full border bg-white/70 dark:bg-gray-800/60 backdrop-blur-md">
+                            <Clock className="h-4 w-4 text-amber-600" />
+                            <span className="text-sm font-medium text-amber-700 dark:text-amber-400">
+                                Bientôt disponible — les achats sont temporairement désactivés
+                            </span>
+                        </div>
+                    )}
                 </div>
 
-                {/* Plans Grid - Alignement parfait */}
-                <div className="grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto">
+                {/* Plans Grid */}
+                <div
+                    className={`grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto ${comingSoon ? "opacity-90" : ""
+                        }`}
+                >
                     {plans.map((plan, i) => (
                         <div key={i} className="animate-slide-up h-full" style={{ animationDelay: `${i * 150}ms` }}>
                             <Card
@@ -144,6 +163,11 @@ export default function Pricing() {
                                     </div>
                                 )}
 
+                                {/* Coming soon overlay par carte (légère) */}
+                                {comingSoon && (
+                                    <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-t from-background/60 to-transparent" />
+                                )}
+
                                 <CardHeader className="text-center pb-4 pt-8">
                                     {/* Icon */}
                                     <div
@@ -159,7 +183,9 @@ export default function Pricing() {
                                         <plan.icon className="w-10 h-10 text-white" />
                                     </div>
 
-                                    <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white mb-3">{plan.name}</CardTitle>
+                                    <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                                        {plan.name}
+                                    </CardTitle>
                                     <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed min-h-[3rem] flex items-center justify-center">
                                         {plan.description}
                                     </p>
@@ -184,7 +210,7 @@ export default function Pricing() {
                                         )}
                                     </div>
 
-                                    {/* Features - Hauteur fixe pour l'alignement */}
+                                    {/* Features */}
                                     <div className="flex-grow mb-8">
                                         <ul className="space-y-4">
                                             {plan.features.map((feature, j) => (
@@ -204,7 +230,7 @@ export default function Pricing() {
                                         </ul>
                                     </div>
 
-                                    {/* Button - Toujours en bas */}
+                                    {/* Button */}
                                     <div className="mt-auto">
                                         <Button
                                             className={`
@@ -219,9 +245,12 @@ export default function Pricing() {
                         relative overflow-hidden
                         group/button
                       `}
+                                            disabled={comingSoon}
+                                            aria-disabled={comingSoon}
                                         >
-                                            <span className="relative z-10">{plan.buttonLabel}</span>
-                                            {/* Effet de brillance */}
+                                            <span className="relative z-10">
+                                                {comingSoon ? "Bientôt disponible" : plan.buttonLabel}
+                                            </span>
                                             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/button:translate-x-full transition-transform duration-700" />
                                         </Button>
                                     </div>
@@ -242,13 +271,21 @@ export default function Pricing() {
                             variant="outline"
                             size="lg"
                             className="gap-2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border-2 hover:border-blue-300 transition-all duration-300 hover:scale-105"
+                            disabled={comingSoon}
+                            aria-disabled={comingSoon}
                         >
                             <Crown className="w-4 h-4" />
-                            Contactez notre équipe
+                            {comingSoon ? "Bientôt disponible" : "Contactez notre équipe"}
                         </Button>
+
+                        {comingSoon && (
+                            <p className="mt-3 text-xs text-muted-foreground">
+                                Les abonnements seront activés prochainement. Les tarifs affichés sont indicatifs.
+                            </p>
+                        )}
                     </div>
                 </div>
             </div>
         </section>
-    )
+    );
 }

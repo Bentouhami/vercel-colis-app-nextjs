@@ -1,13 +1,11 @@
-// src/app/client/services/page.tsx
-
-
+// path: src/app/client/services/page.tsx
 import Pricing from "@/components/pricing/Pricing";
 
-const ServicesPage = () => {
+export default function ServicesPage() {
     return (
         <div>
-            <Pricing />
+            {/* Active le mode "Coming Soon" ici */}
+            <Pricing comingSoon />
         </div>
-    )
+    );
 }
-export default ServicesPage

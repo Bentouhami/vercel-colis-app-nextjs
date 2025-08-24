@@ -102,7 +102,7 @@ export default function SimulationResultsPage() {
         try {
             if (navigator.share) {
                 await navigator.share({
-                    title: `Simulation d'envoi #${results?.id}`,
+                    title: `Simulation d'envoi - ${results?.parcels.length} colis`,
                     text: `Découvrez ma simulation d'envoi de ${results?.parcels.length} colis`,
                     url: window.location.href,
                 })
@@ -119,7 +119,6 @@ export default function SimulationResultsPage() {
     const handleExport = () => {
         if (!results) return
         const data = {
-            simulationId: results.id,
             departure: {
                 country: results.departureCountry,
                 city: results.departureCity,
@@ -143,7 +142,7 @@ export default function SimulationResultsPage() {
         const url = URL.createObjectURL(blob)
         const a = document.createElement("a")
         a.href = url
-        a.download = `simulation-${results.id}.json`
+        a.download = `simulation.json`
         document.body.appendChild(a)
         a.click()
         document.body.removeChild(a)
@@ -169,7 +168,7 @@ export default function SimulationResultsPage() {
     return (
         <PageLayout
             title="Résultats de simulation"
-            subtitle={`Simulation #${results.id} - ${results.parcels.length} colis`}
+            subtitle={`${results.parcels.length} colis`}
             icon={<PackageSearch className="h-6 w-6 text-primary" />}
             headerActions={headerActions}
             maxWidth="full"

@@ -1,402 +1,366 @@
-// path: prisma/seed.js
-import {PrismaClient} from "@prisma/client";
+// prisma/seed.js
+import { PrismaClient } from "@prisma/client";
 import fs from "fs";
 import path from "path";
 
-
 const prisma = new PrismaClient();
 
+// -------- helpers -------------------------------------------------------------
+
+/** small pause; helps keep serverless pools happy */
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/** split an array into chunks of size n */
+const chunk = (arr, n) => {
+  const res = [];
+  for (let i = 0; i < arr.length; i += n) res.push(arr.slice(i, i + n));
+  return res;
+};
+
+/**
+ * createMany in chunks to avoid timeouts / dropped connections
+ * @param {Function} createManyFn - model.createMany
+ * @param {Array} data - rows to insert
+ * @param {number} size - chunk size
+ * @param {string} label - for logs
+ */
+async function createManyChunked(createManyFn, data, size, label) {
+  let total = 0;
+  for (const [i, part] of chunk(data, size).entries()) {
+    const { count } = await createManyFn({ data: part, skipDuplicates: true });
+    total += count;
+    // tiny delay helps Neon/Vercel PgBouncer
+    await sleep(30);
+  }
+  if (data.length) {
+    console.log(`  • ${label}: inserted ${total} (skipDuplicates on)`);
+  }
+  return total;
+}
+
+/** Ensure address exists (there’s no unique constraint, so we do "find or create") */
+async function ensureAddress({
+  street,
+  streetNumber,
+  cityId,
+  boxNumber = null,
+  complement = null,
+}) {
+  const existing = await prisma.address.findFirst({
+    where: { street, streetNumber, cityId, boxNumber, complement },
+    select: { id: true },
+  });
+  if (existing) return existing;
+  return prisma.address.create({
+    data: { street, streetNumber, cityId, boxNumber, complement },
+  });
+}
+
+/** Ensure agency exists (unique on [name, addressId]) */
+async function ensureAgency({
+  name,
+  addressId,
+  location,
+  phoneNumber,
+  email,
+  capacity,
+  availableSlots,
+}) {
+  const existing = await prisma.agency.findFirst({
+    where: { name, addressId },
+    select: { id: true },
+  });
+  if (existing) return existing;
+  return prisma.agency.create({
+    data: {
+      name,
+      addressId,
+      location,
+      phoneNumber,
+      email,
+      capacity,
+      availableSlots,
+    },
+  });
+}
+
+/** Ensure singleton transport by number */
+async function ensureTransport({
+  number,
+  baseWeight,
+  currentWeight,
+  baseVolume,
+  currentVolume,
+  isAvailable,
+}) {
+  const existing = await prisma.transport.findFirst({
+    where: { number },
+    select: { id: true },
+  });
+  if (existing) return existing;
+  return prisma.transport.create({
+    data: {
+      number,
+      baseWeight,
+      currentWeight,
+      baseVolume,
+      currentVolume,
+      isAvailable,
+    },
+  });
+}
+
+/** Ensure global tarifs (agencyId = null) exists once */
+async function ensureGlobalTarifs({
+  weightRate,
+  volumeRate,
+  baseRate,
+  fixedRate,
+}) {
+  const existing = await prisma.tarifs.findFirst({
+    where: { agencyId: null },
+    select: { id: true },
+  });
+  if (existing) return existing;
+  return prisma.tarifs.create({
+    data: { agencyId: null, weightRate, volumeRate, baseRate, fixedRate },
+  });
+}
+
+// -------- main ---------------------------------------------------------------
+
 async function main() {
+  // region countries + timezones + cities
+  console.log("🌍 Seeding countries, timezones, and cities…");
 
-//region insert countries, cities, and timezones
-    console.log("🌍 Seeding countries, cities, and timezones...");
+  const dataFilePath = path.join(
+    process.cwd(),
+    "public/datas/countries+cities.json"
+  );
+  if (!fs.existsSync(dataFilePath)) {
+    console.error("ERREUR: Le fichier countries+cities.json est introuvable.");
+    process.exit(1);
+  }
 
-    // Define the path to your JSON file
-    const dataFilePath = path.join(process.cwd(), "public/datas/countries+cities.json");
-    if (!fs.existsSync(dataFilePath)) {
-        console.error("ERREUR: Le fichier countries+cities.json est introuvable.");
-        process.exit(1);
-    }
+  const countriesData = JSON.parse(fs.readFileSync(dataFilePath, "utf-8"));
+  const allowedIso2 = new Set(["MA", "BE", "FR", "ES", "DE"]);
+  const filteredCountriesData = countriesData.filter((c) =>
+    allowedIso2.has(c.iso2)
+  );
 
-    // Load the JSON data
-    const countriesData = JSON.parse(fs.readFileSync(dataFilePath, "utf-8"));
+  // CHUNK SIZE: adjust if you still see P1017 (try 200–1000). 500 is a good default.
+  const CHUNK = 500;
 
-    // Define allowed ISO2 codes for the countries to seed
-    const allowedIso2 = new Set(["MA", "BE", "FR", "ES", "DE"]);
-    // Filter the country data to only include those in the allowed set
-    const filteredCountriesData = countriesData.filter(country => allowedIso2.has(country.iso2));
-
-    // Loop over the filtered countries and seed each one along with its timezones and cities
-    for (const country of filteredCountriesData) {
-        const createdCountry = await prisma.country.upsert({
-            where: {iso2: country.iso2},
-            update: {},
-            create: {
-                name: country.name,
-                iso2: country.iso2,
-                iso3: country.iso3,
-                phonecode: country.phonecode,
-                capital: country.capital || null,
-                currency: country.currency || null,
-                latitude: country.latitude || null,
-                longitude: country.longitude || null,
-                emoji: country.emoji || null,
-            },
-        });
-
-        console.log(`✅ Country "${country.name}" added.`);
-
-        // Seed timezones for the country
-        for (const timezone of country.timezones || []) {
-            await prisma.timezone.upsert({
-                where: {
-                    zoneName_countryId: {
-                        zoneName: timezone.zoneName,
-                        countryId: createdCountry.id,
-                    },
-                },
-                update: {},
-                create: {
-                    countryId: createdCountry.id,
-                    zoneName: timezone.zoneName,
-                    gmtOffset: timezone.gmtOffset,
-                    abbreviation: timezone.abbreviation,
-                },
-            });
-            console.log(`  🕒 Timezone "${timezone.zoneName}" added for ${country.name}.`);
-        }
-
-        // Seed cities for the country
-        for (const city of country.cities || []) {
-            await prisma.city.upsert({
-                where: {
-                    name_countryId: {
-                        name: city.name,
-                        countryId: createdCountry.id
-                    }
-                },
-                update: {},
-                create: {
-                    name: city.name,
-                    latitude: city.latitude || null,
-                    longitude: city.longitude || null,
-                    countryId: createdCountry.id,
-                },
-            });
-            console.log(` City "${city.name}" added for ${country.name}.`);
-        }
-    }
-
-    console.log("Seeding countries, cities, and timezones completed.");
-    //endregion
-
-    //region get cities ids
-    const saidiaCity = await prisma.city.findFirst({
-        where: {
-            name: "Saidia",
-            country: {
-                name: "Morocco",
-            },
-        },
+  for (const country of filteredCountriesData) {
+    // Countries are few → upsert is fine here
+    const createdCountry = await prisma.country.upsert({
+      where: { iso2: country.iso2 },
+      update: {},
+      create: {
+        name: country.name,
+        iso2: country.iso2,
+        iso3: country.iso3,
+        phonecode: country.phonecode,
+        capital: country.capital || null,
+        currency: country.currency || null,
+        latitude: country.latitude || null,
+        longitude: country.longitude || null,
+        emoji: country.emoji || null,
+      },
     });
 
-    if (!saidiaCity) {
-        throw new Error("La ville Saidia n'a pas été trouvée pour le pays Morocco.");
-    }
+    console.log(`✅ Country "${country.name}" ready.`);
 
-    console.log("ID de Saidia:", saidiaCity.id);
+    // Timezones → createMany in chunks (unique on [zoneName, countryId])
+    const tzRows = (country.timezones || []).map((tz) => ({
+      countryId: createdCountry.id,
+      zoneName: tz.zoneName,
+      gmtOffset: tz.gmtOffset,
+      abbreviation: tz.abbreviation,
+    }));
+    await createManyChunked(
+      prisma.timezone.createMany,
+      tzRows,
+      CHUNK,
+      `timezones for ${country.name}`
+    );
 
-    const berkaneCity = await prisma.city.findFirst({
-        where: {
-            name: "Berkane",
-            country: {
-                name: "Morocco",
-            },
-        }
+    // Cities → createMany in chunks (unique on [name, countryId])
+    const cityRows = (country.cities || []).map((ct) => ({
+      name: ct.name,
+      latitude: ct.latitude || null,
+      longitude: ct.longitude || null,
+      countryId: createdCountry.id,
+    }));
+    await createManyChunked(
+      prisma.city.createMany,
+      cityRows,
+      CHUNK,
+      `cities for ${country.name}`
+    );
+  }
+
+  console.log("✔ Seeding countries/timezones/cities completed.\n");
+  // endregion
+
+  // region query required cities
+  const findCityId = async (name, countryName) => {
+    const city = await prisma.city.findFirst({
+      where: { name, country: { name: countryName } },
+      select: { id: true },
     });
+    if (!city)
+      throw new Error(
+        `La ville ${name} n'a pas été trouvée pour le pays ${countryName}.`
+      );
+    return city.id;
+  };
 
-    if (!berkaneCity) {
-        throw new Error("La ville Berkane n'a pas été trouvée pour le pays Morocco.");
-    }
+  const saidiaId = await findCityId("Saidia", "Morocco");
+  const berkaneId = await findCityId("Berkane", "Morocco");
+  const oujdaId = await findCityId("Oujda-Angad", "Morocco");
+  const monsId = await findCityId("Mons", "Belgium");
+  const frameriesId = await findCityId("Frameries", "Belgium");
+  const charleroiId = await findCityId("Charleroi", "Belgium");
+  const bruxellesId = await findCityId("Brussels", "Belgium");
+  // endregion
 
-    console.log("ID de Berkane:", berkaneCity.id);
+  // region addresses (idempotent: find or create)
+  const bruxellesAddress = await ensureAddress({
+    street: "rue de Bruxelles",
+    streetNumber: "1",
+    cityId: bruxellesId,
+  });
+  const charleroiAddress = await ensureAddress({
+    street: "rue de Charleroi",
+    streetNumber: "1",
+    cityId: charleroiId,
+  });
+  const frameriesAddress = await ensureAddress({
+    street: "rue de Frameries",
+    streetNumber: "1",
+    cityId: frameriesId,
+  });
+  const monsAddress = await ensureAddress({
+    street: "rue de Mons",
+    streetNumber: "1",
+    cityId: monsId,
+  });
+  const oujdaAddress = await ensureAddress({
+    street: "rue de Oujda",
+    streetNumber: "1",
+    cityId: oujdaId,
+  });
+  const saidiaAddress = await ensureAddress({
+    street: "rue de Saidia",
+    streetNumber: "1",
+    cityId: saidiaId,
+  });
+  const berkaneAddress = await ensureAddress({
+    street: "rue de Berkane",
+    streetNumber: "1",
+    cityId: berkaneId,
+  });
+  console.log("✔ Addresses ready.");
+  // endregion
 
-    const oujdaCity = await prisma.city.findFirst({
-        where: {
-            name: "Oujda-Angad",
-            country: {
-                name: "Morocco",
-            },
-        }
-    });
+  // region agencies (idempotent on [name,addressId])
+  await ensureAgency({
+    name: "Agence de Frameries",
+    location: "Frameries",
+    phoneNumber: "+32495500000",
+    email: "agence.de.frameries@gmail.com",
+    capacity: 50,
+    availableSlots: 40,
+    addressId: frameriesAddress.id,
+  });
+  await ensureAgency({
+    name: "Agence de Bruxelles",
+    location: "Bruxelles",
+    phoneNumber: "+32494400000",
+    email: "agence.de.bruxelles@gmail.com",
+    capacity: 100,
+    availableSlots: 10,
+    addressId: bruxellesAddress.id,
+  });
+  await ensureAgency({
+    name: "Agence de Charleroi",
+    location: "Charleroi",
+    phoneNumber: "+32496600000",
+    email: "agence.de.charleroi@gmail.com",
+    capacity: 80,
+    availableSlots: 15,
+    addressId: charleroiAddress.id,
+  });
+  await ensureAgency({
+    name: "Agence de Mons",
+    location: "Mons",
+    phoneNumber: "+32497700000",
+    email: "agence.de.mons@gmail.com",
+    capacity: 120,
+    availableSlots: 20,
+    addressId: monsAddress.id,
+  });
+  await ensureAgency({
+    name: "Agence de Oujda",
+    location: "Oujda",
+    phoneNumber: "+21265500000",
+    email: "agence.de.oujda@gmail.com",
+    capacity: 100,
+    availableSlots: 15,
+    addressId: oujdaAddress.id,
+  });
+  await ensureAgency({
+    name: "Agence de Saidia",
+    location: "Saidia",
+    phoneNumber: "+212693300000",
+    email: "agence.de.saidia@gmail.com",
+    capacity: 100,
+    availableSlots: 15,
+    addressId: saidiaAddress.id,
+  });
+  await ensureAgency({
+    name: "Agence de Berkane",
+    location: "Berkane",
+    phoneNumber: "+21266600000",
+    email: "agence.de.berkane@gmail.com",
+    capacity: 100,
+    availableSlots: 15,
+    addressId: berkaneAddress.id,
+  });
+  console.log("✔ Agencies ready.");
+  // endregion
 
-    if (!oujdaCity) {
-        throw new Error("La ville Oujda n'a pas été trouvée pour le pays Morocco.");
-    }
-    console.log("ID de Oujda:", oujdaCity.id);
+  // region transport (idempotent by number)
+  await ensureTransport({
+    number: "1111-111-11",
+    isAvailable: true,
+    currentWeight: 0,
+    baseWeight: 15000.0,
+    currentVolume: 0,
+    baseVolume: 42000000.0,
+  });
+  console.log("✔ Transport ready.");
+  // endregion
 
-    const monsCity = await prisma.city.findFirst({
-        where: {
-            name: "Mons",
-            country: {
-                name: "Belgium",
-            },
-        },
-    });
+  // region global tarifs (singleton: agencyId = null)
+  await ensureGlobalTarifs({
+    weightRate: 1.6,
+    volumeRate: 0,
+    baseRate: 0,
+    fixedRate: 15.0,
+  });
+  console.log("✔ Global tarifs ready.");
+  // endregion
 
-    if (!monsCity) {
-        throw new Error("La ville Mons n'a pas été trouvée pour le pays Belgique.");
-    }
-
-    console.log("ID de Mons:", monsCity.id);
-
-    const frameriesCity = await prisma.city.findFirst({
-        where: {
-            name: "Frameries",
-            country: {
-                name: "Belgium",
-            },
-        },
-
-
-    });
-
-    if (!frameriesCity) {
-        throw new Error("La ville Frameries n'a pas été trouvée pour le pays Belgique.");
-    }
-
-    console.log("ID de Frameries:", frameriesCity.id);
-
-    const charleroiCity = await prisma.city.findFirst({
-        where: {
-            name: "Charleroi",
-            country: {
-                name: "Belgium",
-            },
-        }
-    });
-
-    if (!charleroiCity) {
-        throw new Error("La ville Charleroi n'a pas été trouvée pour le pays Belgique.");
-    }
-
-    console.log("ID de Charleroi:", charleroiCity.id);
-
-    const bruxellesCity = await prisma.city.findFirst({
-        where: {
-            name: "Brussels",
-            country: {
-                name: "Belgium",
-            },
-        }
-    });
-
-    if (!bruxellesCity) {
-        throw new Error("La ville Bruxelles n'a pas été trouvée pour le pays Belgique.");
-    }
-
-    console.log("ID de Bruxelles:", bruxellesCity.id);
-
-
-    //endregion
-
-    //region creates addresses for agencies
-// Création de l'adresse pour Bruxelles
-    const bruxellesAddress = await prisma.address.create({
-        data: {
-            street: 'rue de Bruxelles',
-            streetNumber: '1',
-            cityId: bruxellesCity.id,
-        }
-    });
-
-// Création de l'adresse pour Charleroi
-    const charleroiAddress = await prisma.address.create({
-        data: {
-            street: 'rue de Charleroi',
-            streetNumber: '1',
-            cityId: charleroiCity.id,
-        }
-    });
-
-// Création de l'adresse pour Frameries
-    const frameriesAddress = await prisma.address.create({
-        data: {
-            street: 'rue de Frameries',
-            streetNumber: '1',
-            cityId: frameriesCity.id,
-        }
-    });
-
-// Création de l'adresse pour Mons
-    const monsAddress = await prisma.address.create({
-        data: {
-            street: 'rue de Mons',
-            streetNumber: '1',
-            cityId: monsCity.id,
-        }
-    });
-
-// Création de l'adresse pour Oujda
-    const oujdaAddress = await prisma.address.create({
-        data: {
-            street: 'rue de Oujda',
-            streetNumber: '1',
-            cityId: oujdaCity.id,
-        }
-    });
-
-// Création de l'adresse pour Saidia
-    const saidiaAddress = await prisma.address.create({
-        data: {
-            street: 'rue de Saidia',
-            streetNumber: '1',
-            cityId: saidiaCity.id,
-        }
-    });
-
-// Création de l'adresse pour Berkane
-    const berkaneAddress = await prisma.address.create({
-        data: {
-            street: 'rue de Berkane',
-            streetNumber: '1',
-            cityId: berkaneCity.id,
-        }
-    });
-
-    console.log('Addresses created');
-//endregion
-
-    //region insert agencies
-    console.log("🌍 Seeding agencies...");
-    await prisma.agency.create({
-        data: {
-            name: 'Agence de Frameries',
-            location: 'Frameries',
-            phoneNumber: '+32495500000',
-            email: 'agence.de.frameries@gmail.com',
-            capacity: 50,
-            availableSlots: 40,
-            addressId: frameriesAddress.id,
-        }
-    });
-
-    // Agency : Agence de Bruxelles
-    await prisma.agency.create({
-        data: {
-            name: 'Agence de Bruxelles',
-            location: 'Bruxelles',
-            phoneNumber: '+32494400000',
-            email: 'agence.de.bruxelles@gmail.com',
-            capacity: 100,
-            availableSlots: 10,
-            addressId: bruxellesAddress.id,
-        }
-    });
-
-    // Agency : Agence de Charleroi
-    await prisma.agency.create({
-        data: {
-            name: 'Agence de Charleroi',
-            location: 'Charleroi',
-            phoneNumber: '+32496600000',
-            email: 'agence.de.charleroi@gmail.com',
-            capacity: 80,
-            availableSlots: 15,
-            addressId: charleroiAddress.id,
-        }
-    });
-
-    // Agency: Agence de Mons
-    await prisma.agency.create({
-        data: {
-            name: 'Agence de Mons',
-            location: 'Mons',
-            phoneNumber: '+32497700000',
-            email: 'agence.de.mons@gmail.com',
-            capacity: 120,
-            availableSlots: 20,
-            addressId: monsAddress.id,
-        }
-    });
-
-    // Agency: Agence de Oujda
-    await prisma.agency.create({
-        data: {
-            name: 'Agence de Oujda',
-            location: 'Oujda',
-            phoneNumber: '+21265500000',
-            email: 'agence.de.oujda@gmail.com',
-            capacity: 100,
-            availableSlots: 15,
-            addressId: oujdaAddress.id,
-        }
-    });
-
-    // Agency: Agence de Saidia
-    await prisma.agency.create({
-        data: {
-            name: 'Agence de Saidia',
-            location: 'Saidia',
-            phoneNumber: '+212693300000',
-            email: 'agence.de.saidia@gmail.com',
-            capacity: 100,
-            availableSlots: 15,
-            addressId: saidiaAddress.id,
-        }
-    });
-
-    // Agency: Agence de Berkane
-    await prisma.agency.create({
-        data: {
-            name: 'Agence de Berkane',
-            location: 'Berkane',
-            phoneNumber: '+21266600000',
-            email: 'agence.de.berkane@gmail.com',
-            capacity: 100,
-            availableSlots: 15,
-            addressId: berkaneAddress.id,
-        }
-    });
-
-    console.log('Agences created');
-
-
-    // Create a Transport
-    await prisma.transport.create({
-        data: {
-            isAvailable: true,
-            number: '1111-111-11',
-            currentWeight: 0,
-            baseWeight: 15000.0,
-            currentVolume: 0,
-            baseVolume: 42000000.0,
-        }
-    });
-
-    console.log('Transport created');
-
-
-    // Create global Tarifs (without agency)
-    await prisma.tarifs.create({
-        data: {
-            agencyId: null,
-            weightRate: 1.60,
-            volumeRate: 0,
-            baseRate: 0,
-            fixedRate: 15.00,
-        },
-    });
-
-    console.log('Tarifs created');
-
+  console.log("\n🎉 Seed completed.");
 }
 
 main()
-    .catch((e) => {
-        console.error(e);
-        process.exit(1);
-    })
-    .finally(async () => {
-        await prisma.$disconnect();
-    });
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

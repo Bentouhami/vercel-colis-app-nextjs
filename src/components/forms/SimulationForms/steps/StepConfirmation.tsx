@@ -149,20 +149,20 @@ const StepConfirmation: React.FC<Props> = ({ departure, destination, parcels, op
 
             {/* Résumé des colis */}
             <Card className="transition-all duration-300 hover:shadow-lg">
-                <CardHeader className="bg-purple-50 p-4 md:p-6">
+                <CardHeader className="bg-purple-50 dark:bg-purple-900/20 p-4 md:p-6">
                     <CardTitle className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div className="flex items-center gap-2 text-purple-700">
+                        <div className="flex items-center gap-2 text-purple-700 dark:text-purple-400">
                             <Package className="h-4 w-4 md:h-5 md:w-5" />
                             <span className="text-base md:text-lg">Résumé des Colis ({parcels.length})</span>
                         </div>
                         <div className="flex items-center gap-3 md:gap-4 text-sm">
                             <div className="flex items-center gap-1">
-                                <Scale className="h-4 w-4 text-green-600" />
-                                <span className="font-medium">{totalWeight.toFixed(1)} kg</span>
+                                <Scale className="h-4 w-4 text-green-600 dark:text-green-400" />
+                                <span className="font-medium text-foreground">{totalWeight.toFixed(1)} kg</span>
                             </div>
                             <div className="flex items-center gap-1">
-                                <Calculator className="h-4 w-4 text-blue-600" />
-                                <span className="font-medium">{(totalVolume / 1000000).toFixed(3)} m³</span>
+                                <Calculator className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                                <span className="font-medium text-foreground">{(totalVolume / 1000000).toFixed(3)} m³</span>
                             </div>
                         </div>
                     </CardTitle>
@@ -174,28 +174,28 @@ const StepConfirmation: React.FC<Props> = ({ departure, destination, parcels, op
                             return (
                                 <div
                                     key={index}
-                                    className="p-3 md:p-4 border rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors duration-200"
+                                    className="p-3 md:p-4 border rounded-lg bg-muted hover:bg-gray-100/80 dark:hover:bg-gray-800/80 transition-colors duration-200"
                                 >
                                     <div className="flex items-center justify-between mb-3">
-                                        <span className="font-medium text-sm">Colis {index + 1}</span>
+                                        <span className="font-medium text-sm text-foreground">Colis {index + 1}</span>
                                         <Badge variant="default" className="bg-green-100 text-green-800 text-xs">
                                             ✓ Valide
                                         </Badge>
                                     </div>
                                     <div className="space-y-2 text-sm">
                                         <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
-                                            <span className="text-gray-600">Dimensions:</span>
-                                            <span className="font-medium break-words">
+                                            <span className="text-muted-foreground">Dimensions:</span>
+                                            <span className="font-medium break-words text-foreground">
                                                 {parcel.height} × {parcel.width} × {parcel.length} cm
                                             </span>
                                         </div>
                                         <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
-                                            <span className="text-gray-600">Poids:</span>
-                                            <span className="font-medium">{parcel.weight} kg</span>
+                                            <span className="text-muted-foreground">Poids:</span>
+                                            <span className="font-medium text-foreground">{parcel.weight} kg</span>
                                         </div>
                                         <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
-                                            <span className="text-gray-600">Volume:</span>
-                                            <span className="font-medium">{volume.toFixed(3)} m³</span>
+                                            <span className="text-muted-foreground">Volume:</span>
+                                            <span className="font-medium text-foreground">{volume.toFixed(3)} m³</span>
                                         </div>
                                     </div>
                                 </div>

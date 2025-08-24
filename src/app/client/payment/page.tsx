@@ -204,7 +204,6 @@ export default function PaymentPage() {
                                 <strong>Debug Info:</strong>
                                 <div>User Role: {userRole}</div>
                                 <div>Session ID: {session?.user?.id}</div>
-                                <div>Simulation ID: {simulationId}</div>
                                 <div>Amount: {amount ?? "—"}€</div>
                             </div>
                         )}
@@ -231,10 +230,6 @@ export default function PaymentPage() {
                         <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
                             <h3 className="font-semibold mb-3">Récapitulatif du Paiement</h3>
                             <div className="space-y-2">
-                                <div className="flex justify-between">
-                                    <span>Simulation ID:</span>
-                                    <span className="font-mono text-sm">{simulationId}</span>
-                                </div>
                                 <div className="flex justify-between">
                                     <span>Montant:</span>
                                     <span className="font-bold text-lg">

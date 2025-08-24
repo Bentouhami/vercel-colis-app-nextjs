@@ -227,7 +227,6 @@ export default function EnvoiRecapPage() {
 
 📋 INFORMATIONS GÉNÉRALES
 ──────────────────────────────────────────────────────────────
-Simulation ID: ${simulationData.id || "N/A"}
 Date de création: ${new Date().toLocaleString("fr-FR")}
 Statut: Confirmé
 
@@ -285,7 +284,7 @@ Ce document a été généré automatiquement le ${new Date().toLocaleString("fr
         const url = URL.createObjectURL(blob)
         const a = document.createElement("a")
         a.href = url
-        a.download = `recapitulatif-envoi-${simulationData.id || Date.now()}.txt`
+        a.download = `recapitulatif-envoi.txt`
         document.body.appendChild(a)
         a.click()
         document.body.removeChild(a)
@@ -318,16 +317,7 @@ Ce document a été généré automatiquement le ${new Date().toLocaleString("fr
         }
     }, [simulationData, formattedPrice])
 
-    const handleCopyId = useCallback(async () => {
-        if (!simulationData?.id) return
-
-        try {
-            await navigator.clipboard.writeText(simulationData.id.toString())
-            toast.success("🆔 ID de simulation copié !")
-        } catch (error) {
-            toast.error("❌ Impossible de copier l'ID")
-        }
-    }, [simulationData?.id])
+    
 
     if (isLoading) {
         return (
@@ -452,10 +442,7 @@ Ce document a été généré automatiquement le ${new Date().toLocaleString("fr
             >
                 {/* Badges d'information */}
                 <div className="flex items-center justify-center gap-4 flex-wrap mb-6">
-                    <Badge variant="outline" className="cursor-pointer hover:bg-muted" onClick={handleCopyId}>
-                        <Copy className="h-3 w-3 mr-2" />
-                        ID: {simulationData.id || "N/A"}
-                    </Badge>
+                    
                     <Badge variant="secondary">
                         <Package className="h-3 w-3 mr-2" />
                         {simulationData.parcels?.length || 0} colis

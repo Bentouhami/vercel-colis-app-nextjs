@@ -1,29 +1,28 @@
 // path: src/app/api/send-email/route.ts
 
-import {NextRequest, NextResponse} from 'next/server';
-import nodemailer from 'nodemailer';
-import {DOMAIN} from "@/utils/constants";
-
+import { NextRequest, NextResponse } from "next/server";
+import nodemailer from "nodemailer";
+import { DOMAIN } from "@/utils/constants";
 
 const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_SERVER_HOST,
-    port: Number(process.env.EMAIL_SERVER_PORT),
-    auth: {
-        user: process.env.EMAIL_SERVER_USER,
-        pass: process.env.EMAIL_SERVER_PASSWORD,
-    },
+  host: process.env.EMAIL_SERVER_HOST,
+  port: Number(process.env.EMAIL_SERVER_PORT),
+  auth: {
+    user: process.env.EMAIL_SERVER_USER,
+    pass: process.env.EMAIL_SERVER_PASSWORD,
+  },
 });
 
 export async function POST(req: NextRequest) {
-    const {name, email, token} = await req.json();
-    const verificationUrl = `${DOMAIN}/client/auth/verify-email?token=${token}`;
+  const { name, email, token } = await req.json();
+  const verificationUrl = `${DOMAIN}/auth/verify-email?token=${token}`;
 
-    try {
-        await transporter.sendMail({
-            from: process.env.EMAIL_FROM,
-            to: email,
-            subject: 'Welcome to ColisApp - Verify Your Email Address',
-            html: `
+  try {
+    await transporter.sendMail({
+      from: process.env.EMAIL_FROM,
+      to: email,
+      subject: "Welcome to ColisApp - Verify Your Email Address",
+      html: `
                 <!DOCTYPE html>
                 <html lang="en">
                 <head>
@@ -144,11 +143,14 @@ export async function POST(req: NextRequest) {
                 </body>
                 </html>
             `,
-        });
+    });
 
-        return NextResponse.json({message: 'Email sent successfully'});
-    } catch (error) {
-        console.error('Error sending verification email:', error);
-        return NextResponse.json({error: 'Failed to send email'}, {status: 500});
-    }
+    return NextResponse.json({ message: "Email sent successfully" });
+  } catch (error) {
+    console.error("Error sending verification email:", error);
+    return NextResponse.json(
+      { error: "Failed to send email" },
+      { status: 500 }
+    );
+  }
 }

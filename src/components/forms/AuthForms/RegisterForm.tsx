@@ -1,3 +1,5 @@
+// path: src/components/forms/AuthForms/RegisterForm.tsx
+
 "use client"
 
 import { useTransition, useState, useEffect } from "react"
@@ -63,8 +65,10 @@ export default function RegisterForm() {
             address: formValues.address,
         }
 
+        console.log("Submitting registration form with data:", dto)
+
         startTransition(() => {
-            ; (async () => {
+            (async () => {
                 try {
                     const result = await registerUser(dto)
                     if (!result) {

@@ -1,11 +1,10 @@
-"use client";
+'use client';
 // path: src/components/auth/verify-email/VerifyEmailClient.tsx
 
-import { Suspense, useCallback, useEffect, useState } from 'react';
+import { Suspense, useCallback, useEffect, useState, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { AlertCircle, ArrowRight, CheckCircle, Loader2, MailCheck, RotateCcw, XCircle } from 'lucide-react';
-
 
 const VerifyEmailContent = () => {
     const router = useRouter();
@@ -15,8 +14,8 @@ const VerifyEmailContent = () => {
     const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'invalid'>('loading');
     const [message, setMessage] = useState<string>("");
     const [countdown, setCountdown] = useState(5);
+    const verificationSentRef = useRef(false); // Ref to track if verification was sent
 
-    // Define startCountdown with useCallback
     const startCountdown = useCallback(() => {
         const timer = setInterval(() => {
             setCountdown((prev) => {
@@ -57,7 +56,6 @@ const VerifyEmailContent = () => {
                     setStatus('success');
                     setMessage("Votre adresse email a été vérifiée avec succès !");
                     await update(); // Force session update
-                    // Start countdown for redirect
                     startCountdown();
                 } else {
                     setStatus('error');
@@ -70,8 +68,11 @@ const VerifyEmailContent = () => {
             }
         };
 
-        verifyEmail();
-    }, [startCountdown, token, update]);
+        if (!verificationSentRef.current) {
+            verificationSentRef.current = true;
+            verifyEmail();
+        }
+    }, [token, update, startCountdown]);
 
 
     const handleRetry = () => {
@@ -173,7 +174,7 @@ const VerifyEmailContent = () => {
                 <div className="mb-8 text-center">
                     <MailCheck className="w-16 h-16 text-blue-500 mx-auto mb-4" />
                     <h1 className="text-2xl font-bold text-gray-900">
-                        Vérification de l&#39;email
+                        Vérification de l&apos;email
                     </h1>
                 </div>
 

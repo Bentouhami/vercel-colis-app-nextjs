@@ -4,21 +4,10 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { FaBuilding, FaHashtag, FaMapMarkerAlt } from "react-icons/fa";
 import { UseFormReturn, FieldValues, Path } from "react-hook-form";
-
-interface AddressFields {
-    address: {
-        street: string;
-        complement?: string;
-        streetNumber?: string;
-        boxNumber?: string;
-        city: string;
-        country: string;
-    };
-}
 import SimulationCountryCitySelector from "@/components/client-specific/simulation/simulation-country-city-selector";
 
 interface AddressFormProps<TForm extends FieldValues> {
@@ -36,12 +25,6 @@ export default function AddressForm<TForm extends FieldValues>({ form, isPending
             </CardHeader>
 
             <CardContent className="space-y-4">
-                {/*
-          This handles "address.country" & "address.city"
-          Make sure it sets form values for city and country:
-            form.setValue("address.city", ...)
-            form.setValue("address.country", ...)
-        */}
                 <SimulationCountryCitySelector form={form} />
 
                 {/* Street (required) */}
@@ -64,6 +47,7 @@ export default function AddressForm<TForm extends FieldValues>({ form, isPending
                                     <FaMapMarkerAlt className="absolute top-3 right-3 text-muted-foreground" />
                                 </div>
                             </FormControl>
+                            <FormMessage />
                         </FormItem>
                     )}
                 />
@@ -87,6 +71,7 @@ export default function AddressForm<TForm extends FieldValues>({ form, isPending
                                         <FaHashtag className="absolute top-3 right-3 text-muted-foreground" />
                                     </div>
                                 </FormControl>
+                                <FormMessage />
                             </FormItem>
                         )}
                     />
@@ -108,6 +93,7 @@ export default function AddressForm<TForm extends FieldValues>({ form, isPending
                                         <FaBuilding className="absolute top-3 right-3 text-muted-foreground" />
                                     </div>
                                 </FormControl>
+                                <FormMessage />
                             </FormItem>
                         )}
                     />
@@ -127,6 +113,7 @@ export default function AddressForm<TForm extends FieldValues>({ form, isPending
                                     placeholder="Ex: Appartement, étage, etc."
                                 />
                             </FormControl>
+                            <FormMessage />
                         </FormItem>
                     )}
                 />

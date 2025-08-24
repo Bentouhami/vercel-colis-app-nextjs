@@ -5,18 +5,10 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FaCalendar, FaPhone, FaUser } from "react-icons/fa";
-import { FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/phone-input";
-import { UseFormReturn, Controller, FieldValues, Path } from "react-hook-form";
-
-interface PersonalInfoFields {
-    firstName: string;
-    lastName: string;
-    birthDate: string;
-    phoneNumber: string;
-    email: string;
-}
+import { UseFormReturn, FieldValues, Path } from "react-hook-form";
 import { DatePicker } from "@/components/ui/date-picker";
 
 interface PersonalInformationFormProps<TForm extends FieldValues> {
@@ -25,7 +17,6 @@ interface PersonalInformationFormProps<TForm extends FieldValues> {
     role?: string;
     agencies?: { id: number; name: string }[];
 }
-
 
 export default function PersonalInformationForm<TForm extends FieldValues>({ form, isPending }: PersonalInformationFormProps<TForm>) {
     const { control } = form;
@@ -47,6 +38,7 @@ export default function PersonalInformationForm<TForm extends FieldValues>({ for
                                     <FaUser className="absolute top-3 right-3 text-muted-foreground" />
                                 </div>
                             </FormControl>
+                            <FormMessage />
                         </FormItem>
                     )} />
 
@@ -60,34 +52,34 @@ export default function PersonalInformationForm<TForm extends FieldValues>({ for
                                     <FaUser className="absolute top-3 right-3 text-muted-foreground" />
                                 </div>
                             </FormControl>
+                            <FormMessage />
                         </FormItem>
                     )} />
                 </div>
 
                 <div className="mt-3 flex flex-col md:flex-row gap-4">
                     {/* BirthDate */}
-                    <Controller
+                    <FormField
                         control={control}
                         name={"birthDate" as Path<TForm>}
                         render={({ field }) => (
                             <FormItem className="w-full md:w-1/2">
                                 <FormLabel>Date de naissance <span className="text-red-500 ml-1">*</span></FormLabel>
                                 <FormControl>
-
                                     <DatePicker
                                         field={{
                                             ...field,
-                                            value: field.value ? new Date(field.value) : undefined, // Convertir string en Date
+                                            value: field.value ? new Date(field.value) : undefined,
                                             onChange: (date: Date | undefined) => {
-                                                field.onChange(date ? date.toISOString().split("T")[0] : ""); // Stocker en string
+                                                field.onChange(date ? date.toISOString().split("T")[0] : "");
                                             }
                                         }}
                                     />
                                 </FormControl>
+                                <FormMessage />
                             </FormItem>
                         )}
                     />
-
 
                     {/* PhoneNumber */}
                     <FormField control={control} name={"phoneNumber" as Path<TForm>} render={({ field }) => (
@@ -99,10 +91,9 @@ export default function PersonalInformationForm<TForm extends FieldValues>({ for
                                     <FaPhone className="absolute top-3 right-3 text-muted-foreground" />
                                 </div>
                             </FormControl>
+                            <FormMessage />
                         </FormItem>
                     )} />
-
-
                 </div>
             </CardContent>
         </Card>

@@ -66,11 +66,11 @@ const StepParcels: React.FC<StepParcelsProps> = ({
     return (
         <div className="space-y-4 md:space-y-6">
             {/* En-tête avec statistiques */}
-            <Card className="transition-all duration-300 hover:shadow-lg border-2 border-blue-100">
-                <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 md:p-6">
+            <Card className="transition-all duration-300 hover:shadow-lg border-2 border-blue-100 dark:border-blue-900/50">
+                <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-4 md:p-6">
                     <CardTitle className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div className="flex items-center gap-2">
-                            <Package className="h-5 w-5 text-blue-600" />
+                        <div className="flex items-center gap-2 text-foreground">
+                            <Package className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                             <span className="text-base md:text-lg">Informations des Colis</span>
                             {isEditMode && (
                                 <Badge variant="secondary" className="text-xs">
@@ -80,12 +80,12 @@ const StepParcels: React.FC<StepParcelsProps> = ({
                         </div>
                         <div className="flex items-center gap-3 md:gap-4 text-sm">
                             <div className="flex items-center gap-1">
-                                <Scale className="h-4 w-4 text-green-600" />
-                                <span className="font-medium">{totalWeight.toFixed(1)} kg</span>
+                                <Scale className="h-4 w-4 text-green-600 dark:text-green-400" />
+                                <span className="font-medium text-foreground">{totalWeight.toFixed(1)} kg</span>
                             </div>
                             <div className="flex items-center gap-1">
-                                <Calculator className="h-4 w-4 text-purple-600" />
-                                <span className="font-medium">{(totalVolume / 1000000).toFixed(3)} m³</span>
+                                <Calculator className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                                <span className="font-medium text-foreground">{(totalVolume / 1000000).toFixed(3)} m³</span>
                             </div>
                         </div>
                     </CardTitle>
@@ -96,7 +96,7 @@ const StepParcels: React.FC<StepParcelsProps> = ({
                         {/* Nombre de colis */}
                         <div className="flex items-center justify-center sm:justify-start gap-4">
                             <div className="flex items-center gap-2">
-                                <Label htmlFor="packageCount" className="text-sm font-medium whitespace-nowrap">
+                                <Label htmlFor="packageCount" className="text-sm font-medium whitespace-nowrap text-foreground">
                                     Nombre de colis:
                                 </Label>
                                 <Input
@@ -108,7 +108,7 @@ const StepParcels: React.FC<StepParcelsProps> = ({
                                     onChange={onPackageCountChange}
                                     className="w-16 md:w-20 text-center"
                                 />
-                                <span className="text-xs text-gray-500 whitespace-nowrap">max {COLIS_MAX_PER_ENVOI}</span>
+                                <span className="text-xs text-muted-foreground whitespace-nowrap">max {COLIS_MAX_PER_ENVOI}</span>
                             </div>
                         </div>
 
@@ -149,7 +149,7 @@ const StepParcels: React.FC<StepParcelsProps> = ({
 
                     {/* Navigation entre les colis - Pagination adaptative */}
                     {parcels.length > 1 && (
-                        <div className="mb-6 p-3 md:p-4 bg-gray-50 rounded-lg">
+                        <div className="mb-6 p-3 md:p-4 bg-muted rounded-lg">
                             <div className="flex items-center justify-center gap-2 md:gap-4">
                                 <Button
                                     variant="outline"
@@ -169,7 +169,7 @@ const StepParcels: React.FC<StepParcelsProps> = ({
                                             onClick={() => setCurrentPackage(index)}
                                             className={`w-7 h-7 md:w-8 md:h-8 rounded-full text-xs font-medium transition-all duration-200 flex-shrink-0 ${index === currentPackage
                                                 ? "bg-blue-600 text-white scale-110"
-                                                : "bg-gray-200 text-gray-600 hover:bg-gray-300 hover:scale-105"
+                                                : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 hover:scale-105"
                                                 }`}
                                         >
                                             {index + 1}
@@ -193,8 +193,8 @@ const StepParcels: React.FC<StepParcelsProps> = ({
                     {/* Formulaire du colis actuel */}
                     <div className="space-y-4 md:space-y-6">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                            <h3 className="text-base md:text-lg font-semibold flex items-center gap-2">
-                                <Package className="h-5 w-5 text-blue-600" />
+                            <h3 className="text-base md:text-lg font-semibold flex items-center gap-2 text-foreground">
+                                <Package className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                                 Colis {currentPackage + 1}
                                 {isCurrentParcelValid() ? (
                                     <Badge variant="default" className="bg-green-100 text-green-800 text-xs">
@@ -206,7 +206,7 @@ const StepParcels: React.FC<StepParcelsProps> = ({
                                     </Badge>
                                 )}
                             </h3>
-                            <div className="text-sm text-gray-600">
+                            <div className="text-sm text-muted-foreground">
                                 Volume:{" "}
                                 {(
                                     ((currentParcel.height || 0) * (currentParcel.width || 0) * (currentParcel.length || 0)) /
@@ -221,13 +221,13 @@ const StepParcels: React.FC<StepParcelsProps> = ({
                             {/* Dimensions */}
                             <div className="space-y-4">
                                 <div className="flex items-center gap-2 mb-3">
-                                    <Ruler className="h-4 w-4 text-blue-600" />
-                                    <Label className="text-sm font-medium">Dimensions (cm)</Label>
+                                    <Ruler className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                                    <Label className="text-sm font-medium text-foreground">Dimensions (cm)</Label>
                                 </div>
 
                                 <div className="space-y-3">
                                     <div>
-                                        <Label htmlFor={`height-${currentPackage}`} className="text-sm">
+                                        <Label htmlFor={`height-${currentPackage}`} className="text-sm text-muted-foreground">
                                             Hauteur (cm)
                                         </Label>
                                         <Input
@@ -239,15 +239,15 @@ const StepParcels: React.FC<StepParcelsProps> = ({
                                             value={currentParcel.height || ""}
                                             onChange={(e) => handleInputChange("height", e.target.value)}
                                             className={`transition-all duration-200 ${currentParcel.height > 0 && currentParcel.height <= 120
-                                                ? "border-green-300 focus:border-green-500"
-                                                : "border-red-300 focus:border-red-500"
+                                                ? "border-green-300 focus:border-green-500 dark:border-green-700"
+                                                : "border-red-300 focus:border-red-500 dark:border-red-700"
                                                 }`}
                                             placeholder="Ex: 30"
                                         />
                                     </div>
 
                                     <div>
-                                        <Label htmlFor={`width-${currentPackage}`} className="text-sm">
+                                        <Label htmlFor={`width-${currentPackage}`} className="text-sm text-muted-foreground">
                                             Largeur (cm)
                                         </Label>
                                         <Input
@@ -259,15 +259,15 @@ const StepParcels: React.FC<StepParcelsProps> = ({
                                             value={currentParcel.width || ""}
                                             onChange={(e) => handleInputChange("width", e.target.value)}
                                             className={`transition-all duration-200 ${currentParcel.width > 0 && currentParcel.width <= 120
-                                                ? "border-green-300 focus:border-green-500"
-                                                : "border-red-300 focus:border-red-500"
+                                                ? "border-green-300 focus:border-green-500 dark:border-green-700"
+                                                : "border-red-300 focus:border-red-500 dark:border-red-700"
                                                 }`}
                                             placeholder="Ex: 20"
                                         />
                                     </div>
 
                                     <div>
-                                        <Label htmlFor={`length-${currentPackage}`} className="text-sm">
+                                        <Label htmlFor={`length-${currentPackage}`} className="text-sm text-muted-foreground">
                                             Longueur (cm)
                                         </Label>
                                         <Input
@@ -279,8 +279,8 @@ const StepParcels: React.FC<StepParcelsProps> = ({
                                             value={currentParcel.length || ""}
                                             onChange={(e) => handleInputChange("length", e.target.value)}
                                             className={`transition-all duration-200 ${currentParcel.length > 0 && currentParcel.length <= 120
-                                                ? "border-green-300 focus:border-green-500"
-                                                : "border-red-300 focus:border-red-500"
+                                                ? "border-green-300 focus:border-green-500 dark:border-green-700"
+                                                : "border-red-300 focus:border-red-500 dark:border-red-700"
                                                 }`}
                                             placeholder="Ex: 15"
                                         />
@@ -291,12 +291,12 @@ const StepParcels: React.FC<StepParcelsProps> = ({
                             {/* Poids et contraintes */}
                             <div className="space-y-4">
                                 <div className="flex items-center gap-2 mb-3">
-                                    <Scale className="h-4 w-4 text-green-600" />
-                                    <Label className="text-sm font-medium">Poids et Contraintes</Label>
+                                    <Scale className="h-4 w-4 text-green-600 dark:text-green-400" />
+                                    <Label className="text-sm font-medium text-foreground">Poids et Contraintes</Label>
                                 </div>
 
                                 <div>
-                                    <Label htmlFor={`weight-${currentPackage}`} className="text-sm">
+                                    <Label htmlFor={`weight-${currentPackage}`} className="text-sm text-muted-foreground">
                                         Poids (kg)
                                     </Label>
                                     <Input
@@ -308,21 +308,21 @@ const StepParcels: React.FC<StepParcelsProps> = ({
                                         value={currentParcel.weight || ""}
                                         onChange={(e) => handleInputChange("weight", e.target.value)}
                                         className={`transition-all duration-200 ${currentParcel.weight > 0 && currentParcel.weight <= 70
-                                            ? "border-green-300 focus:border-green-500"
-                                            : "border-red-300 focus:border-red-500"
+                                            ? "border-green-300 focus:border-green-500 dark:border-green-700"
+                                            : "border-red-300 focus:border-red-500 dark:border-red-700"
                                             }`}
                                         placeholder="Ex: 5.5"
                                     />
                                 </div>
 
                                 {/* Indicateurs de contraintes */}
-                                <div className="space-y-2 p-3 bg-gray-50 rounded-lg">
-                                    <div className="text-xs font-medium text-gray-700 mb-2">Contraintes:</div>
+                                <div className="space-y-2 p-3 bg-muted rounded-lg">
+                                    <div className="text-xs font-medium text-foreground mb-2">Contraintes:</div>
 
                                     <div
                                         className={`flex items-center gap-2 text-xs ${(currentParcel.height + currentParcel.width + currentParcel.length) <= 360
-                                            ? "text-green-600"
-                                            : "text-red-600"
+                                            ? "text-green-600 dark:text-green-400"
+                                            : "text-red-600 dark:text-red-400"
                                             }`}
                                     >
                                         <div
@@ -339,8 +339,8 @@ const StepParcels: React.FC<StepParcelsProps> = ({
 
                                     <div
                                         className={`flex items-center gap-2 text-xs ${Math.max(currentParcel.height, currentParcel.width, currentParcel.length) <= 120
-                                            ? "text-green-600"
-                                            : "text-red-600"
+                                            ? "text-green-600 dark:text-green-400"
+                                            : "text-red-600 dark:text-red-400"
                                             }`}
                                     >
                                         <div
@@ -356,8 +356,7 @@ const StepParcels: React.FC<StepParcelsProps> = ({
                                     </div>
 
                                     <div
-                                        className={`flex items-center gap-2 text-xs ${currentParcel.weight <= 70 ? "text-green-600" : "text-red-600"
-                                            }`}
+                                        className={`flex items-center gap-2 text-xs ${currentParcel.weight <= 70 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}
                                     >
                                         <div
                                             className={`w-2 h-2 rounded-full flex-shrink-0 ${currentParcel.weight <= 70 ? "bg-green-500" : "bg-red-500"}`}
@@ -375,7 +374,7 @@ const StepParcels: React.FC<StepParcelsProps> = ({
             {parcels.length > 1 && (
                 <Card className="transition-all duration-300 hover:shadow-lg">
                     <CardHeader className="p-4 md:p-6">
-                        <CardTitle className="text-base md:text-lg">Aperçu de tous les colis</CardTitle>
+                        <CardTitle className="text-base md:text-lg text-foreground">Aperçu de tous les colis</CardTitle>
                     </CardHeader>
                     <CardContent className="p-4 md:p-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 md:gap-4">
@@ -388,14 +387,14 @@ const StepParcels: React.FC<StepParcelsProps> = ({
                                         key={index}
                                         onClick={() => setCurrentPackage(index)}
                                         className={`p-3 md:p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 hover:scale-105 ${index === currentPackage
-                                            ? "border-blue-500 bg-blue-50"
+                                            ? "border-blue-500 bg-blue-50 dark:bg-blue-900/30"
                                             : isValid
-                                                ? "border-green-300 bg-green-50 hover:border-green-400"
-                                                : "border-red-300 bg-red-50 hover:border-red-400"
+                                                ? "border-green-300 bg-green-50 dark:border-green-800 dark:bg-green-900/30 hover:border-green-400"
+                                                : "border-red-300 bg-red-50 dark:border-red-800 dark:bg-red-900/30 hover:border-red-400"
                                             }`}
                                     >
                                         <div className="flex items-center justify-between mb-2">
-                                            <span className="font-medium text-sm">Colis {index + 1}</span>
+                                            <span className="font-medium text-sm text-foreground">Colis {index + 1}</span>
                                             {isValid ? (
                                                 <Badge variant="default" className="bg-green-100 text-green-800 text-xs">
                                                     ✓
@@ -406,7 +405,7 @@ const StepParcels: React.FC<StepParcelsProps> = ({
                                                 </Badge>
                                             )}
                                         </div>
-                                        <div className="space-y-1 text-xs text-gray-600">
+                                        <div className="space-y-1 text-xs text-muted-foreground">
                                             <div className="break-words">
                                                 📏 {parcel.height} × {parcel.width} × {parcel.length} cm
                                             </div>

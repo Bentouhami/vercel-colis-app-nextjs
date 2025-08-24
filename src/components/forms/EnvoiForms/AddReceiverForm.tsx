@@ -293,7 +293,7 @@ ${JSON.stringify(debugInfo.error, null, 2)}
             <div className="max-w-4xl mx-auto space-y-8">
                 {/* Section Sélection Rapide - Coming Soon */}
                 <div className="animate-in slide-in-from-top-4 duration-700">
-                    <Card className="relative transition-all duration-300 hover:shadow-lg border-dashed border-2 border-gray-300 dark:border-gray-600 bg-gray-50/50 dark:bg-gray-800/50">
+                    <Card className="relative transition-all duration-300 hover:shadow-lg border-dashed border-2 border-gray-300 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/20">
                         {/* Coming Soon Badge */}
                         <div className="absolute -top-3 -right-3 z-10">
                             <Badge className="bg-gradient-to-r from-green-500 to-teal-500 text-white px-3 py-1 text-xs font-semibold shadow-lg animate-pulse">
@@ -303,7 +303,7 @@ ${JSON.stringify(debugInfo.error, null, 2)}
                         </div>
 
                         <CardHeader className="relative">
-                            <CardTitle className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                            <CardTitle className="flex items-center gap-2 text-muted-foreground">
                                 <Users className="h-5 w-5" />
                                 Sélection Rapide
                                 <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
@@ -334,20 +334,20 @@ ${JSON.stringify(debugInfo.error, null, 2)}
                                     <input
                                         type="text"
                                         placeholder="Rechercher dans vos destinataires sauvegardés..."
-                                        className="w-full pl-10 pr-4 py-3 border border-dashed rounded-lg bg-transparent cursor-not-allowed text-gray-500"
+                                        className="w-full pl-10 pr-4 py-3 border border-dashed rounded-lg bg-transparent cursor-not-allowed text-muted-foreground"
                                         disabled
                                     />
                                 </div>
 
                                 {/* Saved Recipients Preview */}
                                 <div className="space-y-2">
-                                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-3">
+                                    <p className="text-sm font-medium text-muted-foreground mb-3">
                                         Vos destinataires récents :
                                     </p>
                                     {mockSavedDestinataires.map((destinataire, index) => (
                                         <div
                                             key={destinataire.id}
-                                            className={`flex items-center gap-3 p-3 border border-dashed rounded-lg bg-white/50 dark:bg-gray-800/50 cursor-not-allowed animate-in slide-in-from-left-4 duration-500`}
+                                            className={`flex items-center gap-3 p-3 border border-dashed rounded-lg bg-card/50 cursor-not-allowed animate-in slide-in-from-left-4 duration-500`}
                                             style={{ animationDelay: `${(index + 1) * 200 + 600}ms` }}
                                         >
                                             <Avatar className="h-8 w-8">
@@ -359,7 +359,7 @@ ${JSON.stringify(debugInfo.error, null, 2)}
 
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-2">
-                                                    <p className="font-medium text-gray-700 dark:text-gray-300 text-sm truncate">
+                                                    <p className="font-medium text-foreground text-sm truncate">
                                                         {destinataire.firstName} {destinataire.lastName}
                                                     </p>
                                                     {destinataire.isDefault && (
@@ -369,7 +369,7 @@ ${JSON.stringify(debugInfo.error, null, 2)}
                                                         </Badge>
                                                     )}
                                                 </div>
-                                                <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+                                                <div className="flex items-center gap-3 text-xs text-muted-foreground">
                                                     <span className="flex items-center gap-1">
                                                         <Mail className="w-3 h-3" />
                                                         {destinataire.email}
@@ -407,21 +407,21 @@ ${JSON.stringify(debugInfo.error, null, 2)}
 
                 <div className="flex items-center gap-4 animate-in fade-in duration-500 delay-700">
                     <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700"></div>
-                    <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">OU</span>
+                    <span className="text-sm text-muted-foreground font-medium">OU</span>
                     <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700"></div>
                 </div>
 
                 {/* Formulaire d'ajout manuel */}
                 <div className="animate-in slide-in-from-bottom-4 duration-700 delay-200">
-                    <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm">
+                    <Card className="shadow-xl border-0 bg-card/90 backdrop-blur-sm">
                         <CardHeader className="text-center space-y-4 pb-8">
                             <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center animate-in zoom-in duration-500 delay-400">
                                 <UserPlus className="h-8 w-8 text-white" />
                             </div>
 
                             <div className="animate-in fade-in duration-500 delay-600">
-                                <CardTitle className="text-2xl font-bold text-gray-800">Ajouter un nouveau destinataire</CardTitle>
-                                <p className="text-gray-600 mt-2">Renseignez les informations du destinataire pour votre envoi</p>
+                                <CardTitle className="text-2xl font-bold text-foreground">Ajouter un nouveau destinataire</CardTitle>
+                                <p className="text-muted-foreground mt-2">Renseignez les informations du destinataire pour votre envoi</p>
                             </div>
 
                             {/* Status Badge */}
@@ -448,7 +448,7 @@ ${JSON.stringify(debugInfo.error, null, 2)}
                                 {/* Nom et Prénom */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in slide-in-from-left-4 duration-500 delay-500">
                                     <div className="space-y-2">
-                                        <Label htmlFor="firstName" className="flex items-center gap-2">
+                                        <Label htmlFor="firstName" className="flex items-center gap-2 text-foreground">
                                             <User className="h-4 w-4 text-blue-500" />
                                             Prénom *
                                         </Label>
@@ -463,7 +463,7 @@ ${JSON.stringify(debugInfo.error, null, 2)}
                                             disabled={isLoading}
                                         />
                                         {errors.firstName && (
-                                            <p className="text-sm text-red-600 flex items-center gap-1 animate-in fade-in duration-200">
+                                            <p className="text-sm text-red-600 dark:text-red-500 flex items-center gap-1 animate-in fade-in duration-200">
                                                 <AlertCircle className="h-3 w-3" />
                                                 {errors.firstName}
                                             </p>
@@ -471,7 +471,7 @@ ${JSON.stringify(debugInfo.error, null, 2)}
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label htmlFor="lastName" className="flex items-center gap-2">
+                                        <Label htmlFor="lastName" className="flex items-center gap-2 text-foreground">
                                             <User className="h-4 w-4 text-blue-500" />
                                             Nom *
                                         </Label>
@@ -486,7 +486,7 @@ ${JSON.stringify(debugInfo.error, null, 2)}
                                             disabled={isLoading}
                                         />
                                         {errors.lastName && (
-                                            <p className="text-sm text-red-600 flex items-center gap-1 animate-in fade-in duration-200">
+                                            <p className="text-sm text-red-600 dark:text-red-500 flex items-center gap-1 animate-in fade-in duration-200">
                                                 <AlertCircle className="h-3 w-3" />
                                                 {errors.lastName}
                                             </p>
@@ -496,7 +496,7 @@ ${JSON.stringify(debugInfo.error, null, 2)}
 
                                 {/* Email */}
                                 <div className="space-y-2 animate-in slide-in-from-left-4 duration-500 delay-600">
-                                    <Label htmlFor="email" className="flex items-center gap-2">
+                                    <Label htmlFor="email" className="flex items-center gap-2 text-foreground">
                                         <Mail className="h-4 w-4 text-blue-500" />
                                         Email *
                                     </Label>
@@ -512,7 +512,7 @@ ${JSON.stringify(debugInfo.error, null, 2)}
                                         disabled={isLoading}
                                     />
                                     {errors.email && (
-                                        <p className="text-sm text-red-600 flex items-center gap-1 animate-in fade-in duration-200">
+                                        <p className="text-sm text-red-600 dark:text-red-500 flex items-center gap-1 animate-in fade-in duration-200">
                                             <AlertCircle className="h-3 w-3" />
                                             {errors.email}
                                         </p>
@@ -521,7 +521,7 @@ ${JSON.stringify(debugInfo.error, null, 2)}
 
                                 {/* Téléphone */}
                                 <div className="space-y-2 animate-in slide-in-from-left-4 duration-500 delay-700">
-                                    <Label htmlFor="phoneNumber" className="flex items-center gap-2">
+                                    <Label htmlFor="phoneNumber" className="flex items-center gap-2 text-foreground">
                                         <Phone className="h-4 w-4 text-blue-500" />
                                         Numéro de téléphone *
                                     </Label>
@@ -537,7 +537,7 @@ ${JSON.stringify(debugInfo.error, null, 2)}
                                         disabled={isLoading}
                                     />
                                     {errors.phoneNumber && (
-                                        <p className="text-sm text-red-600 flex items-center gap-1 animate-in fade-in duration-200">
+                                        <p className="text-sm text-red-600 dark:text-red-500 flex items-center gap-1 animate-in fade-in duration-200">
                                             <AlertCircle className="h-3 w-3" />
                                             {errors.phoneNumber}
                                         </p>
@@ -578,7 +578,7 @@ ${JSON.stringify(debugInfo.error, null, 2)}
                                         variant="outline"
                                         onClick={handleGoBack}
                                         disabled={isLoading}
-                                        className="h-12 px-6 border-2 hover:bg-gray-50 transition-all duration-200 bg-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="h-12 px-6 border-2 hover:bg-muted transition-all duration-200 bg-transparent disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         <ArrowLeft className="h-5 w-5 mr-2" />
                                         Retour
@@ -600,7 +600,7 @@ ${JSON.stringify(debugInfo.error, null, 2)}
                                             </Button>
                                         </CollapsibleTrigger>
                                         <CollapsibleContent className="mt-4">
-                                            <Card className="bg-gray-50 border-gray-200">
+                                            <Card className="bg-muted border-gray-200 dark:border-gray-700">
                                                 <CardContent className="p-4 space-y-4">
                                                     <div className="flex gap-2">
                                                         <Button
@@ -629,21 +629,21 @@ ${JSON.stringify(debugInfo.error, null, 2)}
                                                         </Button>
                                                     </div>
 
-                                                    <div className="space-y-3 text-xs">
+                                                    <div className="space-y-3 text-xs text-foreground">
                                                         <div>
                                                             <strong>Timestamp:</strong> {debugInfo.timestamp}
                                                         </div>
 
                                                         <div>
                                                             <strong>Form Data:</strong>
-                                                            <pre className="mt-1 p-2 bg-white rounded border text-xs overflow-x-auto">
+                                                            <pre className="mt-1 p-2 bg-background rounded border text-xs overflow-x-auto">
                                                                 {JSON.stringify(debugInfo.formData, null, 2)}
                                                             </pre>
                                                         </div>
 
                                                         <div>
                                                             <strong>API Payload:</strong>
-                                                            <pre className="mt-1 p-2 bg-white rounded border text-xs overflow-x-auto">
+                                                            <pre className="mt-1 p-2 bg-background rounded border text-xs overflow-x-auto">
                                                                 {JSON.stringify(debugInfo.apiPayload, null, 2)}
                                                             </pre>
                                                         </div>
@@ -651,7 +651,7 @@ ${JSON.stringify(debugInfo.error, null, 2)}
                                                         {debugInfo.response && (
                                                             <div>
                                                                 <strong>Response:</strong>
-                                                                <pre className="mt-1 p-2 bg-green-50 rounded border text-xs overflow-x-auto">
+                                                                <pre className="mt-1 p-2 bg-green-50 dark:bg-green-900/20 rounded border text-xs overflow-x-auto">
                                                                     {JSON.stringify(debugInfo.response, null, 2)}
                                                                 </pre>
                                                             </div>
@@ -660,7 +660,7 @@ ${JSON.stringify(debugInfo.error, null, 2)}
                                                         {debugInfo.error && (
                                                             <div>
                                                                 <strong>Error Details:</strong>
-                                                                <pre className="mt-1 p-2 bg-red-50 rounded border text-xs overflow-x-auto">
+                                                                <pre className="mt-1 p-2 bg-red-50 dark:bg-red-900/20 rounded border text-xs overflow-x-auto">
                                                                     {JSON.stringify(debugInfo.error, null, 2)}
                                                                 </pre>
                                                             </div>

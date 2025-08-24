@@ -8,7 +8,8 @@ import {
     FormField,
     FormItem,
     FormLabel,
-    FormControl
+    FormControl,
+    FormMessage
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { FaEnvelope, FaLock } from "react-icons/fa";
@@ -50,6 +51,7 @@ export default function LoginInformationForm({
                                     <FaEnvelope className="absolute top-3 right-3 text-muted-foreground" />
                                 </div>
                             </FormControl>
+                            <FormMessage />
                         </FormItem>
                     )}
                 />
@@ -73,6 +75,7 @@ export default function LoginInformationForm({
                                     <FaLock className="absolute top-3 right-3 text-muted-foreground" />
                                 </div>
                             </FormControl>
+                            <FormMessage />
                         </FormItem>
                     )}
                 />
@@ -98,6 +101,7 @@ export default function LoginInformationForm({
                                     <FaLock className="absolute top-3 right-3 text-muted-foreground" />
                                 </div>
                             </FormControl>
+                            <FormMessage />
                         </FormItem>
                     )}
                 />

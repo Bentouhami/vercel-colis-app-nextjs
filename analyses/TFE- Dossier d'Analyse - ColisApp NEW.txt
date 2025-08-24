@@ -61,107 +61,106 @@ Table des matières
 2.2.	Objectifs du projet	7
 2.2.1.	Objectifs stratégiques	7
 2.2.2.	Objectifs fonctionnels	7
-2.3.	Périmètre du projet	9
-2.3.1.	Fonctionnalités incluses	9
-2.3.2.	Fonctionnalités hors périmètre	9
-2.4.	Hypothèses et contraintes	9
-2.4.1.	Hypothèses	9
-2.4.2.	Contraintes techniques	9
-2.5.	Étude de l’existant	10
-2.5.1.	Amélioration d’une application existante	10
-2.5.2.	Analyse SWOT	10
-2.6.	Potentiel de mise en production et étude commerciale	11
-2.6.1.	Solution proposée	11
-2.6.2.	Sources de revenus envisagées	11
-2.6.3.	Marché cible	11
-2.6.4.	Avantage compétitif	12
-2.6.5.	Plan de croissance	12
-2.6.6.	Prévisions de revenus	12
-2.7.	Planning du projet	14
-3.	Analyse fonctionnelle	17
-3.1.	Parties prenantes	17
-3.1.1.	Parties Prenantes Humaines	17
-3.1.2.	Parties Prenantes Techniques (Non-Humaines)	17
-3.2.	User Stories	18
-3.3.	Demandes fonctionnelles	20
-3.4.	Demandes techniques	22
-3.5.	Demandes de sécurité	22
-3.6.	Demandes non-fonctionnelles	22
-3.7.	Modélisations des traitements	23
-3.7.1.	Liste des acteurs humains et non-humains	23
-3.7.2.	Cas d’utilisation	23
-3.7.2.1.	Plans général des diagrammes de cas d’utilisation	24
-3.7.3.	Cas d’utilisation détaillés	27
-3.7.3.1.	Processus de simulation	27
-3.7.3.2.	Paiement via Stripe	27
-3.7.3.3.	Mettre à jour le statut d’un envoi	28
-3.7.3.4.	Gérer les utilisateurs (Super Admin)	28
-3.7.3.5.	Cas d’utilisation d’inscription	29
-3.7.3.6.	Se connecter	31
-3.7.3.7.	Modifier  les informations de profil	32
-3.7.3.8.	Réinitialisation du mot de passe	33
-3.7.3.9.	Simulation d’envoi	34
-3.7.3.10.	Confirmation et paiement	36
-3.7.3.11.	Historique des envois	37
-3.7.3.12.	Suivi colis envois:  ( à refaire )	38
-3.7.3.13.	 Demande de fermeture de compte : ( à refaire )	39
-3.7.4.	Diagramme de séquence :	40
-3.7.4.1.	Diagramme de séquence Simulation d’un Envoi : ( à refaire	40
-3.7.4.2.	Diagramme de Séquence – Suivi d’un Envoi : ( à refaire )	41
-4.	Analyse technique	42
-4.1.	Modélisation des données	42
-4.1.1.	Diagramme Entité-Relation global	42
-4.1.2.	Modèle Conceptuelle de Données (MCD)	43
-4.1.3.	Modèle Logique de Données (MLD)	44
-4.1.4.	Modèle Physique de Données (MPD)	45
-4.1.5.	Diagramme de Classe : parti Entities ( mise ajours  à vérifier )	46
-4.1.6.	Partie Address ( à refaire pour notre projet en NextJS 15 )	47
-4.1.7.	Partie Agence ( à refaire pour notre projet en NextJS 15 )	49
-4.1.8.	Partie Auth ( à refaire pour notre projet en NextJS 15 )	51
-4.1.9.	Partie Colis ( à refaire pour notre projet en NextJS 15 )	54
-4.1.10.	Partie Envois ( à refaire pour notre projet en NextJS 15 )	56
-4.1.11.	Partie Simulation ( à refaire pour notre projet en NextJS 15 )	60
-4.1.12.	Partie Transport ( à refaire pour notre projet en NextJS 15 )	63
-4.1.13.	Partie Security ( à refaire pour notre projet en NextJS 15 )	66
-4.1.14.	Frontend ( à générer  le nouveau diagramme des pages frontend de NextJS)	69
-4.2.	Architecture logicielle & technologique	70
-4.2.1.	Vue d'ensemble et Choix Technologiques	70
-4.2.2.	Diagramme de l'Architecture	71
-4.2.3.	Fonctionnement de notre architecture	72
-5.	Répartition des tâches	74
-6.	Problèmes Rencontrés et Solutions Apportées	75
-6.1.	Adaptation à l'Architecture de l’App Router de Next.js	75
-6.2.	Authentification sur l'Edge Runtime avec NextAuth.js	75
-6.3.	Modélisation et Requêtes Complexes avec Prisma	77
-7.	Wireframes	78
-8.	Glossaire	96
-9.	Annexes	97
-9.1.	A.1 Documentation des cas d’utilisation détaillés	97
-9.1.1.	A.1.1 Espace Public, Destinataire et Client	97
-9.1.2.	A.1.2 Administration Interne	97
-9.1.3.	Dictionnaire des abréviations utilisées	98
-9.2.	Annexes : A.2 – Documentation des cas d’utilisation détaillés	98
-9.2.1.	A.2.1 Processus de simulation	98
-9.2.2.	A.2.2 Paiement de l’envoi via Stripe	99
-9.2.3.	A.2.3 Mise à jour du statut d’un envoi	99
-9.2.4.	A.2.4 Gestion des utilisateurs (Super Admin)	99
-9.2.5.	A.2.5 Inscription	99
-9.2.6.	A.2.5 Réinitialisation du mot de passe client	100
-9.3.	Documentation du MPD	101
-9.4.	Documentation d’API backend endpoints ( a refaire complètement pour remplacer l’ancien api avec notre Nextjs 15 API routes.)	109
-9.4.1.	Classe AddressController	109
-9.4.2.	Classe EnvoisController	113
-9.4.3.	Classe SimulationController	114
-9.4.4.	Classe TransportController	117
-9.4.5.	Classe AuthController	118
-9.4.6.	Classe AgenceController	120
-9.5.	Plan de Test par classe	121
-9.5.1.	SimulationService	121
-9.5.2.	TransportService	122
-9.5.3.	SimulationService	123
-10.	Références	124
-10.1.1.	Documentation des produits utilisés dans la solution	124
-11.	Code	126
+2.3.	Périmètre du projet	8
+2.3.1.	Fonctionnalités incluses	8
+2.3.2.	Fonctionnalités hors périmètre	8
+2.4.	Hypothèses et contraintes	8
+2.4.1.	Hypothèses	8
+2.4.2.	Contraintes techniques	8
+2.5.	Étude de l’existant	9
+2.5.1.	Amélioration d’une application existante	9
+2.5.2.	Analyse SWOT	9
+2.6.	Potentiel de mise en production et étude commerciale	10
+2.6.1.	Solution proposée	10
+2.6.2.	Sources de revenus envisagées	10
+2.6.3.	Marché cible	10
+2.6.4.	Avantage compétitif	11
+2.6.5.	Plan de croissance	11
+2.6.6.	Prévisions de revenus	11
+2.7.	Planning du projet	12
+3.	Analyse fonctionnelle	15
+3.1.	Parties prenantes	15
+3.1.1.	Parties Prenantes Humaines	15
+3.1.2.	Parties Prenantes Techniques (Non-Humaines)	15
+3.2.	User Stories	16
+3.3.	Demandes fonctionnelles	18
+3.4.	Demandes techniques	19
+3.5.	Demandes de sécurité	19
+3.6.	Demandes non-fonctionnelles	19
+3.7.	Modélisations des traitements	20
+3.7.1.	Liste des acteurs humains et non-humains	20
+3.7.2.	Cas d’utilisation	21
+3.7.2.1.	Plans général des diagrammes de cas d’utilisation	21
+3.7.3.	Cas d’utilisation détaillés	24
+3.7.3.1.	Processus de simulation	24
+3.7.3.2.	Paiement via Stripe	24
+3.7.3.3.	Mettre à jour le statut d’un envoi	25
+3.7.3.4.	Gérer les utilisateurs (Super Admin)	25
+3.7.3.5.	Cas d’utilisation d’inscription	26
+3.7.3.6.	Se connecter	28
+3.7.3.7.	Modifier  les informations de profil	29
+3.7.3.8.	Réinitialisation du mot de passe	30
+3.7.3.9.	Simulation d’envoi	31
+3.7.3.10.	Confirmation et paiement	33
+3.7.3.11.	Suivi colis envois:  ( à refaire )	34
+3.7.3.12.	 Demande de fermeture de compte : ( à refaire )	35
+3.7.4.	Diagramme de séquence :	36
+3.7.4.1.	Diagramme de séquence Simulation d’un Envoi : ( à refaire	36
+3.7.4.2.	Diagramme de Séquence – Suivi d’un Envoi : ( à refaire )	37
+4.	Analyse technique	38
+4.1.	Modélisation des données	38
+4.1.1.	Diagramme Entité-Relation global	38
+4.1.2.	Modèle Conceptuelle de Données (MCD)	39
+4.1.3.	Modèle Logique de Données (MLD)	40
+4.1.4.	Modèle Physique de Données (MPD)	41
+4.1.5.	Diagramme de Classe : parti Entities ( mise ajours  à vérifier )	42
+4.1.6.	Partie Address ( à refaire pour notre projet en NextJS 15 )	43
+4.1.7.	Partie Agence ( à refaire pour notre projet en NextJS 15 )	45
+4.1.8.	Partie Auth ( à refaire pour notre projet en NextJS 15 )	47
+4.1.9.	Partie Colis ( à refaire pour notre projet en NextJS 15 )	50
+4.1.10.	Partie Envois ( à refaire pour notre projet en NextJS 15 )	52
+4.1.11.	Partie Simulation ( à refaire pour notre projet en NextJS 15 )	56
+4.1.12.	Partie Transport ( à refaire pour notre projet en NextJS 15 )	59
+4.1.13.	Partie Security ( à refaire pour notre projet en NextJS 15 )	62
+4.1.14.	Frontend ( à générer  le nouveau diagramme des pages frontend de NextJS)	65
+4.2.	Architecture logicielle & technologique	66
+4.2.1.	Vue d'ensemble et Choix Technologiques	66
+4.2.2.	Diagramme de l'Architecture	67
+4.2.3.	Fonctionnement de notre architecture	68
+5.	Répartition des tâches	70
+6.	Problèmes Rencontrés et Solutions Apportées	71
+6.1.	Adaptation à l'Architecture de l’App Router de Next.js	71
+6.2.	Authentification sur l'Edge Runtime avec NextAuth.js	71
+6.3.	Modélisation et Requêtes Complexes avec Prisma	72
+7.	Wireframes	73
+8.	Glossaire	91
+9.	Annexes	92
+9.1.	A.1 Documentation des cas d’utilisation détaillés	92
+9.1.1.	A.1.1 Espace Public, Destinataire et Client	92
+9.1.2.	A.1.2 Administration Interne	92
+9.1.3.	Dictionnaire des abréviations utilisées	93
+9.2.	Annexes : A.2 – Documentation des cas d’utilisation détaillés	93
+9.2.1.	A.2.1 Processus de simulation	93
+9.2.2.	A.2.2 Paiement de l’envoi via Stripe	94
+9.2.3.	A.2.3 Mise à jour du statut d’un envoi	94
+9.2.4.	A.2.4 Gestion des utilisateurs (Super Admin)	94
+9.2.5.	A.2.5 Inscription	94
+9.2.6.	A.2.5 Réinitialisation du mot de passe client	95
+9.3.	Documentation du MPD	96
+9.4.	Documentation d’API backend endpoints ( a refaire complètement pour remplacer l’ancien api avec notre Nextjs 15 API routes.)	104
+9.4.1.	Classe AddressController	104
+9.4.2.	Classe EnvoisController	108
+9.4.3.	Classe SimulationController	109
+9.4.4.	Classe TransportController	112
+9.4.5.	Classe AuthController	113
+9.4.6.	Classe AgenceController	115
+9.5.	Plan de Test par classe	116
+9.5.1.	SimulationService	116
+9.5.2.	TransportService	117
+9.5.3.	SimulationService	118
+10.	Références	119
+10.1.1.	Documentation des produits utilisés dans la solution	119
+11.	Code	121
 
 1. Introduction
 ColisApp est un projet d’application web, visant à simplifier et moderniser les envois de colis entre la Belgique et le Maroc. Elle répond aux besoins des particuliers souhaitant envoyer des colis de manière pratique et transparente, ainsi qu’aux agences de transport cherchant à optimiser leurs opérations. L’objectif est de concevoir une plateforme évolutive et modulaire, basée sur des technologies modernes, tout en assurant la sécurité des données.
@@ -374,42 +373,42 @@ US27 En tant que comptable, je veux recevoir des alertes en cas de paiement éch
 
 
 3.3. Demandes fonctionnelles
-DF 1. Simulation du Coût d'Envoi
+- Simulation du Coût d'Envoi
 Permettre aux utilisateurs (inscrits ou non) de simuler le coût total d'un envoi en fonction des détails saisis (poids, nombre de colis, destination). Cette simulation doit être simple et rapide, sans nécessiter de création de compte.
-DF 2. Inscription et Gestion de Compte
+- Inscription et Gestion de Compte
 Offrir aux utilisateurs la possibilité de s'inscrire et de gérer leur compte, incluant l’enregistrement et la mise à jour des informations personnelles (nom, prénom, date de naissance, adresse, numéro de téléphone, email).
-DF 3. Authentification Sécurisée
+- Authentification Sécurisée
 Implémenter des mécanismes d'authentification sécurisés pour l'accès aux comptes, incluant la connexion, la réinitialisation de mot de passe, et la vérification de l'identité via email ou fournisseurs tiers comme Google.
-DF 4. Gestion des Envois
+- Gestion des Envois
 Permettre aux utilisateurs inscrits de créer, visualiser et gérer leurs envois. Cela inclut l'enregistrement des détails nécessaires (poids, nombre de colis, nom et coordonnées du destinataire) et la génération d’un numéro de suivi unique.
-DF 5. Suivi des Statuts d'Envoi
+- Suivi des Statuts d'Envoi
 Fournir un suivi des statuts des colis pour les clients et destinataires, incluant des étapes clés telles que "À l'agence", "En transit", "Livré". La localisation géographique n'est pas incluse.
-DF 6. Paiement Sécurisé
+- Paiement Sécurisé
 Intégrer une plateforme de paiement en ligne pour sécuriser les transactions financières, permettant aux utilisateurs de finaliser leurs envois après simulation.
-DF 7. Notifications Automatiques
+- Notifications Automatiques
 Automatiser l’envoi de notifications par email ou SMS pour informer les utilisateurs des étapes clés de leur envoi, comme la confirmation, les mises à jour de statut, et la livraison.
-DF 8. Interface Utilisateur Intuitive
+- Interface Utilisateur Intuitive
 Concevoir une interface ergonomique et réactive permettant aux utilisateurs de naviguer facilement, de simuler les coûts, de gérer leurs envois, et de suivre leurs colis.
-DF 9. Historique des Envois
+- Historique des Envois
 Offrir aux utilisateurs inscrits la possibilité de consulter l’historique de leurs envois passés, y compris les détails des colis et les simulations effectuées.
-DF 10.  Support Client
+-  Support Client
 Mettre en place un système de support client accessible pour fournir une assistance technique, répondre aux questions, et résoudre les problèmes liés aux envois ou aux comptes utilisateurs.
-DF 11. Gestion Comptable et Finances
+- Gestion Comptable et Finances
 Mettre en place un module dédié aux comptables pour consulter, filtrer et exporter les transactions. Ce module doit inclure :
-1.1. Accès sécurisé aux transactions et paiements effectués.
-1.2. Filtrage avancé par date, agence et méthode de paiement.
-1.3. Exportation des données sous format CSV ou PDF.
-1.4. Notifications automatiques en cas de paiement échoué ou remboursement.
+- Accès sécurisé aux transactions et paiements effectués.
+- Filtrage avancé par date, agence et méthode de paiement.
+- Exportation des données sous format CSV ou PDF.
+- Notifications automatiques en cas de paiement échoué ou remboursement.
 
 
 3.4. Demandes techniques
-1.5. L’application sera déployée sur Vercel, une plateforme cloud optimisée pour les applications basées sur Next.js.
-1.6. La gestion des serveurs sera automatisée par Vercel, offrant une infrastructure évolutive, fiable et performante.
-1.7. La sécurité est une priorité, avec des mesures avancées comme :
-1.8. Authentification sécurisée via Auth.js avec gestion des tokens et cryptage des mots de passe via bcrypt.
-1.9. Protection des données utilisateur grâce à un chiffrement des communications (SSL/TLS).
-1.10. Les systèmes utilisés pour le développement incluront Windows 11 pour les postes de travail des développeurs.
-1.11. La base de données PostgreSQL sera hébergée sur une plateforme cloud compatible avec Prisma.
+- L’application sera déployée sur Vercel, une plateforme cloud optimisée pour les applications basées sur Next.js.
+- La gestion des serveurs sera automatisée par Vercel, offrant une infrastructure évolutive, fiable et performante.
+- La sécurité est une priorité, avec des mesures avancées comme :
+- Authentification sécurisée via Auth.js avec gestion des tokens et cryptage des mots de passe via bcrypt.
+- Protection des données utilisateur grâce à un chiffrement des communications (SSL/TLS).
+- Les systèmes utilisés pour le développement incluront Windows 11 pour les postes de travail des développeurs.
+- La base de données PostgreSQL sera hébergée sur une plateforme cloud compatible avec Prisma.
 3.5. Demandes de sécurité
 Dans cette section, nous récapitulons les exigences de sécurité imposées à ColisApp :
 * Authentification sécurisée
@@ -447,24 +446,26 @@ o Politique de renouvellement / expiration sécurisée.
 
 ActeurTypeRôle principalClientHumainUtilise la plate-forme pour expédier, payer et suivre ses colis.DestinataireHumainConsulte le suivi d’un colis reçu.Super AdminHumainSupervise tout le système : agences, utilisateurs, envois.Admin d’agenceHumainGère les clients et envois de son agence.ComptableHumainVérifie et valide les transactions financières.Plate-forme ColisAppTechniqueOrchestration des processus (inscription, simulation, suivi…).Services techniques externesTechniqueBD + e-mail + Stripe : stockage, notifications, paiements sécurisés.
 Le tableau détaillé (colonnes « Description complète ») est disponible en Annexe 8.1 : Dictionnaire des acteurs.
+
+
 3.7.2. Cas d’utilisation
 Cette section est dédiée à la présentation et à l'organisation des cas d'utilisation du système ColisApp. Les cas d'utilisation constituent une pierre angulaire de l’analyse fonctionnelle, offrant une vue d’ensemble des interactions entre les utilisateurs (acteurs) et le système. Ils décrivent les fonctionnalités offertes par l’application du point de vue de l’utilisateur, sans entrer dans les détails techniques d’implémentation.
 Dans le cadre du projet ColisApp, plusieurs types d’acteurs ont été identifiés, chacun interagissant avec le système de manière distincte :
-1.12. Visiteur : utilisateur non authentifié pouvant consulter des informations ou simuler un envoi.
-1.13. Client : utilisateur authentifié pouvant gérer ses envois et son profil.
-1.14. Destinataire : personne pouvant suivre un colis sans compte.
-1.15. Admin d’Agence : responsable des opérations au sein d’une agence spécifique.
-1.16. Comptable : profil orienté vers la gestion financière.
-1.17. Super Admin : administrateur global du système.
+- Visiteur : utilisateur non authentifié pouvant consulter des informations ou simuler un envoi.
+- Client : utilisateur authentifié pouvant gérer ses envois et son profil.
+- Destinataire : personne pouvant suivre un colis sans compte.
+- Admin d’Agence : responsable des opérations au sein d’une agence spécifique.
+- Comptable : profil orienté vers la gestion financière.
+- Super Admin : administrateur global du système.
 Afin d’assurer une clarté et une lisibilité optimales, les diagrammes de cas d’utilisation ont été regroupés par rôle ou domaine fonctionnel. Cette organisation permet de visualiser facilement les fonctionnalités accessibles à chaque catégorie d’utilisateur, tout en facilitant la compréhension des périmètres d’action de chacun.
 Les diagrammes présentés dans cette section constituent une référence visuelle essentielle. Ils seront approfondis dans les sections suivantes du dossier d’analyse, où chaque cas d’utilisation significatif sera décrit en détail, avec ses flux principaux, flux alternatifs et scénarios d’exception.
 3.7.2.1. Plans général des diagrammes de cas d’utilisation
-1.18. Espace Public, Destinataire et Client
+- Espace Public, Destinataire et Client
 Ce diagramme montre la transition progressive d’un visiteur vers un client authentifié, en passant par les étapes clés telles que l’inscription, la simulation, la gestion de compte et les actions sur les envois. Il illustre également les interactions spécifiques au rôle de Destinataire qui, sans compte, peut suivre l’état d’un colis. L’objectif est de rendre visible la continuité du parcours utilisateur sur ColisApp, depuis la consultation publique jusqu’à la gestion complète d’un envoi et son paiement.
 
 
 
-1.19. Administration Interne
+- Administration Interne
 Ce diagramme présente les fonctionnalités accessibles aux utilisateurs ayant des rôles de gestion interne sur la plateforme ColisApp : l’administrateur d’agence, le comptable et le super administrateur. Chacun accède à un espace dédié (dashboard) depuis lequel il peut réaliser des actions spécifiques à ses responsabilités. Le diagramme permet de visualiser clairement les domaines fonctionnels séparés tout en mettant en évidence leur point d’entrée commun via l’authentification.
 
 3.7.3. Cas d’utilisation détaillés
@@ -485,20 +486,20 @@ Ce diagramme modélise les actions disponibles pour le Super Administrateur dans
 
 
 3.7.3.5. Cas d’utilisation d’inscription 
-⇒ Documentation :
+- Documentation :
 Cas d'utilisationDescriptionEntréesSortiesCréer un compte (Register)L'utilisateur commence le processus d'inscription en saisissant ses informations.Informations personnelles comme nom, prénom, date de naissance, email, téléphone, adresse.Les données saisies sont transférées pour valValider les données saisiesLe système vérifie que les données entrées respectent les contraintes (format, champs obligatoires).Données saisies par l'utilisateur.Retour d'une validation positive ou des erreurs identifiées.Vérifier email/téléphoneVérifie si l'email ou le numéro de téléphone sont déjà enregistrés dans le système.Email et téléphone fournis par l'utilisateur.Retourne une confirmation ou une erreur si les données existent déjà.Gérer l'adresseVérifie si l'adresse existe déjà ou enregistre une nouvelle adresse dans le système.Adresse fournie par l'utilisateur (rue, numéro, ville, code postal, pays).Adresse liée au compte utilisateur ou nouvelle adresse créée.Enregistrer les données utilisateurSauvegarde les données validées dans la base de données.Données validées (personnelles et adresse).Données de l'utilisateur et adresse sauvegardées.Envoyer email de confirmationEnvoi d'un email à l'utilisateur pour valider son inscription.Email de l'utilisateur.Email envoyé avec un lien d'activation contenant un token.Activer le compteL'utilisateur clique sur le lien d'activation pour valider son compte.Token reçu dans l'email de confirmation.Statut du compte mis à jour comme actif dans la base de données.
 
 
 3.7.3.6. Se connecter
 
 
-⇒ Documentation  :
-Cas d'utilisationDescriptionEntréesSortiesSe connecter (Login)L'utilisateur entre ses informations de connexion (email et mot de passe).Email et mot de passe fournis par l'utilisateur.Données transférées au système d'authentification Auth V5 pour traitement.Authentifier via Auth V5Authentification de l'utilisateur via le système Auth V5. Vérification des informations dans la base de données.Email et mot de passe fournis, gérés par Auth V5.Résultat de l'authentification (succès ou échec), gestion de session et génération de token.Charger le profil utilisateurRécupère les données du profil utilisateur à partir de la base de données après une authentification réussie.Email validé ou ID utilisateur.Données du profil utilisateur récupérées et prêtes à être affichées ou utilisées dans l'application.1.20. 
+- Documentation  :
+Cas d'utilisationDescriptionEntréesSortiesSe connecter (Login)L'utilisateur entre ses informations de connexion (email et mot de passe).Email et mot de passe fournis par l'utilisateur.Données transférées au système d'authentification Auth V5 pour traitement.Authentifier via Auth V5Authentification de l'utilisateur via le système Auth V5. Vérification des informations dans la base de données.Email et mot de passe fournis, gérés par Auth V5.Résultat de l'authentification (succès ou échec), gestion de session et génération de token.Charger le profil utilisateurRécupère les données du profil utilisateur à partir de la base de données après une authentification réussie.Email validé ou ID utilisateur.Données du profil utilisateur récupérées et prêtes à être affichées ou utilisées dans l'application.- 
 
 3.7.3.7. Modifier  les informations de profil 
 
 
-1.21. Documentation :
+- Documentation :
 Cas d'utilisationDescriptionEntréesSortiesAccéder la page de compteL'utilisateur se rend sur la page de son compte pour voir ou modifier ses informations.Aucune entrée requise depuis l'utilisateur à cette étape.La page de compte est affichée.Sélectionner 'Modifier profil'L'utilisateur choisit l'option pour modifier son profil.Clic sur l'option 'Modifier profil'.Le formulaire de modification des informations personnelles est affiché.Modifier les informations personnellesL'utilisateur met à jour les informations de son profil.Informations personnelles mises à jour (par exemple : adresse, numéro de téléphone).Les nouvelles informations sont enregistrées dans la base de données.Sauvegarder les changementsL'utilisateur sauvegarde les modifications apportées à son profil.Clic sur 'Sauvegarder', avec toutes les nouvelles informations entrées.Confirmation de la mise à jour est envoyée à l'utilisateur, et les données sont mises à jour dans la base de données.Recevoir confirmation de mise à jourUne confirmation est envoyée à l'utilisateur pour indiquer que les changements ont été sauvegardés.Aucune entrée nécessaire (se déclenche après la sauvegarde des changements).L'utilisateur reçoit une notification par le système de messagerie électronique confirmant la mise à jour des informations.
 
 
@@ -514,42 +515,32 @@ Cas d'utilisationDescriptionEntréesSortiesAccéder la page de compteL'util
 Ce diagramme modélise le processus complet de réinitialisation du mot de passe par un client. Il commence par une demande de lien via l’email, se poursuit par la réception du lien, la saisie d’un nouveau mot de passe, et la confirmation de la mise à jour. Il inclut également les cas d’erreur liés à un lien invalide ou à une mauvaise saisie du mot de passe.
 
 
-1.1. 
+- 
 3.7.3.9. Simulation d’envoi
 1.1.1.1. 
-1.22. Documentation :
+- Documentation :
 Cas d'utilisationDescriptionEntréesSortiesFaire une simulationL'utilisateur initie une simulation d'envoi.Aucun (action déclenchée par l'utilisateur).Interface pour entrer les détails de l'envoi.Entrer les détails de l'envoiL'utilisateur saisit les informations nécessaires pour l'envoi, comme le poids, dimensions, destination.Poids, dimensions, adresse de départ et d'arrivée.Données collectées pour calculer les coûts.Calculer les coûtsLe système calcule les frais d'envoi en fonction des détails saisis.Détails de l'envoi fournis par l'utilisateur.Coût estimé récupéré de la base de données en fonction des tarifs.Afficher les résultatsLes résultats de la simulation, incluant le coût et les options, sont affichés à l'utilisateur.Résultats du calcul des coûts.Résumé des détails de l'envoi avec les options de modification, validation ou annulation.Modifier la SimulationPermet à l'utilisateur de modifier les détails de la simulation si nécessaire.Données existantes de la simulation.Mise à jour des informations, recalcul des coûts et retour aux résultats.Valider SimulationL'utilisateur confirme la simulation pour passer à l'étape suivante.Résumé des données de la simulation.Enregistrement de la simulation validée dans le système, nécessite une connexion ou inscription.Annuler SimulationL'utilisateur annule la simulation.Aucun (action déclenchée par l'utilisateur).Statut de la simulation mis à jour comme "annulée" dans la base de données et retour à la page de simulation initiale.
 
 
 3.7.3.10. Confirmation et paiement 
 
-1.23. Documentation :
-Cas d’utilisationDescriptionEntréesSortiesAfficher récapitulatif simulationPrésente au client tous les détails calculés (poids, prix, options) avant validation finale.Aucune (appel direct depuis UC_client_utilisateur_simulation).Écran de récapitulatif visible.Valider simulationLe client accepte le devis et lance la procédure de paiement.Clic « Valider ».Déclenche l’obligation de login puis l’écran d’ajout destinataire.Se connecter / S’inscrireGarantit que le client est authentifié avant tout paiement.Identifiants (login) ou données d’inscription.Session ouverte ; retour au flux.Ajouter destinataireLe client saisit les coordonnées du destinataire (nom, adresse, téléphone).Formulaire destinataire.Données validées et persistées ; appel à la création du PaymentIntent.Initier paiement (create PaymentIntent)Le serveur ColisApp appelle Stripe pour créer un PaymentIntent avec montant + success/cancel URLs.ID simulation, montant, e-mail client.clientSecret retourné ; front-end affiche la page Stripe Checkout ou Elements.Recevoir webhook paiement réussiStripe notifie ColisApp que le paiement est « succeeded ».Webhook payment_intent.succeeded (JSON).Déclenche la mise à jour de l’envoi.Mettre à jour statut envoi = PAYÉPasse le statut de l’envoi à PAYÉ et stocke l’ID Stripe pour audit.Données du webhook (paymentIntentId) + ID envoi.Enregistrement BD mis à jour.Générer code suivi & notifierCrée un code de suivi unique, l’enregistre puis informe le client (e-mail + notification).Aucune (automatique).Code suivi stocké & message envoyé via Mail.Rediriger vers profil + toast succèsUX : le client voit « Paiement réussi » et est redirigé vers Mon Profil > Mes envois.Aucune (automatique après succès).Toast « Paiement effectué » + page profil affichée.3.7.3.11.  Historique des envois 
+- Documentation :
+Cas d’utilisationDescriptionEntréesSortiesAfficher récapitulatif simulationPrésente au client tous les détails calculés (poids, prix, options) avant validation finale.Aucune (appel direct depuis UC_client_utilisateur_simulation).Écran de récapitulatif visible.Valider simulationLe client accepte le devis et lance la procédure de paiement.Clic « Valider ».Déclenche l’obligation de login puis l’écran d’ajout destinataire.Se connecter / S’inscrireGarantit que le client est authentifié avant tout paiement.Identifiants (login) ou données d’inscription.Session ouverte ; retour au flux.Ajouter destinataireLe client saisit les coordonnées du destinataire (nom, adresse, téléphone).Formulaire destinataire.Données validées et persistées ; appel à la création du PaymentIntent.Initier paiement (create PaymentIntent)Le serveur ColisApp appelle Stripe pour créer un PaymentIntent avec montant + success/cancel URLs.ID simulation, montant, e-mail client.clientSecret retourné ; front-end affiche la page Stripe Checkout ou Elements.Recevoir webhook paiement réussiStripe notifie ColisApp que le paiement est « succeeded ».Webhook payment_intent.succeeded (JSON).Déclenche la mise à jour de l’envoi.Mettre à jour statut envoi = PAYÉPasse le statut de l’envoi à PAYÉ et stocke l’ID Stripe pour audit.Données du webhook (paymentIntentId) + ID envoi.Enregistrement BD mis à jour.Générer code suivi & notifierCrée un code de suivi unique, l’enregistre puis informe le client (e-mail + notification).Aucune (automatique).Code suivi stocké & message envoyé via Mail.Rediriger vers profil + toast succèsUX : le client voit « Paiement réussi » et est redirigé vers Mon Profil > Mes envois.Aucune (automatique après succès).Toast « Paiement effectué » + page profil affichée.
+3.7.3.11. Suivi colis envois:  ( à refaire )
 
-
-⇒ Documentation:
-Cas d’utilisationDescriptionEntrées côté clientSortie visibleOuvrir le menu « Mes Envois »Depuis Mon Profil, l’utilisateur sélectionne l’option du menu latéral.Simple clic de navigation.La page Mes Envois se charge avec un indicateur de chargement.Afficher la liste des envois (page 1)L’application récupère auprès de la BD les 5 premiers envois du client et les affiche dans un tableau.userId présent dans la session.Tableau rempli (colis, dates, statut, bouton Voir).Chercher / Changer de pageL’utilisateur tape un mot-clé ou clique sur page suivante.Mot-clé OU n° page (1 → n).Tableau actualisé selon le filtre / la pagination.Voir les détails d’un envoi (popup)Clic sur l’icône Voir ➜ la fiche détaillée apparaît dans une modale (poids, volume, prix, QR, suivi).Id de l’envoi sélectionné.Fenêtre modale avec toutes les données de l’envoi.
-
-
-
-
-1.24. 
-
-3.7.3.12. Suivi colis envois:  ( à refaire )
-
-⇒ Documentation
+- Documentation
 Cas d'utilisationDescriptionEntréesSortiesAccéder au suiviLe client ou le destinataire accède à la fonctionnalité de suivi de l'envoi.Requête de l'utilisateur pour suivre un envoi.Interface de suivi présentée à l'utilisateur.Entrer numéro de suiviL'utilisateur entre le numéro de suivi de l'envoi qu'il souhaite suivre.Numéro de suivi entré par l'utilisateur.Validation du numéro et requête de suivi envoyée à la base de données.Consulter statut et localisationLe système affiche le statut actuel et la localisation de l'envoi.Requête de statut basée sur le numéro de suivi.Statut actuel et localisation de l'envoi extraits de la base de données et affichés à l'utilisateur.
 
 
 
 
 
-3.7.3.13.  Demande de fermeture de compte : ( à refaire )
+3.7.3.12.  Demande de fermeture de compte : ( à refaire )
 
 ⇒ Documentation :
 Cas d'utilisationDescriptionEntréesSortiesDemander la fermeture de compteLe client initie la procédure de fermeture de son compte.Demande de fermeture initiée par le client.Formulaire de fermeture de compte présenté au client.Entrer le mot de passe pour confirmerLe client doit confirmer son identité en entrant son mot de passe pour procéder.Saisie du mot de passe par le client.Vérification du mot de passe dans la base de données.AnnulerLe client décide d'annuler la demande de fermeture de compte avant de la soumettre.Action d'annulation par le client.Annulation de la demande de fermeture et retour à l'écran précédent.Soumettre la demande de fermetureAprès vérification, le client peut choisir de soumettre sa demande de fermeture de compte.Confirmation du mot de passe et soumission de la demande par le client.Traitement de la fermeture du compte dans la base de données.Recevoir confirmation de la fermetureLe client reçoit une confirmation que son compte a été fermé.Aucune entrée requise pour cette étape.Notification de fermeture envoyée au client via le système de messagerie électronique.
 
-1.25. 
+- 
 
 3.7.4. Diagramme de séquence :
 3.7.4.1. Diagramme de séquence Simulation d’un Envoi : ( à refaire
@@ -776,14 +767,14 @@ Déploiement : L'application est déployée sur Vercel, la plateforme conçue pa
 4.2.3. Fonctionnement de notre architecture 
 L'application ColisApp est développée sur la base d'une architecture full-stack moderne et intégrée, en s'appuyant sur le framework Next.js 15. Cette approche permet de gérer à la fois le frontend et le backend au sein d'un même projet, garantissant une cohérence et une rapidité de développement optimales.
 L'architecture peut être décomposée en plusieurs couches logiques interdépendantes :
-1. Couche de Présentation (Frontend) :
+- Couche de Présentation (Frontend) :
 * Technologies : Next.js, React 18, TypeScript, Tailwind CSS.
 * Rôle : Cette couche est responsable de tout ce que l'utilisateur voit et avec quoi il interagit dans son navigateur.
 * Fonctionnement : L'interface est construite grâce à l’App Router de Next.js (src/app). Elle exploite pleinement le modèle des React Server Components (RSC) :
 • Les pages et les composants principaux sont des Server Components. Ils s'exécutent côté serveur pour récupérer les données rapidement (via Prisma), ce qui améliore les performances au chargement et le référencement (SEO).
 • L'interactivité (formulaires, boutons, menus) est gérée par des Client Components, identifiés par la directive 'use client'.
 • Cette couche communique avec le backend via des appels fetch aux API Routes internes du projet.
-2. Couche Logique / API (Backend) :
+- Couche Logique / API (Backend) :
 * Technologies : Next.js API Routes, TypeScript.
 * Rôle : C'est le pont entre le frontend et la logique métier. Elle expose des points d'accès (endpoints)       sécurisés que le frontend peut interroger pour récupérer ou modifier des données.
 * Fonctionnement : Le backend est implémenté sous forme d'API Routes situées dans le dossier (src/app/api/v1/). Ces routes suivent une convention de type RESTful. Chaque fichier route.ts exporte des      fonctions correspondant aux méthodes HTTP (GET, POST, PUT, DELETE). Leur rôle est de : 
@@ -792,19 +783,19 @@ L'architecture peut être décomposée en plusieurs couches logiques interdépen
 • Vérifier l'authentification et les autorisations de l'utilisateur.
 • Appeler la couche de service appropriée pour exécuter la logique métier.
 • Retourner une réponse au client au format JSON.
-3. Couche de Services :
+- Couche de Services :
 * Technologies : Modules TypeScript.
 * Rôle : C'est le cœur de l'application. Elle contient toute la logique métier complexe, totalement découplée de l'interface et des routes d'API.
 * Fonctionnement : Des fichiers comme Bk_UserService.ts ou Bk_EnvoiService.ts (situés dans src/services/backend-services/) encapsulent des logiques spécifiques. Par exemple, Bk_EnvoiService contiendra les fonctions pour créer un envoi, calculer son prix, ou mettre à jour son statut. Cette      séparation des préoccupations rend le code plus propre, plus facile à tester et à maintenir. C'est la couche de service qui appelle la couche d'accès aux données.
-4. Couche d'Accès aux Données (Data Access Layer) :
+- Couche d'Accès aux Données (Data Access Layer) :
 * Technologies : Prisma ORM.
 * Rôle : Assurer la communication avec la base de données de manière simple, sécurisée et typée.
 * Fonctionnement : Prisma est utilisé comme un pont entre le code TypeScript et la base de données PostgreSQL. Toutes les interactions avec la base de données (lecture, écriture, mise à jour, suppression) passent par le Prisma Client. Le fichier prisma/schema.prisma sert de source de vérité unique pour définir les modèles de données, leurs relations et leurs contraintes. L'utilisation de Prisma depuis la couche de services garantit des requêtes optimisées et sécurisées contre les injections SQL.
-5. Couche de Persistance (Base de Données) :
+- Couche de Persistance (Base de Données) :
 * Technologies : PostgreSQL.
 * Rôle : Stocker de manière durable toutes les données de l'application.
 * Fonctionnement : Une base de données relationnelle PostgreSQL hébergée sur une plateforme cloud (comme Vercel Postgres, Neon, ou Supabase) stocke les tables (users, envois, agencies, etc.) définies par le schéma Prisma.
-6. Services Transversaux :
+- Services Transversaux :
 * Authentification : Gérée par NextAuth.js (Auth.js). Le fichier src/auth/auth.ts configure les différentes stratégies d'authentification (identifiants, Google, GitHub). Le middleware.ts intercepte les requêtes pour protéger les pages et les API, en s'exécutant sur l'Edge Runtime pour une performance maximale.
 * Sécurité : Outre l'authentification, la sécurité est assurée par le hachage des mots de passe (bcrypt) et la validation systématique des permissions basées sur les rôles des utilisateurs.
 
@@ -826,15 +817,15 @@ Solution : La solution a été d'adopter une approche structurée et rigoureuse.
 6.2. Authentification sur l'Edge Runtime avec NextAuth.js
 Problème : Pour garantir une performance optimale, le middleware.ts de Next.js, qui gère la protection des routes, s'exécute sur "l'Edge Runtime". Cet environnement est un sous-ensemble de Node.js, plus léger mais aussi plus limité. Le principal obstacle est qu'il ne permet pas d'accéder directement à une base de données via Prisma, car Prisma Client n'est pas compatible avec l'Edge par défaut. Il était donc impossible de vérifier le rôle d'un utilisateur en base de données directement depuis le middleware, ce qui est pourtant crucial pour sécuriser l'accès à l'espace /admin.
 Solution : Nous avons mis en place une solution en deux temps, qui respecte les contraintes de l'Edge : 
-6.1. Un middleware "léger" : Le fichier middleware.ts (utilisant auth-edge.ts) se contente de vérifier la validité du cookie de session (JWT). Son seul rôle est de déterminer si l'utilisateur est connecté ou non. Si l'utilisateur n'est pas connecté et tente d'accéder à une page protégée, le middleware le redirige vers la page de connexion. Il ne touche jamais à la base de données.
-6.2. Vérification des rôles au niveau de l'API et des pages : La vérification fine des permissions (par exemple, "cet utilisateur est-il un SUPER_ADMIN ?") est effectuée au début de chaque route d'API ou de page sensible de l'espace /admin. Ces composants s'exécutant dans l'environnement Node.js standard, ils peuvent librement interroger la base de données avec Prisma pour récupérer le rôle de l'utilisateur et autoriser ou refuser l'accès. Cette approche garantit à la fois la performance du middleware et la sécurité des données.
+- Un middleware "léger" : Le fichier middleware.ts (utilisant auth-edge.ts) se contente de vérifier la validité du cookie de session (JWT). Son seul rôle est de déterminer si l'utilisateur est connecté ou non. Si l'utilisateur n'est pas connecté et tente d'accéder à une page protégée, le middleware le redirige vers la page de connexion. Il ne touche jamais à la base de données.
+- Vérification des rôles au niveau de l'API et des pages : La vérification fine des permissions (par exemple, "cet utilisateur est-il un SUPER_ADMIN ?") est effectuée au début de chaque route d'API ou de page sensible de l'espace /admin. Ces composants s'exécutant dans l'environnement Node.js standard, ils peuvent librement interroger la base de données avec Prisma pour récupérer le rôle de l'utilisateur et autoriser ou refuser l'accès. Cette approche garantit à la fois la performance du middleware et la sécurité des données.
 
 
 6.3.  Modélisation et Requêtes Complexes avec Prisma
 Problème : Le schéma de données de ColisApp est riche et fortement relationnel (utilisateurs, envois, agences, colis, paiements, etc.). Le défi était double : d'abord, concevoir un schéma dans schema.prisma qui soit à la fois normalisé et performant. Ensuite, effectuer des requêtes complexes sans tomber dans le piège du "N+1 problem" (multiplier les requêtes inutiles). Par exemple, afficher une liste d'envois pour un client, avec pour chaque envoi les détails du destinataire et les noms des agences de départ et d'arrivée, aurait pu nécessiter de nombreuses requêtes.
 Solution : Nous avons pleinement exploité la puissance de Prisma Client.
-6.3. Modélisation : L'utilisation de relations explicites (@relation) et d'index (@@index) dans le schema.prisma a permis de garantir l'intégrité et la performance des données. L'outil Prisma Migrate a également été essentiel pour gérer l'évolution du schéma de manière versionnée et sécurisée.
-6.4. Requêtes optimisées : Pour les requêtes complexes, nous avons systématiquement utilisé les opérateurs include et select de Prisma. Par exemple, pour récupérer un envoi et ses données liées, une seule requête a suffi :
+- Modélisation : L'utilisation de relations explicites (@relation) et d'index (@@index) dans le schema.prisma a permis de garantir l'intégrité et la performance des données. L'outil Prisma Migrate a également été essentiel pour gérer l'évolution du schéma de manière versionnée et sécurisée.
+- Requêtes optimisées : Pour les requêtes complexes, nous avons systématiquement utilisé les opérateurs include et select de Prisma. Par exemple, pour récupérer un envoi et ses données liées, une seule requête a suffi :
 
  1. // Exemple de requête optimisée
  2.             const envoi = await prisma.envoi.findUnique({
@@ -849,7 +840,7 @@ Solution : Nous avons pleinement exploité la puissance de Prisma Client.
 Cette approche a permis de construire des réponses d'API riches avec un minimum de requêtes à la base de données, assurant ainsi la réactivité de l'application.
 
 7. Wireframes
-6.5. Accueil :
+- Accueil :
 
 
 
@@ -861,8 +852,8 @@ Cette approche a permis de construire des réponses d'API riches avec un minimum
 
 
 
-6.6. Client Accueil :
-6.7. Login
+- Client Accueil :
+- Login
 
 
 
@@ -876,12 +867,12 @@ Cette approche a permis de construire des réponses d'API riches avec un minimum
 
 
 
-6.8. Inscription
+- Inscription
 
-6.9. Simulation
+- Simulation
 
 
-6.10. Contactez-nous 
+- Contactez-nous 
 
 
 
@@ -902,7 +893,7 @@ Cette approche a permis de construire des réponses d'API riches avec un minimum
 
 
 
-6.11. Profile - information
+- Profile - information
 
 
 
@@ -922,7 +913,7 @@ Cette approche a permis de construire des réponses d'API riches avec un minimum
 
 
 
-6.12. Profile – Sécurité
+- Profile – Sécurité
 
 
 
@@ -943,7 +934,7 @@ Cette approche a permis de construire des réponses d'API riches avec un minimum
 
 
 
-6.13. List des envois du client 
+- List des envois du client 
 
 
 
@@ -957,12 +948,12 @@ Cette approche a permis de construire des réponses d'API riches avec un minimum
 
 
 
-6.14. Envoi détails
+- Envoi détails
 
 
-6.15. Profile popup
+- Profile popup
 
-6.16. Admin Dashboard
+- Admin Dashboard
 
 
 
@@ -983,7 +974,7 @@ Cette approche a permis de construire des réponses d'API riches avec un minimum
 
 
 
-6.17. List des agences pour le Super Admin
+- List des agences pour le Super Admin
 
 
 
@@ -1000,7 +991,7 @@ Cette approche a permis de construire des réponses d'API riches avec un minimum
 
 
 
-6.18. Ajouter une nouvelle Agence pour le Super Admin
+- Ajouter une nouvelle Agence pour le Super Admin
 
 
 
@@ -1015,16 +1006,16 @@ Cette approche a permis de construire des réponses d'API riches avec un minimum
 
 
 
-6.19. Liste des utilisateurs pour le Super Admin
+- Liste des utilisateurs pour le Super Admin
 
-6.20. Ajouter un client étape 1/3
-6.21. Ajouter un client étape 2/3
+- Ajouter un client étape 1/3
+- Ajouter un client étape 2/3
 
 
-6.22. Ajouter un client étape 3/3
+- Ajouter un client étape 3/3
 
 8. Glossaire
-6.23. mots-clés Stripe / Paiement
+- mots-clés Stripe / Paiement
 TermeSignificationPourquoi c’est important dans ColisApp3-D Secure (3-DS)Three-Domain Secure : protocole d’authentification renforcée imposé par la directive PSD2/SCA.Quand la banque l’exige, Stripe affiche un challenge (OTP, app bancaire, etc.) pour que le titulaire confirme la transaction. Si le challenge réussit, le risque de fraude et la responsabilité passent à la banque (liability shift).ColisApp n’a pas à implémenter la logique SCA : Stripe prend tout en charge côté front-end. Vous devez simplement prévoir le flux « challenge → succès/échec » pour afficher le toast approprié et permettre un nouveau paiement en cas d’échec.WebhookAppel HTTPS envoyé par Stripe vers votre backend pour notifier un événement asynchrone (ex. payment_intent.succeeded).Il garantit que le backend reçoit la confirmation de paiement même si l’utilisateur ferme l’onglet après avoir payé.Le backend ColisApp écoute le webhook ; dès réception il :1. Vérifie la signature Stripe.2. Met à jour la commande à PAYÉ (idempotent – ignorera les doublons).3. Déclenche l’e-mail de confirmation et le code de suivi.clientSecretJeton opaque renvoyé par Stripe lors de la création d’un PaymentIntent ou SetupIntent. Il s’utilise uniquement côté frontend pour initialiser Stripe.js ou Checkout et confirmer le paiement.- Le serveur Next.js crée le PaymentIntent, récupère le clientSecret et l’envoie au navigateur.- Ce jeton ne donne pas accès aux fonds ni aux données carte ; il autorise seulement cet Intent à être confirmé.- S’il est perdu, un attaquant ne peut rien payer de plus : il est lié à l’Intent, au montant et expirerait vite.
 
 
@@ -1052,17 +1043,17 @@ RelationExplication<include>Le cas cible est obligatoire pour exécuter le ca
 Cas d'utilisationDescriptionPayer l’envoiLe client initie le paiement depuis la page de récapitulatif.Créer une session de paiement StripeLe système communique avec Stripe pour générer une session sécurisée.Rediriger vers StripeRedirection automatique vers l’interface de paiement Stripe.Traiter le résultat du paiementRécupération du résultat (succès ou échec) depuis Stripe.Mettre à jour le statut de l’envoiL’envoi passe au statut "PAYÉ" ou "ÉCHEC" selon le retour.Recevoir la confirmation de l’envoiUn e-mail est automatiquement envoyé pour confirmer le paiement.9.2.3. A.2.3 Mise à jour du statut d’un envoi
 Cas d'utilisationDescriptionMettre à jour le statut d’un envoiPermet de modifier manuellement le statut d’un envoi (ex. : “En transit”).Saisir le nouveau statutL’agent sélectionne un nouveau statut dans une liste prédéfinie.Enregistrer le changementLe système sauvegarde la mise à jour.Notifier le clientLe système peut déclencher une notification par e-mail.9.2.4. A.2.4 Gestion des utilisateurs (Super Admin)
 Cas d'utilisationDescriptionAccéder à la gestion des utilisateursLe super admin accède à l’interface de gestion.Rechercher un utilisateurPossibilité de filtrer la liste (nom, rôle, statut).Modifier les informations d’un utilisateurModifier nom, email, rôle, agence associée.Bloquer ou débloquer un utilisateurSuspension ou réactivation de l’accès.Supprimer un utilisateurSuppression permanente ou désactivation logique du compte.9.2.5. A.2.5 Inscription
-6.24. Acteurs et composants impliqués
-ÉlémentTypeDescriptionClientActeur humainUtilisateur qui souhaite créer un compte sur ColisApp.Système de messagerie électroniqueSystème externeEnvoie l'email de confirmation contenant le lien d'activation.Base de donnéesSystème techniqueStocke les informations saisies par le client et met à jour le statut du compte.6.25. Cas d'utilisation détaillés
-Cas d'utilisationDescriptionCréer un compteÉtape initiale où le client soumet le formulaire d’inscription.Valider les données saisiesVérifie la complétude, le format, et la cohérence des champs (email, mot de passe, etc.).Enregistrer les données utilisateurInsère les données valides dans la base de données.Envoyer email de confirmationEnvoie un email contenant un lien unique d’activation.Activer le compteSe produit lorsque le client clique sur le lien reçu par email ; le système met à jour le statut dans la base de données.6.26. Relations entre éléments
+- Acteurs et composants impliqués
+ÉlémentTypeDescriptionClientActeur humainUtilisateur qui souhaite créer un compte sur ColisApp.Système de messagerie électroniqueSystème externeEnvoie l'email de confirmation contenant le lien d'activation.Base de donnéesSystème techniqueStocke les informations saisies par le client et met à jour le statut du compte.- Cas d'utilisation détaillés
+Cas d'utilisationDescriptionCréer un compteÉtape initiale où le client soumet le formulaire d’inscription.Valider les données saisiesVérifie la complétude, le format, et la cohérence des champs (email, mot de passe, etc.).Enregistrer les données utilisateurInsère les données valides dans la base de données.Envoyer email de confirmationEnvoie un email contenant un lien unique d’activation.Activer le compteSe produit lorsque le client clique sur le lien reçu par email ; le système met à jour le statut dans la base de données.- Relations entre éléments
 SourceCibleType de relationDescriptionClientCréer un compteAssociation directeLe client initie l'inscription.Créer un compteValider les données saisies<>La validation est obligatoire pour poursuivre.Valider les données saisiesEnregistrer les données utilisateur<>Nécessaire si validation réussie.Enregistrer les données utilisateurBase de donnéesAppel techniqueInsertion des données client.Enregistrer les données utilisateurEnvoyer email de confirmation<>Déclenche l’envoi du mail après enregistrement.Envoyer email de confirmationSystème de messagerie électroniqueAppel techniqueLe mail est transmis par un système SMTP.ClientActiver le compteInteractionLe client clique sur le lien reçu.Activer le compteBase de donnéesAppel techniqueLe statut du compte passe à "activé".
 
-6.27. Ce diagramme suit les conventions UML standard :
+- Ce diagramme suit les conventions UML standard :
 • ellipses : cas d’utilisation
 • flèches pleines : interactions directes
 • flèches en pointillé : déclenchements internes ou inclusions <<include>>
 • composants externes : représentés par des pictogrammes (cloud, base de données)
-6.28. Notes complémentaires
+- Notes complémentaires
 o Le lien d'activation contient un token sécurisé généré à l'enregistrement.
 o Ce processus garantit que seuls les comptes confirmés peuvent accéder à l'application.
 Voir aussi : chapitre 3.7.1.x pour la version fonctionnelle dans le corps du dossier.
@@ -1348,13 +1339,13 @@ Host: localhost:8081
 ]
 
 Endpoint: /api/v1/addresses/pays
-6.29. Méthode HTTP: GET
-6.30. Description: Récupérer tous les pays
-6.31. Requête:
+- Méthode HTTP: GET
+- Description: Récupérer tous les pays
+- Requête:
 http
 GET /api/v1/addresses/pays
 Host: localhost:8081
-6.32. Réponse:
+- Réponse:
 json
 // http://localhost:8081/api/v1/addresses/pays
 
@@ -1667,10 +1658,10 @@ Rôle : Calculer le prix total de l'envoi en fonction du poids total et des tari
 Test CaseInputExpected OutputDescriptionCas validepoidsTotal: 8Prix fixe pour poids ≤ 10 kgCalculer le prix avec un poids inférieur ou égal à 10 kg.Cas de limitespoidsTotal: 15Prix variable pour poids > 10 kgCalculer le prix avec un poids supérieur à 10 kg.Cas invalidepoidsTotal: -5Exception ou prix zéroTester avec un poids négatif.
 10. Références
 10.1.1. Documentation des produits utilisés dans la solution
-6.33. Serveur
-6.34. Chatgpt
-6.35. Stackflow
-6.36. Youtube
+- Serveur
+- Chatgpt
+- Stackflow
+- Youtube
 
 
 
