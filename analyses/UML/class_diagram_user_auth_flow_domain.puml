@@ -1,0 +1,155 @@
+@startuml
+  ' Diagramme de Classe pour le sous-domaine: Flux d'authentification (Connexion, Inscription, NextAuth.js)
+left to right direction
+  skinparam classAttributeIconSize 0
+  hide empty members
+
+  package "Data Model (Prisma)" {
+      class User {
+          + id: Int
+          + email: String
+          + password: String?
+          + role: Role
+          + isVerified: Boolean?
+          + emailVerified: DateTime?
+          + verificationToken: String?
+          + verificationTokenExpires: DateTime?
+          ' ... other relevant attributes for auth
+      }
+
+      class Account {
+          + userId: Int
+          + type: String
+          + provider: String
+          + providerAccountId: String
+          ' ... other attributes
+      }
+
+      class Session {
+          + sessionToken: String
+          + userId: Int
+          + expires: DateTime
+          ' ... other attributes
+      }
+
+      class Authenticator {
+          + credentialID: String
+          + userId: Int
+          + providerAccountId: String
+          ' ... other attributes
+      }
+
+      class PasswordResetToken {
+          + id: Int
+          + token: String
+          + expiresAt: DateTime
+          + userId: Int
+          ' ... other attributes
+      }
+
+      enum Role {
+          CLIENT
+          SUPER_ADMIN
+          AGENCY_ADMIN
+          ' ... other roles
+      }
+  }
+
+  package "Backend Services" {
+      class Bk_UserService {
+          + getUserForAuthentication(email: string): Promise<User | null>
+          + getUserByValidToken(token: string): Promise<UserResponseDto | null>
+          + updateUserAndResetTokenVerificationAfterVerification(userId: number): Promise<void>
+          + updateVerificationTokenForOldUser(userId: number, verificationData: VerificationDataType): Promise<void>
+          + getUserByEmail(email: string): Promise<UserLoginDto | null>
+          ' ... other relevant auth methods
+      }
+  }
+
+  package "Repository Layer" {
+      class UserRepository {
+          + findUserByEmail(email: string): Promise<UserLoginDto | null>
+          ' ... other relevant auth methods
+      }
+  }
+
+  package "API Routes" {
+      class AuthApiRoutes {
+          + GET /api/auth/status
+          + POST /api/auth/verify-credentials
+          + GET /api/auth/[...nextauth]
+          + POST /api/auth/[...nextauth]
+      }
+
+      class UsersAuthApiRoutes {
+          + POST /api/v1/users/register
+          + POST /api/v1/users/login
+      }
+  }
+
+  package "Frontend Services" {
+      class FrontendUserService {
+          + generateJWTPayloadAndSetCookie(...): Promise<string>
+          + getConnectedUser(): Promise<User | null>
+          + registerUser(newUser: RegisterUserBackendType): Promise<any>
+          + registerUserEnhanced(data: RegisterUserDto): Promise<{ success: boolean; message: string; userId?: number }>
+      }
+  }
+
+  package "Utilities & External" {
+      class NextAuthEdgeConfig {
+          ' Configuration for NextAuth.js edge runtime
+      }
+      class Bcryptjs {
+          + compare(password: string, hash: string): Promise<boolean>
+          + hash(password: string, salt: number): Promise<string>
+      }
+      class Jsonwebtoken {
+          + sign(payload: object, secret: string, options: object): string
+      }
+      class PrismaClient {
+          ' Represents the Prisma ORM client
+      }
+      class Mailer {
+          + sendVerificationEmail(...): Promise<void>
+      }
+      class ValidationSchema {
+          ' Contains Zod schemas for validation (loginUserSchema, registerUserBackendSchema)
+      }
+      class GenerateTokenUtils {
+          + generateJwt(...): string
+          + setCookie(...): string
+          + generateVerificationTokenForUser(): { verificationToken: string, verificationTokenExpires: Date }
+      }
+      class VerifyTokenUtils {
+          + verifyTokenFromCookies(...): any
+      }
+  }
+
+  ' Relationships
+  User "1" -- "0..*" Account : has >
+  User "1" -- "0..*" Session : has >
+  User "1" -- "0..*" Authenticator : has >
+  User "1" -- "0..*" PasswordResetToken : has >
+
+  AuthApiRoutes ..> Bk_UserService : uses
+  AuthApiRoutes ..> Bcryptjs : uses
+  AuthApiRoutes ..> VerifyTokenUtils : uses
+  AuthApiRoutes ..> NextAuthEdgeConfig : configures
+
+  UsersAuthApiRoutes ..> Bk_UserService : uses
+  UsersAuthApiRoutes ..> Bcryptjs : uses
+  UsersAuthApiRoutes ..> GenerateTokenUtils : uses
+  UsersAuthApiRoutes ..> Mailer : uses
+  UsersAuthApiRoutes ..> ValidationSchema : uses
+  UsersAuthApiRoutes ..> PrismaClient : interacts with
+
+  Bk_UserService ..> UserRepository : uses
+  UserRepository .l.> PrismaClient : interacts with
+  UserRepository ..> User : reads/writes
+
+  FrontendUserService ..> UsersAuthApiRoutes : calls
+  FrontendUserService ..> AuthApiRoutes : calls
+  FrontendUserService ..> GenerateTokenUtils : uses
+
+  @enduml

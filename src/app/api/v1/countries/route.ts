@@ -3,12 +3,19 @@ export const dynamic = "force-dynamic";
 
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/utils/db";
+import { CountryResponseDto } from "@/services/dtos/countries/CountryDto"; // Import DTO
+
+type CountriesQueryParams = {
+    departureCountry?: number; // ID of the country to exclude from the list
+};
 
 /**
- * @method GET
- * @route /api/v1/countries
- * @desc Get distinct countries with agencies, optionally filtering by departureCountry
- * @access public
+ * Get distinct countries with agencies
+ * @description Retrieves a list of distinct countries that have agencies, with an option to exclude a specific departure country.
+ * @params CountriesQueryParams
+ * @response 200:CountryResponseDto[]:List of countries
+ * @response 500:{ error: string }:Internal server error
+ * @openapi
  */
 export async function GET(req: NextRequest) {
     try {

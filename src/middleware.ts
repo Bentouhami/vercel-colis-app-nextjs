@@ -28,6 +28,8 @@ const ROUTE_CONFIG = {
     "/api/v1/tracking",
     "/api/v1/tracking/[trackingNumber]",
     "/api/v1/transports",
+    "/swagger",
+    "/api/swagger",
   ],
 
   // Auth routes - should redirect authenticated users
@@ -74,6 +76,8 @@ const ROUTE_CONFIG = {
     "/api/v1/users/destinataires",
     "/api/v1/users/[id]",
     "/api/v1/users/[id]/profile",
+    "/swagger",
+    "/api/swagger",
   ],
 
   // 🔒 ADMIN ONLY routes - SUPER_ADMIN, AGENCY_ADMIN, ACCOUNTANT can ONLY access these
@@ -115,6 +119,8 @@ const ROUTE_CONFIG = {
     "/api/v1/envois/[id]/edit",
     "/api/v1/envois/[id]/duplicate",
     "/api/v1/envois/[id]/status",
+    "/swagger",
+    "/api/swagger",
   ],
 
   // Special routes

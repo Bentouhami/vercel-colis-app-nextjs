@@ -1,0 +1,32 @@
+@startuml
+  ' Diagramme de Classe pour le domaine Planification Transport (TransportSchedule)
+
+  skinparam classAttributeIconSize 0
+  hide empty members
+
+  package "Data Model (Prisma)" {
+      class TransportSchedule {
+          + id: Int
+          + transportId: Int
+          + departureDate: DateTime
+          + arrivalDate: DateTime
+          + isHoliday: Boolean
+          + createdAt: DateTime
+          + updatedAt: DateTime
+          --
+          ' Relations
+          ' transport: Transport
+      }
+
+      class Transport {
+          + id: Int
+          + number: String
+          ' ... other attributes
+      }
+  }
+
+  ' Relationships
+  TransportSchedule "0..*" -- "1" Transport : belongs to >
+
+
+  @enduml

@@ -1,26 +1,54 @@
-# Project TODOs
+# TODO List for ColisApp Project
 
-This document outlines future enhancements and areas for improvement in the ColisApp project.
+## Class Diagrams to Create/Finalize:
 
-## 1. Testing
+- [x] **Domaine Paiement (`Payment`)**
+  - *Action:* Enregistrer le diagramme généré (class_diagram_payment_domain.puml).
 
-- **Implement Comprehensive Unit Tests**: Develop unit tests for all critical components, especially API routes, backend services, and utility functions, to ensure code reliability and prevent regressions.
+- [x] **Domaine Suivi (`Tracking`)**
+  - *Action:* Analyser les fichiers et générer le diagramme de classe.
 
-## 2. Error Handling & Logging
+- [x] **Domaine Notifications (`Notification`)**
+  - *Action:* Analyser les fichiers et générer le diagramme de classe.
 
-- **Centralized Error Handling**: Implement a standardized and centralized error handling mechanism across all application layers (API, services, UI) to ensure consistent error responses and graceful degradation.
-- **Robust Logging System**: Integrate a comprehensive logging solution to capture application events, errors, and performance metrics for better monitoring and debugging.
+- [x] **Domaine Tarifs (`Tarifs`)** (Optionnel, à discuter)
+  - *Action:* Analyser les fichiers et générer le diagramme de classe.
 
-## 3. Performance Optimization
+- [x] **Domaine Transport (`Transport`)** (Optionnel, à discuter)
+  - *Action:* Analyser les fichiers et générer le diagramme de classe.
 
-- **Database Query Optimization**: Analyze and optimize database queries to improve response times and reduce load on the database.
-- **Caching Strategies**: Explore and implement caching mechanisms for frequently accessed data (e.g., Redis, in-memory cache) to reduce database hits and improve performance.
-- **Asset Optimization**: Optimize static assets (images, CSS, JavaScript) for faster loading times.
+- [x] **Domaine Rendez-vous (`Appointment`)** (Optionnel, à discuter)
+  - *Action:* Analyser les fichiers et générer le diagramme de classe.
 
-## 4. CI/CD Pipeline
+- [x] **Domaine Utilisateur & Authentification** (Décomposé en sous-diagrammes)
+  - *Action:* Le diagramme global a été analysé et sera décomposé pour plus de clarté.
+  - [x] **Sous-domaine: Gestion du profil utilisateur et CRUD de base**
+    - *Action:* Créer le diagramme de classe pour le modèle `User` et les opérations CRUD de base.
+  - [x] **Sous-domaine: Flux d'authentification (Connexion, Inscription, NextAuth.js)**
+    - *Action:* Créer le diagramme de classe pour les flux d'authentification.
+  - [x] **Sous-domaine: Relations utilisateur et rôles**
+    - *Action:* Créer le diagramme de classe pour les relations `AgencyClients`, `AgencyStaff`, `ClientDestinataire` et les rôles.
+  - [x] **Sous-domaine: Gestion des adresses utilisateur**
+    - *Action:* Créer le diagramme de classe pour `UserAddress`, `Address`, `City`, `Country`, `VatRate`, `Timezone`.
+    - *Note:* Le modèle `UserAddress` est présent dans `prisma/schema.prisma` mais est commenté comme "REMOVED". Une clarification est nécessaire.
+- [x] **Domaine Coupons** (À discuter)
+  - *Action:* Analyser les modèles `Coupon`, `UserCoupon`, `EnvoiCoupon` et générer le diagramme de classe.
+- [x] **Domaine Colis (`Parcel`)** (À discuter)
+  - *Action:* Analyser le modèle `Parcel` et générer le diagramme de classe.
+- [x] **Domaine Planification Transport (`TransportSchedule`)** (À discuter)
+  - *Action:* Analyser le modèle `TransportSchedule` et générer le diagramme de classe.
 
-- **Automated CI/CD**: Set up a Continuous Integration/Continuous Deployment pipeline to automate the build, test, and deployment processes, ensuring faster and more reliable releases.
+## General Diagrams:
 
-## 5. Build & Deployment
+- [x] **Diagramme de Classe Général et Abstrait**
+  - *Action:* Créer un diagramme de classe de haut niveau pour l'ensemble de l'application.
 
-- **Fix Build Errors**: Address and resolve any recurring build errors to ensure a stable and consistent build process.
+## Frontend Diagrams:
+
+- [x] **Diagramme Abstrait du Frontend**
+  - *Action:* Créer un diagramme abstrait de l'architecture frontend.
+
+## Pending Actions:
+
+- [ ] **Domaine Agence (`Agency`)**
+  - *Action:* Créer manuellement le fichier `analyses/UML/class_diagram_agency_domain.puml` avec le contenu fourni précédemment, car l'outil n'a pas pu le faire automatiquement.

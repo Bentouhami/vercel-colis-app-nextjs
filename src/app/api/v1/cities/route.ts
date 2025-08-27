@@ -3,12 +3,21 @@
 export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from "@/utils/db";
+import { CityDto } from "@/services/dtos/cities/CityDto"; // Import CityDto
+
+type CitiesQueryParams = {
+    countryId: number; // ID of the country
+};
 
 /**
- * @method GET
- * @route /api/v1/cities?country=CountryID
- * @desc Get cities that have an agency for a given country
- * @access public
+ * Get cities with agencies by country
+ * @description Retrieves a list of cities that have an agency for a given country ID.
+ * @params CitiesQueryParams
+ * @response 200:CityDto[]:List of cities
+ * @response 400:{ error: string }:Country ID is required
+ * @response 405:{ error: string }:Method not allowed
+ * @response 500:{ error: string }:Internal server error
+ * @openapi
  */
 export async function GET(req: NextRequest) {
 

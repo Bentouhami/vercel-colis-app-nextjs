@@ -1,28 +1,67 @@
 @startuml
-actor Client
-participant "UI Client (Next.js)" as UI
-participant "API Simulation (Next.js)" as API
-participant "Bk_SimulationService" as Service
-participant "Prisma ORM" as Prisma
+title Séquence de Simulation d'Envoi Simplifiée et Corrigée
 
-Client -> UI: Accède à la page de simulation
-activate UI
-UI -> UI: Affiche le formulaire de simulation
-Client -> UI: Saisit les détails de l'envoi (origine, destination, poids, volume, etc.)
-UI -> API: Requête de simulation (POST /api/v1/simulations)
-activate API
-API -> Service: Appelle calculerSimulation(detailsEnvoi)
-activate Service
-Service -> Prisma: Requête tarifs, agences, etc.
-activate Prisma
-Prisma --> Service: Retourne données
-deactivate Prisma
-Service -> Service: Calcule le prix et les options de livraison
-Service --> API: Retourne les résultats de simulation
-deactivate Service
-API --> UI: Retourne les résultats (JSON)
-deactivate API
-UI -> UI: Affiche les résultats de simulation
-Client -> UI: Consulte les résultats
-deactivate UI
+actor User
+participant Application
+participant Database
+
+User -> Application: Accède à la page de simulation
+activate Application #ADD1B2
+Application -> Database: Récupère les données nécessaires (par exemple, agences disponibles)
+activate Database #A9D78F
+Database --> Application: Données récupérées
+deactivate Database
+Application --> User: Affiche la page de simulation
+deactivate Application
+
+User -> Application: Saisit les informations de l'envoi (poids, dimensions, type d'envoi)
+activate Application #ADD1B2
+Application -> Database: Enregistre la simulation en tant que brouillon
+activate Database #A9D78F
+Database --> Application: Confirmation d'enregistrement
+deactivate Database
+Application --> User: Affiche les résultats de la simulation (prix, destinations départ/arrivée, dates d'estimation)
+deactivate Application
+
+User -> Application: Confirme la simulation
+activate Application #ADD1B2
+alt Utilisateur connecté
+    Application -> Database: Met à jour le statut de la simulation
+    activate Database #A9D78F
+    Database --> Application: Confirmation de mise à jour
+    deactivate Database
+    Application --> User: Redirige vers la page d'ajout du destinataire
+else Utilisateur non connecté
+    Application --> User: Affiche la modale de connexion
+    deactivate Application
+    User -> Application: Se connecte
+    activate Application #ADD1B2
+    Application --> User: Redirige vers la page d'ajout du destinataire
+end
+deactivate Application
+
+User -> Application: Saisit les informations du destinataire
+activate Application #ADD1B2
+Application -> Database: Stocke les informations du destinataire
+activate Database #A9D78F
+Database --> Application: Confirmation de stockage
+deactivate Database
+Application --> User: Redirige vers la page de récapitulatif ou de paiement
+deactivate Application
+
+alt Paiement réussi
+    User -> Application: Procède au paiement
+    activate Application #ADD1B2
+    Application -> Database: Met à jour le statut de l'envoi (payé)
+    activate Database #A9D78F
+    Database --> Application: Confirmation de paiement
+    deactivate Database
+    Application --> User: Affiche la confirmation de paiement
+else Paiement échoué
+    User -> Application: Procède au paiement
+    activate Application #ADD1B2
+    Application --> User: Affiche un message d'erreur de paiement
+end
+deactivate Application
+
 @enduml

@@ -4,6 +4,13 @@ export const runtime = "nodejs";
 import { NextResponse } from "next/server";
 import { AdminDashboardService } from "@/services/backend-services/AdminDashboardService";
 
+/**
+ * Get Super Admin dashboard statistics
+ * @description Retrieves statistics for the Super Admin dashboard.
+ * @response 200:SuperAdminStats:Super Admin dashboard statistics
+ * @response 500:{ message: string }:Failed to fetch super admin dashboard data
+ * @openapi
+ */
 export async function GET() {
   try {
     const stats = await AdminDashboardService.getSuperAdminStats();

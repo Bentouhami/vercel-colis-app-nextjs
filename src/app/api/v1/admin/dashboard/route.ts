@@ -5,7 +5,19 @@ import { NextRequest, NextResponse } from "next/server";
 import { RoleDto } from "@/services/dtos/enums/EnumsDto";
 import { AdminDashboardBackendService } from "@/services/backend-services/AdminDashboardBackendService";
 import { auth } from "@/auth/auth";
+import { DashboardSummaryDto } from "@/services/dtos/admin/DashboardDto"; // Import DashboardSummaryDto
 
+/**
+ * Get admin dashboard data
+ * @description Retrieves dashboard data based on the authenticated admin's role (SUPER_ADMIN, AGENCY_ADMIN, ACCOUNTANT).
+ * @response 200:DashboardSummaryDto:Dashboard data
+ * @response 401:{ error: string }:Unauthorized
+ * @response 403:{ error: string }:Access denied
+ * @response 400:{ error: string }:Role not recognized
+ * @response 500:{ error: string }:Internal server error
+ * @auth bearer
+ * @openapi
+ */
 export async function GET(request: NextRequest) {
   try {
     // Vérifier la session

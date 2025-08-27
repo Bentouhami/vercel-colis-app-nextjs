@@ -1,17 +1,19 @@
 // path: src/app/api/v1/agencies/update-agency/route.ts
 
-/**
- * This route is used to update an existing agency in the database.
- * It takes the agency data as a JSON payload and updates the corresponding agency in the database.
- * If the agency is not found, it returns a 404 error.
- * If the update operation fails, it returns a 500 error.
- * @param req - The incoming request object
- * @param res - The outgoing response object
- */
-
 import {NextRequest, NextResponse} from "next/server";
 import {updateAgency} from "@/services/backend-services/Bk_AgencyService";
+import { UpdateAgencyDto, AgencyDto } from "@/services/dtos"; // Import DTOs
 
+/**
+ * Update an existing agency
+ * @description Updates an existing agency record in the database.
+ * @body UpdateAgencyDto
+ * @response 200:AgencyDto:Agency updated successfully
+ * @response 400:{ error: string }:Agency data not found
+ * @response 405:{ error: string }:Method not allowed
+ * @response 500:{ error: string }:Failed to update agency
+ * @openapi
+ */
 export async function PUT(req: NextRequest) {
     if (req.method !== 'PUT') {
         return NextResponse.json({error: 'Method not allowed'}, {status: 405});

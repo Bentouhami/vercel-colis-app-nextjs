@@ -2,7 +2,17 @@
 
 import { NextResponse } from "next/server"
 import {sendResetPasswordEmail} from "@/services/backend-services/Bk_AuthService";
+import { ForgotPasswordDto } from "@/services/dtos/auth/authDtos"; // Import ForgotPasswordDto
 
+/**
+ * Request password reset
+ * @description Sends a password reset email to the provided email address.
+ * @body ForgotPasswordDto
+ * @response 200:{ message: string }:Confirmation message
+ * @response 400:{ message: string }:Invalid email
+ * @response 500:{ message: string }:Server error
+ * @openapi
+ */
 export async function POST(req: Request) {
     try {
         const { email } = await req.json()

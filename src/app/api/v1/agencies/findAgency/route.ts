@@ -3,6 +3,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/utils/db";
 
+type FindAgencyQueryParams = {
+    country: number; // ID of the country
+    city: string; // Name of the city
+    agency_name: string; // Name of the agency
+};
+
+/**
+ * Find agency ID by details
+ * @description Finds the ID of an agency by its name, city, and country.
+ * @params FindAgencyQueryParams
+ * @response 200:{ agencyId: number }:Agency ID found
+ * @response 400:{ error: string }:Missing or invalid parameters
+ * @response 404:{ error: string }:Agency not found
+ * @response 500:{ error: string }:Internal server error
+ * @openapi
+ */
 export async function GET(req: NextRequest) {
     // Extract query parameters
     const countryParam = req.nextUrl.searchParams.get("country");

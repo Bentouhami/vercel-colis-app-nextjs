@@ -10,7 +10,7 @@ const TarifsPage = () => {
                 </div>
             }
         >
-            <TarifsComponent />
+            <TarifsComponent comingSoon />
         </Suspense>
     )
 }

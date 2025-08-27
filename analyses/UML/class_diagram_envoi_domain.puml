@@ -1,0 +1,160 @@
+@startuml
+' Diagramme de Classe pour le domaine Envoi (Shipment)
+
+left to right direction
+skinparam classAttributeIconSize 0
+hide empty members
+
+package "Data Model" {
+    class Envoi {
+        + id: Int
+        + trackingNumber: String
+        + qrCodeUrl: String
+        + userId: Int
+        + destinataireId: Int
+        + transportId: Int
+        + departureAgencyId: Int
+        + arrivalAgencyId: Int
+        + simulationStatus: SimulationStatus
+        + envoiStatus: EnvoiStatus
+        + totalWeight: Float
+        + totalVolume: Float
+        + totalPrice: Float
+        + paid: Boolean
+        + departureDate: DateTime
+        + arrivalDate: DateTime
+        + verificationToken: String
+        + comment: String
+        + createdAt: DateTime
+        + updatedAt: DateTime
+        --
+        ' Relations
+        ' client: User
+        ' destinataire: User
+        ' departureAgency: Agency
+        ' arrivalAgency: Agency
+        ' transport: Transport
+        ' payment: Payment
+        ' trackingEvents: TrackingEvent[]
+        ' appointments: Appointment[]
+        ' parcels: Parcel[]
+        ' envoiCoupons: EnvoiCoupon[]
+        ' notifications: Notification[]
+    }
+
+    enum EnvoiStatus {
+        PENDING
+        SENT
+        DELIVERED
+        CANCELLED
+        RETURNED
+    }
+
+    enum SimulationStatus {
+        DRAFT
+        CONFIRMED
+        COMPLETED
+        CANCELLED
+    }
+}
+
+package "Data Transfer Objects (DTOs)" {
+    class EnvoiDto {
+        + id: number
+        + trackingNumber: string
+        + qrCodeUrl: string
+        + userId: number
+        + destinataireId: number
+        + transportId: number
+        + departureAgencyId: number
+        + arrivalAgencyId: number
+        + simulationStatus: SimulationStatusDto
+        + envoiStatus: EnvoiStatusDto
+        + paid: boolean
+        + totalWeight: number
+        + totalVolume: number
+        + totalPrice: number
+        + departureDate: Date
+        + arrivalDate: Date
+        + verificationToken: string
+        + comment: string
+        ' ... relations comme client, destinataire, parcels, etc.
+    }
+
+    class EnvoisListDto {
+        + id: number
+        + departureAgency: string
+        + arrivalAgency: string
+        + totalWeight: number
+        + totalPrice: number
+        + arrivalDate: Date
+        + departureDate: Date
+        + envoiStatus: string
+        + paid: boolean
+        + destinataire: string
+        + trackingNumber: string
+        + createdAt: Date
+    }
+
+    class CreateEnvoiDto {
+        ' ... champs pour la création
+    }
+
+    class UpdateEnvoiDto {
+        ' ... champs pour la mise à jour
+    }
+
+    class PaymentSuccessDto {
+        + id: number
+        + trackingNumber: string
+        + qrCodeUrl: string
+        + totalPrice: number
+        ' ... détails des agences et clients
+    }
+}
+
+package "Service Layer" {
+    class Bk_EnvoiService {
+        + cancelSimulation(envoiId: number): void
+        + updateEnvoi(envoiId: number): boolean
+        + getEnvoiById(envoiId: number): EnvoiDto
+        + getAllEnvoisByUserId(userId: number, limit: number, offset: number): { envois: EnvoisListDto[], total: number }
+        + getPaymentSuccessDataById(envoiId: number): PaymentSuccessDto
+    }
+}
+
+package "API Routes"{
+    class EnvoiApiController {
+        + POST /api/v1/envois/cancel
+        + GET /api/v1/envois/{id}
+        + PUT /api/v1/envois/{id}
+        + GET /api/v1/envois/{id}/status
+        + GET /api/v1/envois/user/{userId}
+    }
+}
+
+' --- Relations ---
+
+EnvoiApiController ..> Bk_EnvoiService : uses
+Bk_EnvoiService ..> Envoi : operates on
+Bk_EnvoiService ..> EnvoiDto : returns
+Bk_EnvoiService ..> EnvoisListDto : returns
+Bk_EnvoiService ..> PaymentSuccessDto : returns
+
+Envoi -- EnvoiStatus : has
+Envoi -- SimulationStatus : has
+
+' Relations to other domain models (simplified)
+Envoi "1" -u- "1" User : client
+Envoi "1" -u- "0..1" User : destinataire
+Envoi "1" -u- "1" Agency : departureAgency
+Envoi "1" -u- "1" Agency : arrivalAgency
+Envoi "1" -u- "0..1" Transport : transport
+Envoi "1" -u- "0..1" Payment : payment
+Envoi "1" -u- "0..*" TrackingEvent : trackingEvents
+Envoi "1" -u- "0..*" Parcel : parcels
+Envoi "1" -u- "0..*" Appointment : appointments
+Envoi "1" -u- "0..*" Notification : notifications
+Envoi "1" -u- "0..*" EnvoiCoupon : envoiCoupons
+
+@enduml

@@ -1,0 +1,64 @@
+@startuml
+  ' Diagramme de Classe pour le domaine Notifications (Notification)
+
+  skinparam classAttributeIconSize 0
+  hide empty members
+
+  package "Data Model (Prisma)" {
+      class Notification {
+          + id: Int
+          + message: String
+          + agencyId: Int
+          + destinataireId: Int?
+          + clientId: Int?
+          + envoiId: Int
+          + isRead: Boolean
+          + isDeleted: Boolean
+          + createdAt: DateTime
+          + updatedAt: DateTime
+          --
+          ' Relations
+          ' agency: Agency
+          ' envoi: Envoi
+          ' destinataireNotification: User?
+          ' clientNotification: User?
+      }
+
+      class Agency {
+          + id: Int
+          + name: String
+          ' ... other attributes
+      }
+
+      class Envoi {
+          + id: Int
+          + trackingNumber: String?
+          ' ... other attributes
+      }
+
+      class User {
+          + id: Int
+          + firstName: String?
+          + lastName: String?
+          ' ... other attributes
+      }
+  }
+
+  ' Relationships
+  Notification "0..*" -- "1" Agency : belongs to >
+  Notification "0..*" -- "1" Envoi : relates to >
+  Notification "0..*" -- "0..1" User as Destinataire : for >
+  Notification "0..*" -- "0..1" User as Client : for >
+
+  note as N1
+    **Note sur le modèle Notification:**
+    Malgré l'existence du modèle `Notification` dans `prisma/schema.prisma`,
+    l'analyse du code n'a pas permis d'identifier de logique explicite
+    (`prisma.notification.create` ou `prisma.notification.update`)
+    qui crée ou met à jour directement des enregistrements dans ce modèle.
+    Il est possible que les notifications soient générées par des mécanismes
+    implicites ou des services externes non analysés, ou que cette partie
+    de la fonctionnalité ne soit pas encore pleinement implémentée.
+  end note
+
+  @enduml

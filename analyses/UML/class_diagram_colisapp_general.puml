@@ -1,0 +1,82 @@
+@startuml
+  ' Diagramme de Classe Général et Abstrait pour ColisApp
+
+  skinparam classAttributeIconSize 0
+  hide empty members
+
+  package "Core Business Entities" {
+      class User {
+          ' ...
+      }
+      class Envoi {
+          ' ...
+      }
+      class Agency {
+          ' ...
+      }
+      class Payment {
+          ' ...
+      }
+      class TrackingEvent {
+          ' ...
+      }
+      class Appointment {
+          ' ...
+      }
+      class Transport {
+          ' ...
+      }
+      class Tarifs {
+          ' ...
+      }
+      class Coupon {
+          ' ...
+      }
+      class UserCoupon {
+          ' ...
+      }
+      class EnvoiCoupon {
+          ' ...
+      }
+      class Parcel {
+          ' ...
+      }
+  }
+
+  package "Geographical & Address Data" {
+      class Address {
+          ' ...
+      }
+      class City {
+          ' ...
+      }
+      class Country {
+          ' ...
+      }
+  }
+
+  ' High-level Relationships with Cardinalities
+
+  User "1" -- "0..*" Envoi : client/destinataire
+  User "1" -- "0..*" Agency : staff/client
+  User "1" -u- "0..*" UserCoupon : has
+  UserCoupon "0..*" -l- "1" Coupon : applies to
+
+  Envoi "1" -u- "0..1" Payment : has
+  Envoi "1" -u- "0..*" TrackingEvent : generates
+  Envoi "1" -- "0..*" Parcel : contains
+  Envoi "1" -- "0..*" EnvoiCoupon : applies
+  Envoi "1" -r- "0..1" Appointment : schedules
+  Envoi "0..*" -- "1" Transport : carried by
+
+  Agency "1" -- "0..*" Envoi : departure/arrival
+  Agency "1" -- "0..*" Transport : owns
+  Agency "1" -r- "0..*" Tarifs : defines
+  Agency "1" -r- "0..*" Appointment : schedules
+
+  Address "0..*" -- "1" City : located in
+  City "0..*" -r- "1" Country : located in
+  Address "0..1" -- "1" Agency : has (unique)
+  User "1" -l- "0..*" Address : has (via UserAddress)
+
+  @enduml

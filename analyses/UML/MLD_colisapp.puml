@@ -1,0 +1,291 @@
+@startuml MLD_ColisApp_Revised
+!theme vibrant
+title MLD ColisApp - Modèle Logique de Données (Révisé)
+
+' Tables
+entity UTILISATEUR {
+  + id_utilisateur <<PK>>
+  --
+  prenom
+  nom
+  email <<UNIQUE>>
+  telephone <<UNIQUE>>
+  role
+  dateNaissance
+  estEntreprise
+}
+
+entity ADRESSE {
+  + id_adresse <<PK>>
+  --
+  rue
+  complement
+  numeroRue
+  numeroBoite
+  # id_ville <<FK>>
+}
+
+entity VILLE {
+  + id_ville <<PK>>
+  --
+  nom
+  latitude
+  longitude
+  # id_pays <<FK>>
+}
+
+entity PAYS {
+  + id_pays <<PK>>
+  --
+  nom <<UNIQUE>>
+  codeISO2 <<UNIQUE>>
+  codeISO3 <<UNIQUE>>
+  indicatifTelephone
+  capitale
+  devise
+  emoji
+}
+
+entity FUSEAU_HORAIRE {
+  + id_fuseau_horaire <<PK>>
+  --
+  nomZone
+  decalageGMT
+  abreviation
+  # id_pays <<FK>>
+}
+
+entity TAUX_TVA {
+  + id_taux_tva <<PK>>
+  --
+  pourcentageTVA
+  typeTVA
+  # id_pays <<FK>> <<UNIQUE>>
+}
+
+entity AGENCE {
+  + id_agence <<PK>>
+  --
+  nom
+  localisation
+  telephone
+  email
+  numeroTVA
+  capacite
+  placesDisponibles
+  # id_adresse <<FK>> <<UNIQUE>>
+  # id_createur_utilisateur <<FK>> <<NULLABLE>>
+}
+
+entity JOURNAL_ACTIVITE {
+  + id_journal_activite <<PK>>
+  --
+  typeActivite
+  details
+  rolePersonnel
+  # id_utilisateur <<FK>> <<NULLABLE>>
+  # id_agence <<FK>> <<NULLABLE>>
+}
+
+entity ENVOI {
+  + id_envoi <<PK>>
+  --
+  numeroSuivi <<UNIQUE>>
+  urlQRCode
+  statutSimulation
+  statutEnvoi
+  poidsTotal
+  volumeTotal
+  prixTotal
+  paye
+  dateDepart
+  dateArrivee
+  commentaire
+  # id_client_utilisateur <<FK>> <<NULLABLE>>
+  # id_destinataire_utilisateur <<FK>> <<NULLABLE>>
+  # id_agence_depart <<FK>>
+  # id_agence_arrivee <<FK>>
+  # id_transport <<FK>> <<NULLABLE>>
+}
+
+entity COLIS {
+  + id_colis <<PK>>
+  --
+  hauteur
+  poids
+  largeur
+  longueur
+  # id_envoi <<FK>>
+}
+
+entity PAIEMENT {
+  + id_paiement <<PK>>
+  --
+  methode
+  statut
+  montant
+  idTransaction <<UNIQUE>>
+  # id_envoi <<FK>> <<UNIQUE>>
+}
+
+entity EVENEMENT_SUIVI {
+  + id_evenement_suivi <<PK>>
+  --
+  statutEvenement
+  localisation
+  description
+  # id_envoi <<FK>>
+}
+
+entity TRANSPORT {
+  + id_transport <<PK>>
+  --
+  numero
+  volumeBase
+  poidsBase
+  volumeActuel
+  poidsActuel
+  estDisponible
+  # id_agence <<FK>> <<NULLABLE>>
+}
+
+entity PLANNING_TRANSPORT {
+  + id_planning_transport <<PK>>
+  --
+  dateDepart
+  dateArrivee
+  estFerier
+  # id_transport <<FK>>
+}
+
+entity RENDEZ_VOUS {
+  + id_rendez_vous <<PK>>
+  --
+  date
+  statut
+  # id_envoi <<FK>> <<UNIQUE>>
+  # id_agence <<FK>>
+}
+
+entity TARIF {
+  + id_tarif <<PK>>
+  --
+  tauxPoids
+  tauxVolume
+  tauxBase
+  tauxFixe
+  # id_agence <<FK>> <<NULLABLE>>
+}
+
+entity COUPON {
+  + id_coupon <<PK>>
+  --
+  codeCoupon <<UNIQUE>>
+  montantReduction
+  pourcentageReduction
+  nombreUtilisations
+  dateDebut
+  dateExpiration
+}
+
+entity NOTIFICATION {
+  + id_notification <<PK>>
+  --
+  message
+  estLu
+  # id_envoi <<FK>>
+  # id_agence <<FK>>
+  # id_destinataire_utilisateur <<FK>> <<NULLABLE>>
+  # id_client_utilisateur <<FK>> <<NULLABLE>>
+}
+
+' Association Tables
+entity UTILISATEUR_ADRESSE {
+  + id_utilisateur <<PK>> <<FK>>
+  + id_adresse <<PK>> <<FK>>
+  --
+  typeAdresse
+}
+
+entity AGENCE_CLIENTS {
+  + id_utilisateur <<PK>> <<FK>>
+  + id_agence <<PK>> <<FK>>
+}
+
+entity AGENCE_PERSONNEL {
+  + id_utilisateur <<PK>> <<FK>>
+  + id_agence <<PK>> <<FK>>
+  --
+  rolePersonnel
+}
+
+entity CLIENT_DESTINATAIRE {
+  + id_client <<PK>> <<FK>>
+  + id_destinataire <<PK>> <<FK>>
+}
+
+entity UTILISATEUR_COUPON {
+  + id_utilisateur <<PK>> <<FK>>
+  + id_coupon <<PK>> <<FK>>
+}
+
+entity ENVOI_COUPON {
+  + id_envoi <<PK>> <<FK>>
+  + id_coupon <<PK>> <<FK>>
+}
+
+' Relations
+ADRESSE "1" -- "N" VILLE : id_ville
+VILLE "1" -- "N" PAYS : id_pays
+FUSEAU_HORAIRE "1" -- "N" PAYS : id_pays
+TAUX_TVA "1" -- "1" PAYS : id_pays
+
+AGENCE "1" -- "1" ADRESSE : id_adresse
+AGENCE "0..N" -- "0..1" UTILISATEUR : id_createur_utilisateur
+
+JOURNAL_ACTIVITE "0..N" -- "0..1" UTILISATEUR : id_utilisateur
+JOURNAL_ACTIVITE "0..N" -- "0..1" AGENCE : id_agence
+
+ENVOI "0..N" -- "0..1" UTILISATEUR : id_client_utilisateur
+ENVOI "0..N" -- "0..1" UTILISATEUR : id_destinataire_utilisateur
+ENVOI "N" -- "1" AGENCE : id_agence_depart
+ENVOI "N" -- "1" AGENCE : id_agence_arrivee
+ENVOI "0..N" -- "0..1" TRANSPORT : id_transport
+
+COLIS "N" -- "1" ENVOI : id_envoi
+PAIEMENT "1" -- "1" ENVOI : id_envoi
+EVENEMENT_SUIVI "N" -- "1" ENVOI : id_envoi
+
+TRANSPORT "0..N" -- "0..1" AGENCE : id_agence
+PLANNING_TRANSPORT "N" -- "1" TRANSPORT : id_transport
+
+RENDEZ_VOUS "1" -- "1" ENVOI : id_envoi
+RENDEZ_VOUS "N" -- "1" AGENCE : id_agence
+
+TARIF "0..N" -- "0..1" AGENCE : id_agence
+
+NOTIFICATION "N" -- "1" ENVOI : id_envoi
+NOTIFICATION "N" -- "1" AGENCE : id_agence
+NOTIFICATION "0..N" -- "0..1" UTILISATEUR : id_destinataire_utilisateur
+NOTIFICATION "0..N" -- "0..1" UTILISATEUR : id_client_utilisateur
+
+' Association Table Relations
+UTILISATEUR "N" -- "N" UTILISATEUR_ADRESSE
+ADRESSE "N" -- "N" UTILISATEUR_ADRESSE
+
+UTILISATEUR "N" -- "N" AGENCE_CLIENTS
+AGENCE "N" -- "N" AGENCE_CLIENTS
+
+UTILISATEUR "N" -- "N" AGENCE_PERSONNEL
+AGENCE "N" -- "N" AGENCE_PERSONNEL
+
+UTILISATEUR "N" -- "N" CLIENT_DESTINATAIRE : id_client
+UTILISATEUR "N" -- "N" CLIENT_DESTINATAIRE : id_destinataire
+
+UTILISATEUR "N" -- "N" UTILISATEUR_COUPON
+COUPON "N" -- "N" UTILISATEUR_COUPON
+
+ENVOI "N" -- "N" ENVOI_COUPON
+COUPON "N" -- "N" ENVOI_COUPON
+
+@enduml

@@ -4,11 +4,25 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSimulationById } from "@/services/backend-services/Bk_SimulationService";
 import { RoleDto } from "@/services/dtos";
 import { auth } from "@/auth/auth";
-import { getSimulation } from "@/services/frontend-services/simulation/SimulationService";
-import { getEnvoiById } from "@/services/backend-services/Bk_EnvoiService";
+import { getEnvoiById } from "@/services/backend-services/Bk_EnvoiService"; // Assuming this is the correct import for getEnvoiById
 
-export const dynamic = "force-dynamic";
+type SimulationPaymentAmountParams = {
+  id: number; // ID of the simulation
+};
 
+/**
+ * Get simulation payment details
+ * @description Retrieves payment details for a specific simulation, including authentication, role, and ownership checks.
+ * @pathParams SimulationPaymentAmountParams
+ * @response 200:{ success: boolean, data: object }:Payment details for the simulation
+ * @response 400:{ error: string }:Invalid simulation ID or price
+ * @response 401:{ error: string }:Unauthorized
+ * @response 403:{ error: string }:Forbidden access or admin account
+ * @response 404:{ error: string }:Simulation not found
+ * @response 500:{ error: string }:Internal server error
+ * @auth bearer
+ * @openapi
+ */
 export async function GET(
   request: NextRequest,
   props: { params: Promise<{ id: string }> }

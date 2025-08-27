@@ -1,0 +1,85 @@
+@startuml
+  ' Diagramme Abstrait du Frontend pour ColisApp
+left to right direction
+  skinparam classAttributeIconSize 0
+  hide empty members
+
+  package "Application Structure (Next.js App Router)" {
+      [App Root (layout.tsx)] as AppRoot
+      [Public Pages (page.tsx)] as PublicPages
+      [Admin Area (admin/)] as AdminArea
+      [Client Area (client/)] as ClientArea
+      [Auth Area (auth/)] as AuthArea
+
+      AppRoot --> PublicPages
+      AppRoot --> AdminArea
+      AppRoot --> ClientArea
+      AppRoot --> AuthArea
+  }
+
+  package "UI Components (src/components)" {
+      [Global UI Components] as GlobalUI
+      [Domain-Specific Components] as DomainUI
+
+      AppRoot --> GlobalUI
+      AdminArea --> DomainUI
+      ClientArea --> DomainUI
+      AuthArea --> DomainUI
+  }
+
+  package "Frontend Services (src/services/frontend-services)" {
+      [AuthService] as AuthService
+      [UserService] as UserService
+      [EnvoiService] as EnvoiService
+      [PaymentService] as PaymentService
+      [TrackingService] as TrackingService
+      [Other Domain Services] as OtherServices
+
+      DomainUI --> AuthService
+      DomainUI --> UserService
+      DomainUI --> EnvoiService
+      DomainUI --> PaymentService
+      DomainUI --> TrackingService
+      DomainUI --> OtherServices
+  }
+
+  package "Reusable Logic (src/hooks)" {
+      [Custom Hooks] as CustomHooks
+
+      DomainUI --> CustomHooks
+  }
+
+  package "State Management (src/contexts)" {
+      [LoadingContext] as LoadingContext
+      [Other Contexts/Global State] as OtherState
+
+      AppRoot --> LoadingContext
+      DomainUI --> OtherState
+  }
+
+  package "Backend API (src/app/api)" {
+      [Auth API] as AuthAPI
+      [Users API] as UsersAPI
+      [Envois API] as EnvoisAPI
+      [Payments API] as PaymentsAPI
+      [Tracking API] as TrackingAPI
+      [Other Domain APIs] as OtherAPIs
+  }
+
+  ' Data Flow & Interactions
+  AuthService --> AuthAPI : calls
+  UserService --> UsersAPI : calls
+  EnvoiService --> EnvoisAPI : calls
+  PaymentService --> PaymentsAPI : calls
+  TrackingService --> TrackingAPI : calls
+  OtherServices --> OtherAPIs : calls
+
+  note as N1
+    **Key Technologies:**
+    - Next.js (App Router)
+    - React
+    - Axios (for API calls)
+    - React Context API (for global state)
+  end note
+
+  @enduml

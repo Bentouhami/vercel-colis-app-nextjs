@@ -1,0 +1,61 @@
+@startuml
+  ' Diagramme de Classe pour le domaine Rendez-vous (Appointment)
+
+  skinparam classAttributeIconSize 0
+  hide empty members
+
+  package "Data Model (Prisma)" {
+      enum AppointmentStatus {
+          PENDING
+          CONFIRMED
+          CANCELLED
+          RESCHEDULED
+          COMPLETED
+          MISSED
+          IN_PROGRESS
+      }
+
+      class Appointment {
+          + id: Int
+          + envoiId: Int @unique
+          + agencyId: Int
+          + date: DateTime
+          + status: AppointmentStatus
+          + isDeleted: Boolean
+          + createdAt: DateTime
+          + updatedAt: DateTime
+          --
+          ' Relations
+          ' envoi: Envoi
+          ' agency: Agency
+      }
+
+      class Envoi {
+          + id: Int
+          + trackingNumber: String?
+          ' ... other attributes
+      }
+
+      class Agency {
+          + id: Int
+          + name: String
+          ' ... other attributes
+      }
+  }
+
+  ' Relationships
+  Appointment "1" -- "1" Envoi : relates to >
+  Appointment "0..*" -- "1" Agency : belongs to >
+
+  note as N1
+    **Note sur le modèle Appointment:**
+    Malgré l'existence du modèle `Appointment` dans `prisma/schema.prisma`,
+    l'analyse du code n'a pas permis d'identifier de logique explicite
+    (`prisma.appointment.create` ou `prisma.appointment.update`)
+    qui crée ou met à jour directement des enregistrements dans ce modèle.
+    Il est possible que les rendez-vous soient gérés par des mécanismes
+    implicites ou des services externes non analysés, ou que cette partie
+    de la fonctionnalité ne soit pas encore pleinement implémentée.
+  end note
+
+  @enduml

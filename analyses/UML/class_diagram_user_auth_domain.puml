@@ -1,0 +1,309 @@
+@startuml
+  ' Diagramme de Classe pour le domaine Utilisateur & Authentification
+
+  skinparam classAttributeIconSize 0
+  hide empty members
+
+  package "Data Model (Prisma)" {
+      enum Role {
+          CLIENT
+          SUPER_ADMIN
+          DESTINATAIRE
+          AGENCY_ADMIN
+          ACCOUNTANT
+      }
+
+      class User {
+          + id: Int
+          + firstName: String?
+          + lastName: String?
+          + email: String
+          + phoneNumber: String?
+          + password: String?
+          + role: Role
+          + isVerified: Boolean?
+          + emailVerified: DateTime?
+          + verificationToken: String?
+          + verificationTokenExpires: DateTime?
+          + isDeleted: Boolean
+          --
+          ' Relations
+          ' accounts: Account[]
+          ' sessions: Session[]
+          ' authenticator: Authenticator[]
+          ' sentEnvois: Envoi[]
+          ' receivedEnvois: Envoi[]
+          ' notificationsAsDestinataire: Notification[]
+          ' notificationAsClient: Notification[]
+          ' userCoupons: UserCoupon[]
+          ' clientLinks: ClientDestinataire[]
+          ' destinataireLinks: ClientDestinataire[]
+          ' clientAgencies: AgencyClients[]
+          ' agencyStaffs: AgencyStaff[]
+          ' userAddresses: UserAddress[]
+          ' createdAgencies: Agency[]
+          ' staffsActivityLogs: ActivityLog[]
+      }
+
+      class PasswordResetToken {
+          + id: Int
+          + token: String
+          + expiresAt: DateTime
+          + userId: Int
+          --
+          ' Relations
+          ' user: User
+      }
+
+      class Account {
+          + userId: Int
+          + type: String
+          + provider: String
+          + providerAccountId: String
+          --
+          ' Relations
+          ' user: User
+      }
+
+      class Session {
+          + sessionToken: String
+          + userId: Int
+          + expires: DateTime
+          --
+          ' Relations
+          ' user: User
+      }
+
+      class Authenticator {
+          + credentialID: String
+          + userId: Int
+          + providerAccountId: String
+          --
+          ' Relations
+          ' user: User
+      }
+
+      class AgencyClients {
+          + clientId: Int
+          + agencyId: Int
+          --
+          ' Relations
+          ' client: User
+          ' agency: Agency
+      }
+
+      class AgencyStaff {
+          + staffId: Int
+          + agencyId: Int
+          + staffRole: Role
+          --
+          ' Relations
+          ' staff: User
+          ' agency: Agency
+      }
+
+      class ClientDestinataire {
+          + id: Int
+          + clientId: Int
+          + destinataireId: Int
+          --
+          ' Relations
+          ' client: User
+          ' destinataire: User
+      }
+
+      enum ActivityType {
+          AGENCY_CREATED
+          AGENCY_UPDATED
+          ' ... other types
+      }
+
+      class ActivityLog {
+          + id: Int
+          + activityType: ActivityType
+          + staffId: Int?
+          + agencyId: Int?
+          + details: String?
+          + staffRole: Role
+          --
+          ' Relations
+          ' staff: User?
+          ' agency: Agency?
+      }
+
+      class Address {
+          + id: Int
+          + street: String
+          + cityId: Int
+          --
+          ' Relations
+          ' city: City
+          ' userAddresses: UserAddress[]
+      }
+
+      class UserAddress {
+          + id: Int
+          + userId: Int
+          + addressId: Int
+          + addressType: AddressType
+          --
+          ' Relations
+          ' address: Address
+          ' user: User
+      }
+
+      class City {
+          + id: Int
+          + name: String
+          + countryId: Int
+          --
+          ' Relations
+          ' country: Country
+      }
+
+      class Country {
+          + id: Int
+          + name: String
+          + iso2: String
+          --
+          ' Relations
+          ' cities: City[]
+      }
+  }
+
+  package "Backend Services" {
+      class Bk_UserService {
+          + getUserForAuthentication(email: string): Promise<User | null>
+          + handleDestinataire(userId: number, destinataireData: CreateDestinataireDto): Promise<DestinataireResponseWithRoleDto | null>
+          + createDestinataire(newDestinataire: CreateDestinataireDto): Promise<DestinataireResponseWithRoleDto | null>
+          + getUserByValidToken(token: string): Promise<UserResponseDto | null>
+          + updateUserAndResetTokenVerificationAfterVerification(userId: number): Promise<void>
+          + updateVerificationTokenForOldUser(userId: number, verificationData: VerificationDataType): Promise<void>
+          + getUserById(id: number): Promise<CreateDestinataireDto | null>
+          + DeleteDestinataireById(id: number): Promise<boolean>
+          + checkExistingAssociation(clientId: number, destinataireId: number): Promise<ClientDestinataire | null>
+          + associateDestinataireToCurrentClient(userId: number, destinataireId: number): Promise<ClientDestinataire | null>
+          + getUserByEmail(email: string): Promise<UserLoginDto | null>
+          + getUserProfileById(userId: number): Promise<ProfileDto | null>
+          + getUsersByAgencyAdmin(adminId: number): Promise<ProfileDto[] | null>
+          + getAllUsers(): Promise<ProfileDto[] | null>
+          + updateUserProfile(userId: number, data: UpdateProfileRequestDto): Promise<ProfileDto | null>
+      }
+  }
+
+  package "Repository Layer" {
+      class UserRepository {
+          + findUserByEmail(email: string): Promise<UserLoginDto | null>
+          + getUserProfileById(userId: number): Promise<ProfileDto | null>
+          + getAllUsers(): Promise<ProfileDto[] | null>
+          + getUsersByAgencyAdmin(adminId: number): Promise<ProfileDto[]>
+          + updateUserProfile(userId: number, data: UpdateProfileRequestDto): Promise<ProfileDto | null>
+      }
+  }
+
+  package "API Routes (Next.js)" {
+      class AuthApiRoutes {
+          + GET /api/auth/status
+          + POST /api/auth/verify-credentials
+          + GET /api/auth/[...nextauth]
+          + POST /api/auth/[...nextauth]
+      }
+
+      class UsersApiRoutes {
+          + GET /api/v1/users
+          + GET /api/v1/users/{id}
+          + DELETE /api/v1/users/{id}
+          + POST /api/v1/users/register
+          + POST /api/v1/users/login
+          ' ... other user-related routes
+      }
+  }
+
+  package "Frontend Services" {
+      class FrontendUserService {
+          + generateJWTPayloadAndSetCookie(...): Promise<string>
+          + getConnectedUser(): Promise<User | null>
+          + getUserProfileById(id: number): Promise<ProfileDto | null>
+          + getUserById(id: number): Promise<CreateDestinataireDto | null>
+          + updateUserProfile(userId: number, data: UpdateProfileRequestDto): Promise<ProfileDto | null>
+          + updateUserProfileMe(data: Partial<ProfileDto>): Promise<any>
+          + registerUser(newUser: RegisterUserBackendType): Promise<any>
+          + registerUserEnhanced(data: RegisterUserDto): Promise<{ success: boolean; message: string; userId?: number }>
+          + addDestinataire(data: CreateDestinataireDto): Promise<number | null>
+          + getUsers(): Promise<ProfileDto[] | null>
+      }
+  }
+
+  package "Utilities & External" {
+      class Bcryptjs {
+          + compare(password: string, hash: string): Promise<boolean>
+          + hash(password: string, salt: number): Promise<string>
+      }
+      class Jsonwebtoken {
+          + sign(payload: object, secret: string, options: object): string
+      }
+      class PrismaClient {
+          ' Represents the Prisma ORM client
+      }
+      class Mailer {
+          + sendVerificationEmail(...): Promise<void>
+      }
+      class ValidationSchema {
+          ' Contains Zod schemas for validation
+      }
+      class GenerateTokenUtils {
+          + generateJwt(...): string
+          + setCookie(...): string
+          + generateVerificationTokenForUser(): { verificationToken: string, verificationTokenExpires: Date }
+      }
+      class VerifyTokenUtils {
+          + verifyTokenFromCookies(...): any
+      }
+  }
+
+  ' Relationships
+  User "1" -- "0..*" Account : has >
+  User "1" -- "0..*" Session : has >
+  User "1" -- "0..*" Authenticator : has >
+  User "1" -- "0..*" PasswordResetToken : has >
+  User "1" -- "0..*" AgencyClients : is client of >
+  User "1" -- "0..*" AgencyStaff : is staff of >
+  User "1" -- "0..*" ClientDestinataire : is client of >
+  User "1" -- "0..*" ClientDestinataire : is destinataire of >
+  User "1" -- "0..*" ActivityLog : performs >
+  User "1" -- "0..*" UserAddress : has >
+  UserAddress "0..*" -- "1" Address : links to >
+  Address "0..*" -- "1" City : located in >
+  City "0..*" -- "1" Country : located in >
+
+  Bk_UserService ..> UserRepository : uses
+  UserRepository ..> PrismaClient : interacts with
+  UserRepository ..> User : reads/writes
+  UserRepository ..> Account : reads/writes
+  UserRepository ..> Session : reads/writes
+  UserRepository ..> Authenticator : reads/writes
+  UserRepository ..> PasswordResetToken : reads/writes
+  UserRepository ..> AgencyClients : reads/writes
+  UserRepository ..> AgencyStaff : reads/writes
+  UserRepository ..> ClientDestinataire : reads/writes
+  UserRepository ..> ActivityLog : reads/writes
+  UserRepository ..> Address : reads/writes
+  UserRepository ..> UserAddress : reads/writes
+  UserRepository ..> City : reads/writes
+  UserRepository ..> Country : reads/writes
+
+  AuthApiRoutes ..> Bk_UserService : uses
+  AuthApiRoutes ..> Bcryptjs : uses
+  AuthApiRoutes ..> VerifyTokenUtils : uses
+
+  UsersApiRoutes ..> Bk_UserService : uses
+  UsersApiRoutes ..> Bcryptjs : uses
+  UsersApiRoutes ..> GenerateTokenUtils : uses
+  UsersApiRoutes ..> Mailer : uses
+  UsersApiRoutes ..> ValidationSchema : uses
+
+  FrontendUserService ..> UsersApiRoutes : calls
+  FrontendUserService ..> AuthApiRoutes : calls
+  FrontendUserService ..> GenerateTokenUtils : uses
+
+  @enduml

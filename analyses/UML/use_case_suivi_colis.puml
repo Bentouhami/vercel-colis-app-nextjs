@@ -1,0 +1,25 @@
+@startuml 
+left to right direction
+actor Client
+actor Destinataire
+actor "Système de Suivi" as TrackingSystem
+
+rectangle "Suivi des Envois" {
+  usecase "Consulter Statut Colis" as UC_ConsultStatus
+  usecase "Entrer Numéro de Suivi" as UC_EnterTrackingNum
+  usecase "Recevoir Notifications Statut" as UC_ReceiveNotifications
+
+  usecase "Afficher Détails Envoi" as UC_DisplayDetails
+  usecase "Afficher Historique Événements" as UC_DisplayHistory
+}
+
+Client -- UC_ConsultStatus
+Destinataire -- UC_ConsultStatus
+Destinataire -- UC_EnterTrackingNum
+
+UC_ConsultStatus <.. UC_DisplayDetails : include
+UC_ConsultStatus <.. UC_DisplayHistory : include
+
+TrackingSystem -- UC_ReceiveNotifications
+
+@enduml

@@ -2,7 +2,16 @@
 
 import { NextResponse } from "next/server"
 import {resetPassword} from "@/services/backend-services/Bk_AuthService";
+import { ResetPasswordDto } from "@/services/dtos/auth/authDtos"; // Import ResetPasswordDto
 
+/**
+ * Reset user password
+ * @description Resets the user's password using a valid reset token.
+ * @body ResetPasswordDto
+ * @response 200:{ success: boolean, message: string }:Password updated successfully
+ * @response 400:{ success: boolean, message: string }:Invalid token or password
+ * @openapi
+ */
 export async function POST(req: Request) {
     try {
         const body = await req.json()

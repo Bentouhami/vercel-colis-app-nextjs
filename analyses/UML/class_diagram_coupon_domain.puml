@@ -1,0 +1,72 @@
+@startuml
+  ' Diagramme de Classe pour le domaine Coupons
+
+  skinparam classAttributeIconSize 0
+  hide empty members
+
+  package "Data Model (Prisma)" {
+      class Coupon {
+          + id: Int
+          + couponCode: String
+          + discountAmount: Decimal
+          + discountPercentage: Decimal
+          + numberOfUses: Int
+          + startDate: DateTime
+          + expirationDate: DateTime?
+          + termsAndConditions: String?
+          + isDeleted: Boolean
+          --
+          ' Relations
+          ' userCoupon: UserCoupon[]
+          ' envoiCoupon: EnvoiCoupon[]
+      }
+
+      class UserCoupon {
+          + userId: Int
+          + couponId: Int
+          --
+          ' Relations
+          ' user: User
+          ' coupon: Coupon
+      }
+
+      class EnvoiCoupon {
+          + envoiId: Int
+          + couponId: Int
+          --
+          ' Relations
+          ' envoi: Envoi
+          ' coupon: Coupon
+      }
+
+      class User {
+          + id: Int
+          + email: String
+          ' ... other attributes
+      }
+
+      class Envoi {
+          + id: Int
+          + trackingNumber: String?
+          ' ... other attributes
+      }
+  }
+
+  ' Relationships
+  Coupon "1" -- "0..*" UserCoupon : has >
+  Coupon "1" -- "0..*" EnvoiCoupon : has >
+  User "1" -- "0..*" UserCoupon : applies >
+  Envoi "1" -- "0..*" EnvoiCoupon : applies >
+
+  note as N1
+    **Note sur les modèles Coupon, UserCoupon, EnvoiCoupon:**
+    Malgré l'existence de ces modèles dans `prisma/schema.prisma`,
+    l'analyse du code n'a pas permis d'identifier de logique explicite
+    (`prisma.coupon.create`, `prisma.userCoupon.create`, `prisma.envoiCoupon.create`)
+    qui crée ou met à jour directement des enregistrements dans ces modèles.
+    Il est possible que la gestion des coupons soit effectuée par des mécanismes
+    implicites ou des services externes non analysés, ou que cette partie
+    de la fonctionnalité ne soit pas encore pleinement implémentée.
+  end note
+
+  @enduml

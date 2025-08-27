@@ -1,0 +1,29 @@
+@startuml
+title Séquence de Suivi d'un Envoi
+
+actor User
+participant Application
+participant Database
+
+User -> Application: Accède à la page de suivi
+activate Application #ADD1B2
+Application --> User: Affiche le champ de saisie du numéro de suivi
+deactivate Application
+
+User -> Application: Saisit le numéro de suivi
+activate Application #ADD1B2
+Application -> Database: Recherche les informations de l'envoi et les événements de suivi
+activate Database #A9D78F
+
+alt Envoi trouvé
+    Database --> Application: Retourne les détails de l'envoi et l'historique de suivi
+    deactivate Database
+    Application --> User: Affiche les détails de l'envoi et l'historique de suivi
+else Envoi non trouvé / Numéro invalide
+    Database --> Application: Indique que l'envoi n'est pas trouvé
+    deactivate Database
+    Application --> User: Affiche un message d'erreur (ex: "Envoi non trouvé" ou "Numéro invalide")
+end
+deactivate Application
+
+@enduml

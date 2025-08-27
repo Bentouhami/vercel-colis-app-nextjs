@@ -1,10 +1,10 @@
-@startuml MCD_ColisApp_Conceptuel_Complet
+@startuml MCD_ColisApp_Conceptuel_Abstrait_CORRIGE
 !theme vibrant
-title MCD ColisApp - Modèle Conceptuel de Données (Notation Merise)
+title MCD ColisApp - Modèle Conceptuel (corrigé selon Prisma)
 allowmixing
 skinparam entity {
-  backgroundColor White
-  borderColor Black
+  BackgroundColor White
+  BorderColor Black
 }
 skinparam usecase {
   BorderColor Black
@@ -12,399 +12,289 @@ skinparam usecase {
   FontSize 12
 }
 
-' Enumérations
-enum Role {
-  CLIENT
-  SUPER_ADMIN
-  DESTINATAIRE
-  AGENCY_ADMIN
-  ACCOUNTANT
-}
-
-enum PaymentMethod {
-  CARD
-  CASH
-}
-
-enum PaymentStatus {
-  PENDING
-  PAID
-  FAILED
-}
-
-enum VatType {
-  REDUCED
-  STANDARD
-  EXEMPT
-}
-
-enum AddressType {
-  HOME
-  OFFICE
-  BILLING
-  SHIPPING
-  OTHER
-}
-
-enum SimulationStatus {
-  DRAFT
-  CONFIRMED
-  COMPLETED
-  CANCELLED
-}
-
-enum EnvoiStatus {
-  PENDING
-  SENT
-  DELIVERED
-  CANCELLED
-  RETURNED
-}
-
-enum AppointmentStatus {
-  PENDING
-  CONFIRMED
-  CANCELLED
-  RESCHEDULED
-  COMPLETED
-  MISSED
-  IN_PROGRESS
-}
-
-enum TrackingEventStatus {
-  CREATED
-  COLLECTED
-  IN_TRANSIT
-  ARRIVED_AT_AGENCY
-  OUT_FOR_DELIVERY
-  DELIVERED
-  FAILED
-}
-
-enum ActivityType {
-  AGENCY_CREATED
-  AGENCY_UPDATED
-  CLIENT_LINKED
-  ENVOI_CREATED
-  PAYMENT_CREATED
-}
-
 ' --- ENTITÉS ---
-entity User {
-  firstName
-  lastName
+entity Utilisateur {
+  prénom
+  nom
   email
-  phoneNumber
-  password
-  role
-  isVerified
-  isEnterprise
-  birthDate
+  téléphone
+  rôle
+  dateNaissance
+  estEntreprise
 }
 
-entity Account {
-  type
-  provider
-  providerAccountId
-  refresh_token
-  access_token
+entity Adresse {
+  rue
+  complément
+  numéroRue
+  numéroBoîte
 }
 
-entity Session {
-  sessionToken
-  expires
-}
-
-entity PasswordResetToken {
-  token
-  expiresAt
-}
-
-entity Address {
-  street
-  complement
-  streetNumber
-  boxNumber
-}
-
-entity City {
-  name
+entity Ville {
+  nom
   latitude
   longitude
 }
 
-entity Country {
-  name
-  iso2
-  iso3
-  phonecode
-  capital
-  currency
+entity Pays {
+  nom
+  codeISO2
+  codeISO3
+  indicatifTéléphonique
+  capitale
+  devise
+  emoji
 }
 
-entity Timezone {
-  zoneName
-  gmtOffset
-  abbreviation
+entity FuseauHoraire {
+  nomZone
+  décalageGMT
+  abréviation
 }
 
-entity VatRate {
-  vatPercent
-  vatType
+entity TauxTVA {
+  pourcentageTVA
+  typeTVA
 }
 
-entity Agency {
-  name
-  location
-  phoneNumber
+entity Agence {
+  nom
+  localisation
+  téléphone
   email
-  vatNumber
-  capacity
-  availableSlots
+  numéroTVA
+  capacité
+  placesDisponibles
 }
 
-entity ActivityLog {
-  activityType
-  details
-  staffRole
+entity JournalActivite {
+  typeActivite
+  détails
+  rôlePersonnel
 }
 
 entity Envoi {
-  trackingNumber
-  qrCodeUrl
-  simulationStatus
-  envoiStatus
-  totalWeight
-  totalVolume
-  totalPrice
-  paid
-  departureDate
-  arrivalDate
-  comment
+  numéroSuivi
+  urlQRCode
+  statutSimulation
+  statutEnvoi
+  poidsTotal
+  volumeTotal
+  prixTotal
+  payé
+  dateDépart
+  dateArrivée
+  commentaire
 }
 
-entity Parcel {
-  height
-  weight
-  width
-  length
+entity Colis {
+  hauteur
+  poids
+  largeur
+  longueur
 }
 
-entity Payment {
-  method
-  status
-  amount
-  transactionId
+entity Paiement {
+  méthode
+  statut
+  montant
+  idTransaction
 }
 
-entity TrackingEvent {
-  eventStatus
-  location
+entity ÉvénementSuivi {
+  statutÉvénement
+  localisation
   description
 }
 
 entity Transport {
-  number
-  baseVolume
-  baseWeight
-  currentVolume
-  currentWeight
-  isAvailable
+  numéro
+  volumeBase
+  poidsBase
+  volumeActuel
+  poidsActuel
+  estDisponible
 }
 
-entity TransportSchedule {
-  departureDate
-  arrivalDate
-  isHoliday
+entity PlanningTransport {
+  dateDépart
+  dateArrivée
+  estFérié
 }
 
-entity Appointment {
+entity RendezVous {
   date
-  status
+  statut
 }
 
-entity Tarifs {
-  weightRate
-  volumeRate
-  baseRate
-  fixedRate
+entity Tarif {
+  tauxPoids
+  tauxVolume
+  tauxBase
+  tauxFixe
 }
 
 entity Coupon {
-  couponCode
-  discountAmount
-  discountPercentage
-  numberOfUses
-  startDate
-  expirationDate
+  codeCoupon
+  montantRéduction
+  pourcentageRéduction
+  nombreUtilisations
+  dateDébut
+  dateExpiration
 }
 
 entity Notification {
   message
-  isRead
-}
-
-entity Authenticator {
-  credentialID
-  credentialPublicKey
-  counter
-}
-
-entity HabiteA {
-  addressType
-  createdAt
-  updatedAt
-  isDeleted
+  estLu
 }
 
 ' --- ASSOCIATIONS (ovales) ---
-usecase "(A pour compte)" as ACompte
-usecase "(A pour session)" as ASession
-usecase "(A pour token reset)" as ATokenReset
-usecase "(A pour authenticator)" as AAuthenticator
-usecase "(Se trouve dans)" as SeTrouveDans
-usecase "(Fait partie de)" as FaitPartieDe
-usecase "(A pour fuseau)" as AFuseau
-usecase "(A pour TVA)" as ATVA
+usecase "(Habite à)" as HabiteA
+HabiteA : typeAdresse
+
+usecase "(Est\nlocalisée à)" as EstLocaliseeA
+usecase "(Fait\npartie de)" as FaitPartieDe
+usecase "(A pour\nfuseau)" as AFuseau
+usecase "(Applique\nTVA)" as AppliqueTVA
+
 usecase "(Crée)" as Cree
-usecase "(Est client de)" as ClientDe
-usecase "(Effectue activité)" as EffectueActivite
+usecase "(Est\nclient de)" as EstClientDe
+usecase "(Est membre du\npersonnel)" as EstMembrePersonnel
+EstMembrePersonnel : rôlePersonnel
+usecase "(Effectue\nactivité)" as EffectueActivite
+
 usecase "(Envoie)" as Envoie
 usecase "(Reçoit)" as Recoit
+
 usecase "(Part de)" as PartDe
 usecase "(Arrive à)" as ArriveA
-usecase "(Utilise transport)" as UtiliseTransport
+
+usecase "(Utilise\ntransport)" as UtiliseTransport
 usecase "(Contient)" as Contient
 usecase "(Règle)" as Regle
-usecase "(A pour historique)" as Historique
+usecase "(A pour\nhistorique)" as Historique
 usecase "(A rendez-vous)" as ARendezVous
-usecase "(Bénéficie coupon)" as BeneficieCoupon
-usecase "(Utilise coupon)" as UtiliseCoupon
-usecase "(Reçoit notification)" as RecoitNotification
-usecase "(Concerne envoi)" as ConcerneEnvoi
-usecase "(Est localisée à)" as LocaliseeA
-usecase "(Applique)" as Applique
-usecase "(A pour planning)" as APourPlanning
-usecase "(Gère)" as Gere
 
-' New associations
-usecase "(Est Client/Destinataire de)" as EstClientDestinataireDe
-usecase "(Est Membre du Personnel)" as EstMembrePersonnel
-EstMembrePersonnel : staffRole
+usecase "(Bénéficie\ncoupon)" as BeneficieCoupon
+usecase "(Utilise\ncoupon)" as UtiliseCoupon
 
-' --- RELATIONS PRINCIPALES ---
+usecase "(Reçoit\nnotification)" as RecoitNotification
+usecase "(Concerne\nenvoi)" as ConcerneEnvoi
+usecase "(Concerne\nagence)" as ConcerneAgence
 
-' User et ses comptes/sessions
-User "1,1" -- ACompte : a pour compte
-ACompte -- "0,n" Account : est associé à
+usecase "(Est\nsituée à)" as EstSitueeA
+usecase "(Applique\ntarif)" as AppliqueTarif
+usecase "(Gère\ntransport)" as GereTransport
+usecase "(A pour\nplanning)" as APourPlanning
 
-User "1,1" -- ASession : a pour session
-ASession -- "0,n" Session : est associé à
+usecase "(Est client/destinataire\nde)" as EstClientDestinataireDe
 
-User "1,1" -- ATokenReset : a pour token de réinitialisation
-ATokenReset -- "0,n" PasswordResetToken : est associé à
+' --- RELATIONS ---
 
-User "1,1" -- AAuthenticator : a pour authentificateur
-AAuthenticator -- "0,n" Authenticator : est associé à
+' User ↔ Address (M:N via UserAddress)
+Utilisateur "0,n" -- HabiteA
+HabiteA -- "0,n" Adresse
 
-' User et adresses
-User "1,n" -- HabiteA : habite à
-HabiteA -- "0,n" Address : est une adresse de
+' Adresse ↔ Ville (1 adresse → 1 ville ; 1 ville → 0..n adresses)
+Adresse "1,1" -- EstLocaliseeA
+EstLocaliseeA -- "0,n" Ville
 
-' Hiérarchie géographique
-Address "1,n" -- SeTrouveDans : se trouve dans
-SeTrouveDans -- "1,1" City : est associée à
+' Ville ↔ Pays (City.countryId NOT NULL)
+Ville "1,1" -- FaitPartieDe
+FaitPartieDe -- "0,n" Pays
 
-City "1,n" -- FaitPartieDe : fait partie de
-FaitPartieDe -- "1,1" Country : est associée à
+' Pays ↔ FuseauHoraire (Country 0..n Timezone ; Timezone 1 Country)
+Pays "0,n" -- AFuseau
+AFuseau -- "1,1" FuseauHoraire
 
-Country "1,1" -- AFuseau : a pour fuseau horaire
-AFuseau -- "0,n" Timezone : est associée à
+' Pays ↔ TauxTVA (Country 0..1 VatRate ; VatRate 1 Country)
+Pays "0,1" -- AppliqueTVA
+AppliqueTVA -- "1,1" TauxTVA
 
-Country "1,1" -- ATVA : applique TVA
-ATVA -- "0,n" VatRate : est associée à
+' Agence ↔ Adresse (Agency 1 Address ; Address 0..1 Agency)
+Agence "1,1" -- EstSitueeA
+EstSitueeA -- "0,1" Adresse
 
-' User et Agency
-User "0,1" -- Cree : crée
-Cree -- "0,n" Agency : est créée par
+' Utilisateur ↔ Agence (creator) (User 0..n Agencies ; Agency 0..1 creator)
+Utilisateur "0,n" -- Cree
+Cree -- "0,1" Agence
 
-User "0,n" -- ClientDe : est client de
-ClientDe -- "0,n" Agency : a pour client
+' Utilisateur ↔ Agence (clients) (M:N)
+Utilisateur "0,n" -- EstClientDe
+EstClientDe -- "0,n" Agence
 
-' New Client/Destinataire association
-User "0,n" -- EstClientDestinataireDe : est client/destinataire de
-EstClientDestinataireDe -- "0,n" User : a pour client/destinataire
+' Utilisateur ↔ Agence (staff) (M:N avec rôle)
+Utilisateur "0,n" -- EstMembrePersonnel
+EstMembrePersonnel -- "0,n" Agence
 
-' New AgencyStaff association
-User "0,n" -- EstMembrePersonnel : est membre du personnel
-EstMembrePersonnel -- "0,n" Agency : a pour agence
+' Client–Destinataire (M:N)
+Utilisateur "0,n" -u- EstClientDestinataireDe
+EstClientDestinataireDe -- "0,n" Utilisateur
 
-User "0,1" -- EffectueActivite : effectue activité
-EffectueActivite -- "0,n" ActivityLog : est associée à
+' Journal d'activité (user/agency optionnels)
+Utilisateur "0,n" -- EffectueActivite
+EffectueActivite -l- "0,1" JournalActivite
+Agence "0,n" --u- EffectueActivite
 
-Agency "0,1" -- EffectueActivite : concerne activité
+' Envoi – client (userId?)
+Utilisateur "0,n" -- Envoie
+Envoie -- "0,1" Envoi
 
-' Envois
-User "1,1" -- Envoie : envoie
-Envoie -- "0,n" Envoi : est envoyé par
+' Envoi – destinataire (destinataireId?)
+Utilisateur "0,n" - Recoit
+Recoit - "0,1" Envoi
 
-User "1,1" -- Recoit : reçoit
-Recoit -- "0,n" Envoi : est reçu par
+' Envoi – agences (départ/arrivée requis)
+Agence "0,n" -- PartDe
+PartDe -- "1,1" Envoi
+Agence "0,n" -- ArriveA
+ArriveA -- "1,1" Envoi
 
-Agency "1,1" -- PartDe : part de
-PartDe -- "0,n" Envoi : est le point de départ de
+' Envoi – Transport (transportId?)
+Envoi "0,1" --- UtiliseTransport
+UtiliseTransport --- "0,n" Transport
 
-Agency "1,1" -- ArriveA : arrive à
-ArriveA -- "0,n" Envoi : est le point d'arrivée de
+' Envoi – Colis (Envoi 0..n ; Colis 1)
+Envoi "0,n" -- Contient
+Contient -- "1,1" Colis
 
-Envoi "0,n" -- UtiliseTransport : utilise
-UtiliseTransport -- "0,1" Transport : est utilisé par
+' Envoi – Paiement (Envoi 0..1 ; Paiement 1)
+Envoi "0,1" -- Regle
+Regle -- "1,1" Paiement
 
-' Parcels et Envois
-Envoi "1,1" -- Contient : contient
-Contient -- "1,n" Parcel : est contenu dans
+' Envoi – ÉvénementSuivi (Envoi 0..n ; Événement 1)
+Envoi "0,n" -- Historique
+Historique -- "1,1" ÉvénementSuivi
 
-' Payment
-Envoi "1,1" -- Regle : règle
-Regle -- "0,1" Payment : est réglé pour
+' Rendez-vous (Envoi 0..1 ; RendezVous 1 ; Agence 0..n)
+Envoi "0,1" -- ARendezVous
+ARendezVous -- "1,1" RendezVous
+Agence "0,n" -d- ARendezVous
 
-' Tracking
-Envoi "1,1" -- Historique : a pour historique
-Historique -- "0,n" TrackingEvent : est un événement de
+' Coupons (M:N)
+Utilisateur "0,n" -- BeneficieCoupon
+BeneficieCoupon -- "0,n" Coupon
+Envoi "0,n" --r-- UtiliseCoupon
+UtiliseCoupon --u-- "0,n" Coupon
 
-' Appointments
-Envoi "1,1" -- ARendezVous : a rendez-vous
-ARendezVous -- "0,1" Appointment : est un rendez-vous pour
+' Notifications (agency 1, envoi 1, utilisateur 0..1)
+Utilisateur "0,n" -l- RecoitNotification
+RecoitNotification -- "0,1" Notification
+Envoi "0,n" -- ConcerneEnvoi
+ConcerneEnvoi -- "1,1" Notification
+Agence "0,n" -- ConcerneAgence
+ConcerneAgence -u- "1,1" Notification
 
-Agency "1,1" -- ARendezVous : gère rendez-vous
+' Agence – Tarif (Tarif global possible : agency 0..n ; tarif 0..1)
+Agence "0,n" -- AppliqueTarif
+AppliqueTarif -- "0,1" Tarif
 
-' Coupons
-User "0,n" -- BeneficieCoupon : bénéficie
-BeneficieCoupon -- "0,n" Coupon : est bénéficié par
+' Agence – Transport (agency 0..n ; transport 0..1)
+Agence "0,n" -- GereTransport
+GereTransport -- "0,1" Transport
 
-Envoi "0,n" -- UtiliseCoupon : utilise
-UtiliseCoupon -- "0,n" Coupon : est utilisé par
-
-' Notifications
-User "0,1" -- RecoitNotification : reçoit
-RecoitNotification -- "0,n" Notification : est reçue par
-
-Envoi "1,1" -- ConcerneEnvoi : concerne envoi
-ConcerneEnvoi -- "0,n" Notification : est associée à
-
-Agency "1,1" -- ConcerneEnvoi : concerne agence
-
-' Agency et services
-Agency "1,1" -- LocaliseeA : localisée à
-LocaliseeA -- "1,1" Address : est l'adresse de
-
-Agency "0,1" -- Applique : applique
-Applique -- "1,n" Tarifs : est appliquée par
-
-Agency "0,1" -- Gere : gère
-Gere -- "0,n" Transport : est géré par
-
-Transport "1,1" -- APourPlanning : a pour planning
-APourPlanning -- "0,n" TransportSchedule : est un planning de
+' Transport – Planning (transport 1 ; planning 0..n)
+Transport "1,1" -- APourPlanning
+APourPlanning -- "0,n" PlanningTransport
 
 @enduml

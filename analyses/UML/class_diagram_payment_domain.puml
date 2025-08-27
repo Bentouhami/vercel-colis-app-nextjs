@@ -1,0 +1,101 @@
+@startuml
+  ' Diagramme de Classe pour le domaine Paiement (Payment)
+
+  skinparam classAttributeIconSize 0
+  hide empty members
+
+  package "Data Model (Prisma)" {
+      enum PaymentMethod {
+          CARD
+          CASH
+      }
+
+      enum PaymentStatus {
+          PENDING
+          PAID
+          FAILED
+      }
+
+      class Payment {
+          + id: Int
+          + envoiId: Int @unique
+          + method: PaymentMethod
+          + status: PaymentStatus
+          + amount: Float
+          + transactionId: String?
+          + isDeleted: Boolean
+          + createdAt: DateTime
+          + updatedAt: DateTime
+          --
+          ' Relations
+          ' envoi: Envoi
+      }
+
+      class Envoi {
+          + id: Int
+          + trackingNumber: String?
+          + paid: Boolean
+          + envoiStatus: EnvoiStatus
+          + simulationStatus: SimulationStatus
+          --
+          ' Relations
+          ' payment: Payment?
+          ' trackingEvents: TrackingEvent[]
+      }
+
+      enum EnvoiStatus {
+          PENDING
+          SENT
+          DELIVERED
+          CANCELLED
+          RETURNED
+      }
+
+      enum SimulationStatus {
+          DRAFT
+          CONFIRMED
+          COMPLETED
+          CANCELLED
+      }
+  }
+
+  package "API Routes" {
+      class PaymentApiRoutes {
+          + POST /api/v1/payment : createStripeSession(amount: number)
+      }
+
+      class CompletePaymentApiRoutes {
+          + GET /api/v1/payment/complete-payment : handlePaymentCompletion()
+      }
+  }
+
+  package "Backend Services" {
+      class Bk_SimulationService {
+          + updatePaidEnvoi(simulation: SimulationResponseDto, simulationIdAndToken: CreatedSimulationResponseDto): Promise<void>
+      }
+  }
+
+  package "External Services" {
+      class StripeAPI {
+          ' External payment gateway
+      }
+  }
+
+  ' Relationships
+  Payment "1" -- "1" Envoi : relates to >
+
+  PaymentApiRoutes ..> StripeAPI : creates session
+  CompletePaymentApiRoutes ..> Bk_SimulationService : updates envoi status
+  Bk_SimulationService ..> Envoi : updates paid status
+
+  note as N1
+    **Note sur le modèle Payment:**
+    Malgré l'existence du modèle `Payment` dans `prisma/schema.prisma`,
+    l'analyse du code n'a pas permis d'identifier de logique explicite
+    (`prisma.payment.create` ou `prisma.payment.update`)
+    qui crée ou met à jour directement des enregistrements dans ce modèle.
+    L'état de paiement est géré via le champ `paid` du modèle `Envoi`
+    et potentiellement par des mécanismes externes (ex: webhooks Stripe).
+  end note
+
+  @enduml

@@ -1,0 +1,117 @@
+@startuml
+  ' Diagramme de Classe pour le domaine Agence (Agency)
+
+  skinparam classAttributeIconSize 0
+  hide empty members
+
+  package "Data Model" {
+      class Agency {
+          + id: Int
+          + name: String
+          + location: String
+          + phoneNumber: String
+          + email: String
+          + vatNumber: String
+          + addressId: Int
+          + capacity: Int
+          + availableSlots: Int
+          + isDeleted: Boolean
+          + createdAt: DateTime
+          + updatedAt: DateTime
+          --
+          ' Relations
+          ' createdBy: User
+          ' arrivalEnvoi: Envoi[]
+          ' departureEnvoi: Envoi[]
+          ' notifications: Notification[]
+          ' appointments: Appointment[]
+          ' transports: Transport[]
+          ' tarifs: Tarifs[]
+          ' address: Address
+          ' agencyClients: AgencyClients[]
+          ' agencyStaff: AgencyStaff[]
+          ' activityLogs: ActivityLog[]
+    }
+}
+
+package "Data Transfer Objects (DTOs)" {
+    class AgencyDto {
+        + id: number
+        + name: string
+        + location: string
+        + email: string
+        + phoneNumber: string
+        + vatNumber: string
+        + addressId: number
+        + capacity: number
+        + availableSlots: number
+        + createdAt: Date
+        + updatedAt: Date
+        ' ... relations comme address
+    }
+
+    class CreateAgencyDto {
+        ' ... champs pour la création
+    }
+    class UpdateAgencyDto {
+        ' ... champs pour la mise à jour
+    }
+
+    class AgencyResponseDto {
+        ' ... champs pour la réponse
+    }
+
+    class AgencyStaffDto {
+        + id: number
+        + agencyId: number
+        + staffId: number
+        + staffRole: RoleDto
+    }
+}
+package "Service Layer" {
+    class Bk_AgencyService {
+        + getLightAgencies(filters: { countryId?: number, cityId?: number, search?: string }): AgencyDto[]
+        + findAgencyByName(agencyName: string): FullAgencyDto
+        + getAgencyId(country: string, city: string, agencyName: string): number
+        + getAgencyById(id: number): AgencyResponseDto
+        + getAgencies(params: { page: number, limit: number,
+       search: string, sortKey: string, sortDir: string }): AgencyDto[]
+        + getAgenciesByAdminId(staffId: number, params: { page:
+       number, limit: number, search: string, sortKey: string, sortDir:
+       string }): AgencyDto[]
+        + createAgency(agencyData: AgencyDto, staffId: number): AgencyResponseDto
+        + updateAgency(agencyData: AgencyDto): AgencyResponseDto
+    }
+}
+package "API Routes" {
+    class AgencyApiRoutes {
+        + GET /api/v1/agencies/admin-agencies
+        + POST /api/v1/agencies/create-agency
+        + GET /api/v1/agencies/findAgency
+        + GET /api/v1/agencies/get-agency-by-id
+        + GET /api/v1/agencies/light
+        + GET /api/v1/agencies
+        + GET /api/v1/agencies/summary
+        + PUT /api/v1/agencies/update-agency
+        + GET /api/v1/agencies/{agency}
+        + GET /api/v1/agencies/get-agency-by-id/{id}
+    }
+}
+    AgencyApiRoutes ..> Bk_AgencyService : uses
+    Bk_AgencyService ..> Agency : operates on
+    Bk_AgencyService ..> AgencyDto : returns
+    Bk_AgencyService ..> AgencyResponseDto : returns
+    Bk_AgencyService ..> AgencyStaffDto : uses as parameter
+
+    Agency "1" -- "1" Address : has
+    Agency "1" -- "0..*" Envoi : departureEnvois
+    Agency "1" -- "0..*" Envoi : arrivalEnvois
+    Agency "1" -- "0..*" AgencyClients : clients
+    Agency "1" -- "0..*" AgencyStaff : staff
+    Agency "1" -- "0..*" Transport : transports
+    Agency "1" -- "0..*" Tarifs : tarifs
+    Agency "1" -- "0..*" Notification : notifications
+    Agency "1" -- "0..*" Appointment : appointments
+    Agency "1" -- "0..*" ActivityLog : activityLogs
+    Agency "0..1" -- "0..*" User : createdBy
+    @enduml

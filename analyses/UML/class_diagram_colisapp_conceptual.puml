@@ -1,0 +1,59 @@
+@startuml class_diagram_colisapp_conceptual
+!theme vibrant
+title Diagramme de Classes - ColisApp (Conceptuel)
+
+' Core Models (Prisma) - No attributes for high-level view
+class User
+class Agency
+class Envoi
+class Address
+class City
+class Country
+class Payment
+class TrackingEvent
+class Parcel
+class Appointment
+class Transport
+class Tarifs
+class Coupon
+class Notification
+
+' Relationships (No cardinalities)
+' Relationships
+User "1" -- "0..*" Envoi  
+User "1" -- "0..*" Envoi  
+User -- Role  
+User "1" -- "0..*" UserAddressAssociation   
+UserAddressAssociation "0..*" -- "1" Address 
+User "1" -- "0..*" AgencyClientAssociation 
+AgencyClientAssociation "0..*" -- "1" Agency 
+User "1" -- "0..*" AgencyStaffAssociation  
+AgencyStaffAssociation "0..*" -- "1" Agency 
+
+Agency "1" -- "0..*" Envoi 
+Agency "1" -- "0..*" Envoi 
+
+Envoi -- EnvoiStatus  
+Envoi "1" -- "0..1" Payment 
+Envoi "1" -- "0..*" TrackingEvent 
+Envoi "1" -- "0..*" Appointment 
+Transport "1" -- "0..*" Envoi 
+Coupon "1" -- "0..*" Envoi 
+
+Payment -- PaymentStatus 
+TrackingEvent -- TrackingEventStatus 
+
+Address -- AddressType 
+Address "0..*" -- "1" City 
+City "0..*" -- "1" Country 
+Country "0..*" -- "1" Timezone 
+
+Country -- Tarifs 
+Agency -- Tarifs 
+
+User "1" -- "0..*" Notification 
+Agency "1" -- "0..*" ActivityLog 
+User "1" -- "0..*" ActivityLog 
+
+
+@enduml

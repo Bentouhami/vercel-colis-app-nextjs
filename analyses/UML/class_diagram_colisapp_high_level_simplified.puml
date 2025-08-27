@@ -1,0 +1,74 @@
+@startuml class_diagram_colisapp_high_level_simplified
+!theme vibrant
+title Diagramme de Classes - ColisApp (Haut Niveau Simplifié)
+
+' Core Models (Prisma) - No attributes for high-level view
+class User
+class Agency
+class Envoi
+class Address
+class City
+class Country
+class Payment
+class TrackingEvent
+class Parcel
+class Appointment
+class Transport
+class Tarifs
+class Coupon
+class Notification
+
+' Relationships (Single line for 1-N)
+User  --  Envoi : client &\ndestinataire
+Envoi  --  Payment
+Envoi  --  TrackingEvent
+Envoi  --  Parcel
+Envoi  --  Appointment
+Envoi  --  Transport
+Agency  --  Envoi : departureAgency
+Agency  --  Envoi : arrivalAgency
+Agency  --  Address
+Address  --  City
+City  --  Country
+
+' Many-to-many relationships (represented via association classes or direct for simplicity)
+' Using explicit association classes for clarity in M-N
+class UserAddressAssociation
+class AgencyStaffAssociation
+class AgencyClientsAssociation
+class UserCouponAssociation
+class ClientDestinataireAssociation
+class TransportScheduleAssociation
+
+User  --  Agency : staff
+User  --  Agency : clients
+User  --  Address : user addresses
+User  --  Coupon : user coupons
+User  --  User : client/destinataire links
+
+' Explicit association classes for M-N
+User  -- UserAddressAssociation
+Address  -- UserAddressAssociation
+User  -u- AgencyStaffAssociation
+Agency  -u- AgencyStaffAssociation
+User  -u- AgencyClientsAssociation
+Agency  -u- AgencyClientsAssociation
+User  -u- UserCouponAssociation
+Coupon  -u- UserCouponAssociation
+User -u- ClientDestinataireAssociation
+User -u- ClientDestinataireAssociation
+
+Transport  --  TransportScheduleAssociation
+
+' Other direct relationships
+Country  --  Tarifs : applies to
+Country  --  Notification : concerns
+Agency  --  Tarifs : agency specific
+Agency  --  Transport : manages
+
+' Notifications
+User  --  Notification : receives
+Envoi  --  Notification : concerns
+Agency  --  Notification : sent by
+
+@enduml

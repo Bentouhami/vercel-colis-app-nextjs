@@ -1,0 +1,24 @@
+@startuml 
+left to right direction
+
+actor "Utilisateur" as user
+
+rectangle "Système ColisApp" {
+  usecase "Suivre un Envoi" as UC_SuiviEnvoi
+  usecase "Saisir Numéro de Suivi" as UC_SaisirNum
+  usecase "Rechercher Informations de Suivi" as UC_RechercherInfo
+  usecase "Afficher Détails de l'Envoi" as UC_AfficherDetails
+  usecase "Afficher Historique des Événements" as UC_AfficherHistorique
+  usecase "Gérer Erreur de Suivi" as UC_GererErreur
+}
+
+user --> UC_SuiviEnvoi
+
+UC_SuiviEnvoi .> UC_SaisirNum : <<include>>
+UC_SuiviEnvoi .> UC_RechercherInfo : <<include>>
+UC_SuiviEnvoi .> UC_AfficherDetails : <<include>>
+UC_SuiviEnvoi .> UC_AfficherHistorique : <<include>>
+
+UC_GererErreur .< UC_SuiviEnvoi : <<extend>>
+
+@enduml

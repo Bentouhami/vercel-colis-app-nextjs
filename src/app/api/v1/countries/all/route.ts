@@ -2,14 +2,17 @@
 
 import {NextRequest, NextResponse} from 'next/server';
 import {getAllCountries} from "@/services/backend-services/Bk_CountryService";
+import { CountryDto } from "@/services/dtos/countries/CountryDto"; // Import DTO
 
 /**
- * @method GET
- * @route /api/v1/countries/all
- * @desc Get all countries
- * @access public
+ * Get all countries
+ * @description Retrieves a list of all countries in the system.
+ * @response 200:CountryDto[]:List of all countries
+ * @response 404:{ error: string }:No countries found
+ * @response 405:{ error: string }:Method not allowed
+ * @response 500:{ error: string }:Internal server error
+ * @openapi
  */
-
 export async function GET(req: NextRequest) {
 
     if (req.method !== 'GET') {

@@ -1,0 +1,80 @@
+@startuml
+  ' Diagramme de Classe pour le domaine Colis (Parcel)
+
+  skinparam classAttributeIconSize 0
+  hide empty members
+
+  package "Data Model (Prisma)" {
+      class Parcel {
+          + id: Int
+          + envoiId: Int
+          + height: Decimal
+          + weight: Decimal
+          + width: Decimal
+          + length: Decimal
+          + isDeleted: Boolean
+          + createdAt: DateTime
+          + updatedAt: DateTime
+          --
+          ' Relations
+          ' envoi: Envoi
+      }
+
+      class Envoi {
+          + id: Int
+          + trackingNumber: String?
+          ' ... other attributes
+      }
+  }
+
+  package "Data Transfer Objects (DTOs)" {
+      class ParcelDto {
+          + id: number
+          + height: number
+          + weight: number
+          + width: number
+          + length: number
+          + envoiId: number
+      }
+  }
+
+  package "Data Access Object (DAO) Layer" {
+      class ParcelDAO {
+          + getParcelsBySimulationId(id: number): Promise<Parcel[] | null>
+          + updateParcels(id: number, parcels: ParcelDto[]): Promise<void>
+          + deleteParcelsBySimulationId(envoiId: number): Promise<void>
+          + createParcels(parcels: ParcelDto[]): Promise<void>
+      }
+  }
+
+  package "Repository Layer" {
+      class ParcelRepository {
+          + getParcelsBySimulationId(id: number): Promise<ParcelDto[] | null>
+          + deleteParcelsBySimulationId(envoiId: number): Promise<void>
+          + createParcels(parcels: ParcelDto[]): Promise<void>
+      }
+  }
+
+  package "Backend Services" {
+      class Bk_SimulationService {
+          + updateSimulationAndParcels(simulationData: UpdateEditedSimulationDto): Promise<void | null>
+          ' ... other relevant methods
+      }
+  }
+
+  package "Utilities" {
+      class PrismaClient {
+          ' Represents the Prisma ORM client
+      }
+  }
+
+  ' Relationships
+  Parcel "0..*" -- "1" Envoi : belongs to >
+
+  ParcelRepository ..> ParcelDAO : uses
+  ParcelDAO ..> PrismaClient : interacts with
+  ParcelDAO ..> Parcel : reads/writes
+
+  Bk_SimulationService ..> ParcelRepository : uses
+
+  @enduml

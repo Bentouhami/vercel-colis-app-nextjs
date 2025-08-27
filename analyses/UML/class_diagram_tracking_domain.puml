@@ -1,0 +1,82 @@
+@startuml
+  ' Diagramme de Classe pour le domaine Suivi (Tracking)
+
+  skinparam classAttributeIconSize 0
+  hide empty members
+
+  package "Data Model (Prisma)" {
+      enum EnvoiStatus {
+          PENDING
+          SENT
+          DELIVERED
+          CANCELLED
+          RETURNED
+      }
+
+      enum TrackingEventStatus {
+          CREATED
+          COLLECTED
+          IN_TRANSIT
+          ARRIVED_AT_AGENCY
+          OUT_FOR_DELIVERY
+          DELIVERED
+          FAILED
+      }
+
+      class Envoi {
+          + id: Int
+          + trackingNumber: String
+          + envoiStatus: EnvoiStatus
+          --
+          ' Relations
+          ' trackingEvents: TrackingEvent[]
+      }
+
+      class TrackingEvent {
+          + id: Int
+          + envoiId: Int
+          + eventStatus: TrackingEventStatus
+          + location: String
+          + description: String
+          + createdAt: DateTime
+          --
+          ' Relations
+          ' envoi: Envoi
+      }
+  }
+
+  package "Service Layer" {
+      class TrackingRepository {
+          + addEvent(data: { envoiId: number, status: TrackingEventStatus, location?: string, description?: string }): Promise<TrackingEvent>
+          + adminAddEvent(userRole: RoleDto, data: { envoiId: number, status: TrackingEventStatus, location?: string, description?: string }): Promise<TrackingEvent>
+          + listByTrackingNumber(trackingNumber: string): Promise<TrackingEvent[]>
+      }
+  }
+
+  package "API Routes" {
+      class TrackingApiRoutes {
+          + POST /api/v1/tracking
+          + GET /api/v1/tracking/{trackingNumber}
+      }
+  }
+
+  package "Utilities" {
+      class PrismaClient {
+          ' Represents the Prisma ORM client
+      }
+      class RoleDto {
+          ' Enum for user roles
+      }
+  }
+
+  ' Relationships
+  Envoi "1" -- "0..*" TrackingEvent : has >
+  TrackingEvent --> Envoi : envoiId
+
+  TrackingApiRoutes ..> TrackingRepository : uses
+  TrackingRepository ..> PrismaClient : interacts with
+  TrackingRepository ..> Envoi : updates status
+  TrackingRepository ..> TrackingEvent : creates/reads
+  TrackingRepository ..> RoleDto : uses for auth
+
+  @enduml

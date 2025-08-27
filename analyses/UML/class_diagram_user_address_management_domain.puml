@@ -1,0 +1,201 @@
+@startuml
+  ' Diagramme de Classe pour le sous-domaine: Gestion des adresses utilisateur
+
+  skinparam classAttributeIconSize 0
+  hide empty members
+
+  package "Data Model (Prisma)" {
+      class User {
+          + id: Int
+          + firstName: String?
+          + lastName: String?
+          + email: String
+          ' ... other relevant attributes
+          --
+          ' Relations
+          ' userAddresses: UserAddress[]
+      }
+
+      class UserAddress {
+          + id: Int
+          + userId: Int
+          + addressId: Int
+          + addressType: AddressType
+          --
+          ' Relations
+          ' address: Address
+          ' user: User
+      }
+
+      class Address {
+          + id: Int
+          + street: String
+          + complement: String?
+          + streetNumber: String?
+          + boxNumber: String?
+          + cityId: Int
+          --
+          ' Relations
+          ' city: City
+          ' userAddresses: UserAddress[]
+          ' agency: Agency?
+      }
+
+      class City {
+          + id: Int
+          + name: String
+          + countryId: Int
+          --
+          ' Relations
+          ' country: Country
+          ' addresses: Address[]
+      }
+
+      class Country {
+          + id: Int
+          + name: String
+          + iso2: String
+          + iso3: String
+          + phonecode: String
+          + capital: String?
+          + currency: String?
+          + latitude: String?
+          + longitude: String?
+          + emoji: String?
+          --
+          ' Relations
+          ' cities: City[]
+          ' timezones: Timezone[]
+          ' vatRates: VatRate[]
+      }
+
+      class Timezone {
+          + id: Int
+          + zoneName: String
+          + gmtOffset: Int
+          + abbreviation: String
+          + countryId: Int
+          --
+          ' Relations
+          ' country: Country
+      }
+
+      class VatRate {
+          + id: Int
+          + countryId: Int
+          + itemClassId: Int
+          + vatPercent: Decimal
+          + vatType: VatType?
+          --
+          ' Relations
+          ' country: Country
+      }
+
+      enum AddressType {
+          HOME
+          OFFICE
+          BILLING
+          SHIPPING
+          OTHER
+      }
+
+      enum VatType {
+          REDUCED
+          STANDARD
+          EXEMPT
+      }
+  }
+
+  package "Repository Layer" {
+  left to right direction
+      class UserRepository {
+          + updateUserProfile(userId: number, data: UpdateProfileRequestDto): Promise<ProfileDto | null>
+          + findUserByEmail(email: string): Promise<UserLoginDto | null>
+          + getUserProfileById(userId: number): Promise<ProfileDto | null>
+          + getAllUsers(): Promise<ProfileDto[] | null>
+          + getUsersByAgencyAdmin(adminId: number): Promise<ProfileDto[]>
+      }
+
+      class AddressRepository {
+          + getAddressByStreetAndCityId(street: string, cityId: number): Promise<AddressDto | null>
+          + createAddress(addressData: FrontendAddressType): Promise<AddressDto | null>
+      }
+  }
+
+  package "Backend Services" {
+      class Bk_CityService {
+          + getCitiesPerCountry(countryId: number): Promise<CityDto[] | null>
+          + getCityById(cityId: number): Promise<CityDto | null>
+      }
+
+      class Bk_CountryService {
+          + getAllCountries(): Promise<CountryDto[] | null>
+          ' ... other country-related methods
+      }
+  }
+
+  package "API Routes" {
+      class AddressesApiRoutes {
+          + GET /api/v1/addresses
+          + POST /api/v1/addresses
+          + GET /api/v1/addresses/{id}
+          + PUT /api/v1/addresses/{id}
+      }
+
+      class CitiesApiRoutes {
+          + GET /api/v1/cities
+          + GET /api/v1/cities/{countryId}
+      }
+
+      class CountriesApiRoutes {
+          + GET /api/v1/countries
+          + GET /api/v1/countries/all
+      }
+  }
+
+  package "Utilities" {
+      class PrismaClient {
+          ' Represents the Prisma ORM client
+      }
+  }
+
+  ' Relationships
+  User "1" -- "0..*" UserAddress : has >
+  UserAddress "0..*" -- "1" Address : links to >
+  UserAddress -r- AddressType : has type
+  Address "0..*" -- "1" City : located in >
+  City "0..*" -- "1" Country : located in >
+  Country "1" -- "0..*" Timezone : has >
+  Country "1" -- "0..*" VatRate : has >
+  VatRate -u- VatType : has type
+
+  UserRepository ..> PrismaClient : interacts with
+  UserRepository ..> User : reads/writes
+  UserRepository ..> UserAddress : reads/writes
+  UserRepository ..> Address : reads/writes
+  UserRepository ..> City : reads/writes
+  UserRepository ..> Country : reads/writes
+
+  AddressRepository ..> PrismaClient : interacts with
+  AddressRepository ..> Address : reads/writes
+  AddressRepository ..> City : reads/writes
+  AddressRepository ..> Country : reads/writes
+
+  Bk_CityService ..> PrismaClient : interacts with
+  Bk_CityService ..> City : reads
+  Bk_CityService ..> Country : reads
+
+  Bk_CountryService ..> PrismaClient : interacts with
+  Bk_CountryService ..> Country : reads
+
+  AddressesApiRoutes ..> AddressRepository : uses
+  AddressesApiRoutes ..> PrismaClient : interacts with
+
+  CitiesApiRoutes ..> Bk_CityService : uses
+  CitiesApiRoutes ..> PrismaClient : interacts with
+
+  CountriesApiRoutes ..> Bk_CountryService : uses
+  CountriesApiRoutes ..> PrismaClient : interacts with
+
+
+  @enduml

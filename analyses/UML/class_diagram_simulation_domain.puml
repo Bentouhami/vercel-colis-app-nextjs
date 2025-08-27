@@ -1,0 +1,152 @@
+@startuml
+' Diagramme de Classe pour le domaine Simulation
+
+skinparam classAttributeIconSize 0
+hide empty members
+
+package "Data Model" {
+    class Envoi {
+        + id: Int
+        + trackingNumber: String
+        + qrCodeUrl: String
+        + userId: Int
+        + destinataireId: Int
+        + transportId: Int
+        + departureAgencyId: Int
+        + arrivalAgencyId: Int
+        + simulationStatus: SimulationStatus
+        + envoiStatus: EnvoiStatus
+        + totalWeight: Float
+        + totalVolume: Float
+        + totalPrice: Float
+        + paid: Boolean
+        + departureDate: DateTime
+        + arrivalDate: DateTime
+        + verificationToken: String
+        + comment: String
+        + createdAt: DateTime
+        + updatedAt: DateTime
+        --
+        ' Relations (simplifiées pour la simulation)
+        ' client: User
+        ' destinataire: User
+        ' departureAgency: Agency
+        ' arrivalAgency: Agency
+        ' parcels: Parcel[]
+    }
+
+    enum SimulationStatus {
+        DRAFT
+        CONFIRMED
+        COMPLETED
+        CANCELLED
+    }
+
+    enum EnvoiStatus {
+        PENDING
+        SENT
+        DELIVERED
+        CANCELLED
+        RETURNED
+    }
+}
+
+package "Data Transfer Objects (DTOs)" {
+    class SimulationResponseDto {
+        + id: number
+        + userId: number
+        + destinataireId: number
+        + departureCountry: string
+        + departureCity: string
+        + departureAgency: string
+        + destinationCountry: string
+        + destinationCity: string
+        + destinationAgency: string
+        + parcels: CreateParcelDto[]
+        + simulationStatus: SimulationStatusDto
+        + envoiStatus: EnvoiStatusDto
+        + totalWeight: number
+        + totalVolume: number
+        + totalPrice: number
+        + departureDate: Date
+        + arrivalDate: Date
+    }
+
+    class CreateSimulationRequestDto {
+        + userId: number
+        + destinataireId: number
+        + departureAgencyId: number
+        + arrivalAgencyId: number
+        + parcels: CreateParcelDto[]
+        + totalWeight: number
+        + totalVolume: number
+        + totalPrice: number
+        + departureDate: Date
+        + arrivalDate: Date
+        + simulationStatus: SimulationStatusDto
+        + envoiStatus: EnvoiStatusDto
+    }
+
+    class UpdateEditedSimulationDto {
+        + id: number
+        ' ... champs partiels pour la mise à jour
+    }
+
+    class CreatedSimulationResponseDto {
+        + id: number
+        + verificationToken: string
+    }
+
+    class SimulationSummaryDto {
+        + id: number
+        + totalWeight: number
+        + totalVolume: number
+        + totalPrice: number
+        + departureDate: Date
+        + arrivalDate: Date
+        + simulationStatus: SimulationStatusDto
+        + envoiStatus: EnvoiStatusDto
+        + transportId: number
+    }
+}
+
+package "Service Layer" {
+    class Bk_SimulationService {
+        + getSimulationById(simulationId: number): SimulationResponseDto
+        + createSimulation(simulationData: CreateSimulationRequestDto): CreatedSimulationResponseDto
+        + updateSimulationUserId(id: number, userId: number): void
+        + updateSimulationDestinataireId(simulationId: number, destinataireId: number): boolean
+        + updatePaidEnvoi(simulation: SimulationResponseDto, simulationIdAndToken: CreatedSimulationResponseDto): void
+        + updateSimulationAndParcels(simulationData: UpdateEditedSimulationDto): void
+        + getSimulationSummary(simulationId: number): SimulationSummaryDto
+        + updateSimulationTransportId(simulationId: number, transportId: number): boolean
+        + getAmountSimulationById(simulationId: number): number
+    }
+}
+
+package "API / Controller Layer" {
+    class SimulationApiController {
+        + POST /api/v1/simulations
+        + GET /api/v1/simulations
+        + PUT /api/v1/simulations
+        + GET /api/v1/simulations/{id}
+        + GET /api/v1/simulations/{id}/payment-amount
+        + GET /api/v1/simulations/delete-cookies
+        + PUT /api/v1/simulations/edit
+    }
+}
+
+' --- Relations ---
+
+SimulationApiController ..> Bk_SimulationService : uses
+Bk_SimulationService ..> Envoi : operates on
+Bk_SimulationService ..> SimulationResponseDto : returns
+Bk_SimulationService ..> CreatedSimulationResponseDto : returns
+Bk_SimulationService ..> SimulationSummaryDto : returns
+Bk_SimulationService ..> CreateSimulationRequestDto : uses as parameter
+Bk_SimulationService ..> UpdateEditedSimulationDto : uses as parameter
+
+Envoi -- SimulationStatus : has
+Envoi -- EnvoiStatus : has
+
+@enduml

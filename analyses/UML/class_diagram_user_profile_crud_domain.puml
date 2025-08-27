@@ -1,0 +1,106 @@
+@startuml
+  ' Diagramme de Classe pour le sous-domaine: Gestion du profil utilisateur et CRUD de base
+
+  skinparam classAttributeIconSize 0
+  hide empty members
+
+  package "Data Model (Prisma)" {
+      class User {
+          + id: Int
+          + firstName: String?
+          + lastName: String?
+          + email: String
+          + phoneNumber: String?
+          + password: String?
+          + role: Role
+          + isVerified: Boolean?
+          + isDeleted: Boolean
+          ' ... other relevant attributes for profile
+      }
+
+      enum Role {
+          CLIENT
+          SUPER_ADMIN
+          AGENCY_ADMIN
+          ' ... other roles
+      }
+  }
+
+  package "Data Transfer Objects (DTOs)" {
+      class ProfileDto {
+          + id: number
+          + firstName: string
+          + lastName: string
+          + email: string
+          + phoneNumber: string
+          + role: Role
+          + isVerified: boolean
+          ' ... other profile attributes
+      }
+
+      class UserResponseDto {
+          + id: number
+          + firstName: string
+          + lastName: string
+          + email: string
+          + role: Role
+          ' ... other user response attributes
+      }
+
+      class UpdateProfileRequestDto {
+          + firstName?: string
+          + lastName?: string
+          + email?: string
+          + phoneNumber?: string
+          ' ... other updatable profile attributes
+      }
+  }
+
+  package "Backend Services" {
+      class Bk_UserService {
+          + getUserById(id: number): Promise<UserResponseDto | null>
+          + getUserProfileById(userId: number): Promise<ProfileDto | null>
+          + updateUserProfile(userId: number, data: UpdateProfileRequestDto): Promise<ProfileDto | null>
+          + getAllUsers(): Promise<ProfileDto[] | null>
+          + DeleteDestinataireById(id: number): Promise<boolean>
+          ' ... other relevant CRUD methods
+      }
+  }
+
+  package "Repository Layer" {
+      class UserRepository {
+          + getUserProfileById(userId: number): Promise<ProfileDto | null>
+          + getAllUsers(): Promise<ProfileDto[] | null>
+          + updateUserProfile(userId: number, data: UpdateProfileRequestDto): Promise<ProfileDto | null>
+          ' ... other relevant CRUD methods
+      }
+  }
+
+  package "API Routes" {
+      class UsersApiRoutes {
+          + GET /api/v1/users : getAllUsers()
+          + GET /api/v1/users/{id} : getUserById()
+          + DELETE /api/v1/users/{id} : deleteUserById()
+          ' ... other relevant API routes
+      }
+  }
+
+  package "Utilities" {
+      class PrismaClient {
+          ' Represents the Prisma ORM client
+      }
+  }
+
+  ' Relationships
+  UsersApiRoutes ..> Bk_UserService : uses
+  Bk_UserService ..> UserRepository : uses
+  UserRepository ..> PrismaClient : interacts with
+  UserRepository ..> User : reads/writes
+
+  Bk_UserService ..> User : reads/writes
+
+  ProfileDto <.. User : maps from
+  UserResponseDto <.. User : maps from
+  UpdateProfileRequestDto ..> User : maps to
+
+  @enduml

@@ -2,6 +2,20 @@
 import {NextRequest, NextResponse} from "next/server";
 import {cancelSimulation} from "@/services/backend-services/Bk_EnvoiService";
 
+type CancelEnvoiBody = {
+    envoiId: number; // ID of the envoi to cancel
+};
+
+/**
+ * Cancel envoi simulation
+ * @description Cancels a shipment simulation.
+ * @body CancelEnvoiBody
+ * @response 200:{ message: string }:Simulation cancelled successfully
+ * @response 400:{ error: string }:Invalid or missing envoiId
+ * @response 404:{ error: string }:Envoi not found
+ * @response 500:{ error: string }:Error cancelling simulation
+ * @openapi
+ */
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();

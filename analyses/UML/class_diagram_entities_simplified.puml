@@ -1,0 +1,184 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class PasswordResetToken {
+}
+
+class Payment {
+}
+
+class User {
+}
+
+class Account {
+}
+
+class Session {
+}
+
+class AgencyClients {
+}
+
+class AgencyStaff {
+}
+
+class ActivityLog {
+}
+
+class Authenticator {
+}
+
+class Notification {
+}
+
+class VatRate {
+}
+
+class City {
+}
+
+class Country {
+}
+
+class Timezone {
+}
+
+class UserAddress {
+}
+
+class Address {
+}
+
+class Agency {
+}
+
+class ClientDestinataire {
+}
+
+class Coupon {
+}
+
+class UserCoupon {
+}
+
+class Transport {
+}
+
+class Envoi {
+}
+
+class TrackingEvent {
+}
+
+class Appointment {
+}
+
+class EnvoiCoupon {
+}
+
+class Parcel {
+}
+
+class Tarifs {
+}
+
+class TransportSchedule {
+}
+
+' Relations
+PasswordResetToken -- User
+Payment -- Envoi
+
+User "1" -- "*" Account
+User "1" -- "*" Session
+User "1" -- "*" Authenticator
+User "1" -- "*" PasswordResetToken
+
+User "1" -- "*" Envoi : client
+User "1" -- "*" Envoi : destinataire
+
+User "1" -- "*" Notification : client
+User "1" -- "*" Notification : destinataire
+
+User "1" -- "*" UserCoupon
+User "1" -- "*" ClientDestinataire : client
+User "1" -- "*" ClientDestinataire : destinataire
+User "1" -- "*" AgencyClients
+User "1" -- "*" AgencyStaff
+User "1" -- "*" UserAddress
+User "1" -- "*" Agency : createdBy
+User "1" -- "*" ActivityLog : staff
+
+AgencyClients -- User
+AgencyClients -- Agency
+
+AgencyStaff -- User
+AgencyStaff -- Agency
+
+ActivityLog -- User
+ActivityLog -- Agency
+
+Notification -- Agency
+Notification -- Envoi
+Notification -- User : destinataireNotification
+Notification -- User : clientNotification
+
+VatRate -- Country
+City -- Country
+City "1" -- "*" Address
+Country "1" -- "*" Timezone
+Country "1" -- "*" VatRate
+
+UserAddress -- Address
+UserAddress -- User
+
+Address "1" -- "*" UserAddress
+Address "1" -- "1" City
+Address "1" -- "0..1" Agency
+
+Agency "1" -- "*" Envoi : arrivalEnvoi
+Agency "1" -- "*" Envoi : departureEnvoi
+Agency "1" -- "*" Notification
+Agency "1" -- "*" Appointment
+Agency "1" -- "*" Transport
+Agency "1" -- "*" Tarifs
+Agency "1" -- "*" AgencyClients
+Agency "1" -- "*" AgencyStaff
+Agency "1" -- "*" ActivityLog
+Agency "1" -- "1" Address
+
+ClientDestinataire -- User : client
+ClientDestinataire -- User : destinataire
+
+Coupon "1" -- "*" UserCoupon
+Coupon "1" -- "*" EnvoiCoupon
+
+UserCoupon -- User
+UserCoupon -- Coupon
+
+Transport "1" -- "*" Envoi
+Transport "1" -- "*" TransportSchedule
+Transport "0..1" -- "1" Agency
+
+Envoi "1" -- "*" EnvoiCoupon
+Envoi "1" -- "*" Parcel
+Envoi "1" -- "0..1" Appointment
+Envoi "1" -- "*" Notification
+Envoi "1" -- "0..1" Payment
+Envoi "1" -- "*" TrackingEvent
+Envoi "1" -- "1" Agency : arrivalAgency
+Envoi "1" -- "1" Agency : departureAgency
+Envoi "0..1" -- "1" Transport
+Envoi "0..1" -- "1" User : destinataire
+Envoi "0..1" -- "1" User : client
+
+TrackingEvent -- Envoi
+Appointment -- Envoi
+Appointment -- Agency
+EnvoiCoupon -- Envoi
+EnvoiCoupon -- Coupon
+Parcel -- Envoi
+Tarifs "0..1" -- "1" Agency
+TransportSchedule -- Transport
+
+@enduml

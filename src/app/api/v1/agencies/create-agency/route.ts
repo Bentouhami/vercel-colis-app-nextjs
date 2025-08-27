@@ -2,9 +2,21 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createAgency } from "@/services/backend-services/Bk_AgencyService";
-import { RoleDto } from "@/services/dtos";
+import { RoleDto, CreateAgencyDto, AgencyDto } from "@/services/dtos"; // Import DTOs
 import { auth } from "@/auth/auth";
 
+/**
+ * Create a new agency
+ * @description Creates a new agency record. Accessible only by SUPER_ADMIN.
+ * @body CreateAgencyDto
+ * @response 200:AgencyDto:Agency created successfully
+ * @response 400:{ error: string }:Agency data not found
+ * @response 401:{ error: string }:User not found
+ * @response 403:{ error: string }:Not permitted for non super admin users
+ * @response 500:{ error: string }:Failed to create agency
+ * @auth bearer
+ * @openapi
+ */
 export async function POST(req: NextRequest) {
   if (req.method !== "POST") {
     return NextResponse.json({ error: "Method not allowed" }, { status: 405 });

@@ -9,6 +9,13 @@ import { verifySimulationToken } from "@/utils/verifySimulationToken";
 import { EnvoiStatusDto, SimulationStatusDto } from "@/services/dtos";
 import { cookies } from "next/headers";
 
+/**
+ * Complete payment process
+ * @description Finalizes the payment process after redirection from the payment gateway. Updates envoi status and deletes the simulation cookie.
+ * @response 200:{ message: string }:Payment completed successfully
+ * @response 500:{ message: string }:Payment error
+ * @openapi
+ */
 export async function GET(req: NextRequest) {
   try {
     // 1. Retrieve Simulation Data from Cookie

@@ -6,8 +6,27 @@ import {
   getAgenciesByAdminId,
 } from "@/services/backend-services/Bk_AgencyService";
 import { auth } from "@/auth/auth";
-import { RoleDto } from "@/services/dtos";
+import { RoleDto, AgencyDto } from "@/services/dtos"; // Import AgencyDto
 
+type AdminAgenciesQueryParams = {
+  page?: number;
+  limit?: number;
+  search?: string;
+  sortKey?: string;
+  sortDir?: "asc" | "desc";
+};
+
+/**
+ * Get agencies for admin
+ * @description Retrieves a list of agencies based on the authenticated admin's role. SUPER_ADMIN sees all agencies, AGENCY_ADMIN sees agencies associated with them.
+ * @params AdminAgenciesQueryParams
+ * @response 200:AgencyDto[]:List of agencies
+ * @response 401:{ message: string }:Unauthorized
+ * @response 403:{ message: string }:Forbidden
+ * @response 500:{ message: string }:Error fetching agencies
+ * @auth bearer
+ * @openapi
+ */
 export async function GET(request: NextRequest) {
   const sess = await auth();
   if (!sess) return new NextResponse("Unauthorized", { status: 401 });

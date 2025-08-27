@@ -1,0 +1,107 @@
+@startuml
+  ' Diagramme de Classe pour le domaine Transport (Transport)
+
+  skinparam classAttributeIconSize 0
+  hide empty members
+
+  package "Data Model (Prisma)" {
+      class Transport {
+          + id: Int
+          + number: String
+          + baseVolume: Decimal
+          + baseWeight: Decimal
+          + currentVolume: Decimal
+          + currentWeight: Decimal
+          + isAvailable: Boolean
+          + agencyId: Int?
+          + isDeleted: Boolean
+          + createdAt: DateTime
+          + updatedAt: DateTime
+          --
+          ' Relations
+          ' agency: Agency?
+          ' envois: Envoi[]
+          ' transportSchedules: TransportSchedule[]
+      }
+
+      class Agency {
+          + id: Int
+          + name: String
+          ' ... other attributes
+      }
+
+      class Envoi {
+          + id: Int
+          + trackingNumber: String?
+          ' ... other attributes
+      }
+
+      class TransportSchedule {
+          + id: Int
+          + transportId: Int
+          ' ... other attributes
+      }
+  }
+
+  package "Data Transfer Objects (DTOs)" {
+      class TransportResponseDto {
+          + id: number
+          + number: string
+          + baseVolume: number
+          + baseWeight: number
+          + currentVolume: number
+          + currentWeight: number
+          + isAvailable: boolean
+      }
+
+      class UpdateTransportRequestDto {
+          + id: number
+          + number: string
+          + baseVolume: number
+          + baseWeight: number
+          + currentVolume: number
+          + currentWeight: number
+          + isAvailable: boolean
+      }
+  }
+
+  package "Repository Layer" {
+      class TransportRepository {
+          + getTransports(): Promise<TransportResponseDto[] | null>
+          + updateTransport(transport: UpdateTransportRequestDto): Promise<TransportResponseDto | null>
+      }
+  }
+
+  package "Backend Services" {
+      class Bk_TransportService {
+          + getTransports(): Promise<TransportResponseDto[] | null>
+          + updateTransport(transport: UpdateTransportRequestDto): Promise<TransportResponseDto | null>
+      }
+  }
+
+  package "API Routes" {
+      class TransportApiRoutes {
+          + GET /api/v1/transports
+          + PUT /api/v1/transports
+      }
+  }
+
+  package "Utilities" {
+      class PrismaClient {
+          ' Represents the Prisma ORM client
+      }
+  }
+
+  ' Relationships
+  Transport "0..*" -- "0..1" Agency : belongs to >
+  Transport "1" -- "0..*" Envoi : carries >
+  Transport "1" -- "0..*" TransportSchedule : has >
+
+  TransportApiRoutes ..> Bk_TransportService : uses
+  Bk_TransportService ..> TransportRepository : uses
+  TransportRepository ..> PrismaClient : interacts with
+  TransportRepository ..> Transport : reads/writes
+  TransportRepository ..> TransportResponseDto : returns
+  TransportRepository ..> UpdateTransportRequestDto : uses as parameter
+
+  @enduml

@@ -9,6 +9,18 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
     apiVersion: '2025-04-30.basil' as any, // Use the expected API version and assert as any to bypass strict type check if needed, though updating should fix it.
 });
 
+type CreatePaymentSessionBody = {
+    amount: number; // Amount for the payment session
+};
+
+/**
+ * Create Stripe payment session
+ * @description Creates a new Stripe checkout session for payment.
+ * @body CreatePaymentSessionBody
+ * @response 200:{ id: string }:Stripe session ID
+ * @response 500:{ message: string }:Payment error
+ * @openapi
+ */
 export async function POST(req: Request) {
     try {
         const { amount } = await req.json();

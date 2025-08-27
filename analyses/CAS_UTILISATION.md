@@ -14,8 +14,32 @@ Ce document recense l'ensemble des cas d'utilisation identifiés pour l'applicat
 
 ### Acteur : Destinataire
 
-- `UC-DEST-01`: Suivre un envoi par son numéro de suivi [TODO]
-- `UC-DEST-02`: Consulter l'historique des événements d'un envoi [TODO]
+- `UC-DEST-01`: Suivre un envoi par son numéro de suivi [DONE]
+- `UC-DEST-02`: Consulter l'historique des événements d'un envoi [FUSIONNÉ DANS UC-DEST-01]
+
+### Cas d'Utilisation Détaillé : Suivre un Envoi par son Numéro de Suivi
+
+*   **ID :** `UC-DEST-01`
+*   **Nom :** Suivre un Envoi par son Numéro de Suivi
+*   **Acteur(s) Principal(aux) :** Destinataire, Client, Visiteur (tout utilisateur ayant un numéro de suivi)
+*   **Description :** Permet à un utilisateur de consulter le statut actuel et l'historique détaillé des événements d'un envoi en fournissant un numéro de suivi valide.
+*   **Préconditions :**
+    *   L'utilisateur a accès à l'application (via le site web ou une application mobile).
+    *   L'utilisateur dispose d'un numéro de suivi d'envoi.
+*   **Flux Normal des Événements :**
+    1.  L'utilisateur accède à la page de suivi des envois.
+    2.  Le système affiche un champ de saisie pour le numéro de suivi.
+    3.  L'utilisateur saisit le numéro de suivi et valide.
+    4.  Le système recherche les informations de l'envoi et son historique dans la base de données.
+    5.  Le système affiche les détails de l'envoi (statut actuel, informations de base) et la liste chronologique des événements de suivi (date, heure, description de l'événement, localisation).
+*   **Flux Alternatifs :**
+    *   **A1 : Numéro de Suivi Invalide ou Envoi Non Trouvé :**
+        1.  À l'étape 3 du flux normal, le numéro de suivi saisi est invalide ou ne correspond à aucun envoi dans le système.
+        2.  Le système affiche un message d'erreur approprié (ex: "Numéro de suivi invalide" ou "Envoi non trouvé").
+        3.  Le cas d'utilisation se termine.
+*   **Postconditions :**
+    *   L'utilisateur a consulté les informations de suivi de l'envoi.
+    *   Aucune modification n'est apportée aux données de l'envoi.
 
 ### Acteur : Client (Hérite des cas du Visiteur)
 

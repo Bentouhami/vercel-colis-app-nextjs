@@ -1,0 +1,2945 @@
+openapi: 3.0.0
+info:
+  title: ColisApp API
+  description: Documentation de l'API RESTful pour l'application de gestion des envois ColisApp.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Serveur de développement local
+  - url: https://colisapp.example.com/api/v1
+    description: Serveur de production
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: Users
+    description: Opérations liées aux utilisateurs
+  - name: Agencies
+    description: Opérations liées aux agences
+  - name: Envois
+    description: Opérations liées aux envois (colis)
+  - name: Authentication
+    description: Opérations d'authentification et de gestion des mots de passe
+  - name: Addresses
+    description: Opérations liées aux adresses
+  - name: Admin
+    description: Opérations d'administration
+  - name: Cities
+    description: Opérations liées aux villes
+  - name: Contact
+    description: Opérations du formulaire de contact
+  - name: Countries
+    description: Opérations liées aux pays
+  - name: Dashboard
+    description: Opérations du tableau de bord
+  - name: Payments
+    description: Opérations de paiement
+  - name: Simulations
+    description: Opérations de simulation d'envoi
+  - name: Tarifs
+    description: Opérations de gestion des tarifs
+  - name: Tracking
+    description: Opérations de suivi des envois
+  - name: Transports
+    description: Opérations de gestion des transports
+  - name: Appointments
+    description: Opérations de gestion des rendez-vous
+
+paths:
+  /users:
+    get:
+      summary: Récupérer la liste des utilisateurs
+      description: Récupère une liste d'utilisateurs en fonction du rôle de l'utilisateur authentifié. Les super administrateurs voient tous les utilisateurs, les administrateurs d'agence voient ceux associés à leur agence.
+      tags:
+        - Users
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Liste d'utilisateurs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProfileDto'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+
+  /users/{id}:
+    get:
+      summary: Récupérer un utilisateur par ID
+      description: Récupère un enregistrement d'utilisateur unique par son ID. Nécessite une authentification.
+      tags:
+        - Users
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de l'utilisateur à récupérer
+      responses:
+        '200':
+          description: Détails de l'utilisateur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDto'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      summary: Supprimer un utilisateur par ID
+      description: Supprime un enregistrement d'utilisateur par son ID (suppression logique).
+      tags:
+        - Users
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de l'utilisateur à supprimer
+      responses:
+        '200':
+          description: Utilisateur supprimé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/UserDto' # Assuming it returns the deleted user or a confirmation
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /agencies:
+    get:
+      summary: Récupérer les agences par ville
+      description: Récupère une liste d'agences pour un ID de ville donné.
+      tags:
+        - Agencies
+      parameters:
+        - in: query
+          name: city
+          schema:
+            type: integer
+          required: true
+          description: ID de la ville pour filtrer les agences
+      responses:
+        '200':
+          description: Liste d'agences
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: Créer une nouvelle agence
+      description: Crée un nouvel enregistrement d'agence. Nécessite une authentification.
+      tags:
+        - Agencies
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAgencyDto'
+      responses:
+        '201':
+          description: Agence créée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgencyDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /agencies/{id}:
+    get:
+      summary: Récupérer une agence par ID
+      description: Récupère un enregistrement d'agence unique par son ID.
+      tags:
+        - Agencies
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de l'agence à récupérer
+      responses:
+        '200':
+          description: Détails de l'agence
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgencyDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      summary: Mettre à jour une agence par ID
+      description: Met à jour un enregistrement d'agence existant par son ID. Nécessite une authentification.
+      tags:
+        - Agencies
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de l'agence à mettre à jour
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAgencyDto'
+      responses:
+        '200':
+          description: Agence mise à jour avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgencyDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /envois:
+    post:
+      summary: Créer un nouvel envoi
+      description: Crée un nouvel enregistrement d'envoi (colis). Nécessite une authentification.
+      tags:
+        - Envois
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEnvoiDto'
+      responses:
+        '201':
+          description: Envoi créé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Envoi created successfully
+                  envoi:
+                    $ref: '#/components/schemas/EnvoiDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /envois/{id}:
+    get:
+      summary: Récupérer un envoi par ID
+      description: Récupère un enregistrement d'envoi unique par son ID. Nécessite une authentification.
+      tags:
+        - Envois
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de l'envoi à récupérer
+      responses:
+        '200':
+          description: Détails de l'envoi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvoiResponseDto'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      summary: Mettre à jour un envoi par ID
+      description: Met à jour un enregistrement d'envoi existant par son ID. Nécessite une authentification.
+      tags:
+        - Envois
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de l'envoi à mettre à jour
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEnvoiDto'
+      responses:
+        '200':
+          description: Envoi mis à jour avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvoiDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /(auth)/check-reset-token:
+    get:
+      summary: Vérifier la validité du token de réinitialisation de mot de passe
+      description: Vérifie si un token de réinitialisation de mot de passe donné est valide.
+      tags:
+        - Authentication
+      parameters:
+        - in: query
+          name: token
+          schema:
+            type: string
+          required: true
+          description: Le token de réinitialisation de mot de passe
+      responses:
+        '200':
+          description: Statut de validité du token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  valid:
+                    type: boolean
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /(auth)/forgot-password:
+    post:
+      summary: Demander la réinitialisation du mot de passe
+      description: Envoie un email de réinitialisation de mot de passe à l'adresse email fournie.
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordDto'
+      responses:
+        '200':
+          description: Message de confirmation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: Email invalide
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /(auth)/reset-password:
+    post:
+      summary: Réinitialiser le mot de passe de l'utilisateur
+      description: Réinitialise le mot de passe de l'utilisateur à l'aide d'un token de réinitialisation valide.
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordDto'
+      responses:
+        '200':
+          description: Mot de passe mis à jour avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '400':
+          description: Token ou mot de passe invalide
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /addresses:
+    get:
+      summary: Récupérer toutes les adresses
+      description: Récupère une liste de toutes les adresses dans le système.
+      tags:
+        - Addresses
+      responses:
+        '200':
+          description: Liste d'adresses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AddressDto'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: Créer une nouvelle adresse
+      description: Crée un nouvel enregistrement d'adresse dans le système.
+      tags:
+        - Addresses
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAddressDto'
+      responses:
+        '201':
+          description: Adresse créée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  address:
+                    $ref: '#/components/schemas/AddressDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /addresses/{id}:
+    get:
+      summary: Récupérer une adresse par ID
+      description: Récupère un enregistrement d'adresse unique par son ID.
+      tags:
+        - Addresses
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de l'adresse à récupérer
+      responses:
+        '200':
+          description: Détails de l'adresse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddressDto'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      summary: Mettre à jour une adresse par ID
+      description: Met à jour un enregistrement d'adresse existant par son ID.
+      tags:
+        - Addresses
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de l'adresse à mettre à jour
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAddressDto'
+      responses:
+        '200':
+          description: Adresse mise à jour avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  address:
+                    $ref: '#/components/schemas/AddressDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      summary: Supprimer une adresse par ID
+      description: Supprime un enregistrement d'adresse par son ID.
+      tags:
+        - Addresses
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de l'adresse à supprimer
+      responses:
+        '200':
+          description: Adresse supprimée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  address:
+                    $ref: '#/components/schemas/AddressDto'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /admin/{id}:
+    get:
+      summary: Récupérer les détails d'un utilisateur par ID (Accès Admin)
+      description: Récupère un enregistrement d'utilisateur unique par son ID. Accessible uniquement par SUPER_ADMIN et AGENCY_ADMIN.
+      tags:
+        - Admin
+        - Users
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de l'utilisateur à récupérer
+      responses:
+        '200':
+          description: Détails de l'utilisateur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Accès refusé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /admin/dashboard:
+    get:
+      summary: Récupérer les données du tableau de bord Admin
+      description: Récupère les données du tableau de bord en fonction du rôle de l'administrateur authentifié (SUPER_ADMIN, AGENCY_ADMIN, ACCOUNTANT).
+      tags:
+        - Admin
+        - Dashboard
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Données du tableau de bord
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardSummaryDto'
+        '400':
+          description: Rôle non reconnu
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Accès non autorisé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /agencies/admin-agencies:
+    get:
+      summary: Récupérer les agences pour l'administrateur
+      description: Récupère une liste d'agences en fonction du rôle de l'administrateur authentifié. SUPER_ADMIN voit toutes les agences, AGENCY_ADMIN voit les agences qui lui sont associées.
+      tags:
+        - Agencies
+        - Admin
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Numéro de page
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Nombre d'éléments par page
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Terme de recherche
+        - in: query
+          name: sortKey
+          schema:
+            type: string
+            default: name
+          description: Clé de tri
+        - in: query
+          name: sortDir
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+          description: Direction de tri
+      responses:
+        '200':
+          description: Liste d'agences
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AgencyDto'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /agencies/create-agency:
+    post:
+      summary: Créer une nouvelle agence
+      description: Crée un nouvel enregistrement d'agence. Accessible uniquement par SUPER_ADMIN.
+      tags:
+        - Agencies
+        - Admin
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAgencyDto'
+      responses:
+        '200':
+          description: Agence créée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgencyDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /agencies/findAgency:
+    get:
+      summary: Trouver l'ID d'une agence par ses détails
+      description: Trouve l'ID d'une agence par son nom, sa ville et son pays.
+      tags:
+        - Agencies
+      parameters:
+        - in: query
+          name: country
+          schema:
+            type: integer
+          required: true
+          description: ID du pays
+        - in: query
+          name: city
+          schema:
+            type: string
+          required: true
+          description: Nom de la ville
+        - in: query
+          name: agency_name
+          schema:
+            type: string
+          required: true
+          description: Nom de l'agence
+      responses:
+        '200':
+          description: ID de l'agence trouvé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  agencyId:
+                    type: integer
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /agencies/get-agency-by-id:
+    get:
+      summary: Récupérer les détails d'une agence par ID
+      description: Récupère les détails d'une agence par son ID. Accessible par AGENCY_ADMIN et SUPER_ADMIN.
+      tags:
+        - Agencies
+        - Admin
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: agencyId
+          schema:
+            type: integer
+          required: true
+          description: ID de l'agence
+      responses:
+        '200':
+          description: Détails de l'agence
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgencyDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /agencies/light:
+    get:
+      summary: Récupérer une liste allégée d'agences
+      description: Récupère une liste allégée d'agences, filtrable par ID de pays, ID de ville et terme de recherche.
+      tags:
+        - Agencies
+      parameters:
+        - in: query
+          name: countryId
+          schema:
+            type: integer
+          description: ID du pays
+        - in: query
+          name: cityId
+          schema:
+            type: integer
+          description: ID de la ville
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Terme de recherche pour le nom de l'agence
+      responses:
+        '200':
+          description: Liste allégée d'agences
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /agencies/summary:
+    get:
+      summary: Récupérer le résumé de l'agence (Placeholder)
+      description: Cette route est un placeholder pour les données de résumé d'agence.
+      tags:
+        - Agencies
+      responses:
+        '200':
+          description: Réponse placeholder
+          content:
+            application/json:
+              schema:
+                nullable: true
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /agencies/update-agency:
+    put:
+      summary: Mettre à jour une agence existante
+      description: Met à jour un enregistrement d'agence existant dans la base de données.
+      tags:
+        - Agencies
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAgencyDto'
+      responses:
+        '200':
+          description: Agence mise à jour avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgencyDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /cities/{countryId}:
+    get:
+      summary: Récupérer les villes par ID de pays
+      description: Récupère une liste de toutes les villes pour un ID de pays donné.
+      tags:
+        - Cities
+      parameters:
+        - in: path
+          name: countryId
+          schema:
+            type: integer
+          required: true
+          description: ID du pays
+      responses:
+        '200':
+          description: Liste de villes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /cities:
+    get:
+      summary: Récupérer les villes avec agences par pays
+      description: Récupère une liste de villes qui ont une agence pour un ID de pays donné.
+      tags:
+        - Cities
+      parameters:
+        - in: query
+          name: countryId
+          schema:
+            type: integer
+          required: true
+          description: ID du pays
+      responses:
+        '200':
+          description: Liste de villes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /contact:
+    post:
+      summary: Envoyer un message de contact
+      description: Envoie un message via le formulaire de contact.
+      tags:
+        - Contact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageBodyDto'
+      responses:
+        '200':
+          description: Message envoyé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '403':
+          description: CORS non autorisé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    options:
+      summary: Gérer les requêtes pré-vol CORS
+      description: Gère les requêtes pré-vol (OPTIONS) pour le formulaire de contact.
+      tags:
+        - Contact
+      responses:
+        '204':
+          description: Pré-vol CORS réussi
+
+  /countries/all:
+    get:
+      summary: Récupérer tous les pays
+      description: Récupère une liste de tous les pays dans le système.
+      tags:
+        - Countries
+      responses:
+        '200':
+          description: Liste de tous les pays
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CountryDto'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /countries:
+    get:
+      summary: Récupérer les pays distincts avec agences
+      description: Récupère une liste de pays distincts qui ont des agences, avec une option pour exclure un pays de départ spécifique.
+      tags:
+        - Countries
+      parameters:
+        - in: query
+          name: departureCountry
+          schema:
+            type: integer
+          description: ID du pays à exclure de la liste
+      responses:
+        '200':
+          description: Liste de pays
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CountryResponseDto'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /dashboard/super-admin:
+    get:
+      summary: Récupérer les statistiques du tableau de bord Super Admin
+      description: Récupère les statistiques pour le tableau de bord Super Admin.
+      tags:
+        - Dashboard
+        - Admin
+      responses:
+        '200':
+          description: Statistiques du tableau de bord Super Admin
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuperAdminStats'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /envois/{id}/status:
+    put:
+      summary: Mettre à jour le statut de l'envoi par ID
+      description: Met à jour le statut d'un enregistrement d'envoi (colis) par son ID. Accessible par SUPER_ADMIN, AGENCY_ADMIN et ACCOUNTANT.
+      tags:
+        - Envois
+        - Admin
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de l'envoi
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  $ref: '#/components/schemas/EnvoiStatusDto'
+              required:
+                - status
+      responses:
+        '200':
+          description: Statut de l'envoi mis à jour avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvoiDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /envois/cancel:
+    post:
+      summary: Annuler la simulation d'envoi
+      description: Annule une simulation d'envoi.
+      tags:
+        - Envois
+        - Simulations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                envoiId:
+                  type: integer
+              required:
+                - envoiId
+      responses:
+        '200':
+          description: Simulation annulée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /envois/user/{userId}:
+    get:
+      summary: Récupérer les envois par ID utilisateur
+      description: Récupère une liste d'envois pour un utilisateur spécifique. Accessible par SUPER_ADMIN et l'utilisateur lui-même.
+      tags:
+        - Envois
+        - Users
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: integer
+          required: true
+          description: ID de l'utilisateur
+      responses:
+        '200':
+          description: Liste d'envois pour l'utilisateur
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EnvoisListDto'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /payment/complete-payment:
+    get:
+      summary: Finaliser le processus de paiement
+      description: Finalise le processus de paiement après la redirection depuis la passerelle de paiement. Met à jour le statut de l'envoi et supprime le cookie de simulation.
+      tags:
+        - Payments
+      responses:
+        '200':
+          description: Paiement effectué avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /payment:
+    post:
+      summary: Créer une session de paiement Stripe
+      description: Crée une nouvelle session de paiement Stripe.
+      tags:
+        - Payments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+              required:
+                - amount
+      responses:
+        '200':
+          description: ID de session Stripe
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /simulations/{id}/payment-amount:
+    get:
+      summary: Récupérer le montant du paiement de la simulation
+      description: Récupère le montant total du paiement pour une simulation spécifique, avec des vérifications d'authentification et de droits.
+      tags:
+        - Simulations
+        - Payments
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de la simulation
+      responses:
+        '200':
+          description: Montant du paiement de la simulation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  amount:
+                    type: number
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Accès refusé ou compte administrateur
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /simulations/{id}:
+    get:
+      summary: Récupérer les détails de la simulation par ID
+      description: Récupère les détails d'une simulation spécifique.
+      tags:
+        - Simulations
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de la simulation
+      responses:
+        '200':
+          description: Détails de la simulation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimulationResponseDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /simulations/delete-cookies:
+    get:
+      summary: Supprimer les cookies de simulation
+      description: Supprime le cookie de simulation du navigateur du client.
+      tags:
+        - Simulations
+      responses:
+        '200':
+          description: Cookies de simulation supprimés avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /simulations/edit:
+    put:
+      summary: Mettre à jour une simulation existante
+      description: Met à jour une simulation existante avec les données fournies.
+      tags:
+        - Simulations
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEditedSimulationDto'
+      responses:
+        '200':
+          description: Simulation mise à jour avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /simulations:
+    post:
+      summary: Créer une nouvelle simulation
+      description: Crée un nouvel enregistrement de simulation.
+      tags:
+        - Simulations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSimulationRequestDto'
+      responses:
+        '201':
+          description: Simulation créée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    get:
+      summary: Récupérer les détails de la simulation à partir du cookie
+      description: Récupère les détails de la simulation à partir du cookie du client.
+      tags:
+        - Simulations
+      responses:
+        '200':
+          description: Données de la simulation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/SimulationResponseDto'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      summary: Mettre à jour une simulation existante
+      description: Met à jour une simulation existante avec les données fournies.
+      tags:
+        - Simulations
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SimulationResponseDto'
+      responses:
+        '200':
+          description: Simulation mise à jour avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /tarifs:
+    get:
+      summary: Récupérer les tarifs
+      description: Récupère les tarifs de tarification.
+      tags:
+        - Tarifs
+      responses:
+        '200':
+          description: Liste des tarifs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TarifsDto'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /tracking/{trackingNumber}:
+    get:
+      summary: Récupérer les événements de suivi par numéro de suivi
+      description: Récupère les événements de suivi pour un numéro de suivi spécifique. L'accès peut être restreint en fonction du rôle de l'utilisateur et de la propriété.
+      tags:
+        - Tracking
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: trackingNumber
+          schema:
+            type: string
+          required: true
+          description: Le numéro de suivi de l'envoi
+      responses:
+        '200':
+          description: Liste des événements de suivi
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object # Placeholder for TrackingEvent
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /tracking:
+    post:
+      summary: Ajouter un événement de suivi (Admin)
+      description: Ajoute un nouvel événement de suivi pour un envoi. Nécessite une authentification et un rôle d'administrateur approprié.
+      tags:
+        - Tracking
+        - Admin
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                envoiId:
+                  type: integer
+                status:
+                  $ref: '#/components/schemas/TrackingEventStatus'
+                location:
+                  type: string
+                description:
+                  type: string
+              required:
+                - envoiId
+                - status
+      responses:
+        '201':
+          description: Événement de suivi ajouté avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /transports:
+    get:
+      summary: Récupérer la liste des transports
+      description: Récupère une liste de tous les transports.
+      tags:
+        - Transports
+      responses:
+        '200':
+          description: Transports récupérés avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TransportResponseDto'
+                  message:
+                    type: string
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      summary: Mettre à jour un transport
+      description: Met à jour un transport existant avec les données fournies.
+      tags:
+        - Transports
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTransportRequestDto'
+      responses:
+        '200':
+          description: Transport mis à jour avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TransportResponseDto'
+                  message:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /users/{id}/profile:
+    get:
+      summary: Récupérer le profil utilisateur par ID
+      description: Récupère le profil d'un utilisateur par son ID. Accessible par SUPER_ADMIN et l'utilisateur lui-même.
+      tags:
+        - Users
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de l'utilisateur
+      responses:
+        '200':
+          description: Détails du profil utilisateur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      summary: Mettre à jour le profil utilisateur par ID
+      description: Met à jour le profil d'un utilisateur par son ID. Accessible par SUPER_ADMIN et l'utilisateur lui-même.
+      tags:
+        - Users
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de l'utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequestDto'
+      responses:
+        '200':
+          description: Profil utilisateur mis à jour avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /users/all:
+    get:
+      summary: Récupérer tous les utilisateurs (Accès Admin)
+      description: Récupère une liste de tous les utilisateurs pour SUPER_ADMIN, ou les utilisateurs associés à l'agence pour AGENCY_ADMIN.
+      tags:
+        - Users
+        - Admin
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Liste d'utilisateurs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProfileDto'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /users/appointments/book:
+    post:
+      summary: Réserver un rendez-vous pour un envoi payé
+      description: Réserve un rendez-vous pour un envoi payé, en s'assurant qu'il appartient à l'utilisateur et qu'il n'a pas encore été réservé.
+      tags:
+        - Users
+        - Appointments
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                envoiId:
+                  type: integer
+                date:
+                  type: string
+                  format: date-time
+              required:
+                - envoiId
+                - date
+      responses:
+        '201':
+          description: Rendez-vous réservé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  appointment:
+                    $ref: '#/components/schemas/AppointmentDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /users/appointments/envoi-paye:
+    get:
+      summary: Récupérer le dernier envoi payé sans rendez-vous
+      description: Récupère le dernier envoi payé pour l'utilisateur authentifié qui n'a pas encore de rendez-vous.
+      tags:
+        - Users
+        - Appointments
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Détails du dernier envoi payé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  envoi:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      trackingNumber:
+                        type: string
+                      departureAgencyName:
+                        type: string
+                    nullable: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /users/destinataires:
+    post:
+      summary: Créer ou associer un destinataire
+      description: Crée un nouveau destinataire ou associe un destinataire existant à l'utilisateur actuel.
+      tags:
+        - Users
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDestinataireDto'
+      responses:
+        '200':
+          description: Destinataire créé ou associé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DestinataireResponseWithRoleDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /users/list:
+    get:
+      summary: Récupérer la liste des utilisateurs (Accès Admin)
+      description: Récupère une liste de tous les utilisateurs pour SUPER_ADMIN, ou les utilisateurs associés à l'agence pour AGENCY_ADMIN.
+      tags:
+        - Users
+        - Admin
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Liste d'utilisateurs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProfileDto'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /users/login:
+    post:
+      summary: Connexion utilisateur
+      description: Authentifie un utilisateur et génère un token JWT.
+      tags:
+        - Users
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginUserDto'
+      responses:
+        '200':
+          description: Authentifié
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+              description: Cookie de session JWT
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /users/logout:
+    get:
+      summary: Déconnexion utilisateur
+      description: Déconnecte l'utilisateur en supprimant le cookie de session.
+      tags:
+        - Users
+        - Authentication
+      responses:
+        '200':
+          description: Déconnecté
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '403':
+          description: Origine non autorisée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    options:
+      summary: Gérer les requêtes pré-vol CORS pour la déconnexion
+      description: Gère les requêtes pré-vol (OPTIONS) pour le point de terminaison de déconnexion.
+      tags:
+        - Users
+        - Authentication
+      responses:
+        '204':
+          description: Pré-vol CORS réussi
+
+  /users/register:
+    post:
+      summary: Enregistrer un nouvel utilisateur
+      description: Enregistre un nouvel utilisateur dans le système.
+      tags:
+        - Users
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserDto'
+      responses:
+        '201':
+          description: Compte créé avec succès. Vérifiez votre email.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/UserDto'
+        '200':
+          description: Le compte existe mais n'est pas vérifié. Vérifiez votre email.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /users/verify:
+    post:
+      summary: Vérifier l'email de l'utilisateur
+      description: Vérifie l'adresse email d'un utilisateur avec un token fourni.
+      tags:
+        - Users
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+              required:
+                - token
+      responses:
+        '200':
+          description: Email vérifié avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/UserResponseDto'
+                  message:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    Unauthorized:
+      description: Non autorisé
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Unauthorized
+    NotFound:
+      description: Ressource non trouvée
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Not found
+    BadRequest:
+      description: Requête invalide
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Invalid data provided
+    MethodNotAllowed:
+      description: Méthode non autorisée
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: Method not allowed
+    InternalServerError:
+      description: Erreur interne du serveur
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Internal server error
+    Forbidden:
+      description: Accès refusé
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Forbidden
+
+  schemas:
+    # Enums
+    RoleDto:
+      type: string
+      enum:
+        - CLIENT
+        - SUPER_ADMIN
+        - DESTINATAIRE
+        - AGENCY_ADMIN
+        - ACCOUNTANT
+    SimulationStatusDto:
+      type: string
+      enum:
+        - DRAFT
+        - CONFIRMED
+        - COMPLETED
+        - CANCELLED
+    EnvoiStatusDto:
+      type: string
+      enum:
+        - PENDING
+        - SENT
+        - DELIVERED
+        - CANCELLED
+        - RETURNED
+    PaymentStatusDto:
+      type: string
+      enum:
+        - PENDING
+        - PAID
+        - FAILED
+        - REFUNDED
+    AppointmentStatusDto:
+      type: string
+      enum:
+        - PENDING
+        - CONFIRMED
+        - CANCELLED
+        - RESCHEDULED
+        - COMPLETED
+        - MISSED
+        - IN_PROGRESS
+    AddressType:
+      type: string
+      enum:
+        - HOME
+        - OFFICE
+        - BILLING
+        - SHIPPING
+        - OTHER
+    TrackingEventStatus:
+      type: string
+      enum:
+        - CREATED
+        - COLLECTED
+        - IN_TRANSIT
+        - ARRIVED_AT_AGENCY
+        - OUT_FOR_DELIVERY
+        - DELIVERED
+        - FAILED
+
+    # User DTOs
+    UserDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        firstName:
+          type: string
+        lastName:
+          type: string
+        name:
+          type: string
+        birthDate:
+          type: string
+          format: date
+        email:
+          type: string
+          format: email
+        phoneNumber:
+          type: string
+        password:
+          type: string
+          format: password
+        image:
+          type: string
+          nullable: true
+        role:
+          $ref: '#/components/schemas/RoleDto'
+        agencyId:
+          type: integer
+        isVerified:
+          type: boolean
+        emailVerified:
+          type: string
+          format: date-time
+        verificationToken:
+          type: string
+        verificationTokenExpires:
+          type: string
+          format: date-time
+        userAddresses:
+          $ref: '#/components/schemas/UserAddressDto'
+          nullable: true
+      required:
+        - email
+    ProfileDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+          format: email
+        firstName:
+          type: string
+        lastName:
+          type: string
+        birthDate:
+          type: string
+          format: date
+        name:
+          type: string
+        phoneNumber:
+          type: string
+        userAddresses:
+          $ref: '#/components/schemas/UserAddressDto'
+        image:
+          type: string
+          nullable: true
+        role:
+          $ref: '#/components/schemas/RoleDto'
+        isVerified:
+          type: boolean
+      required:
+        - id
+        - email
+        - firstName
+        - lastName
+        - birthDate
+        - name
+        - phoneNumber
+        - userAddresses
+        - role
+        - isVerified
+    CreateUserDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        name:
+          type: string
+        birthDate:
+          type: string
+          format: date
+        email:
+          type: string
+          format: email
+        phoneNumber:
+          type: string
+        password:
+          type: string
+          format: password
+        image:
+          type: string
+          nullable: true
+        role:
+          $ref: '#/components/schemas/RoleDto'
+        agencyId:
+          type: integer
+        userAddresses:
+          $ref: '#/components/schemas/AddressDto'
+        verificationTokenExpires:
+          type: string
+          format: date-time
+        verificationToken:
+          type: string
+      required:
+        - email
+        - password
+        - userAddresses
+        - verificationTokenExpires
+        - verificationToken
+    UpdateUserDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        firstName:
+          type: string
+        lastName:
+          type: string
+        name:
+          type: string
+        birthDate:
+          type: string
+          format: date
+        email:
+          type: string
+          format: email
+        phoneNumber:
+          type: string
+        password:
+          type: string
+          format: password
+        image:
+          type: string
+          nullable: true
+        role:
+          $ref: '#/components/schemas/RoleDto'
+        agencyId:
+          type: integer
+        isVerified:
+          type: boolean
+        emailVerified:
+          type: string
+          format: date-time
+        verificationToken:
+          type: string
+        verificationTokenExpires:
+          type: string
+          format: date-time
+        userAddresses:
+          $ref: '#/components/schemas/UserAddressDto'
+          nullable: true
+      required:
+        - id
+    LoginUserDto:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+      required:
+        - email
+        - password
+    UserResponseDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        firstName:
+          type: string
+        lastName:
+          type: string
+        birthDate:
+          type: string
+          format: date
+        phoneNumber:
+          type: string
+        email:
+          type: string
+          format: email
+        image:
+          type: string
+          nullable: true
+        role:
+          $ref: '#/components/schemas/RoleDto'
+      required:
+        - id
+        - firstName
+        - lastName
+        - phoneNumber
+        - email
+        - role
+    UpdateProfileRequestDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        birthDate:
+          type: string
+          format: date
+        phoneNumber:
+          type: string
+        email:
+          type: string
+          format: email
+        address:
+          type: object
+          properties:
+            street:
+              type: string
+            complement:
+              type: string
+            streetNumber:
+              type: string
+            boxNumber:
+              type: string
+            city:
+              type: string
+            country:
+              type: string
+            countryIso2:
+              type: string
+            countryIso3:
+              type: string
+            countryPhoneCode:
+              type: string
+          required:
+            - street
+            - city
+            - country
+            - countryIso2
+            - countryIso3
+            - countryPhoneCode
+      required:
+        - firstName
+        - lastName
+        - birthDate
+        - phoneNumber
+        - email
+        - address
+    CreateDestinataireDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        phoneNumber:
+          type: string
+        image:
+          type: string
+          nullable: true
+        role:
+          $ref: '#/components/schemas/RoleDto'
+      required:
+        - firstName
+        - lastName
+        - email
+        - phoneNumber
+    DestinataireResponseWithRoleDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        firstName:
+          type: string
+        lastName:
+          type: string
+        name:
+          type: string
+          nullable: true
+        email:
+          type: string
+          format: email
+        phoneNumber:
+          type: string
+        image:
+          type: string
+          nullable: true
+        role:
+          $ref: '#/components/schemas/RoleDto'
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - phoneNumber
+        - role
+
+    # Agency DTOs
+    AgencyDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        location:
+          type: string
+        email:
+          type: string
+          format: email
+        phoneNumber:
+          type: string
+        vatNumber:
+          type: string
+        addressId:
+          type: integer
+        address:
+          $ref: '#/components/schemas/AddressDto'
+        capacity:
+          type: integer
+          nullable: true
+        availableSlots:
+          type: integer
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - name
+        - addressId
+        - createdAt
+        - updatedAt
+    CreateAgencyDto:
+      type: object
+      properties:
+        name:
+          type: string
+        location:
+          type: string
+        email:
+          type: string
+          format: email
+        phoneNumber:
+          type: string
+        vatNumber:
+          type: string
+        addressId:
+          type: integer
+        address:
+          $ref: '#/components/schemas/AddressDto'
+        capacity:
+          type: integer
+          nullable: true
+        availableSlots:
+          type: integer
+          nullable: true
+      required:
+        - name
+        - addressId
+    UpdateAgencyDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        location:
+          type: string
+        email:
+          type: string
+          format: email
+        phoneNumber:
+          type: string
+        vatNumber:
+          type: string
+        addressId:
+          type: integer
+        address:
+          $ref: '#/components/schemas/AddressDto'
+        capacity:
+          type: integer
+          nullable: true
+        availableSlots:
+          type: integer
+          nullable: true
+      required:
+        - id
+
+    # Envoi DTOs
+    EnvoiDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        destinationId:
+          type: integer
+        trackingNumber:
+          type: string
+        qrCodeUrl:
+          type: string
+        userId:
+          type: integer
+        client:
+          $ref: '#/components/schemas/UserDto'
+        destinataireId:
+          type: integer
+        destinataire:
+          $ref: '#/components/schemas/UserDto'
+        transportId:
+          type: integer
+        departureAgencyId:
+          type: integer
+        departureAgency:
+          $ref: '#/components/schemas/AgencyDto'
+          nullable: true
+        arrivalAgencyId:
+          type: integer
+        arrivalAgency:
+          $ref: '#/components/schemas/AgencyDto'
+          nullable: true
+        simulationStatus:
+          $ref: '#/components/schemas/SimulationStatusDto'
+        envoiStatus:
+          $ref: '#/components/schemas/EnvoiStatusDto'
+        paid:
+          type: boolean
+        totalWeight:
+          type: number
+          format: float
+        totalVolume:
+          type: number
+          format: float
+        totalPrice:
+          type: number
+          format: float
+        departureDate:
+          type: string
+          format: date-time
+        arrivalDate:
+          type: string
+          format: date-time
+        verificationToken:
+          type: string
+        comment:
+          type: string
+        parcels:
+          type: array
+          items:
+            $ref: '#/components/schemas/ParcelDto'
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - departureAgencyId
+        - arrivalAgencyId
+        - simulationStatus
+        - envoiStatus
+        - paid
+        - totalWeight
+        - totalVolume
+        - totalPrice
+        - departureDate
+        - arrivalDate
+        - verificationToken
+    CreateEnvoiDto:
+      type: object
+      properties:
+        destinationId:
+          type: integer
+        userId:
+          type: integer
+        destinataireId:
+          type: integer
+        transportId:
+          type: integer
+        departureAgencyId:
+          type: integer
+        arrivalAgencyId:
+          type: integer
+        simulationStatus:
+          $ref: '#/components/schemas/SimulationStatusDto'
+        envoiStatus:
+          $ref: '#/components/schemas/EnvoiStatusDto'
+        paid:
+          type: boolean
+        totalWeight:
+          type: number
+          format: float
+        totalVolume:
+          type: number
+          format: float
+        totalPrice:
+          type: number
+          format: float
+        departureDate:
+          type: string
+          format: date-time
+        arrivalDate:
+          type: string
+          format: date-time
+        verificationToken:
+          type: string
+        comment:
+          type: string
+        parcels:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateParcelDto'
+      required:
+        - departureAgencyId
+        - arrivalAgencyId
+        - simulationStatus
+        - envoiStatus
+        - paid
+        - totalWeight
+        - totalVolume
+        - totalPrice
+        - departureDate
+        - arrivalDate
+        - verificationToken
+        - parcels
+    UpdateEnvoiDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        destinationId:
+          type: integer
+        trackingNumber:
+          type: string
+        qrCodeUrl:
+          type: string
+        userId:
+          type: integer
+        destinataireId:
+          type: integer
+        transportId:
+          type: integer
+        departureAgencyId:
+          type: integer
+        arrivalAgencyId:
+          type: integer
+        simulationStatus:
+          $ref: '#/components/schemas/SimulationStatusDto'
+        envoiStatus:
+          $ref: '#/components/schemas/EnvoiStatusDto'
+        paid:
+          type: boolean
+        totalWeight:
+          type: number
+          format: float
+        totalVolume:
+          type: number
+          format: float
+        totalPrice:
+          type: number
+          format: float
+        departureDate:
+          type: string
+          format: date-time
+        arrivalDate:
+          type: string
+          format: date-time
+        verificationToken:
+          type: string
+        comment:
+          type: string
+        parcels:
+          type: array
+          items:
+            $ref: '#/components/schemas/ParcelDto'
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+    EnvoiResponseDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        destinataire:
+          type: object
+          properties:
+            name:
+              type: string
+            email:
+              type: string
+              format: email
+            phoneNumber:
+              type: string
+          required:
+            - name
+            - email
+            - phoneNumber
+        client:
+          $ref: '#/components/schemas/UserDto'
+        trackingNumber:
+          type: string
+        qrCodeUrl:
+          type: string
+        arrivalAgencyId:
+          type: integer
+        departureAgencyId:
+          type: integer
+        envoiStatus:
+          $ref: '#/components/schemas/EnvoiStatusDto'
+        simulationStatus:
+          $ref: '#/components/schemas/SimulationStatusDto'
+        userId:
+          type: integer
+        paid:
+          type: boolean
+        transportId:
+          type: integer
+        parcels:
+          type: array
+          items:
+            $ref: '#/components/schemas/ParcelDto'
+        totalWeight:
+          type: number
+          format: float
+        totalVolume:
+          type: number
+          format: float
+        totalPrice:
+          type: number
+          format: float
+        departureDate:
+          type: string
+          format: date-time
+        arrivalDate:
+          type: string
+          format: date-time
+      required:
+        - id
+        - destinataire
+        - client
+        - trackingNumber
+        - qrCodeUrl
+        - arrivalAgencyId
+        - departureAgencyId
+        - envoiStatus
+        - simulationStatus
+        - userId
+        - paid
+        - transportId
+        - parcels
+        - totalWeight
+        - totalVolume
+        - totalPrice
+        - departureDate
+        - arrivalDate
+
+    # Parcel DTOs
+    ParcelDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        height:
+          type: number
+          format: float
+        weight:
+          type: number
+          format: float
+        width:
+          type: number
+          format: float
+        length:
+          type: number
+          format: float
+        envoiId:
+          type: integer
+      required:
+        - height
+        - weight
+        - width
+        - length
+        - envoiId
+    CreateParcelDto:
+      type: object
+      properties:
+        height:
+          type: number
+          format: float
+        weight:
+          type: number
+          format: float
+        width:
+          type: number
+          format: float
+        length:
+          type: number
+          format: float
+        envoiId:
+          type: integer
+      required:
+        - height
+        - weight
+        - width
+        - length
+
+    # Address DTOs
+    AddressDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        street:
+          type: string
+        complement:
+          type: string
+          nullable: true
+        streetNumber:
+          type: string
+          nullable: true
+        boxNumber:
+          type: string
+          nullable: true
+        cityId:
+          type: integer
+        city:
+          $ref: '#/components/schemas/CityDto'
+      required:
+        - street
+        - city
+    UserAddressDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        addressId:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        addressType:
+          $ref: '#/components/schemas/AddressType'
+        isDeleted:
+          type: boolean
+        address:
+          $ref: '#/components/schemas/AddressDto'
+        user:
+          $ref: '#/components/schemas/UserDto'
+        city:
+          $ref: '#/components/schemas/CityDto'
+      required:
+        - userId
+        - addressId
+        - createdAt
+        - updatedAt
+        - addressType
+        - isDeleted
+        - address
+        - user
+        - city
+    AgencyAddressDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        street:
+          type: string
+        complement:
+          type: string
+          nullable: true
+        streetNumber:
+          type: string
+          nullable: true
+        boxNumber:
+          type: string
+          nullable: true
+        cityId:
+          type: integer
+        city:
+          $ref: '#/components/schemas/CityDto'
+      required:
+        - street
+        - city
+
+    # City DTOs
+    CityDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        country:
+          $ref: '#/components/schemas/CountryDto'
+      required:
+        - id
+        - name
+        - country
+
+    # Country DTOs
+    CountryDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        iso2:
+          type: string
+          nullable: true
+        iso3:
+          type: string
+          nullable: true
+        phonecode:
+          type: string
+          nullable: true
+        capital:
+          type: string
+          nullable: true
+        currency:
+          type: string
+          nullable: true
+        latitude:
+          type: string
+          nullable: true
+        longitude:
+          type: string
+          nullable: true
+      required:
+        - id
+        - name

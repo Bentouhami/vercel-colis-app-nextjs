@@ -1,0 +1,111 @@
+@startuml
+  ' Diagramme de Classe pour le sous-domaine: Relations utilisateur et rôles
+
+  skinparam classAttributeIconSize 0
+  hide empty members
+
+  package "Data Model (Prisma)" {
+      class User {
+          + id: Int
+          + firstName: String?
+          + lastName: String?
+          + email: String
+          + role: Role
+          ' ... other relevant attributes
+      }
+
+      enum Role {
+          CLIENT
+          SUPER_ADMIN
+          DESTINATAIRE
+          AGENCY_ADMIN
+          ACCOUNTANT
+      }
+
+      class AgencyClients {
+          + clientId: Int
+          + agencyId: Int
+          --
+          ' Relations
+          ' client: User
+          ' agency: Agency
+      }
+
+      class AgencyStaff {
+          + staffId: Int
+          + agencyId: Int
+          + staffRole: Role
+          --
+          ' Relations
+          ' staff: User
+          ' agency: Agency
+      }
+
+      class ClientDestinataire {
+          + id: Int
+          + clientId: Int
+          + destinataireId: Int
+          --
+          ' Relations
+          ' client: User
+          ' destinataire: User
+      }
+
+      class Agency {
+          + id: Int
+          + name: String
+          ' ... other attributes
+      }
+  }
+
+  package "Backend Services" {
+      class Bk_UserService {
+          + handleDestinataire(userId: number, destinataireData: CreateDestinataireDto): Promise<DestinataireResponseWithRoleDto | null>
+          + createDestinataire(newDestinataire: CreateDestinataireDto): Promise<DestinataireResponseWithRoleDto | null>
+          + checkExistingAssociation(clientId: number, destinataireId: number): Promise<ClientDestinataire | null>
+          + associateDestinataireToCurrentClient(userId: number, destinataireId: number): Promise<ClientDestinataire | null>
+          + getUsersByAgencyAdmin(adminId: number): Promise<ProfileDto[] | null>
+          ' ... other relevant methods
+      }
+  }
+
+  package "Repository Layer" {
+      class UserRepository {
+          + getUsersByAgencyAdmin(adminId: number): Promise<ProfileDto[]>
+          ' ... other relevant methods
+      }
+  }
+
+  package "API Routes" {
+      class UsersApiRoutes {
+          + POST /api/v1/users/destinataires : addDestinataire()
+          + GET /api/v1/users/list : getUsers()
+          ' ... other relevant API routes
+      }
+  }
+
+  package "Utilities" {
+      class PrismaClient {
+          ' Represents the Prisma ORM client
+      }
+  }
+
+  ' Relationships
+  User "1" -- "0..*" AgencyClients : is client of >
+  User "1" -- "0..*" AgencyStaff : is staff of >
+  User "1" -- "0..*" ClientDestinataire : is client of >
+  User "1" -- "0..*" ClientDestinataire : is destinataire of >
+
+  AgencyClients "0..*" -- "1" Agency : associated with >
+  AgencyStaff "0..*" -- "1" Agency : associated with >
+
+  Bk_UserService ..> UserRepository : uses
+  UserRepository ..> PrismaClient : interacts with
+  UserRepository ..> User : reads/writes
+  UserRepository ..> AgencyClients : reads/writes
+  UserRepository ..> AgencyStaff : reads/writes
+  UserRepository ..> ClientDestinataire : reads/writes
+
+  UsersApiRoutes ..> Bk_UserService : uses
+
+  @enduml

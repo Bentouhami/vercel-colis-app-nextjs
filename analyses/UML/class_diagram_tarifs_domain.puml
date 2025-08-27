@@ -1,0 +1,73 @@
+@startuml
+  ' Diagramme de Classe pour le domaine Tarifs (Tariffs)
+
+  skinparam classAttributeIconSize 0
+  hide empty members
+
+  package "Data Model (Prisma)" {
+      class Tarifs {
+          + id: Int
+          + agencyId: Int?
+          + weightRate: Decimal
+          + volumeRate: Decimal
+          + baseRate: Decimal
+          + fixedRate: Decimal
+          + createdAt: DateTime
+          + updatedAt: DateTime
+          + isDeleted: Boolean
+          --
+          ' Relations
+          ' agency: Agency?
+      }
+
+      class Agency {
+          + id: Int
+          + name: String
+          ' ... other attributes
+      }
+  }
+
+  package "Data Transfer Objects (DTOs)" {
+      class TarifsDto {
+          + id: number
+          + weightRate: number
+          + volumeRate: number
+          + baseRate: number
+          + fixedRate: number
+      }
+  }
+
+  package "Repository Layer" {
+      class TarifsRepository {
+          + getTarifs(): Promise<TarifsDto | null>
+      }
+  }
+
+  package "Backend Services" {
+      class Bk_TarifService {
+          + findTarifs(): Promise<TarifsDto | null>
+      }
+  }
+
+  package "API Routes" {
+      class TarifsApiRoutes {
+          + GET /api/v1/tarifs
+      }
+  }
+
+  package "Utilities" {
+      class PrismaClient {
+          ' Represents the Prisma ORM client
+      }
+  }
+
+  ' Relationships
+  Tarifs "0..*" -- "0..1" Agency : belongs to >
+
+  TarifsApiRoutes ..> Bk_TarifService : uses
+  Bk_TarifService ..> TarifsRepository : uses
+  TarifsRepository ..> PrismaClient : interacts with
+  TarifsRepository ..> Tarifs : reads from
+  TarifsRepository ..> TarifsDto : returns
+
+  @enduml

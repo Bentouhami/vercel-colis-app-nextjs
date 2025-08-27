@@ -1,0 +1,86 @@
+@startuml
+' Diagramme de Classe pour le domaine Utilisateur (User)
+
+skinparam classAttributeIconSize 0
+hide empty members
+
+package "Data Model" {
+    class User {
+        + id: Int
+        + firstName: String
+        + lastName: String
+        + email: String
+        + phoneNumber: String
+        + role: Role
+        + image: String
+        + isVerified: Boolean
+        + createdAt: DateTime
+        + updatedAt: DateTime
+        --
+        ' Relations (simplifiées)
+        ' sentEnvois: Envoi[]
+        ' receivedEnvois: Envoi[]
+        ' userAddresses: UserAddress[]
+    }
+
+    enum Role {
+        CLIENT
+        SUPER_ADMIN
+        DESTINATAIRE
+        AGENCY_ADMIN
+        ACCOUNTANT
+    }
+}
+
+package "Data Transfer Objects (DTOs)" {
+    class ProfileDto {
+        + id: Int
+        + email: String
+        + firstName: String
+        + lastName: String
+        + phoneNumber: String
+        + role: RoleDto
+        ' ... autres champs pertinents
+    }
+
+    class UpdateProfileRequestDto {
+        + firstName: String
+        + lastName: String
+        + phoneNumber: String
+        + email: String
+        ' ... autres champs pour l'adresse
+    }
+}
+
+package "Service Layer" {
+    class Bk_UserService {
+        + getUserForAuthentication(email: String): User
+        + getUserProfileById(userId: number): ProfileDto
+        + getAllUsers(): ProfileDto[]
+        + getUsersByAgencyAdmin(adminId: number): ProfileDto[]
+        + updateUserProfile(userId: number, data: UpdateProfileRequestDto): ProfileDto
+        + handleDestinataire(userId: number, data: CreateDestinataireDto): DestinataireResponseDto
+        + DeleteDestinataireById(id: number): boolean
+        ' ... autres méthodes importantes
+    }
+}
+
+package "API Routes" {
+    class UserApiRoutes {
+        + GET /api/v1/users
+        + GET /api/v1/users/{id}/profile
+        + PUT /api/v1/users/{id}/profile
+        + DELETE /api/v1/users/{id}
+    }
+}
+
+' --- Relations ---
+
+UserApiRoutes ..> Bk_UserService : uses
+Bk_UserService ..> User : operates on
+Bk_UserService ..> ProfileDto : returns
+Bk_UserService ..> UpdateProfileRequestDto : uses as parameter
+
+User -- Role : has
+
+@enduml

@@ -1,11 +1,13 @@
 // path: src/app/api/v1/transports/route.ts
 
-import {NextRequest, NextResponse} from 'next/server';
-import {getTransports, updateTransport} from "@/services/backend-services/Bk_TransportService";
-import {transportSchema} from "@/utils/validationSchema";
+import { NextRequest, NextResponse } from "next/server";
+import {
+  getTransports,
+  updateTransport,
+} from "@/services/backend-services/Bk_TransportService";
+import { transportSchema } from "@/utils/validationSchema";
 
-export const dynamic = 'force-dynamic';
-
+export const dynamic = "force-dynamic";
 
 /**
  * GET methode to fin transports
@@ -13,25 +15,32 @@ export const dynamic = 'force-dynamic';
  * @constructor
  */
 export async function GET(request: NextRequest) {
-    if (request.method !== 'GET') {
-        return NextResponse.json({error: 'Method not allowed'}, {status: 405});
+  if (request.method !== "GET") {
+    return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
+  }
+  try {
+    // Get transports
+    const transports = await getTransports();
+
+    if (!transports) {
+      return NextResponse.json(
+        { error: "Failed to get transports" },
+        { status: 500 }
+      );
     }
-    try {
-        // Get transports
-        const transports = await getTransports();
 
-        if (!transports) {
-            return NextResponse.json({error: 'Failed to get transports'}, {status: 500});
-        }
-
-        return NextResponse.json({data: transports, message: "Transports retrieved successfully"}, {status: 200});
-
-    } catch (error) {
-        console.error("Error getting transports:", error);
-        return NextResponse.json({error: 'Failed to get transports'}, {status: 500});
-    }
+    return NextResponse.json(
+      { data: transports, message: "Transports retrieved successfully" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error getting transports:", error);
+    return NextResponse.json(
+      { error: "Failed to get transports" },
+      { status: 500 }
+    );
+  }
 }
-
 
 /**
  * PUT method
@@ -39,46 +48,47 @@ export async function GET(request: NextRequest) {
  * @param request - The incoming HTTP request.
  */
 export async function PUT(request: NextRequest) {
+  if (request.method !== "PUT") {
+    return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
+  }
 
-    if (request.method !== "PUT") {
-        return NextResponse.json({error: "Method not allowed"}, {status: 405});
+  try {
+    // Parse the request body
+    const body = await request.json();
+
+    // Validate the request body using transportSchema
+    const validationResult = transportSchema.safeParse(body);
+
+    if (!validationResult.success) {
+      // Return validation errors
+      return NextResponse.json(
+        { error: validationResult.error.errors },
+        { status: 400 }
+      );
     }
 
-    try {
-        // Parse the request body
-        const body = await request.json();
+    // Destructure the parsed and validated data
+    const validData = validationResult.data;
 
-        // Validate the request body using transportSchema
-        const validationResult = transportSchema.safeParse(body);
+    // Update the transport in the database
+    const updatedTransport = await updateTransport(validData);
 
-        if (!validationResult.success) {
-            // Return validation errors
-            return NextResponse.json(
-                {error: validationResult.error.errors},
-                {status: 400}
-            );
-        }
-
-        // Destructure the parsed and validated data
-        const validData = validationResult.data;
-
-        // Update the transport in the database
-        const updatedTransport = await updateTransport(validData);
-
-        if (!updatedTransport) {
-            return NextResponse.json(
-                {error: "Transport not found or failed to update"},
-                {status: 404}
-            );
-        }
-
-
-        return NextResponse.json(
-            {data: updatedTransport, message: "Transport updated successfully"},
-            {status: 200}
-        );
-    } catch (error) {
-        console.error("Error updating transport:", error);
-        return NextResponse.json({error: "Failed to update transport"}, {status: 500});
+    if (!updatedTransport) {
+      return NextResponse.json(
+        { error: "Transport not found or failed to update" },
+        { status: 404 }
+      );
     }
+
+    return NextResponse.json(
+      { data: updatedTransport, message: "Transport updated successfully" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error updating transport:", error);
+    return NextResponse.json(
+      { error: "Failed to update transport" },
+      { status: 500 }
+    );
+  }
 }
