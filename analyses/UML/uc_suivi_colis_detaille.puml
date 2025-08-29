@@ -19,6 +19,6 @@ UC_SuiviEnvoi .> UC_RechercherInfo : <<include>>
 UC_SuiviEnvoi .> UC_AfficherDetails : <<include>>
 UC_SuiviEnvoi .> UC_AfficherHistorique : <<include>>
 
-UC_GererErreur .< UC_SuiviEnvoi : <<extend>>
+UC_GererErreur .> UC_SuiviEnvoi : <<extend>>
 
 @enduml

@@ -15,12 +15,8 @@
 
 
 
-	
-      INF-C
 
-
-
-EPREUVE INTEGREE
+      
 
 
 
@@ -35,8 +31,10 @@ EPREUVE INTEGREE
 
 
 
-Nom du Professeur EI : 
-(à mentionner si autorisation)
+
+
+
+
 
 
 
@@ -53,114 +51,109 @@ Je tiens à remercier toutes les personnes qui m’ont aidé tout au long de ce 
 
 
 Table des matières
-1.	Introduction	6
-1.1.	Contexte Problématique	6
-1.2.	Bénéficiaires	6
-2.	Cahier des charges	7
-2.1.	Résumé du projet	7
-2.2.	Objectifs du projet	7
-2.2.1.	Objectifs stratégiques	7
-2.2.2.	Objectifs fonctionnels	7
-2.3.	Périmètre du projet	8
-2.3.1.	Fonctionnalités incluses	8
-2.3.2.	Fonctionnalités hors périmètre	8
-2.4.	Hypothèses et contraintes	8
-2.4.1.	Hypothèses	8
-2.4.2.	Contraintes techniques	8
-2.5.	Étude de l’existant	9
-2.5.1.	Amélioration d’une application existante	9
-2.5.2.	Analyse SWOT	9
-2.6.	Potentiel de mise en production et étude commerciale	10
-2.6.1.	Solution proposée	10
-2.6.2.	Sources de revenus envisagées	10
-2.6.3.	Marché cible	10
-2.6.4.	Avantage compétitif	11
-2.6.5.	Plan de croissance	11
-2.6.6.	Prévisions de revenus	11
-2.7.	Planning du projet	12
-3.	Analyse fonctionnelle	15
-3.1.	Parties prenantes	15
-3.1.1.	Parties Prenantes Humaines	15
-3.1.2.	Parties Prenantes Techniques (Non-Humaines)	15
-3.2.	User Stories	16
-3.3.	Demandes fonctionnelles	18
-3.4.	Demandes techniques	19
-3.5.	Demandes de sécurité	19
-3.6.	Demandes non-fonctionnelles	19
-3.7.	Modélisations des traitements	20
-3.7.1.	Liste des acteurs humains et non-humains	20
-3.7.2.	Cas d’utilisation	21
-3.7.2.1.	Plans général des diagrammes de cas d’utilisation	21
-3.7.3.	Cas d’utilisation détaillés	24
-3.7.3.1.	Processus de simulation	24
-3.7.3.2.	Paiement via Stripe	24
-3.7.3.3.	Mettre à jour le statut d’un envoi	25
-3.7.3.4.	Gérer les utilisateurs (Super Admin)	25
-3.7.3.5.	Cas d’utilisation d’inscription	26
-3.7.3.6.	Se connecter	28
-3.7.3.7.	Modifier  les informations de profil	29
-3.7.3.8.	Réinitialisation du mot de passe	30
-3.7.3.9.	Simulation d’envoi	31
-3.7.3.10.	Confirmation et paiement	33
-3.7.3.11.	Suivi colis envois:  ( à refaire )	34
-3.7.3.12.	 Demande de fermeture de compte : ( à refaire )	35
-3.7.4.	Diagramme de séquence :	36
-3.7.4.1.	Diagramme de séquence Simulation d’un Envoi : ( à refaire	36
-3.7.4.2.	Diagramme de Séquence – Suivi d’un Envoi : ( à refaire )	37
-4.	Analyse technique	38
-4.1.	Modélisation des données	38
-4.1.1.	Diagramme Entité-Relation global	38
-4.1.2.	Modèle Conceptuelle de Données (MCD)	39
-4.1.3.	Modèle Logique de Données (MLD)	40
-4.1.4.	Modèle Physique de Données (MPD)	41
-4.1.5.	Diagramme de Classe : parti Entities ( mise ajours  à vérifier )	42
-4.1.6.	Partie Address ( à refaire pour notre projet en NextJS 15 )	43
-4.1.7.	Partie Agence ( à refaire pour notre projet en NextJS 15 )	45
-4.1.8.	Partie Auth ( à refaire pour notre projet en NextJS 15 )	47
-4.1.9.	Partie Colis ( à refaire pour notre projet en NextJS 15 )	50
-4.1.10.	Partie Envois ( à refaire pour notre projet en NextJS 15 )	52
-4.1.11.	Partie Simulation ( à refaire pour notre projet en NextJS 15 )	56
-4.1.12.	Partie Transport ( à refaire pour notre projet en NextJS 15 )	59
-4.1.13.	Partie Security ( à refaire pour notre projet en NextJS 15 )	62
-4.1.14.	Frontend ( à générer  le nouveau diagramme des pages frontend de NextJS)	65
-4.2.	Architecture logicielle & technologique	66
-4.2.1.	Vue d'ensemble et Choix Technologiques	66
-4.2.2.	Diagramme de l'Architecture	67
-4.2.3.	Fonctionnement de notre architecture	68
-5.	Répartition des tâches	70
-6.	Problèmes Rencontrés et Solutions Apportées	71
-6.1.	Adaptation à l'Architecture de l’App Router de Next.js	71
-6.2.	Authentification sur l'Edge Runtime avec NextAuth.js	71
-6.3.	Modélisation et Requêtes Complexes avec Prisma	72
-7.	Wireframes	73
-8.	Glossaire	91
-9.	Annexes	92
-9.1.	A.1 Documentation des cas d’utilisation détaillés	92
-9.1.1.	A.1.1 Espace Public, Destinataire et Client	92
-9.1.2.	A.1.2 Administration Interne	92
-9.1.3.	Dictionnaire des abréviations utilisées	93
-9.2.	Annexes : A.2 – Documentation des cas d’utilisation détaillés	93
-9.2.1.	A.2.1 Processus de simulation	93
-9.2.2.	A.2.2 Paiement de l’envoi via Stripe	94
-9.2.3.	A.2.3 Mise à jour du statut d’un envoi	94
-9.2.4.	A.2.4 Gestion des utilisateurs (Super Admin)	94
-9.2.5.	A.2.5 Inscription	94
-9.2.6.	A.2.5 Réinitialisation du mot de passe client	95
-9.3.	Documentation du MPD	96
-9.4.	Documentation d’API backend endpoints ( a refaire complètement pour remplacer l’ancien api avec notre Nextjs 15 API routes.)	104
-9.4.1.	Classe AddressController	104
-9.4.2.	Classe EnvoisController	108
-9.4.3.	Classe SimulationController	109
-9.4.4.	Classe TransportController	112
-9.4.5.	Classe AuthController	113
-9.4.6.	Classe AgenceController	115
-9.5.	Plan de Test par classe	116
-9.5.1.	SimulationService	116
-9.5.2.	TransportService	117
-9.5.3.	SimulationService	118
-10.	Références	119
-10.1.1.	Documentation des produits utilisés dans la solution	119
-11.	Code	121
+1.	Introduction	5
+1.1.	Contexte Problématique	5
+1.2.	Bénéficiaires	5
+2.	Cahier des charges	6
+2.1.	Résumé du projet	6
+2.2.	Objectifs du projet	6
+2.2.1.	Objectifs stratégiques	6
+2.2.2.	Objectifs fonctionnels	6
+2.3.	Périmètre du projet	7
+2.3.1.	Fonctionnalités incluses	7
+2.3.2.	Fonctionnalités hors périmètre	7
+2.4.	Hypothèses et contraintes	7
+2.4.1.	Hypothèses	7
+2.4.2.	Contraintes techniques	7
+2.5.	Étude de l’existant	8
+2.5.1.	Amélioration d’une application existante	8
+2.5.2.	Analyse SWOT	8
+2.6.	Potentiel de mise en production et étude commerciale	9
+2.6.1.	Solution proposée	9
+2.6.2.	Sources de revenus envisagées	9
+2.6.3.	Marché cible	9
+2.6.4.	Avantage compétitif	10
+2.6.5.	Plan de croissance	10
+2.6.6.	Prévisions de revenus	10
+2.7.	Planning du projet	11
+3.	Analyse fonctionnelle	14
+3.1.	Parties prenantes	14
+3.1.1.	Parties Prenantes Humaines	14
+3.1.2.	Parties Prenantes Techniques (Non-Humaines)	14
+3.2.	User Stories	15
+3.3.	Demandes fonctionnelles	17
+3.4.	Demandes techniques	18
+3.5.	Demandes de sécurité	18
+3.6.	Demandes non-fonctionnelles	18
+3.7.	Modélisations des traitements	19
+3.7.1.	Liste des acteurs humains et non-humains	19
+3.7.2.	Cas d’utilisation	20
+3.7.2.1.	Plans général des diagrammes de cas d’utilisation	20
+3.7.3.	Cas d’utilisation détaillés	23
+3.7.3.1.	Processus de simulation	23
+3.7.3.2.	Paiement via Stripe	23
+3.7.3.3.	Mettre à jour le statut d’un envoi	24
+3.7.3.4.	Gérer les utilisateurs (Super Admin)	24
+3.7.3.5.	Cas d’utilisation d’inscription	25
+3.7.3.6.	Se connecter	26
+3.7.3.7.	Modifier  les informations de profil	27
+3.7.3.8.	Réinitialisation du mot de passe	28
+3.7.3.9.	Simulation d’envoi	29
+3.7.3.10.	Suivi colis envois	30
+3.7.4.	Diagramme de séquence :	31
+3.7.4.1.	Diagramme de séquence Simulation d’un Envoi.	31
+3.7.4.2.	Diagramme de Séquence – Suivi d’un Envoi	33
+4.	Analyse technique	34
+4.1.	Modélisation des données	34
+4.1.1.	Modèle Conceptuelle de Données (MCD)	34
+4.1.2.	Modèle Logique de Données (MLD)	35
+4.1.3.	Modèle Physique de Données (MPD)	36
+4.1.4.	Diagramme de Classe Général et Abstrait pour ColisApp	37
+4.1.5.	Diagramme de Classe pour le domaine Utilisateur (User)	38
+4.1.6.	Diagramme de Classe pour le domaine Envoi	39
+4.1.7.	Diagramme de Classe pour le domaine Agence	40
+4.1.8.	Diagramme de Classe pour le domaine Simulation	41
+4.1.9.	Diagramme de Classe pour le domaine Suivi d’envoi	42
+4.1.10.	Diagramme de Classe pour le domaine Tarifs	43
+4.1.11.	Diagramme de Classe pour le domaine Transport	44
+4.1.12.	Diagramme de Classe pour le domaine Rendez-vous (Appointment	45
+4.1.13.	Diagrammes du domaine Utilisateur & Authentification	46
+4.1.14.	Diagramme de Classe pour le domaine Coupons	50
+4.1.15.	Diagramme de Classe pour le domaine Colis (Parcel)	51
+4.1.16.	Diagramme de classe pour le domaine Planification Transport  (`TransportSchedule`)	52
+4.1.17.	Diagramme Abstrait du Frontend pour ColisApp	53
+4.2.	Architecture logicielle & technologique	54
+4.2.1.	Vue d'ensemble et Choix Technologiques	54
+4.2.2.	Diagramme de l'Architecture	55
+4.2.3.	Fonctionnement de notre architecture	56
+5.	Répartition des tâches	58
+6.	Problèmes Rencontrés et Solutions Apportées	59
+6.1.	Adaptation à l'Architecture de l’App Router de Next.js	59
+6.2.	Authentification sur l'Edge Runtime avec NextAuth.js	59
+6.3.	Modélisation et Requêtes Complexes avec Prisma	60
+7.	Wireframes	61
+8.	Glossaire	77
+9.	Annexes	78
+9.1.	A.1 Documentation des cas d’utilisation détaillés	78
+9.1.1.	A.1.1 Espace Public, Destinataire et Client	78
+9.1.2.	A.1.2 Administration Interne	78
+9.1.3.	Dictionnaire des abréviations utilisées	79
+9.2.	Annexes : A.2 – Documentation des cas d’utilisation détaillés	79
+9.2.1.	A.2.1 Processus de simulation	79
+9.2.2.	A.2.2 Paiement de l’envoi via Stripe	80
+9.2.3.	A.2.3 Mise à jour du statut d’un envoi	80
+9.2.4.	A.2.4 Gestion des utilisateurs (Super Admin)	80
+9.2.5.	A.2.5 Inscription	80
+9.2.6.	A.2.5 Réinitialisation du mot de passe client	81
+9.3.	Documentation du MPD	82
+9.4.	Documentation d’API backend endpoints	90
+9.5.	Plan de Test par classe	93
+9.5.1.	SimulationService	93
+9.5.2.	TransportService	94
+9.5.3.	SimulationService	95
+10.	Références	96
+10.1.1.	Documentation des produits utilisés dans la solution	96
+11.	Code	97
 
 1. Introduction
 ColisApp est un projet d’application web, visant à simplifier et moderniser les envois de colis entre la Belgique et le Maroc. Elle répond aux besoins des particuliers souhaitant envoyer des colis de manière pratique et transparente, ainsi qu’aux agences de transport cherchant à optimiser leurs opérations. L’objectif est de concevoir une plateforme évolutive et modulaire, basée sur des technologies modernes, tout en assurant la sécurité des données.
@@ -487,27 +480,15 @@ Ce diagramme modélise les actions disponibles pour le Super Administrateur dans
 
 3.7.3.5. Cas d’utilisation d’inscription 
 - Documentation :
-Cas d'utilisationDescriptionEntréesSortiesCréer un compte (Register)L'utilisateur commence le processus d'inscription en saisissant ses informations.Informations personnelles comme nom, prénom, date de naissance, email, téléphone, adresse.Les données saisies sont transférées pour valValider les données saisiesLe système vérifie que les données entrées respectent les contraintes (format, champs obligatoires).Données saisies par l'utilisateur.Retour d'une validation positive ou des erreurs identifiées.Vérifier email/téléphoneVérifie si l'email ou le numéro de téléphone sont déjà enregistrés dans le système.Email et téléphone fournis par l'utilisateur.Retourne une confirmation ou une erreur si les données existent déjà.Gérer l'adresseVérifie si l'adresse existe déjà ou enregistre une nouvelle adresse dans le système.Adresse fournie par l'utilisateur (rue, numéro, ville, code postal, pays).Adresse liée au compte utilisateur ou nouvelle adresse créée.Enregistrer les données utilisateurSauvegarde les données validées dans la base de données.Données validées (personnelles et adresse).Données de l'utilisateur et adresse sauvegardées.Envoyer email de confirmationEnvoi d'un email à l'utilisateur pour valider son inscription.Email de l'utilisateur.Email envoyé avec un lien d'activation contenant un token.Activer le compteL'utilisateur clique sur le lien d'activation pour valider son compte.Token reçu dans l'email de confirmation.Statut du compte mis à jour comme actif dans la base de données.
-
-
-3.7.3.6. Se connecter
+Cas d'utilisationDescriptionEntréesSortiesCréer un compte (Register)L'utilisateur commence le processus d'inscription en saisissant ses informations.Informations personnelles comme nom, prénom, date de naissance, email, téléphone, adresse.Les données saisies sont transférées pour valValider les données saisiesLe système vérifie que les données entrées respectent les contraintes (format, champs obligatoires).Données saisies par l'utilisateur.Retour d'une validation positive ou des erreurs identifiées.Vérifier email/téléphoneVérifie si l'email ou le numéro de téléphone sont déjà enregistrés dans le système.Email et téléphone fournis par l'utilisateur.Retourne une confirmation ou une erreur si les données existent déjà.Gérer l'adresseVérifie si l'adresse existe déjà ou enregistre une nouvelle adresse dans le système.Adresse fournie par l'utilisateur (rue, numéro, ville, code postal, pays).Adresse liée au compte utilisateur ou nouvelle adresse créée.Enregistrer les données utilisateurSauvegarde les données validées dans la base de données.Données validées (personnelles et adresse).Données de l'utilisateur et adresse sauvegardées.Envoyer email de confirmationEnvoi d'un email à l'utilisateur pour valider son inscription.Email de l'utilisateur.Email envoyé avec un lien d'activation contenant un token.Activer le compteL'utilisateur clique sur le lien d'activation pour valider son compte.Token reçu dans l'email de confirmation.Statut du compte mis à jour comme actif dans la base de données.3.7.3.6. Se connecter
 
 
 - Documentation  :
-Cas d'utilisationDescriptionEntréesSortiesSe connecter (Login)L'utilisateur entre ses informations de connexion (email et mot de passe).Email et mot de passe fournis par l'utilisateur.Données transférées au système d'authentification Auth V5 pour traitement.Authentifier via Auth V5Authentification de l'utilisateur via le système Auth V5. Vérification des informations dans la base de données.Email et mot de passe fournis, gérés par Auth V5.Résultat de l'authentification (succès ou échec), gestion de session et génération de token.Charger le profil utilisateurRécupère les données du profil utilisateur à partir de la base de données après une authentification réussie.Email validé ou ID utilisateur.Données du profil utilisateur récupérées et prêtes à être affichées ou utilisées dans l'application.- 
-
-3.7.3.7. Modifier  les informations de profil 
+Cas d'utilisationDescriptionEntréesSortiesSe connecter (Login)L'utilisateur entre ses informations de connexion (email et mot de passe).Email et mot de passe fournis par l'utilisateur.Données transférées au système d'authentification Auth V5 pour traitement.Authentifier via Auth V5Authentification de l'utilisateur via le système Auth V5. Vérification des informations dans la base de données.Email et mot de passe fournis, gérés par Auth V5.Résultat de l'authentification (succès ou échec), gestion de session et génération de token.Charger le profil utilisateurRécupère les données du profil utilisateur à partir de la base de données après une authentification réussie.Email validé ou ID utilisateur.Données du profil utilisateur récupérées et prêtes à être affichées ou utilisées dans l'application.3.7.3.7. Modifier  les informations de profil 
 
 
 - Documentation :
 Cas d'utilisationDescriptionEntréesSortiesAccéder la page de compteL'utilisateur se rend sur la page de son compte pour voir ou modifier ses informations.Aucune entrée requise depuis l'utilisateur à cette étape.La page de compte est affichée.Sélectionner 'Modifier profil'L'utilisateur choisit l'option pour modifier son profil.Clic sur l'option 'Modifier profil'.Le formulaire de modification des informations personnelles est affiché.Modifier les informations personnellesL'utilisateur met à jour les informations de son profil.Informations personnelles mises à jour (par exemple : adresse, numéro de téléphone).Les nouvelles informations sont enregistrées dans la base de données.Sauvegarder les changementsL'utilisateur sauvegarde les modifications apportées à son profil.Clic sur 'Sauvegarder', avec toutes les nouvelles informations entrées.Confirmation de la mise à jour est envoyée à l'utilisateur, et les données sont mises à jour dans la base de données.Recevoir confirmation de mise à jourUne confirmation est envoyée à l'utilisateur pour indiquer que les changements ont été sauvegardés.Aucune entrée nécessaire (se déclenche après la sauvegarde des changements).L'utilisateur reçoit une notification par le système de messagerie électronique confirmant la mise à jour des informations.
-
-
-
-
-
-
-
 
 
 
@@ -517,16 +498,12 @@ Ce diagramme modélise le processus complet de réinitialisation du mot de passe
 
 - 
 3.7.3.9. Simulation d’envoi
-1.1.1.1. 
 - Documentation :
 Cas d'utilisationDescriptionEntréesSortiesFaire une simulationL'utilisateur initie une simulation d'envoi.Aucun (action déclenchée par l'utilisateur).Interface pour entrer les détails de l'envoi.Entrer les détails de l'envoiL'utilisateur saisit les informations nécessaires pour l'envoi, comme le poids, dimensions, destination.Poids, dimensions, adresse de départ et d'arrivée.Données collectées pour calculer les coûts.Calculer les coûtsLe système calcule les frais d'envoi en fonction des détails saisis.Détails de l'envoi fournis par l'utilisateur.Coût estimé récupéré de la base de données en fonction des tarifs.Afficher les résultatsLes résultats de la simulation, incluant le coût et les options, sont affichés à l'utilisateur.Résultats du calcul des coûts.Résumé des détails de l'envoi avec les options de modification, validation ou annulation.Modifier la SimulationPermet à l'utilisateur de modifier les détails de la simulation si nécessaire.Données existantes de la simulation.Mise à jour des informations, recalcul des coûts et retour aux résultats.Valider SimulationL'utilisateur confirme la simulation pour passer à l'étape suivante.Résumé des données de la simulation.Enregistrement de la simulation validée dans le système, nécessite une connexion ou inscription.Annuler SimulationL'utilisateur annule la simulation.Aucun (action déclenchée par l'utilisateur).Statut de la simulation mis à jour comme "annulée" dans la base de données et retour à la page de simulation initiale.
 
+3.7.3.10. Suivi colis envois
 
-3.7.3.10. Confirmation et paiement 
 
-- Documentation :
-Cas d’utilisationDescriptionEntréesSortiesAfficher récapitulatif simulationPrésente au client tous les détails calculés (poids, prix, options) avant validation finale.Aucune (appel direct depuis UC_client_utilisateur_simulation).Écran de récapitulatif visible.Valider simulationLe client accepte le devis et lance la procédure de paiement.Clic « Valider ».Déclenche l’obligation de login puis l’écran d’ajout destinataire.Se connecter / S’inscrireGarantit que le client est authentifié avant tout paiement.Identifiants (login) ou données d’inscription.Session ouverte ; retour au flux.Ajouter destinataireLe client saisit les coordonnées du destinataire (nom, adresse, téléphone).Formulaire destinataire.Données validées et persistées ; appel à la création du PaymentIntent.Initier paiement (create PaymentIntent)Le serveur ColisApp appelle Stripe pour créer un PaymentIntent avec montant + success/cancel URLs.ID simulation, montant, e-mail client.clientSecret retourné ; front-end affiche la page Stripe Checkout ou Elements.Recevoir webhook paiement réussiStripe notifie ColisApp que le paiement est « succeeded ».Webhook payment_intent.succeeded (JSON).Déclenche la mise à jour de l’envoi.Mettre à jour statut envoi = PAYÉPasse le statut de l’envoi à PAYÉ et stocke l’ID Stripe pour audit.Données du webhook (paymentIntentId) + ID envoi.Enregistrement BD mis à jour.Générer code suivi & notifierCrée un code de suivi unique, l’enregistre puis informe le client (e-mail + notification).Aucune (automatique).Code suivi stocké & message envoyé via Mail.Rediriger vers profil + toast succèsUX : le client voit « Paiement réussi » et est redirigé vers Mon Profil > Mes envois.Aucune (automatique après succès).Toast « Paiement effectué » + page profil affichée.
-3.7.3.11. Suivi colis envois:  ( à refaire )
 
 - Documentation
 Cas d'utilisationDescriptionEntréesSortiesAccéder au suiviLe client ou le destinataire accède à la fonctionnalité de suivi de l'envoi.Requête de l'utilisateur pour suivre un envoi.Interface de suivi présentée à l'utilisateur.Entrer numéro de suiviL'utilisateur entre le numéro de suivi de l'envoi qu'il souhaite suivre.Numéro de suivi entré par l'utilisateur.Validation du numéro et requête de suivi envoyée à la base de données.Consulter statut et localisationLe système affiche le statut actuel et la localisation de l'envoi.Requête de statut basée sur le numéro de suivi.Statut actuel et localisation de l'envoi extraits de la base de données et affichés à l'utilisateur.
@@ -535,184 +512,90 @@ Cas d'utilisationDescriptionEntréesSortiesAccéder au suiviLe client ou le
 
 
 
-3.7.3.12.  Demande de fermeture de compte : ( à refaire )
-
-⇒ Documentation :
-Cas d'utilisationDescriptionEntréesSortiesDemander la fermeture de compteLe client initie la procédure de fermeture de son compte.Demande de fermeture initiée par le client.Formulaire de fermeture de compte présenté au client.Entrer le mot de passe pour confirmerLe client doit confirmer son identité en entrant son mot de passe pour procéder.Saisie du mot de passe par le client.Vérification du mot de passe dans la base de données.AnnulerLe client décide d'annuler la demande de fermeture de compte avant de la soumettre.Action d'annulation par le client.Annulation de la demande de fermeture et retour à l'écran précédent.Soumettre la demande de fermetureAprès vérification, le client peut choisir de soumettre sa demande de fermeture de compte.Confirmation du mot de passe et soumission de la demande par le client.Traitement de la fermeture du compte dans la base de données.Recevoir confirmation de la fermetureLe client reçoit une confirmation que son compte a été fermé.Aucune entrée requise pour cette étape.Notification de fermeture envoyée au client via le système de messagerie électronique.
-
-- 
-
 3.7.4. Diagramme de séquence :
-3.7.4.1. Diagramme de séquence Simulation d’un Envoi : ( à refaire
-Acteur principal : "Client"
-Objets : "Envoi" / "Camionnette" / "Base de données"
-• Le client crée un nouvel envoi.
-• Il choisit la destination de cet envoi.
-• Dans une boucle, le client peut ajouter un ou plusieurs colis :
-• Le client ajoute des colis à l'envoi.
-• Pour chaque colis ajouté, le système vérifie la disponibilité de l'espace dans la camionnette.
-• La camionnette calcule les dimensions nécessaires.
-• Les résultats de ces calculs sont renvoyés au système d'envoi.
-• Le système reçoit les informations de disponibilité de l'espace.
-• Selon la disponibilité :
-• Si de l'espace est disponible, le client ajoute le(s) destinataire(s) à l'envoi.
-• Le colis est ajouté à l'envoi.
-• Les détails du prix total sont affichés au client.
-• Si l'espace n'est pas disponible :
-• Le client doit modifier les détails du colis.
-
-3.7.4.2. Diagramme de Séquence – Suivi d’un Envoi : ( à refaire )
+3.7.4.1. Diagramme de séquence Simulation d’un Envoi.
+Ce diagramme de séquence décrit le flux principal des interactions entre un utilisateur, l'application ColisApp et la base de données lors du processus de simulation d'un envoi, de la saisie des informations initiales jusqu'à la confirmation de la simulation et le début du processus de paiement, en incluant la gestion de l'authentification de l'utilisateur.
 
 
-Acteur principal : "Client"
-Acteur secondaire : "Destinataire"
-Objets : "Application" / "Base de données"
+Acteurs Impliqués :
+• User (Utilisateur) : L'acteur humain qui interagit avec l'interface de l'application.
+• Application : Représente le système ColisApp dans son ensemble, incluant l'interface utilisateur (UI), les services frontend et backend, les API et la logique métier. C'est le point central de traitement des requêtes utilisateur.
+• Database (Base de Données) : Le système de persistance des données où sont stockées toutes les informations relatives aux envois, aux utilisateurs, aux agences, etc.
+Flux des Événements :
+* Accès à la Page de Simulation :
+o L'utilisateur accède à la page de simulation de l'envoi.
+o L'Application récupère les données nécessaires (ex: agences disponibles) depuis la Base de Données.
+o L'Application affiche la page de simulation à l'utilisateur.
+* Saisie des Informations de l'Envoi :
+o L'utilisateur saisit les informations de l'envoi (poids, dimensions, type d'envoi) dans l'interface.
+o L'Application traite ces informations et enregistre la simulation en tant que brouillon dans la Base de Données.
+o L'Application affiche les résultats de la simulation à l'utilisateur (prix, destinations départ/arrivée, dates d'estimation).
+* Confirmation de la Simulation et Authentification :
+o L'utilisateur clique sur "Confirmer la simulation".
+o Condition (Utilisateur connecté) :
+• Si l'utilisateur est déjà connecté, l'Application met à jour le statut de la simulation dans la Base de Données.
+• L'Application redirige l'utilisateur vers la page d'ajout du destinataire.
+o Condition (Utilisateur non connecté) :
+• Si l'utilisateur n'est pas connecté, l'Application affiche une modale de connexion.
+• L'utilisateur se connecte via la modale.
+• L'Application redirige l'utilisateur vers la page d'ajout du destinataire.
+* Saisie et Stockage des Informations du Destinataire :
+o L'utilisateur saisit les informations du destinataire.
+o L'Application stocke ces informations dans la Base de Données.
+o L'Application redirige l'utilisateur vers la page de récapitulatif ou de paiement.
+* Processus de Paiement :
+o L'utilisateur procède au paiement.
+o Condition (Paiement réussi) :
+• L'Application traite le paiement.
+• L'Application met à jour le statut de l'envoi (payé) dans la Base de Données.
+• L'Application affiche la confirmation de paiement à l'utilisateur.
+o Condition (Paiement échoué) :
+• L'Application affiche un message d'erreur de paiement à l'utilisateur.
 
-• Le client initie le suivi en sélectionnant l'option correspondante dans l'application.
-• Le client entre le numéro de suivi qui lui a été fourni lors de l'expédition du colis.
-• La requête est envoyée par l'application pour obtenir des informations sur l'envoi.
-• La base de données fournit les informations actuelles sur l'envoi, y compris sa localisation.
-• Le client reçoit les informations mises à jour concernant son envoi.
-• Le destinataire, comme acteur secondaire, suit un processus similaire pour suivre l'envoi.
+
+3.7.4.2. Diagramme de Séquence – Suivi d’un Envoi
+Ce diagramme de séquence décrit le flux des interactions entre un utilisateur, l'application ColisApp et la base de données lors du processus de suivi d'un envoi, de la saisie du numéro de suivi jusqu'à l'affichage des informations de l'envoi ou d'un message d'erreur. ( Annexe )
+
+
+
+
+
 4. Analyse technique
-4.1. Modélisation des données 
-4.1.1. Diagramme Entité-Relation global
-4.1.2. Modèle Conceptuelle de Données (MCD)
-4.1.3. Modèle Logique de Données (MLD)	
-4.1.4. Modèle Physique de Données (MPD)
-
-
-4.1.5. Diagramme de Classe : parti Entities ( mise ajours  à vérifier )
-4.1.6. Partie Address ( à refaire pour notre projet en NextJS 15 )
-
-
-
-Classe Address
-PropriétéDescriptionidIdentifiant unique de l'adresse.rueNom de la rue de l'adresse.numeroNuméro de l'adresse.villeNom de la ville de l'adresse.codepostalCode postal de l'adresse.paysNom du pays de l'adresse.
-Classe AddressDTO
-PropriétéDescriptionrueNom de la rue de l'adresse.numeroNuméro de l'adresse.villeNom de la ville de l'adresse.codepostalCode postal de l'adresse.paysNom du pays de l'adresse.
-Classe AddressController
-MéthodeDescriptiongetAllAddress()Récupère la liste de toutes les adresses sous forme de DTO.getCountries()Récupère la liste de tous les pays.getCitiesByCountry()Récupère la liste des villes pour un pays donné.
-
-Interface AddressRepository
-MéthodeDescriptionfindAddressByRueAndNumeroAndVilleAndCodepostalAndPays()Recherche une adresse spécifique.existsAddressByRueAndNumeroAndVilleAndCodepostalAndPays()Vérifie si une adresse spécifique existe.findAllPaysWithAgences() Récupère la liste de tous les pays avec des agences.findCitiesWithAgencesByCountry()Récupère la liste des villes pour un pays donné avec des agences.
-Classe AddressService
-MéthodeDescriptiongetAllAddresses()Récupère la liste de toutes les adresses.getAddressById()Récupère une adresse spécifique par son identifiant.createAddress()Crée une nouvelle adresse.updateAddress()Met à jour une adresse existante.deleteAddress()Supprime une adresse par son identifiant.getCountries() Récupère la liste de tous les pays.getCitiesByCountry(Récupère la liste des villes pour un pays donné.
-4.1.7. Partie Agence ( à refaire pour notre projet en NextJS 15 )
-
-
-Classe Agence
-Propriété/MéthodeDescriptionid: IntegerIdentifiant unique de l'agence.idAddress: AddressAdresse de l'agence (relation 1 -> *).nomAgence: StringNom de l'agence.localisation: StringLocalisation de l'agence.
-Classe AgenceDTO
-Propriété/MéthodeDescriptionidAddress: AddressDTOAdresse de l'agence sous forme de DTO.nomAgence: StringNom de l'agence.localisation: StringLocalisation de l'agence.
-Interface AgenceRepository
-Propriété/MéthodeDescriptionfindAgencesByVille(String ville): List<String>Récupère la liste des noms d'agences pour une ville donnée.
-Classe AgenceService
-Propriété/MéthodeDescriptionagenceRepository: AgenceRepositoryRéférentiel pour accéder aux données des agences.getAgencesByVille(String ville): ResponseEntity<List<String>>Récupère la liste des noms d'agences pour une ville donnée.
-Classe AgenceController
-Propriété/MéthodeDescriptionagenceService: AgenceServiceService pour gérer la logique métier liée aux agences.getAgencesByVille(String ville): ResponseEntity<List<String>>Point d'entrée pour récupérer la liste des noms d'agences pour une ville donnée.
-
-
-
-4.1.8. Partie Auth ( à refaire pour notre projet en NextJS 15 )
+4.1. Modélisation des données
+4.1.1. Modèle Conceptuelle de Données (MCD)
 1.1.1. 
-AuthController
+4.1.2. Modèle Logique de Données (MLD)
+4.1.3. Modèle Physique de Données (MPD)
 
-Propriété/MéthodeDescriptionregisterMéthode pour enregistrer un utilisateur.loginMéthode pour connecter un utilisateur.checkEmailMéthode pour vérifier l'existence d'un email.
-EmailRequest
+4.1.4. Diagramme de Classe Général et Abstrait pour ColisApp
+4.1.5. Diagramme de Classe pour le domaine Utilisateur (User)
 
-Propriété/MéthodeDescriptionemailEmail de l'utilisateur.getEmailRetourne l'email de l'utilisateur.setEmailDéfinit l'email de l'utilisateur.
-UserLoginRequest
+4.1.6. Diagramme de Classe pour le domaine Envoi
 
-Propriété/MéthodeDescriptionemailEmail de l'utilisateur pour la connexion.passwordMot de passe de l'utilisateur pour la connexion.
-UserLoginResponse
+4.1.7. Diagramme de Classe pour le domaine Agence
+4.1.8. Diagramme de Classe pour le domaine Simulation
+4.1.9. Diagramme de Classe pour le domaine Suivi d’envoi
 
-Propriété/MéthodeDescriptionnomNom de l'utilisateur.prenomPrénom de l'utilisateur.dateDeNaissanceDate de naissance de l'utilisateur.sexeSexe de l'utilisateur.telephoneTéléphone de l'utilisateur.emailEmail de l'utilisateur.rueRue de l'adresse de l'utilisateur.numeroNuméro de l'adresse de l'utilisateur.villeVille de l'adresse de l'utilisateur.codepostalCode postal de l'adresse de l'utilisateur.paysPays de l'adresse de l'utilisateur.
+4.1.10. Diagramme de Classe pour le domaine Tarifs
+4.1.11. Diagramme de Classe pour le domaine Transport
 
+4.1.12. Diagramme de Classe pour le domaine Rendez-vous (Appointment
+4.1.13. Diagrammes du domaine Utilisateur & Authentification
+- Sous-domaine: Gestion du profil utilisateur et CRUD de base
 
-UserRegisterRequest
-
-Propriété/MéthodeDescriptionnomNom de l'utilisateur pour l'enregistrement.prenomPrénom de l'utilisateur pour l'enregistrement.dateDeNaissanceDate de naissance de l'utilisateur pour l'enregistrement.sexeSexe de l'utilisateur pour l'enregistrement.telephoneTéléphone de l'utilisateur pour l'enregistrement.emailEmail de l'utilisateur pour l'enregistrement.rueRue de l'adresse pour l'enregistrement.numeroNuméro de l'adresse pour l'enregistrement.villeVille de l'adresse pour l'enregistrement.codepostalCode postal de l'adresse pour l'enregistrement.paysPays de l'adresse pour l'enregistrement.passwordMot de passe pour l'enregistrement.
-ClientDTO
-
-Propriété/MéthodeDescriptionnomNom du client.prenomPrénom du client.dateDeNaissanceDate de naissance du client.sexeSexe du client.telephoneTéléphone du client.emailEmail du client.idAddressAdresse du client.motDePasseMot de passe du client.
-Client
-
-Propriété/MéthodeDescriptionidIdentifiant unique du client.nomNom du client.prenomPrénom du client.dateDeNaissanceDate de naissance du client.sexeSexe du client.telephoneTéléphone du client.emailEmail du client.idAddressAdresse du client.motDePasseMot de passe du client.
-ClientRepository
-
-Propriété/MéthodeDescriptionexistsClientByEmailVérifie l'existence d'un client par email.findClientByEmailTrouve un client par email.findAddressIdByClientIDTrouve l'identifiant d'adresse par l'identifiant du client.
-AuthService
-
-Propriété/MéthodeDescriptionregisterEnregistre un nouvel utilisateur.loginConnecte un utilisateur existant.existsClientByEmailVérifie l'existence d'un client par email.findAddressTrouve une adresse par DTO.exitsAddressVérifie l'existence d'une adresse par DTO.getClientDTOCrée un ClientDTO à partir d'un UserRegisterRequest et AddressDTO.
-4.1.9. Partie Colis ( à refaire pour notre projet en NextJS 15 )
-
-
-ColisService
-
-Propriété/MéthodeDescriptionvalidateColisValide la liste des colis en fonction des critères spécifiques.calculatePrixTotalCalcule le prix total des colis en fonction de leur poids total et des tarifs appliqués.
-ColisDTO
-
-Propriété/MéthodeDescriptionidEnvoiIdentifiant de l'envoi associé au colis.hauteurHauteur du colis.largeurLargeur du colis.longueurLongueur du colis.poidsColisPoids du colis.volumeColisVolume du colis.
-ColisController
-
-Propriété/MéthodeDescriptionvalidateColisValide les colis en fonction des données fournies.calculatePriceCalcule le prix total des colis en fonction des données fournies.
-Colis
-
-Propriété/MéthodeDescriptionidIdentifiant unique du colis.idEnvoiIdentifiant de l'envoi associé au colis.hauteurHauteur du colis.largeurLargeur du colis.longueurLongueur du colis.poidsColisPoids du colis.volumeColisVolume du colis.
-ColisRepository
-
-Propriété/MéthodeDescription-Gère les opérations CRUD sur les entités Colis.
-
-
-4.1.10. Partie Envois ( à refaire pour notre projet en NextJS 15 )
-
-
-
-EnvoisController
-Propriété/MéthodeDescriptionPropriétés- EnvoisService envoisServiceDépendance vers le service des envois pour gérer les opérations métier.Méthodes+ validerEnvoi(envoisDTO: EnvoisRequestDTO, user: User): ResponseEntity<String>Valide un envoi en utilisant les informations fournies dans le DTO et l'utilisateur authentifié.
-EnvoisService
-Propriété/MéthodeDescriptionPropriétés- EnvoisRepository envoisRepositoryDépendance vers le repository des envois pour les opérations de persistance.- ColisRepository colisRepositoryDépendance vers le repository des colis pour les opérations de persistance.- TransportService transportServiceDépendance vers le service de transport pour gérer les mises à jour du transport.- ClientRepository clientRepositoryDépendance vers le repository des clients pour accéder aux informations des clients.- AgenceRepository agenceRepositoryDépendance vers le repository des agences pour accéder aux informations des agences.- DestinataireRepository destinataireRepositoryDépendance vers le repository des destinataires pour accéder aux informations des destinataires.- AuthService authServiceDépendance vers le service d'authentification pour vérifier les adresses et les utilisateurs.- AddressRepository addressRepositoryDépendance vers le repository des adresses pour les opérations de persistance des adresses.- TarifRepository tarifRepositoryDépendance vers le repository des tarifs pour accéder aux informations des tarifs.- TransportRepository transportRepositoryDépendance vers le repository des transports pour accéder aux informations des transports.Méthodes+ validerEnvoi(envoisDTO: EnvoisRequestDTO, userEmail: String): booleanValide un envoi en utilisant les informations fournies dans le DTO et l'adresse e-mail de l'utilisateur.- getDestinataireAddress(envoisRequestDTO: EnvoisRequestDTO): AddressObtient l'adresse du destinataire à partir du DTO de la demande d'envoi.- generateTrackingCode(simulationData: EnvoisRequestDTO, client: Client): StringGénère un code de suivi pour l'envoi en utilisant les informations fournies.- generateAlphanumCode(length: int): StringGénère un code alphanumérique de la longueur spécifiée.
-EnvoisRepository
-Propriété/MéthodeDescriptionMéthodes+ findAll(): List<Envois>Récupère toutes les entités d'envois de la base de données.+ findById(id: Integer): EnvoisRécupère une entité d'envoi par son identifiant.+ save(envois: Envois): EnvoisSauvegarde une entité d'envoi dans la base de données.
-Envois
-Propriété/MéthodeDescriptionPropriétés+ Integer idIdentifiant unique de l'envoi.+ String codeDeSuiviCode de suivi de l'envoi.+ LocalDate dateEnvoiDate d'envoi.+ LocalDate dateLivraisonPrevuDate de livraison prévue.+ BigDecimal poidsTotalPoids total de l'envoi.+ BigDecimal volumeTotalVolume total de l'envoi.+ BigDecimal prixTotalPrix total de l'envoi.+ String statutStatut de l'envoi.+ Agence idAgenceArriveeAgence d'arrivée de l'envoi.+ Agence idAgenceDepartAgence de départ de l'envoi.+ Client idClientClient qui envoie le colis.+ Coupon idCouponCoupon utilisé pour l'envoi (s'il y en a un).+ Destinataire idDestinataireDestinataire de l'envoi.+ Tarif idTarifTarif appliqué à l'envoi.+ Transport idTransportTransport utilisé pour l'envoi.Méthodes+ getCodeDeSuivi(): StringObtient le code de suivi de l'envoi.+ getDateEnvoi(): LocalDateObtient la date d'envoi.+ getDateLivraisonPrevu(): LocalDateObtient la date de livraison prévue.+ getPoidsTotal(): BigDecimalObtient le poids total de l'envoi.+ getVolumeTotal(): BigDecimalObtient le volume total de l'envoi.+ getPrixTotal(): BigDecimalObtient le prix total de l'envoi.+ getStatut(): StringObtient le statut de l'envoi.
-
-EnvoisDTO
-Propriété/MéthodeDescriptionPropriétés+ String codeDeSuiviCode de suivi de l'envoi.+ LocalDate dateEnvoiDate d'envoi.+ LocalDate dateLivraisonPrevuDate de livraison prévue.+ BigDecimal poidsTotalPoids total de l'envoi.+ BigDecimal volumeTotalVolume total de l'envoi.+ BigDecimal prixTotalPrix total de l'envoi.+ String statutStatut de l'envoi.+ AgenceDTO idAgenceArriveeAgence d'arrivée de l'envoi.+ AgenceDTO idAgenceDepartAgence de départ de l'envoi.+ ClientDTO idClientClient qui envoie le colis.+ CouponDTO idCouponCoupon utilisé pour l'envoi (s'il y en a un).+ DestinataireDTO idDestinataireDestinataire de l'envoi.+ TarifDTO idTarifTarif appliqué à l'envoi.+ TransportDTO idTransportTransport utilisé pour l'envoi.+ List<ColisDTO> colisListe des colis inclus dans l'envoi.
+- Sous-domaine: Flux d'authentification (Connexion, Inscription, NextAuth.js)
 
 
 
 
-4.1.11. Partie Simulation ( à refaire pour notre projet en NextJS 15 )
+	
 
 
-SimulationController
-Propriété/MéthodeDescriptionPropriétés- SimulationService simulationServiceDépendance vers le service de simulation pour gérer les opérations métier.Méthodes+ calculateSimulation(request: SimulationRequest): ResponseEntity<SimulationResponse>Calcule la simulation d'envoi en utilisant les informations fournies dans la requête.
-SimulationService
-Propriété/MéthodeDescriptionPropriétés- TarifRepository tarifRepositoryDépendance vers le repository des tarifs pour accéder aux informations des tarifs.Méthodes+ calculateSimulation(request: SimulationRequest): SimulationResponseCalcule la simulation d'envoi en utilisant les informations fournies dans la requête.- getNextTuesday(currentDate: LocalDate): LocalDateObtient le prochain mardi à partir de la date actuelle.- getPrixTotal(poidsTotal: BigDecimal): TarifResultCalcule le prix total en fonction du poids total des colis.- getVolumeTotal(colisList: List<ColisDTO>): BigDecimalCalcule le volume total des colis.- getPoidsTotal(colisList: List<ColisDTO>): BigDecimalCalcule le poids total des colis.
-SimulationRequest
-Propriété/MéthodeDescriptionPropriétés+ String paysDepartPays de départ.+ String villeDepartVille de départ.+ String agenceDepartAgence de départ.+ String paysDestinationPays de destination.+ String villeDestinationVille de destination.+ String agenceArriveAgence d'arrivée.+ LocalDate currentDateDate actuelle pour calculer les dates d'envoi et de livraison.+ List<ColisDTO> colisListe des colis inclus dans la simulation.
-SimulationResponse
-Propriété/MéthodeDescriptionPropriétés+ String paysDepartPays de départ.+ String villeDepartVille de départ.+ String agenceDepartAgence de départ.+ LocalDate dateEnvoiPrevuDate d'envoi prévue.+ String paysDestinationPays de destination.+ String villeDestinationVille de destination.+ String agenceArriveAgence d'arrivée.+ LocalDate dateLivraisonPrevuDate de livraison prévue.+ BigDecimal poidsTotalPoids total des colis.+ BigDecimal volumeTotalVolume total des colis.+ BigDecimal prixTotalPrix total de l'envoi.+ String statutStatut de l'envoi.+ List<ColisDTO> colisListe des colis inclus dans l'envoi.+ Integer idTarifIdentifiant du tarif appliqué à l'envoi.SimulationDTO
-Propriété/MéthodeDescriptionPropriétés+ String paysDepartPays de départ.+ String villeDepartVille de départ.+ String agenceDepartAgence de départ.+ String paysDestinationPays de destination.+ String villeDestinationVille de destination.+ String agenceArriveAgence d'arrivée.+ LocalDate currentDateDate actuelle pour calculer les dates d'envoi et de livraison.+ LocalDate dateEnvoiPrevuDate d'envoi prévue.+ LocalDate dateLivraisonPrevuDate de livraison prévue.+ BigDecimal poidsTotalPoids total des colis.+ BigDecimal volumeTotalVolume total des colis.+ BigDecimal prixTotalPrix total de l'envoi.+ String statutStatut de l'envoi.+ List<ColisDTO> colisListe des colis inclus dans la simulation.
+- Sous-domaine: Relations utilisateur et rôles 
 
+- Sous-domaine: Gestion des adresses utilisateur
 
-4.1.12. Partie Transport ( à refaire pour notre projet en NextJS 15 )
-
-
-
-
-TransportController
-Propriété/MéthodeDescriptionPropriétés- TransportService transportServiceDépendance vers le service de transport pour gérer les opérations métier.Méthodes+ checkTransportAvailability(poidsTotal: BigDecimal, volumeTotal: BigDecimal): ResponseEntity<Boolean>Vérifie la disponibilité du transport en fonction du poids et du volume total.+ calculateNextAvailableDate(): ResponseEntity<LocalDate>Calcule la prochaine date disponible pour le transport.+ updateTransport(poidsTotal: BigDecimal, volumeTotal: BigDecimal): ResponseEntity<Void>Met à jour les informations du transport en ajoutant le poids et le volume total.
-TransportService
-Propriété/MéthodeDescriptionPropriétés- TransportRepository transportRepositoryDépendance vers le repository des transports pour accéder aux informations des transports.Méthodes+ checkTransportAvailability(poidsTotal: BigDecimal, volumeTotal: BigDecimal): booleanVérifie la disponibilité du transport en fonction du poids et du volume total.+ calculateNextAvailableDate(): LocalDateCalcule la prochaine date disponible pour le transport.+ updateTransport(poidsTotal: BigDecimal, volumeTotal: BigDecimal): voidMet à jour les informations du transport en ajoutant le poids et le volume total.- getNextTuesday(currentDate: LocalDate): LocalDateObtient le prochain mardi à partir de la date actuelle.
-TransportRepository
-Propriété/MéthodeDescriptionMéthodes+ findById(id: Integer): Optional<Transport>Récupère une entité de transport par son identifiant.+ save(transport: Transport): TransportSauvegarde une entité de transport dans la base de données.
-Transport
-Propriété/MéthodeDescriptionPropriétés+ Integer idIdentifiant unique du transport.+ Boolean estDisponibleIndique si le transport est disponible.+ String plaqueMatriculationPlaque d'immatriculation du transport.+ BigDecimal poidsActuelPoids actuel du transport.+ BigDecimal poidsDeBasePoids de base du transport.+ BigDecimal volumeActuelVolume actuel du transport.+ BigDecimal volumeDeBaseVolume de base du transport.Méthodes+ getEstDisponible(): BooleanObtient la disponibilité du transport.+ getPlaqueMatriculation(): StringObtient la plaque d'immatriculation du transport.+ getPoidsActuel(): BigDecimalObtient le poids actuel du transport.+ getPoidsDeBase(): BigDecimalObtient le poids de base du transport.+ getVolumeActuel(): BigDecimalObtient le volume actuel du transport.+ getVolumeDeBase(): BigDecimalObtient le volume de base du transport.
-TransportDTO
-Propriété/MéthodeDescriptionPropriétés+ Integer idIdentifiant unique du transport.+ Boolean estDisponibleIndique si le transport est disponible.+ String plaqueMatriculationPlaque d'immatriculation du transport.+ BigDecimal poidsActuelPoids actuel du transport.+ BigDecimal poidsDeBasePoids de base du transport.+ BigDecimal volumeActuelVolume actuel du transport.+ BigDecimal volumeDeBaseVolume de base du transport.
+4.1.14. Diagramme de Classe pour le domaine Coupons
 
 
 
@@ -722,38 +605,14 @@ Propriété/MéthodeDescriptionPropriétés+ Integer idIdentifiant unique d
 
 
 
+4.1.15. Diagramme de Classe pour le domaine Colis (Parcel)
+
+1.1.1. 
+4.1.16. Diagramme de classe pour le domaine Planification Transport  (`TransportSchedule`)
+
+4.1.17. Diagramme Abstrait du Frontend pour ColisApp
 
 
-
-
-
-
-
-
-4.1.13. Partie Security ( à refaire pour notre projet en NextJS 15 )
-
-
-
-CustomUserDetailsService
-Propriété/MéthodeDescriptionloadUserByUsernameCharge les détails d'un utilisateur par email.
-JwtRequestFilter
-Propriété/MéthodeDescriptiondoFilterInternalFiltre les requêtes pour vérifier la présence et la validité du token JWT.
-JwtUtil
-Propriété/MéthodeDescriptionextractUsernameExtrait le nom d'utilisateur du token JWT.extractExpirationExtrait la date d'expiration du token JWT.generateTokenGénère un nouveau token JWT pour un utilisateur.validateTokenValide le token JWT par rapport au nom d'utilisateur.
-PasswordEncoderConfig
-Propriété/MéthodeDescriptionpasswordEncoderConfigure et retourne un encodeur de mots de passe BCrypt.
-SecurityConfig
-Propriété/MéthodeDescriptionuserDetailsServiceRetourne le service de détails utilisateur personnalisé.securityFilterChainConfigure les règles de sécurité pour les requêtes HTTP.corsConfigurerConfigure les règles CORS pour les requêtes.
-ClientRepository
-Propriété/MéthodeDescriptionfindClientByEmailTrouve un client par email.existsClientByEmailVérifie l'existence d'un client par email.
-Client
-Propriété/MéthodeDescriptionidIdentifiant unique du client.nomNom du client.prenomPrénom du client.dateDeNaissanceDate de naissance du client.sexeSexe du client.telephoneTéléphone du client.emailEmail du client.idAddressAdresse du client.motDePasseMot de passe du client.
-
-
-
-Controller – Service – Repository
-
-4.1.14. Frontend ( à générer  le nouveau diagramme des pages frontend de NextJS)
 4.2. Architecture logicielle & technologique
 4.2.1. Vue d'ensemble et Choix Technologiques
 L'architecture de ColisApp repose sur une stack technique moderne, cohérente et entièrement basée sur l'écosystème TypeScript, choisie pour sa performance, sa sécurité et sa maintenabilité.
@@ -851,7 +710,6 @@ Cette approche a permis de construire des réponses d'API riches avec un minimum
 
 
 
-
 - Client Accueil :
 - Login
 
@@ -870,7 +728,6 @@ Cette approche a permis de construire des réponses d'API riches avec un minimum
 - Inscription
 
 - Simulation
-
 
 - Contactez-nous 
 
@@ -946,13 +803,10 @@ Cette approche a permis de construire des réponses d'API riches avec un minimum
 
 
 
-
-
 - Envoi détails
 
 
 - Profile popup
-
 - Admin Dashboard
 
 
@@ -1047,7 +901,6 @@ Cas d'utilisationDescriptionAccéder à la gestion des utilisateursLe super a
 ÉlémentTypeDescriptionClientActeur humainUtilisateur qui souhaite créer un compte sur ColisApp.Système de messagerie électroniqueSystème externeEnvoie l'email de confirmation contenant le lien d'activation.Base de donnéesSystème techniqueStocke les informations saisies par le client et met à jour le statut du compte.- Cas d'utilisation détaillés
 Cas d'utilisationDescriptionCréer un compteÉtape initiale où le client soumet le formulaire d’inscription.Valider les données saisiesVérifie la complétude, le format, et la cohérence des champs (email, mot de passe, etc.).Enregistrer les données utilisateurInsère les données valides dans la base de données.Envoyer email de confirmationEnvoie un email contenant un lien unique d’activation.Activer le compteSe produit lorsque le client clique sur le lien reçu par email ; le système met à jour le statut dans la base de données.- Relations entre éléments
 SourceCibleType de relationDescriptionClientCréer un compteAssociation directeLe client initie l'inscription.Créer un compteValider les données saisies<>La validation est obligatoire pour poursuivre.Valider les données saisiesEnregistrer les données utilisateur<>Nécessaire si validation réussie.Enregistrer les données utilisateurBase de donnéesAppel techniqueInsertion des données client.Enregistrer les données utilisateurEnvoyer email de confirmation<>Déclenche l’envoi du mail après enregistrement.Envoyer email de confirmationSystème de messagerie électroniqueAppel techniqueLe mail est transmis par un système SMTP.ClientActiver le compteInteractionLe client clique sur le lien reçu.Activer le compteBase de donnéesAppel techniqueLe statut du compte passe à "activé".
-
 - Ce diagramme suit les conventions UML standard :
 • ellipses : cas d’utilisation
 • flèches pleines : interactions directes
@@ -1167,448 +1020,25 @@ Cet enum est utilisé pour définir le statut des rendez-vous dans l'application
 ValeursDescriptionsPENDINGRendez-vous en attente de confirmation.CONFIRMEDRendez-vous confirmé par l'agence ou le client.CANCELLEDRendez-vous annulé par l'agence ou le client.RESCHEDULEDRendez-vous reprogrammé à une autre date.COMPLETEDRendez-vous terminé avec succès.MISSEDRendez-vous manqué par le client ou l'agence.IN_PROGRESSRendez-vous en cours de réalisation.
 
 
-9.4. Documentation d’API backend endpoints ( a refaire complètement pour remplacer l’ancien api avec notre Nextjs 15 API routes.) 
-9.4.1. Classe AddressController
-EndpointMéthode HTTPDescriptionDTO UtiliséRéponse/api/v1/addressesGETRécupérer toutes les adressesAddressDTOList<AddressDTO>/api/v1/addresses/paysGETRécupérer tous les paysN/AList<String>/api/v1/addresses/{pays}/villesGETRécupérer les villes par paysN/AList<String>
-Exemples de Requêtes et Réponses :
-Endpoint: /api/v1/addresses
-• Méthode HTTP: GET
-• Description: Récupérer toutes les adresses
-• Requête:
-http
-GET /api/v1/addresses
-Host: localhost:8081
-• Réponse:
-// http://localhost:8081/api/v1/addresses
-
-[
-  {
-    "rue": "rue de Bruxelles 1",
-    "numero": "1",
-    "ville": "Bruxelles",
-    "codepostal": "2000",
-    "pays": "Belgique"
-  },
-  {
-    "rue": "rue de Anvers 1",
-    "numero": "1",
-    "ville": "Anvers",
-    "codepostal": "2000",
-    "pays": "Belgique"
-  },
-  {
-    "rue": "rue de Mons 1",
-    "numero": "1",
-    "ville": "Mons",
-    "codepostal": "7000",
-    "pays": "Belgique"
-  },
-  {
-    "rue": "rue de Casablanca 1",
-    "numero": "1",
-    "ville": "Casablanca",
-    "codepostal": "20000",
-    "pays": "Maroc"
-  },
-  {
-    "rue": "rue de Marrakech 1",
-    "numero": "1",
-    "ville": "Marrakech",
-    "codepostal": "40000",
-    "pays": "Maroc"
-  },
-  {
-    "rue": "Rue des Martyrs",
-    "numero": "28",
-    "ville": "Frameries",
-    "codepostal": "7080",
-    "pays": "Belgique"
-  },
-  {
-    "rue": "rue des toto",
-    "numero": "25",
-    "ville": "Mons",
-    "codepostal": "7000",
-    "pays": "Belgique"
-  },
-  {
-    "rue": "rue jessie",
-    "numero": "25",
-    "ville": "Estinnes",
-    "codepostal": "7120",
-    "pays": "Belgique"
-  },
-  {
-    "rue": "rue toto test",
-    "numero": "88",
-    "ville": "Mons",
-    "codepostal": "7000",
-    "pays": "Belgique"
-  },
-  {
-    "rue": "rue toto1",
-    "numero": "1",
-    "ville": "Paris",
-    "codepostal": "10000",
-    "pays": "France"
-  },
-  {
-    "rue": "rue destinataire1",
-    "numero": "1",
-    "ville": "Frameries",
-    "codepostal": "7080",
-    "pays": "Belgique"
-  },
-  {
-    "rue": "rue destinataire2",
-    "numero": "2",
-    "ville": "Frameries",
-    "codepostal": "7080",
-    "pays": "Belgique"
-  },
-  {
-    "rue": "rue destinataire3",
-    "numero": "3",
-    "ville": "Frameries",
-    "codepostal": "7080",
-    "pays": ""
-  },
-  {
-    "rue": "rue destinataire4",
-    "numero": "4",
-    "ville": "Frameries",
-    "codepostal": "7080",
-    "pays": ""
-  },
-  {
-    "rue": "rue des3",
-    "numero": "3",
-    "ville": "Mons",
-    "codepostal": "7000",
-    "pays": "Belgique"
-  },
-  {
-    "rue": "rue des4",
-    "numero": "4",
-    "ville": "Mons",
-    "codepostal": "7000",
-    "pays": "Belgique"
-  },
-  {
-    "rue": "des5",
-    "numero": "5",
-    "ville": "Mons",
-    "codepostal": "7000",
-    "pays": "Belgique"
-  },
-  {
-    "rue": "rue des6",
-    "numero": "6",
-    "ville": "Mons",
-    "codepostal": "7000",
-    "pays": "Belgique"
-  },
-  {
-    "rue": "rue des7",
-    "numero": "7",
-    "ville": "Mons",
-    "codepostal": "7000",
-    "pays": "Belgique"
-  },
-  {
-    "rue": "rue des9",
-    "numero": "9",
-    "ville": "Mons",
-    "codepostal": "7000",
-    "pays": "Belgique"
-  },
-  {
-    "rue": "rue dess",
-    "numero": "10",
-    "ville": "Mons",
-    "codepostal": "7000",
-    "pays": "Belgique"
-  },
-  {
-    "rue": "rue",
-    "numero": "88",
-    "ville": "Frameries",
-    "codepostal": "7080",
-    "pays": "Belgique"
-  }
-]
-
-Endpoint: /api/v1/addresses/pays
-- Méthode HTTP: GET
-- Description: Récupérer tous les pays
-- Requête:
-http
-GET /api/v1/addresses/pays
-Host: localhost:8081
-- Réponse:
-json
-// http://localhost:8081/api/v1/addresses/pays
-
-[
-  "Belgique",
-  "Maroc"
-]
-
-
-Endpoint: /api/v1/addresses/{pays}/villes
-• Méthode HTTP: GET
-• Description: Récupérer les villes par pays
-• Requête:
-http
-GET /api/v1/addresses/Maroc/villes 
-Host: localhost:8081
-• Réponse:
-// http://localhost:8081/api/v1/addresses/Maroc/villes
-
-[
-  "Casablanca",
-  "Marrakech"
-]
-9.4.2. Classe EnvoisController
-
-EndpointMéthode HTTPDescriptionDTO UtiliséRéponse/api/v1/envois/validerPOSTValider un envoiEnvoisRequestDTOString
-Exemples de Requêtes et Réponses :
-Endpoint: /api/v1/envois/valider
-• Méthode HTTP: POST
-• Description: Valider un envoi
-• Requête:
-http
-POST /api/v1/envois/valider
-Host: localhost:8081
-Content-Type: application/json
-Authorization: Bearer <token>
-
-{
-  "paysDepart": "France",
-  "villeDepart": "Paris",
-  "agenceDepart": "Agence 1",
-  "dateEnvoiPrevu": "2024-06-25",
-  "paysDestination": "Maroc",
-  "villeDestination": "Marrakech",
-  "agenceArrive": "Agence 2",
-  "dateLivraisonPrevu": "2024-07-01",
-  "poidsTotal": "50",
-  "volumeTotal": "1000000",
-  "prixTotal": "80",
-  "statut": "En Attente de Confirmation d'envoi",
-  "colis": [
-    {
-      "hauteur": 100,
-      "largeur": 100,
-      "longueur": 100,
-      "poidsColis": 50,
-      "volumeColis": 1000000
-    }
-  ],
-  "idTarif": 3,
-  "idDestinataire": {
-    "nomPrenom": "John Doe",
-    "telephone": "+32123456789",
-    "email": "john.doe@mail.com",
-    "idAddress": {
-      "rue": "123 Elm St",
-      "numero": "3",
-      "ville": "Bruxelles",
-      "codepostal": "1000",
-      "pays": "Belgique"
-    }
-  }
-}
-
-• Réponse:
-json
-"Envoi validé avec succès"
-9.4.3. Classe SimulationController
-EndpointMéthode HTTPDescriptionDTO UtiliséRéponse/api/v1/simulation/calculatePOSTCalculer la simulation d'envoiSimulationRequestSimulationResponse
-Endpoint: /api/v1/simulation/calculate
-• Méthode HTTP: POST
-• Description: Calculer la simulation d'envoi
-• Requête:
-http
-POST /api/v1/simulation/calculate
-Host: localhost:8081
-Content-Type: application/json
-
-{
-  "paysDepart": "Belgique",
-  "villeDepart": "Mons",
-  "agenceDepart": "Agence 1",
-  "paysDestination": "Maroc",
-  "villeDestination": "Marrakech",
-  "agenceArrive": "Agence 2",
-  "currentDate": "2024-06-20",
-  "colis": [
-    {
-      "hauteur": 50,
-      "largeur": 50,
-      "longueur": 50,
-      "poidsColis": 20
-    },
-    {
-      "hauteur": 60,
-      "largeur": 60,
-      "longueur": 60,
-      "poidsColis": 30
-    }
-  ]
-}
-
-• Réponse:
-json
-{
-    "paysDepart": "Belgique",
-    "villeDepart": "Mons",
-    "agenceDepart": "Agence 1",
-    "dateEnvoiPrevu": "2024-06-25",
-    "paysDestination": "Maroc",
-    "villeDestination": "Marrakech",
-    "agenceArrive": "Agence 2",
-    "dateLivraisonPrevu": "2024-07-01",
-    "poidsTotal": 50,
-    "volumeTotal": 341000,
-    "prixTotal": 80.00,
-    "statut": "En Attente de Confirmation d'envoi",
-    "colis": [
-        {
-            "hauteur": 50,
-            "largeur": 50,
-            "longueur": 50,
-            "poidsColis": 20,
-            "volumeColis": null
-        },
-        {
-            "hauteur": 60,
-            "largeur": 60,
-            "longueur": 60,
-            "poidsColis": 30,
-            "volumeColis": null
-        }
-    ],
-    "idTarif": 3
-}
-
-
-9.4.4. Classe TransportController
-EndpointMéthode HTTPDescriptionDTO UtiliséRéponse/api/v1/transports/verify-spacePOSTVérifier la disponibilité du transportTransportDTODisponibilité (Boolean) et date du prochain transport (LocalDate)
-Endpoint: /api/v1/transports/verify-space
-• Méthode HTTP: POST
-• Description: Vérifier la disponibilité du transport besoin le login
-• Requête:
-http
-POST /api/v1/transports/verify-space 
-Host: localhost:8081
-Content-Type: application/json
-
-{
-  "poidsTotal": 50,
-  "volumeTotal": 300000
-}
-
-• Réponse:
-json
-
-{
-  "available": true,
-  "nextAvailableDate": "2024-07-09"
-}
-
-
-9.4.5. Classe AuthController
-EndpointMéthode HTTPDescriptionDTO UtiliséRéponse/api/v1/users/auth/registerPOSTEnregistrer un nouvel utilisateurUserRegisterDTOString/api/v1/users/auth/loginPOSTConnecter un utilisateurUserLoginDTOToken (String)/api/v1/users/auth/check-emailPOSTVérifier l'existence d'un emailCheckEmailDTOBooleanEndpoint: /api/v1/users/auth/register
-• Méthode HTTP: POST
-• Description: Enregistrer un nouvel utilisateur
-• Requête:
-http
-POST /api/v1/users/auth/register 
-Host: localhost:8081
-Content-Type: application/json
-
-{
-  "nom": "John",
-  "prenom": "Doe",
-  "dateDeNaissance": "1990-01-01",
-  "sexe": true,
-  "telephone": "+32123456789",
-  "email": "john.doe@mail.com",
-  "rue": "123 Elm St",
-  "numero": "3",
-  "ville": "Bruxelles",
-  "codepostal": "1000",
-  "pays": "Belgique",
-  "password": "password123",
-  "confirmPassword": "password123"
-}
-
-• Réponse:
-json
-"User created"
-Endpoint: /api/v1/users/auth/login
-• Méthode HTTP: POST
-• Description: Connecter un utilisateur
-• Requête:
-http
-POST /api/v1/users/auth/login
-Host: localhost:8081
-Content-Type: application/json
-
-{
-  "email": "toto.mail@mail.com",
-  "password": "Azerty123"
-}
-
-• Réponse:
-json
-{
-    "data": {
-        "nom": "toto",
-        "prenom": "tata",
-        "dateDeNaissance": "1986-08-05",
-        "sexe": "female",
-        "telephone": "+3265986532",
-        "email": "toto.mail@mail.com",
-        "rue": "rue des toto",
-        "numero": "25",
-        "ville": "Mons",
-        "codepostal": "7000",
-        "pays": "Belgique"
-    },
-    "success": true,
-    "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0b3RvLm1haWxAbWFpbC5jb20iLCJpYXQiOjE3MTg4MTY0MTEsImV4cCI6MTcxODgyMDAxMX0.7fsHKFD63GNsk4PwtqVNANBCm7V9-QFDYKRpjr9MlD0"
-}
-
-
-Endpoint: /api/v1/users/auth/check-email
-• Méthode HTTP: POST
-• Description: Vérifier l'existence d'un email
-• Requête:
-http
-POST /api/v1/users/auth/check-email 
-Host: localhost:8081
-Content-Type: application/json
-
-{
-  "email": "toto.mail@mail.com"
-}
-Réponse:
-json
-{
-  "exists": true
-}
-
-9.4.6. Classe AgenceController
-
-EndpointMéthode HTTPDescriptionDTO UtiliséRéponse/api/v1/agences/{ville}GETRécupérer les agences par villeN/AList<AgenceDTO>
-Endpoint: /api/v1/agences/{ville}
-• Méthode HTTP: GET
-• Description: Récupérer les agences par ville
-• Requête:
-http
-GET /api/v1/agences/Mons
+9.4. Documentation d’API backend endpoints 
+- Résumé des Points d'Accès API Clés de ColisApp
+Ce document fournit un résumé des points d'accès API RESTful les plus importants de l'application ColisApp, organisés par domaine fonctionnel. Pour une documentation complète et détaillée, veuillez-vous référer vous à l'interface Swagger UI hébergée.
+- Utilisateurs (Users)
+Point d'Accès APIMéthodeDescription/api/v1/usersGETRécupère la liste des utilisateurs (filtrée par rôle)./api/v1/users/{id}GETRécupère les détails d'un utilisateur spécifique par ID./api/v1/users/{id}DELETESupprime logiquement un utilisateur par ID./api/v1/users/{id}/profileGETRécupère le profil d'un utilisateur par ID./api/v1/users/{id}/profilePUTMet à jour le profil d'un utilisateur par ID./api/v1/users/registerPOSTEnregistre un nouvel utilisateur (flux personnalisé)./api/v1/users/loginPOSTAuthentifie un utilisateur et génère un token JWT (flux personnalisé)./api/v1/users/logoutGETDéconnecte l'utilisateur en supprimant le cookie de session./api/v1/users/verifyPOSTVérifie l'adresse email d'un utilisateur avec un token./api/v1/users/destinatairesPOSTCrée ou associe un destinataire à l'utilisateur actuel./api/v1/users/listGETRécupère la liste des utilisateurs (accès Admin)./api/v1/users/allGETRécupère tous les utilisateurs (accès Admin).- Authentification (Authentication - NextAuth.js)
+Point d'Accès APIMéthodeDescription/api/auth/[...nextauth]GET/POSTGère les flux d'authentification NextAuth.js (OAuth, Credentials)./api/auth/statusGETVérifie si l'utilisateur est authentifié./api/auth/verify-credentialsPOSTValide les identifiants pour le Credentials Provider de NextAuth.js./(auth)/check-reset-tokenGETVérifie la validité d'un token de réinitialisation de mot de passe./(auth)/forgot-passwordPOSTDemande la réinitialisation du mot de passe (envoi d'email)./(auth)/reset-passwordPOSTRéinitialise le mot de passe de l'utilisateur avec un token.- Agences (Agencies)
+Point d'Accès APIMéthodeDescription/api/v1/agenciesGETRécupère les agences par ville./api/v1/agenciesPOSTCrée une nouvelle agence./api/v1/agencies/{id}GETRécupère les détails d'une agence par ID./api/v1/agencies/{id}PUTMet à jour une agence par ID./api/v1/agencies/admin-agenciesGETRécupère les agences pour l'administrateur (filtré par rôle)./api/v1/agencies/create-agencyPOSTCrée une nouvelle agence (accès Admin)./api/v1/agencies/findAgencyGETTrouve l'ID d'une agence par ses détails (pays, ville, nom)./api/v1/agencies/get-agency-by-idGETRécupère les détails d'une agence par ID (accès Admin)./api/v1/agencies/lightGETRécupère une liste allégée d'agences./api/v1/agencies/summaryGETRésumé de l'agence (placeholder)./api/v1/agencies/update-agencyPUTMet à jour une agence existante.- Envois (Shipments)
+Point d'Accès APIMéthodeDescription/api/v1/envoisPOSTCrée un nouvel envoi./api/v1/envois/{id}GETRécupère un envoi par ID./api/v1/envois/{id}PUTMet à jour un envoi par ID./api/v1/envois/{id}/statusPUTMet à jour le statut d'un envoi par ID (accès Admin)./api/v1/envois/cancelPOSTAnnule une simulation d'envoi./api/v1/envois/user/{userId}GETRécupère les envois par ID utilisateur.- Paiements (Payments)
+Point d'Accès APIMéthodeDescription/api/v1/paymentPOSTCrée une session de paiement Stripe./api/v1/payment/complete-paymentGETFinalise le processus de paiement après redirection.- Simulations (Simulations)
+Point d'Accès APIMéthodeDescription/api/v1/simulationsPOSTCrée une nouvelle simulation./api/v1/simulationsGETRécupère les détails de la simulation à partir du cookie./api/v1/simulationsPUTMet à jour une simulation existante./api/v1/simulations/{id}GETRécupère les détails de la simulation par ID./api/v1/simulations/{id}/payment-amountGETRécupère le montant du paiement de la simulation./api/v1/simulations/delete-cookiesGETSupprime les cookies de simulation./api/v1/simulations/editPUTMet à jour une simulation existante (version d'édition).- Suivi (Tracking)
+Point d'Accès APIMéthodeDescription/api/v1/tracking/{trackingNumber}GETRécupère les événements de suivi par numéro de suivi./api/v1/trackingPOSTAjoute un événement de suivi (accès Admin).- Transports (Transports)
+Point d'Accès APIMéthodeDescription/api/v1/transportsGETRécupère la liste des transports./api/v1/transportsPUTMet à jour un transport.- Adresses (Addresses)
+Point d'Accès APIMéthodeDescription/api/v1/addressesGETRécupère toutes les adresses./api/v1/addressesPOSTCrée une nouvelle adresse./api/v1/addresses/{id}GETRécupère une adresse par ID./api/v1/addresses/{id}PUTMet à jour une adresse par ID./api/v1/addresses/{id}DELETESupprime une adresse par ID.- Villes (Cities)
+Point d'Accès APIMéthodeDescription/api/v1/citiesGETRécupère les villes avec agences par pays./api/v1/cities/{countryId}GETRécupère les villes pour un ID de pays donné.- Pays (Countries)
+Point d'Accès APIMéthodeDescription/api/v1/countries/allGETRécupère tous les pays./api/v1/countriesGETRécupère les pays distincts avec agences.- Tableau de Bord (Dashboard)
+Point d'Accès APIMéthodeDescription/api/v1/dashboard/super-adminGETRécupère les statistiques du tableau de bord Super Admin.- Tarifs (Tarifs)
+Point d'Accès APIMéthodeDescription/api/v1/tarifsGETRécupère les tarifs de tarification.- Rendez-vous (Appointments)
+Point d'Accès APIMéthodeDescription/api/v1/users/appointments/bookPOSTRéserve un rendez-vous pour un envoi payé./api/v1/users/appointments/envoi-payeGETRécupère le dernier envoi payé sans rendez-vous.- Contact (Contact)
+Point d'Accès APIMéthodeDescription/api/v1/contactPOSTEnvoie un message via le formulaire de contact./api/v1/contactOPTIONSGère les requêtes pré-vol CORS pour le formulaire de contact.
 
 
 
@@ -1616,7 +1046,7 @@ GET /api/v1/agences/Mons
 
 
 
-9.5. Plan de Test par classe
+9.5.  Plan de Test par classe
 9.5.1. SimulationService
 
 Méthode: calculateSimulation
@@ -1640,6 +1070,7 @@ Méthode: calculateNextAvailableDate
 Rôle : Calculer la prochaine date disponible pour le transport, qui est deux mardis après la date actuelle.
 Test CaseInputExpected OutputDescriptionCas validecurrentDate: "2023-06-01" (jeudi)"2023-06-13" (deux mardis plus tard)Calculer la prochaine date disponible en sautant deux mardis.Cas de limitescurrentDate: "2023-12-31" (dimanche)"2024-01-16" (deux mardis plus tard)Calculer la prochaine date disponible en traversant la fin d'année.
 
+
 Méthode: updateTransport
 Rôle : Mettre à jour le poids et le volume actuels du transport après l'ajout d'un nouvel envoi.
 Test CaseInputExpected OutputDescriptionCas validepoidsTotal: 100, volumeTotal: 20000Transport mis à jour avec poids et volume ajoutésMettre à jour les valeurs du transport avec de nouvelles valeurs valides.Cas de limitespoidsTotal: 0, volumeTotal: 0Transport inchangéTester avec des valeurs zéro pour poids et volume.Cas invalidepoidsTotal: -100, volumeTotal: -20000Exception ou transport non mis à jourTester avec des valeurs négatives pour poids et volume.
@@ -1655,20 +1086,30 @@ Rôle : Calculer le volume total des colis dans une simulation d'envoi.
 Test CaseInputExpected OutputDescriptionCas validecolisList: [{ hauteur: 30, largeur: 30, longueur: 30 }]27000 cm³Calculer le volume total pour un colis donné.Cas de limitescolisList: [{ hauteur: 100, largeur: 100, longueur: 100 }]1000000 cm³Calculer le volume total pour un colis avec de grandes dimensions.Cas invalidecolisList: [{ hauteur: -30, largeur: 30, longueur: 30 }]Exception ou volume zéroTester avec une hauteur négative.
 Méthode: getPrixTotal
 Rôle : Calculer le prix total de l'envoi en fonction du poids total et des tarifs disponibles.
-Test CaseInputExpected OutputDescriptionCas validepoidsTotal: 8Prix fixe pour poids ≤ 10 kgCalculer le prix avec un poids inférieur ou égal à 10 kg.Cas de limitespoidsTotal: 15Prix variable pour poids > 10 kgCalculer le prix avec un poids supérieur à 10 kg.Cas invalidepoidsTotal: -5Exception ou prix zéroTester avec un poids négatif.
-10. Références
+Test CaseInputExpected OutputDescriptionCas validepoidsTotal: 8Prix fixe pour poids ≤ 10 kgCalculer le prix avec un poids inférieur ou égal à 10 kg.Cas de limitespoidsTotal: 15Prix variable pour poids > 10 kgCalculer le prix avec un poids supérieur à 10 kg.Cas invalidepoidsTotal: -5Exception ou prix zéroTester avec un poids négatif.10. Références
 10.1.1. Documentation des produits utilisés dans la solution
-- Serveur
+- Cours Informatique de gestion de l’IRAM
+- NextJS
+- AuthJS
+- Vercel
+- Tailwind CSS
+- ShadCN
+- Zod
+- TypeScript
+- Prisma ORM
+- Visual Studio Code
+- IntelliJ IDEA
+- Stripe
+- Axios
 - Chatgpt
 - Stackflow
 - Youtube
 
 
-
 11. Code
 
 
-Gestion de transport de colis à l'InternationalBentouhami Faisal INF BProjet de fin d’étude en Bachelier Informatique de gestion
+Gestion de transport de colis à l'InternationalBentouhami Faisal INF CProjet de fin d’étude en Bachelier Informatique de gestion
 
 2
 

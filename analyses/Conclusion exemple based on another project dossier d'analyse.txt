@@ -1,0 +1,32 @@
+6.	Conclusion et Perspectives
+6.1.	Synthèse des réalisations et des objectifs atteints
+Au départ, l’objectif était de proposer un outil simple pour créer, suivre et clôturer des tickets, avec une assignation automatique par groupes et localisation, une CMDB basique, un annuaire, et une gestion des SLA.
+
+Côté fonctionnalités, ces objectifs sont atteints. L’application gère les incidents et les tâches, le circuit d’approbation des tâches par le manager, les commentaires et les changements de statut. L’assignation automatique par groupe et localisation est en place. La CMDB pour les ordinateurs fonctionne et l’annuaire permet la recherche par nom ou identifiant. Les SLA sont pris en compte avec un filtrage des tickets en retard. La gestion des groupes et des utilisateurs est disponible pour les rôles prévus.
+
+Côté technique, le socle est opérationnel avec Next.js pour l’interface et les API, Prisma pour l’accès aux données et PostgreSQL pour le stockage. L’authentification par JWT est implémentée, les mots de passe sont hachés avec bcrypt, et des validations côté client et côté serveur sont en place. L’envoi d’e-mails techniques passe par Resend. Le déploiement tourne sur Apache sur un serveur Debian, avec une séparation réseau via OPNsense, des VLAN et un schéma d’adressage défini. Le domaine et le DNS sont configurés chez OVH.
+
+6.2.	Appréciation personnelle du travail effectué
+Globalement, je suis content d’avoir travaillé sur ce projet, car le sujet m’intéresse vraiment. Au départ, je visais un système simple avec incidents et tâches. J’ai ajouté des fonctions au fil du temps par intérêt, en particulier la gestion par groupes qui organise mieux les responsabilités.
+
+J’avais déjà mis en place une infrastructure en cours, mais ici je l’ai fait dans un contexte réel avec de vraies contraintes. Il a fallu garder l’accès Internet disponible, composer avec la compatibilité du matériel, déplacer et câbler proprement, configurer le réseau sans coupures longues et exposer le service en respectant des règles de base en sécurité. Mettre l’application en ligne m’a aussi permis de toucher au domaine et au DNS de façon concrète.
+
+Le projet m’a donc fait progresser autant sur le développement que sur l’exploitation. Je suis satisfait du niveau atteint aujourd’hui, tout en sachant qu’il reste des pistes d’amélioration. Si j’ai du temps, je continuerai le développement de TicketEase pour en faire un outil réellement utilisable.
+
+6.3.	Perspectives d’amélioration et d’évolution du système
+Sur la sécurité, je voudrais aller plus loin. Le code et l’infrastructure sont sécurisés à la base, mais il reste de la marge. Les prochains pas sont des sauvegardes automatiques de la base de données et des fichiers, une journalisation centralisée, de la supervision avec alertes et un durcissement plus poussé des serveurs.
+
+Sur l’organisation, travailler sur plusieurs machines m’a montré les limites de mon versionning . J’aurais dû mettre Docker dès le départ, avec un fichier compose pour lancer la stack, des scripts de démarrage et un dépôt Git bien structuré. Je compte le faire dans la suite, avec une intégration continue pour valider les changements.
+Sur le produit, j’aimerais enrichir la CMDB avec des stockrooms . Avec des stockrooms, on pourrait distinguer le stock par site et suivre les entrées et sorties. J’ajouterais des statistiques et des graphiques sur les stocks, ainsi que plus de rapports côté tickets, par exemple le nombre de tickets clôturés par personne sur une période.
+
+6.4.	Recommandations pour les futures versions
+Plusieurs pistes peuvent être envisagées pour faire évoluer TicketEase et renforcer son utilité à long terme.
+
+-	Développement d’une application mobile dédiée afin de permettre aux techniciens et aux utilisateurs d’accéder rapidement aux tickets depuis un smartphone ou une tablette.
+-	Mise en place de notifications en temps réel pour informer les utilisateurs des changements de statut ou des nouveaux commentaires.
+-	Ajout d’un système de reporting avec des tableaux de bord personnalisables et des indicateurs clés de performance.
+-	Intégration d’un module de sauvegarde et de restauration automatique de la base de données.
+-	Extension du support multilingue afin de rendre l’application utilisable par un public international.
+-	Amélioration des fonctionnalités de sécurité avec l’authentification multifacteur et la mise en place d’un audit détaillé des actions réalisées dans le système.
+-	Ajout d’un module de planification et d’escalade des tickets pour garantir un suivi optimal des SLA, avec relances automatiques en cas de dépassement.
+

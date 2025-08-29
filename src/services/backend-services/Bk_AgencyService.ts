@@ -1,34 +1,35 @@
 // path: src/backend-services/Bk_AgencyService.ts
 
-import {AgencyDto, AgencyResponseDto, FullAgencyDto} from "@/services/dtos";
-import {prisma} from "@/utils/db";
-import {agencyRepository} from "@/services/repositories/agencies/AgencyRepository";
+import { AgencyDto, AgencyResponseDto, FullAgencyDto } from "@/services/dtos";
+import { prisma } from "@/utils/db";
+import { agencyRepository } from "@/services/repositories/agencies/AgencyRepository";
+import { Prisma } from "@prisma/client";
 
 export async function getLightAgencies(filters?: {
-    countryId?: number;
-    cityId?: number;
-    search?: string;
+  countryId?: number;
+  cityId?: number;
+  search?: string;
 }) {
-    return prisma.agency.findMany({
-        where: {
-            address: {
-                city: {
-                    countryId: filters?.countryId,
-                    id: filters?.cityId,
-                },
-            },
-            name: filters?.search
-                ? {contains: filters.search, mode: "insensitive"}
-                : undefined,
+  return prisma.agency.findMany({
+    where: {
+      address: {
+        city: {
+          countryId: filters?.countryId,
+          id: filters?.cityId,
         },
-        select: {
-            id: true,
-            name: true,
-        },
-        orderBy: {
-            name: "asc",
-        },
-    });
+      },
+      name: filters?.search
+        ? { contains: filters.search, mode: "insensitive" }
+        : undefined,
+    },
+    select: {
+      id: true,
+      name: true,
+    },
+    orderBy: {
+      name: "asc",
+    },
+  });
 }
 
 /**
@@ -37,96 +38,117 @@ export async function getLightAgencies(filters?: {
  * @param agencyName
  * @returns {Promise<FullAgencyDto | null>} agency or null
  */
-export async function findAgencyByName(agencyName: string): Promise<FullAgencyDto | null> {
-    const agency = await prisma.agency.findFirst({
-        where: {
-            name: agencyName,
-        },
-    }) as FullAgencyDto | null;
+export async function findAgencyByName(
+  agencyName: string
+): Promise<FullAgencyDto | null> {
+  const agency = (await prisma.agency.findFirst({
+    where: {
+      name: agencyName,
+    },
+  })) as FullAgencyDto | null;
+
+  if (!agency) {
+    return null;
+  }
+
+  return agency;
+}
+
+export async function getAgencyId(
+  country: string,
+  city: string,
+  agencyName: string
+): Promise<number | null> {
+  try {
+    const agencyId = await agencyRepository.getAgencyId(
+      country,
+      city,
+      agencyName
+    );
+
+    if (!agencyId) {
+      throw new Error("Agency not found");
+    }
+    return agencyId;
+  } catch (error) {
+    console.error("Error getting agency id:", error);
+    throw error;
+  }
+}
+
+export async function getAgencyById(
+  id: number
+): Promise<AgencyResponseDto | null> {
+  try {
+    const agency = await agencyRepository.getAgencyById(id);
 
     if (!agency) {
-        return null;
+      throw new Error("Agency not found");
     }
 
     return agency;
+  } catch (error) {
+    console.error("Error getting agency:", error);
+    throw error;
+  }
 }
 
-export async function getAgencyId(country: string, city: string, agencyName: string): Promise<number | null> {
-
-    try {
-        const agencyId = await agencyRepository.getAgencyId(country, city, agencyName);
-
-
-        if (!agencyId) {
-            throw new Error("Agency not found");
-        }
-        return agencyId;
-    } catch (error) {
-        console.error("Error getting agency id:", error);
-        throw error;
-    }
-}
-
-export async function getAgencyById(id: number): Promise<AgencyResponseDto | null> {
-    try {
-        const agency = await agencyRepository.getAgencyById(id);
-
-        if (!agency) {
-            throw new Error("Agency not found");
-        }
-
-        return agency;
-    } catch (error) {
-        console.error("Error getting agency:", error);
-        throw error;
-    }
-}
-
-
-export async function getAgencies(p0: {
+export async function getAgencies({ page, limit, search, sortKey, sortDir }: {
     page: number;
     limit: number;
     search: string;
     sortKey: string;
     sortDir: string;
-}): Promise<AgencyDto[] | null> {
+}) {
     try {
+        const where: Prisma.AgencyWhereInput = search ? {
+            OR: [
+                { name: { contains: search, mode: 'insensitive' } },
+                { location: { contains: search, mode: 'insensitive' } },
+            ],
+        } : {};
 
-        const agencies = await prisma.agency.findMany(
-            {
-                select: {
-                    id: true,
-                    name: true,
-                    location: true,
-                    addressId: true,
-                    capacity: true,
-                    availableSlots: true,
-                    createdAt: true,
-                    updatedAt: true,
-                    address: {
-                        select: {
-                            id: true,
-                            street: true,
-                            complement: true,
-                            streetNumber: true,
-                            boxNumber: true,
-                            city: {
-                                select: {
-                                    id: true,
-                                    name: true,
-                                    country: {
-                                        select: {
-                                            id: true,
-                                            name: true,
-                                        }
+        const total = await prisma.agency.count({ where });
+
+        const agencies = await prisma.agency.findMany({
+            where,
+            select: {
+                id: true,
+                name: true,
+                location: true,
+                addressId: true,
+                capacity: true,
+                availableSlots: true,
+                createdAt: true,
+                updatedAt: true,
+                address: {
+                    select: {
+                        id: true,
+                        street: true,
+                        complement: true,
+                        streetNumber: true,
+                        boxNumber: true,
+                        city: {
+                            select: {
+                                id: true,
+                                name: true,
+                                country: {
+                                    select: {
+                                        id: true,
+                                        name: true,
                                     }
                                 }
-                            },
+                            }
                         },
                     },
                 },
-            }
-        );
+            },
+            orderBy: {
+                [sortKey]: sortDir,
+            },
+            skip: (page - 1) * limit,
+            take: limit,
+        });
 
         if (!agencies) {
             throw new Error("Agencies not found");
@@ -159,7 +181,12 @@ export async function getAgencies(p0: {
             updatedAt: agency.updatedAt,
         }));
 
-        return formattedAgencies;
+        return {
+            data: formattedAgencies,
+            total,
+            page,
+            totalPages: Math.ceil(total / limit),
+        };
 
     } catch (error) {
         console.error("Error getting agencies for super admin:", error);
@@ -168,22 +195,32 @@ export async function getAgencies(p0: {
 }
 
 // region agency admin functions
-export async function getAgenciesByAdminId(staffId: number, p0: {
+export async function getAgenciesByAdminId(staffId: number, { page, limit, search, sortKey, sortDir }: {
     page: number;
     limit: number;
     search: string;
     sortKey: string;
     sortDir: string;
-}): Promise<AgencyDto[] | null> {
+}) {
     if (!staffId) {
         throw new Error("Invalid admin id");
     }
 
     try {
+        const where: Prisma.AgencyStaffWhereInput = {
+            staffId,
+            agency: search ? {
+                OR: [
+                    { name: { contains: search, mode: 'insensitive' } },
+                    { location: { contains: search, mode: 'insensitive' } },
+                ],
+            } : {},
+        };
+
+        const total = await prisma.agencyStaff.count({ where });
+
         const agencies = await prisma.agencyStaff.findMany({
-            where: {
-                staffId,
-            },
+            where,
             include: {
                 agency: {
                     select: {
@@ -220,8 +257,15 @@ export async function getAgenciesByAdminId(staffId: number, p0: {
                 },
 
             },
-
+            orderBy: {
+                agency: {
+                    [sortKey]: sortDir,
+                }
+            },
+            skip: (page - 1) * limit,
+            take: limit,
         });
+
         if (!agencies) {
             throw new Error("Agencies not found");
         }
@@ -253,7 +297,12 @@ export async function getAgenciesByAdminId(staffId: number, p0: {
             updatedAt: agency.agency.updatedAt,
         }));
 
-        return formattedAgencies;
+        return {
+            data: formattedAgencies,
+            total,
+            page,
+            totalPages: Math.ceil(total / limit),
+        };
 
     } catch (error) {
         console.error("Error getting agencies by admin id:", error);
@@ -261,33 +310,35 @@ export async function getAgenciesByAdminId(staffId: number, p0: {
     }
 }
 
-export async function createAgency(agencyData: AgencyDto, staffId: number): Promise<AgencyResponseDto | null> {
-    try {
-        const agency = await agencyRepository.createAgency(agencyData, staffId);
-        if (!agency) {
-            throw new Error("Agency not created");
-        }
-        return agency;
-    } catch (error) {
-        console.error("Error creating agency:", error);
-        throw error;
+export async function createAgency(
+  agencyData: AgencyDto,
+  staffId: number
+): Promise<AgencyResponseDto | null> {
+  try {
+    const agency = await agencyRepository.createAgency(agencyData, staffId);
+    if (!agency) {
+      throw new Error("Agency not created");
     }
+    return agency;
+  } catch (error) {
+    console.error("Error creating agency:", error);
+    throw error;
+  }
 }
 
-export async function updateAgency(agencyData: AgencyDto): Promise<AgencyResponseDto | null> {
-    try {
-        const agency = await agencyRepository.updateAgency(agencyData);
-        if (!agency) {
-            throw new Error("Agency not updated");
-        }
-        return agency;
-    } catch (error) {
-        console.error("Error updating agency:", error);
-        throw error;
+export async function updateAgency(
+  agencyData: AgencyDto
+): Promise<AgencyResponseDto | null> {
+  try {
+    const agency = await agencyRepository.updateAgency(agencyData);
+    if (!agency) {
+      throw new Error("Agency not updated");
     }
+    return agency;
+  } catch (error) {
+    console.error("Error updating agency:", error);
+    throw error;
+  }
 }
-
 
 // endregion
-
-

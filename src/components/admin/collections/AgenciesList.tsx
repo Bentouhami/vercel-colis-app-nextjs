@@ -1,21 +1,21 @@
 'use client';
 
-import React, {useCallback, useEffect, useState} from 'react';
-import {useSession} from 'next-auth/react';
-import {useRouter} from 'next/navigation';
-import {toast} from 'sonner';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import axios from 'axios';
-import {MoreHorizontal} from 'lucide-react';
+import { MoreHorizontal } from 'lucide-react';
 
-import {AgencyDto} from '@/services/dtos/agencies/AgencyDto';
-import {RoleDto} from '@/services/dtos';
-import {getAgenciesForAdmin} from '@/services/frontend-services/agencies/AgencyService';
-import {DOMAIN, API_DOMAIN} from '@/utils/constants';
+import { AgencyDto } from '@/services/dtos/agencies/AgencyDto';
+import { RoleDto } from '@/services/dtos';
+import { getAgenciesForAdmin } from '@/services/frontend-services/agencies/AgencyService';
+import { DOMAIN, API_DOMAIN } from '@/utils/constants';
 
 import {
     Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import {Button} from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -24,14 +24,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {Input} from '@/components/ui/input';
-import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationNext,
-    PaginationPrevious
-} from '@/components/ui/pagination';
+import { Input } from '@/components/ui/input';
 
 enum SortDirection {
     ASC = 'asc',
@@ -52,13 +45,13 @@ const defaultColumnVisibility: Record<string, boolean> = {
 };
 
 export default function AgenciesList() {
-    const {data: session} = useSession();
+    const { data: session } = useSession();
     const router = useRouter();
 
     const [agencies, setAgencies] = useState<AgencyDto[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const [sortConfig, setSortConfig] = useState<SortConfig>({key: 'name', direction: SortDirection.ASC});
+    const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'name', direction: SortDirection.ASC });
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const agenciesPerPage = 5;
@@ -81,14 +74,15 @@ export default function AgenciesList() {
                 sortKey: sortConfig.key,
                 sortDir: sortConfig.direction,
             });
+            console.log(res);
 
-            if (res.status === 200) {
+            if (res) {
+                setAgencies(res.data || []);
+                setTotalPages(res.totalPages);
             }
 
-            setAgencies(res);
-            setTotalPages(res.totalPages);
-
         } catch (error) {
+            console.error(error);
             toast.error('Failed to fetch agencies');
         } finally {
             setIsLoading(false);
@@ -123,6 +117,8 @@ export default function AgenciesList() {
             toast.error('Failed to delete agency');
         }
     };
+
+    const paginate = (page: number) => setCurrentPage(page);
 
     return (
         <div className="space-y-6 p-4">
@@ -203,12 +199,12 @@ export default function AgenciesList() {
                             <TableCell className="text-right">
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Button variant="ghost"><MoreHorizontal/></Button>
+                                        <Button variant="ghost"><MoreHorizontal /></Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end">
                                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                         <DropdownMenuItem onClick={() => handleEdit(agency.id)}>Edit</DropdownMenuItem>
-                                        <DropdownMenuSeparator/>
+                                        <DropdownMenuSeparator />
                                         <DropdownMenuItem
                                             onClick={() => handleDelete(agency.id)}>Delete</DropdownMenuItem>
                                     </DropdownMenuContent>
@@ -220,19 +216,16 @@ export default function AgenciesList() {
             </Table>
 
             {/* Pagination */}
-            <Pagination className="mt-4">
-                <PaginationContent>
-                    <PaginationItem>
-                        <PaginationPrevious size="default" onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}/>
-                    </PaginationItem>
-                    <PaginationItem>
-                        <span className="text-sm font-semibold">Page {currentPage} sur {totalPages}</span>
-                    </PaginationItem>
-                    <PaginationItem>
-                        <PaginationNext size="default" onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}/>
-                    </PaginationItem>
-                </PaginationContent>
-            </Pagination>
+            <div className="flex justify-between items-center mt-4">
+                <div>
+                    Page {currentPage} sur {totalPages}
+                </div>
+                <div className="flex gap-2">
+                    <Button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>Précédent</Button>
+                    <Button onClick={() => paginate(currentPage + 1)}
+                            disabled={currentPage === totalPages}>Suivant</Button>
+                </div>
+            </div>
         </div>
     );
 }
