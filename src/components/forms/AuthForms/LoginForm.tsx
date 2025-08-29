@@ -68,7 +68,7 @@ export default function LoginForm() {
                         if (updatedSession?.user?.role) {
                             const userRole = updatedSession.user.role
 
-                            // 🚀 ROLE-BASED REDIRECTS: Determine redirect based on role
+                            //  ROLE-BASED REDIRECTS: Determine redirect based on role
                             let redirectUrl: string
 
                             if (["SUPER_ADMIN", "AGENCY_ADMIN", "ACCOUNTANT"].includes(userRole)) {
@@ -95,7 +95,7 @@ export default function LoginForm() {
                                 }
                             }
 
-                            console.log("🔄 Login redirect:", { userRole, customRedirect, redirectUrl })
+
                             router.push(redirectUrl)
                         } else {
                             // Fallback if no role detected
@@ -293,7 +293,7 @@ export default function LoginForm() {
                                 >
                                     <p className="text-sm text-gray-600 dark:text-gray-400">
                                         <Link
-                                            href="/client/auth/forgot-password"
+                                            href="/auth/forgot-password"
                                             className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors hover:underline"
                                         >
                                             Vous avez oublié votre mot de passe ?
@@ -306,6 +306,15 @@ export default function LoginForm() {
                                             className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors hover:underline"
                                         >
                                             Créez un compte
+                                        </Link>
+                                    </p>
+                                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                                        Ou{" "}
+                                        <Link
+                                            href="/"
+                                            className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors hover:underline"
+                                        >
+                                            retourner à l&apos;accueil
                                         </Link>
                                     </p>
                                 </div>

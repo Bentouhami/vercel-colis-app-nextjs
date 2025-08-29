@@ -75,7 +75,7 @@ const HeaderNavbar: React.FC<NavbarProps> = ({ role, isLoggedIn, name, email, im
 
     const CurrentThemeIcon = getCurrentThemeIcon()
 
-    // 🚀 ROLE-BASED NAVIGATION: Different navigation for admins vs clients
+    //  ROLE-BASED NAVIGATION: Different navigation for admins vs clients
     const getNavigationLinks = () => {
         if (isAdmin) {
             // 🔒 Admin navigation - ONLY admin routes (no access to public routes)

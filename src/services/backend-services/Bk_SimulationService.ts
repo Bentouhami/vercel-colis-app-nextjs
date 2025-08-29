@@ -42,9 +42,6 @@ export async function getSimulationById(
 export async function createSimulation(
   simulationData: CreateSimulationRequestDto
 ): Promise<CreatedSimulationResponseDto | null> {
-  // ckeck if function is called
-  console.log("createSimulation called with data:", simulationData);
-
   // Check if departureAgencyId is provided
   if (!simulationData.departureAgencyId) {
     return null;

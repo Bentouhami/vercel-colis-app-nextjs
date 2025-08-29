@@ -74,7 +74,7 @@ export default function AgenciesList() {
                 sortKey: sortConfig.key,
                 sortDir: sortConfig.direction,
             });
-            console.log(res);
+
 
             if (res) {
                 setAgencies(res.data || []);
@@ -223,7 +223,7 @@ export default function AgenciesList() {
                 <div className="flex gap-2">
                     <Button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>Précédent</Button>
                     <Button onClick={() => paginate(currentPage + 1)}
-                            disabled={currentPage === totalPages}>Suivant</Button>
+                        disabled={currentPage === totalPages}>Suivant</Button>
                 </div>
             </div>
         </div>

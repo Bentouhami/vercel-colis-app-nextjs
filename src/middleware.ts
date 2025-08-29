@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth/auth-edge";
 import { RoleDto } from "@/services/dtos";
 
-// 🚀 COMPREHENSIVE: Complete role-based access control based on your actual routes
+//  COMPREHENSIVE: Complete role-based access control based on your actual routes
 const ROUTE_CONFIG = {
   // Public routes - accessible to everyone when NOT authenticated
   public: [
@@ -141,7 +141,7 @@ const ROUTE_CONFIG = {
   ],
 } as const;
 
-// 🚀 ROLE DEFINITIONS
+//  ROLE DEFINITIONS
 const ADMIN_ROLES: RoleDto[] = [
   RoleDto.SUPER_ADMIN,
   RoleDto.AGENCY_ADMIN,
@@ -149,7 +149,7 @@ const ADMIN_ROLES: RoleDto[] = [
 ];
 const CLIENT_ROLES: RoleDto[] = [RoleDto.CLIENT, RoleDto.DESTINATAIRE];
 
-// 🚀 ROLE-BASED REDIRECTS
+//  ROLE-BASED REDIRECTS
 const ROLE_REDIRECTS = {
   [RoleDto.CLIENT]: "/client",
   [RoleDto.DESTINATAIRE]: "/client", // Same access as CLIENT
@@ -158,7 +158,7 @@ const ROLE_REDIRECTS = {
   [RoleDto.ACCOUNTANT]: "/admin",
 } as const;
 
-// 🚀 ROUTE CHECKING FUNCTIONS
+//  ROUTE CHECKING FUNCTIONS
 function isPublicRoute(pathname: string): boolean {
   return ROUTE_CONFIG.public.some((route) => {
     if (route.includes("[")) {
@@ -218,9 +218,7 @@ export default auth((req) => {
   const isLoggedIn = !!req.auth;
   const userRole = req.auth?.user?.role as RoleDto;
 
-  console.log("🔍 Middleware:", { pathname, userRole, isLoggedIn });
-
-  // 🚀 PERFORMANCE: Skip processing for static files
+  //  PERFORMANCE: Skip processing for static files
   if (
     pathname.startsWith("/_next/") ||
     pathname.includes(".") ||
@@ -229,58 +227,55 @@ export default auth((req) => {
     return NextResponse.next();
   }
 
-  // 🚀 ALLOW: Auth API routes (needed for authentication flow)
+  //  ALLOW: Auth API routes (needed for authentication flow)
   if (isAuthApiRoute(pathname)) {
     return NextResponse.next();
   }
 
-  // 🚀 ALLOW: Error routes
+  //  ALLOW: Error routes
   if (isErrorRoute(pathname)) {
     return NextResponse.next();
   }
 
-  // 🚀 REDIRECT: Authenticated users on auth pages
+  //  REDIRECT: Authenticated users on auth pages
   if (isLoggedIn && userRole && isAuthRoute(pathname)) {
-    console.log("🔄 Authenticated user on auth page, redirecting to dashboard");
     const redirectUrl = ROLE_REDIRECTS[userRole];
     return NextResponse.redirect(new URL(redirectUrl, req.url));
   }
 
-  // 🚀 REDIRECT: Root redirect for authenticated users
+  //  REDIRECT: Root redirect for authenticated users
   if (pathname === "/" && isLoggedIn && userRole) {
-    console.log("🔄 Root redirect for authenticated user");
     return NextResponse.redirect(new URL(ROLE_REDIRECTS[userRole], req.url));
   }
 
-  // 🚀 ALLOW: Public routes for unauthenticated users only
+  //  ALLOW: Public routes for unauthenticated users only
   if (!isLoggedIn && isPublicRoute(pathname)) {
     return NextResponse.next();
   }
 
-  // 🚀 ALLOW: Auth routes for unauthenticated users
+  //  ALLOW: Auth routes for unauthenticated users
   if (!isLoggedIn && isAuthRoute(pathname)) {
     return NextResponse.next();
   }
 
-  // 🚀 REQUIRE AUTH: Protected routes need authentication
+  //  REQUIRE AUTH: Protected routes need authentication
   if (!isLoggedIn) {
-    console.log("🚫 No authentication, redirecting to login");
     const loginUrl = new URL("/auth/login", req.url);
     loginUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  // 🛡️ STRICT ROLE-BASED ACCESS CONTROL
+  // STRICT ROLE-BASED ACCESS CONTROL
 
-  // 🔒 ADMIN ROLES: Can ONLY access /admin/* routes (MOST RESTRICTIVE)
+  // ADMIN ROLES: Can ONLY access /admin/* routes (MOST RESTRICTIVE)
   if (ADMIN_ROLES.includes(userRole)) {
-    // ✅ Allow admin-only routes
+    //  Allow admin-only routes
     if (isAdminOnlyRoute(pathname)) {
       return NextResponse.next();
     }
 
-    // 🚫 Block ALL other routes for admins (including root, client, public)
-    console.log("🚫 Admin blocked from non-admin route:", pathname);
+    //  Block ALL other routes for admins (including root, client, public)
+
     const unauthorizedUrl = new URL("/admin/unauthorized", req.url);
     unauthorizedUrl.searchParams.set("reason", "admin_restricted_access");
     unauthorizedUrl.searchParams.set("attempted", pathname);
@@ -288,21 +283,20 @@ export default auth((req) => {
     return NextResponse.redirect(unauthorizedUrl);
   }
 
-  // 👤 CLIENT ROLES: CLIENT, DESTINATAIRE (same access)
+  //  CLIENT ROLES: CLIENT, DESTINATAIRE (same access)
   if (CLIENT_ROLES.includes(userRole)) {
-    // ✅ Allow client routes
+    //  Allow client routes
     if (isClientRoute(pathname)) {
       return NextResponse.next();
     }
 
-    // ✅ Allow public routes for clients (they can still access public pages)
+    //  Allow public routes for clients (they can still access public pages)
     if (isPublicRoute(pathname)) {
       return NextResponse.next();
     }
 
-    // 🚫 Block admin routes for clients
+    //  Block admin routes for clients
     if (isAdminOnlyRoute(pathname)) {
-      console.log("🚫 Client blocked from admin route:", pathname);
       const unauthorizedUrl = new URL("/client/unauthorized", req.url);
       unauthorizedUrl.searchParams.set("reason", "client_blocked_from_admin");
       unauthorizedUrl.searchParams.set("attempted", pathname);
@@ -310,16 +304,16 @@ export default auth((req) => {
       return NextResponse.redirect(unauthorizedUrl);
     }
 
-    // ✅ Allow other routes for clients
+    //  Allow other routes for clients
     return NextResponse.next();
   }
 
   // Default: allow access for unknown roles (shouldn't happen)
-  console.log("⚠️ Unknown role, allowing access:", userRole);
+
   return NextResponse.next();
 });
 
-// 🚀 COMPREHENSIVE: Match all routes except static files
+//  COMPREHENSIVE: Match all routes except static files
 export const config = {
   matcher: [
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff|woff2|ttf|eot)$).*)",

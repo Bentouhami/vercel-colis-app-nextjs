@@ -30,13 +30,13 @@ export async function GET(
   const params = await props.params;
 
   try {
-    // ✅ 1. Check authentication
+    //  1. Check authentication
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
     }
 
-    // ✅ 2. Block admin accounts from payments
+    //  2. Block admin accounts from payments
     if (
       session.user.role &&
       [RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN, RoleDto.ACCOUNTANT].includes(
@@ -52,7 +52,7 @@ export async function GET(
       );
     }
 
-    // ✅ 3. Validate simulation ID
+    //  3. Validate simulation ID
     const simulationId = Number(params.id);
     if (isNaN(simulationId) || simulationId <= 0) {
       return NextResponse.json(
@@ -61,7 +61,7 @@ export async function GET(
       );
     }
 
-    // ✅ 4. Get simulation from database
+    //  4. Get simulation from database
     const simulation = await getSimulationById(simulationId);
     if (!simulation) {
       return NextResponse.json(
@@ -70,7 +70,7 @@ export async function GET(
       );
     }
 
-    // ✅ 5. Check if user owns this simulation (sender or recipient)
+    //  5. Check if user owns this simulation (sender or recipient)
     const currentUserId = Number(session.user.id);
     const isOwner =
       simulation.userId === currentUserId ||
@@ -86,7 +86,7 @@ export async function GET(
       );
     }
 
-    // ✅ 6. Check if simulation has a valid price
+    //  6. Check if simulation has a valid price
     if (!simulation.totalPrice || simulation.totalPrice <= 0) {
       return NextResponse.json(
         { error: "Prix de la simulation non disponible" },
@@ -96,7 +96,7 @@ export async function GET(
     // get full simulation by id
     const envoi = await getEnvoiById(simulationId);
 
-    // ✅ 7. Check if simulation is not already paid
+    //  7. Check if simulation is not already paid
     if (envoi?.paid) {
       return NextResponse.json(
         { error: "Cette simulation a déjà été payée" },
@@ -104,7 +104,7 @@ export async function GET(
       );
     }
 
-    // ✅ 8. Return secure payment data
+    //  8. Return secure payment data
     return NextResponse.json(
       {
         success: true,

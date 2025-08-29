@@ -65,7 +65,7 @@ export default function RegisterForm() {
             address: formValues.address,
         }
 
-        console.log("Submitting registration form with data:", dto)
+
 
         startTransition(() => {
             (async () => {

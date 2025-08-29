@@ -11,7 +11,7 @@ import GitHubProvider from "@auth/core/providers/github";
 import { RoleDto } from "@/services/dtos/enums/EnumsDto";
 import type { AddressResponseDto } from "@/services/dtos";
 import { getUserForAuthentication } from "@/services/backend-services/Bk_UserService";
-// ✅ CONSISTENT: Only import from utils/db
+//  CONSISTENT: Only import from utils/db
 import { prisma } from "@/utils/db";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -28,10 +28,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials): Promise<User | null> {
-        if (process.env.NODE_ENV === "development") {
-          console.log("🔐 Starting authentication for:", credentials?.email);
-        }
-
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Please enter a valid email and password");
         }
@@ -42,16 +38,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           );
 
           if (!user) {
-            if (process.env.NODE_ENV === "development") {
-              console.log("❌ User not found for:", credentials.email);
-            }
             throw new Error("Incorrect credentials");
           }
 
           if (!user.password) {
-            if (process.env.NODE_ENV === "development") {
-              console.log("❌ No password set for:", credentials.email);
-            }
             throw new Error("Account not configured for password login");
           }
 
@@ -61,19 +51,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           );
 
           if (!passwordValid) {
-            if (process.env.NODE_ENV === "development") {
-              console.log("❌ Invalid password for:", credentials.email);
-            }
             throw new Error("Incorrect credentials");
-          }
-
-          if (process.env.NODE_ENV === "development") {
-            console.log(
-              "✅ Authentication successful for:",
-              user.email,
-              "Role:",
-              user.role
-            );
           }
 
           return {
@@ -89,7 +67,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             emailVerified: user.emailVerified ?? null,
           } as User;
         } catch (error) {
-          console.error("❌ Authorization error:", error);
+          console.error(" Authorization error:", error);
           return null;
         }
       },

@@ -48,7 +48,7 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaNeon } from "@prisma/adapter-neon";
 
-// 🚀 REMOVED: fetchConnectionCache is now always true by default
+//  REMOVED: fetchConnectionCache is now always true by default
 // neonConfig.fetchConnectionCache = true
 
 const connectionString = process.env.DATABASE_URL!;

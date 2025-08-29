@@ -104,10 +104,8 @@ export async function getUserById(
   id: number
 ): Promise<CreateDestinataireDto | null> {
   try {
-    console.log("🔍 getUserById called with ID:", id);
-
     if (!id || isNaN(id) || id <= 0) {
-      console.error("❌ Invalid user ID:", id);
+      console.error(" Invalid user ID:", id);
       throw new Error("ID utilisateur invalide");
     }
 
@@ -118,11 +116,6 @@ export async function getUserById(
       },
       timeout: 10000,
       withCredentials: true,
-    });
-
-    console.log("✅ getUserById response:", {
-      status: response.status,
-      data: response.data,
     });
 
     if (response.status !== 200) {
@@ -153,14 +146,13 @@ export async function getUserById(
       role: userData.role || RoleDto.DESTINATAIRE,
     };
 
-    console.log("🎉 getUserById success:", destinataireData);
     return destinataireData;
   } catch (error: unknown) {
-    console.error("💥 Error in getUserById:", error);
+    console.error(" Error in getUserById:", error);
 
     if (axios.isAxiosError(error)) {
       const axiosError = error as AxiosError;
-      console.error("📊 Axios Error Details:", {
+      console.error(" Axios Error Details:", {
         message: axiosError.message,
         status: axiosError.response?.status,
         data: axiosError.response?.data,
@@ -262,12 +254,6 @@ export async function registerUserEnhanced(
   data: RegisterUserDto
 ): Promise<{ success: boolean; message: string; userId?: number }> {
   try {
-    console.log(
-      "🚀 registerUser called with data:",
-      JSON.stringify(data, null, 2)
-    );
-    console.log("📡 API endpoint:", `${API_DOMAIN}/auth/register`);
-
     // Validation des données avant envoi
     if (
       !data.firstName ||
@@ -283,7 +269,7 @@ export async function registerUserEnhanced(
         phoneNumber: !!data.phoneNumber,
         password: !!data.password,
       };
-      console.error("❌ Missing required fields:", missingFields);
+      console.error(" Missing required fields:", missingFields);
       throw new Error(
         `Champs requis manquants: ${Object.entries(missingFields)
           .filter(([_, exists]) => !exists)
@@ -295,7 +281,7 @@ export async function registerUserEnhanced(
     // Validation format email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(data.email)) {
-      console.error("❌ Invalid email format:", data.email);
+      console.error(" Invalid email format:", data.email);
       throw new Error("Format d'email invalide");
     }
 
@@ -317,11 +303,6 @@ export async function registerUserEnhanced(
       password: data.password,
     };
 
-    console.log(
-      "🧹 Cleaned data being sent:",
-      JSON.stringify({ ...cleanData, password: "***" }, null, 2)
-    );
-
     // Configuration de la requête
     const config = {
       headers: {
@@ -332,36 +313,27 @@ export async function registerUserEnhanced(
       withCredentials: true,
     };
 
-    console.log("⚙️ Request config:", JSON.stringify(config, null, 2));
-
     // Effectuer la requête
-    console.log("📤 Making POST request...");
+
     const response = await axios.post(
       `${API_DOMAIN}/auth/register`,
       cleanData,
       config
     );
 
-    console.log("✅ Response received:");
-    console.log("  - Status:", response.status);
-    console.log("  - Status Text:", response.statusText);
-    console.log("  - Data:", JSON.stringify(response.data, null, 2));
-
     if (response.status !== 201 && response.status !== 200) {
-      console.error("❌ Unexpected status code:", response.status);
+      console.error(" Unexpected status code:", response.status);
       throw new Error(`Statut de réponse inattendu: ${response.status}`);
     }
 
     // Vérification de la structure de réponse
     if (!response.data) {
-      console.error("❌ No response data");
+      console.error(" No response data");
       throw new Error("Aucune donnée dans la réponse");
     }
 
     const userData = response.data.user || response.data.data || response.data;
     const userId = userData?.id || response.data.userId;
-
-    console.log("🎉 User registered successfully with ID:", userId);
 
     return {
       success: true,
@@ -369,11 +341,11 @@ export async function registerUserEnhanced(
       userId: userId,
     };
   } catch (error: unknown) {
-    console.error("💥 Error in registerUser:", error);
+    console.error(" Error in registerUser:", error);
 
     if (axios.isAxiosError(error)) {
       const axiosError = error as AxiosError;
-      console.error("📊 Axios Error Details:", {
+      console.error(" Axios Error Details:", {
         message: axiosError.message,
         status: axiosError.response?.status,
         data: axiosError.response?.data,
@@ -419,10 +391,9 @@ export async function addDestinataire(
 ): Promise<number | null> {
   try {
     console.log(
-      "🚀 addDestinataire called with data:",
+      " addDestinataire called with data:",
       JSON.stringify(data, null, 2)
     );
-    console.log("📡 API endpoint:", `${API_DOMAIN}/users/destinataires`);
 
     // Validation des données avant envoi
     if (!data.firstName || !data.lastName || !data.email || !data.phoneNumber) {
@@ -432,7 +403,7 @@ export async function addDestinataire(
         email: !!data.email,
         phoneNumber: !!data.phoneNumber,
       };
-      console.error("❌ Missing required fields:", missingFields);
+      console.error(" Missing required fields:", missingFields);
       throw new Error(
         `Champs requis manquants: ${Object.entries(missingFields)
           .filter(([_, exists]) => !exists)
@@ -444,7 +415,7 @@ export async function addDestinataire(
     // Validation format email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(data.email)) {
-      console.error("❌ Invalid email format:", data.email);
+      console.error(" Invalid email format:", data.email);
       throw new Error("Format d'email invalide");
     }
 
@@ -460,11 +431,6 @@ export async function addDestinataire(
       role: data.role || RoleDto.DESTINATAIRE,
     };
 
-    console.log(
-      "🧹 Cleaned data being sent:",
-      JSON.stringify(cleanData, null, 2)
-    );
-
     // Configuration de la requête
     const config = {
       headers: {
@@ -475,45 +441,36 @@ export async function addDestinataire(
       withCredentials: true, // Important pour les cookies de session
     };
 
-    console.log("⚙️ Request config:", JSON.stringify(config, null, 2));
-
     // Effectuer la requête
-    console.log("📤 Making POST request...");
     const response = await axios.post(
       `${API_DOMAIN}/users/destinataires`,
       cleanData,
       config
     );
 
-    console.log("✅ Response received:");
-    console.log("  - Status:", response.status);
-    console.log("  - Status Text:", response.statusText);
-    console.log("  - Headers:", JSON.stringify(response.headers, null, 2));
-    console.log("  - Data:", JSON.stringify(response.data, null, 2));
-
-    // ✅ CORRECTION: L'API retourne 200, pas 201
+    //  CORRECTION: L'API retourne 200, pas 201
     if (response.status !== 200) {
-      console.error("❌ Unexpected status code:", response.status);
+      console.error(" Unexpected status code:", response.status);
       throw new Error(`Statut de réponse inattendu: ${response.status}`);
     }
 
     // Vérification de la structure de réponse
     if (!response.data) {
-      console.error("❌ No response data");
+      console.error(" No response data");
       throw new Error("Aucune donnée dans la réponse");
     }
 
-    // ✅ CORRECTION: La structure est {data: destinataireData}
+    //  CORRECTION: La structure est {data: destinataireData}
     const destinataireData = response.data.data;
     if (!destinataireData) {
-      console.error("❌ No data field in response:", response.data);
+      console.error(" No data field in response:", response.data);
       throw new Error("Champ 'data' manquant dans la réponse");
     }
 
-    // ✅ CORRECTION: L'ID est dans destinataireData.id
+    //  CORRECTION: L'ID est dans destinataireData.id
     const destinataireId = destinataireData.id;
     if (!destinataireId) {
-      console.error("❌ No id in destinataire data:", destinataireData);
+      console.error(" No id in destinataire data:", destinataireData);
       throw new Error("ID du destinataire manquant dans les données");
     }
 
@@ -523,12 +480,12 @@ export async function addDestinataire(
     );
     return destinataireId;
   } catch (error: unknown) {
-    console.error("💥 Error in addDestinataire:", error);
+    console.error(" Error in addDestinataire:", error);
 
     // Type guard pour AxiosError
     if (axios.isAxiosError(error)) {
       const axiosError = error as AxiosError;
-      console.error("📊 Axios Error Details:");
+      console.error(" Axios Error Details:");
       console.error("  - Message:", axiosError.message);
       console.error("  - Code:", axiosError.code);
       console.error("  - Status:", axiosError.response?.status);
@@ -597,12 +554,12 @@ export async function addDestinataire(
       }
     } else if (error instanceof Error) {
       // Erreur JavaScript standard
-      console.error("📊 Standard Error:", error.message);
-      console.error("📊 Stack:", error.stack);
+      console.error(" Standard Error:", error.message);
+      console.error(" Stack:", error.stack);
       throw new Error(`Erreur: ${error.message}`);
     } else {
       // Erreur inconnue
-      console.error("📊 Unknown Error:", error);
+      console.error(" Unknown Error:", error);
       throw new Error("Une erreur inconnue s'est produite");
     }
   }

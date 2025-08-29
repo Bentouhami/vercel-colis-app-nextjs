@@ -6,11 +6,11 @@ import GoogleProvider from "@auth/core/providers/google";
 import GitHubProvider from "@auth/core/providers/github";
 import type { RoleDto } from "@/services/dtos/enums/EnumsDto";
 
-// 🚀 EDGE-COMPATIBLE: No Prisma adapter, no bcrypt
+//  EDGE-COMPATIBLE: No Prisma adapter, no bcrypt
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  // ❌ Remove PrismaAdapter for edge compatibility
+  //  Remove PrismaAdapter for edge compatibility
   session: {
-    strategy: "jwt", // ✅ JWT works on edge
+    strategy: "jwt", //  JWT works on edge
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   providers: [
@@ -26,7 +26,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         try {
-          // 🚀 Use API route for authentication (runs on serverless, not edge)
+          //  Use API route for authentication (runs on serverless, not edge)
           const response = await fetch(
             `${process.env.NEXTAUTH_URL}/api/auth/verify-credentials`,
             {

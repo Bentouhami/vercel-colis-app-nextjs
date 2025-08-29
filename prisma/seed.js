@@ -32,9 +32,7 @@ async function createManyChunked(createManyFn, data, size, label) {
     // tiny delay helps Neon/Vercel PgBouncer
     await sleep(30);
   }
-  if (data.length) {
-    console.log(`  • ${label}: inserted ${total} (skipDuplicates on)`);
-  }
+
   return total;
 }
 
@@ -131,7 +129,7 @@ async function ensureGlobalTarifs({
 
 async function main() {
   // region countries + timezones + cities
-  console.log("🌍 Seeding countries, timezones, and cities…");
+  c;
 
   const dataFilePath = path.join(
     process.cwd(),
@@ -169,8 +167,6 @@ async function main() {
       },
     });
 
-    console.log(`✅ Country "${country.name}" ready.`);
-
     // Timezones → createMany in chunks (unique on [zoneName, countryId])
     const tzRows = (country.timezones || []).map((tz) => ({
       countryId: createdCountry.id,
@@ -200,7 +196,6 @@ async function main() {
     );
   }
 
-  console.log("✔ Seeding countries/timezones/cities completed.\n");
   // endregion
 
   // region query required cities
@@ -261,7 +256,7 @@ async function main() {
     streetNumber: "1",
     cityId: berkaneId,
   });
-  console.log("✔ Addresses ready.");
+
   // endregion
 
   // region agencies (idempotent on [name,addressId])
@@ -328,7 +323,6 @@ async function main() {
     availableSlots: 15,
     addressId: berkaneAddress.id,
   });
-  console.log("✔ Agencies ready.");
   // endregion
 
   // region transport (idempotent by number)
@@ -340,7 +334,6 @@ async function main() {
     currentVolume: 0,
     baseVolume: 42000000.0,
   });
-  console.log("✔ Transport ready.");
   // endregion
 
   // region global tarifs (singleton: agencyId = null)
@@ -350,10 +343,7 @@ async function main() {
     baseRate: 0,
     fixedRate: 15.0,
   });
-  console.log("✔ Global tarifs ready.");
   // endregion
-
-  console.log("\n🎉 Seed completed.");
 }
 
 main()

@@ -38,7 +38,6 @@ export async function POST(request: NextRequest) {
       (await request.json()) as CreateSimulationRequestDto;
 
     if (!simulationDataToCreate) {
-      console.log("simulationDataToCreate is undefined");
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
@@ -61,11 +60,6 @@ export async function POST(request: NextRequest) {
 
     // Assign the userId to the simulation data
     simulationDataToCreate.userId = userId;
-
-    console.log(
-      " ====> Creating simulation with data in POST request in path: src/app/api/v1/simulations/route.ts : ",
-      simulationDataToCreate
-    );
 
     // Create a new simulation using the provided data
     const simulationIdAndVerificationToken = await createSimulation(

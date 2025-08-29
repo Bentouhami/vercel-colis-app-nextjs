@@ -207,8 +207,7 @@ ${JSON.stringify(debugInfo.error, null, 2)}
                 role: RoleDto.DESTINATAIRE,
             }
 
-            console.log("🔍 Form Data:", JSON.stringify(destinataireFormData, null, 2))
-            console.log("📤 API Payload:", JSON.stringify(formattedDestinataireData, null, 2))
+
 
             // Add the destinataire to the database
             const destinataireId = await addDestinataire(formattedDestinataireData)
@@ -233,7 +232,7 @@ ${JSON.stringify(debugInfo.error, null, 2)}
                 throw new Error("Une erreur est survenue lors de l'assignation du transport à la simulation.")
             }
 
-            console.log("✅ Destinataire créé avec succès, ID:", destinataireId)
+
 
             setDebugInfo({
                 formData: destinataireFormData,

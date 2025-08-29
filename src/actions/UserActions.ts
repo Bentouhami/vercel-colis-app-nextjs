@@ -7,8 +7,11 @@ import { loginUserSchema } from "@/utils/validationSchema";
 import { signIn } from "@/auth/auth";
 
 const login = async (email: string, password: string, redirectUrl?: string) => {
-  // ✅ Empêche l'exécution pendant le build Vercel
-  if (process.env.NEXT_PUBLIC_VERCEL_ENV && process.env.NEXT_PUBLIC_VERCEL_ENV !== 'production') {
+  //  Empêche l'exécution pendant le build Vercel
+  if (
+    process.env.NEXT_PUBLIC_VERCEL_ENV &&
+    process.env.NEXT_PUBLIC_VERCEL_ENV !== "production"
+  ) {
     console.warn(
       "⛔ Tentative d'authentification bloquée (environnement Vercel)."
     );
@@ -29,7 +32,7 @@ const login = async (email: string, password: string, redirectUrl?: string) => {
   }
 
   try {
-    // 🚀 Let Auth.js handle everything - no need to pre-fetch user data
+    //  Let Auth.js handle everything - no need to pre-fetch user data
     const result = await signIn("credentials", {
       redirect: false,
       email: loginData.email.toLowerCase().trim(),

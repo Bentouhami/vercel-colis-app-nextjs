@@ -32,7 +32,7 @@ export async function GET(
 
     return NextResponse.json(cities, { status: 200 });
   } catch (error) {
-    console.error("❌ Error in cities API:", error);
+    console.error(" Error in cities API:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

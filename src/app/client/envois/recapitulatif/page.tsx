@@ -113,7 +113,7 @@ export default function EnvoiRecapPage() {
     }, [simulationData?.departureDate, simulationData?.arrivalDate])
 
     const loadSimulationData = useCallback(async (currentRetryCount = 0) => {
-        console.log(`🔄 Loading simulation data (attempt ${currentRetryCount + 1})...`)
+
         setError(null)
         setCurrentStep(0)
         setLoadingState((prev) => ({ ...prev, simulation: true }))
@@ -132,7 +132,7 @@ export default function EnvoiRecapPage() {
             setCurrentStep(2)
             setLoadingState((prev) => ({ ...prev, simulation: false, users: true }))
 
-            console.log("👥 Loading user data...")
+
             const [senderData, destinataireData] = await Promise.all([
                 getUserById(simulation.userId),
                 getUserById(simulation.destinataireId),
@@ -150,13 +150,12 @@ export default function EnvoiRecapPage() {
             }
 
             setSimulationData(completeData)
-            console.log("✅ Simulation data loaded successfully:", completeData)
 
             if (currentRetryCount > 0) {
                 toast.success("Données chargées avec succès !")
             }
         } catch (error: any) {
-            console.error("💥 Error loading simulation data:", error)
+            console.error(" Error loading simulation data:", error)
             const errorMessage = error.message || "Une erreur est survenue lors du chargement des données."
             setError(errorMessage)
             toast.error(errorMessage)
@@ -185,7 +184,7 @@ export default function EnvoiRecapPage() {
         try {
             await new Promise((resolve) => setTimeout(resolve, 1500))
             toast.success("Redirection vers le paiement sécurisé...")
-            // ✅ SÉCURISÉ: Passer seulement l'ID de simulation
+            //  SÉCURISÉ: Passer seulement l'ID de simulation
             router.push(`/client/payment?simulationId=${simulationData.id}`)
         } catch (error) {
             toast.error("Erreur lors de la redirection vers le paiement.")
@@ -244,7 +243,7 @@ Téléphone: ${simulationData.destinataire.phoneNumber}
 
 🗺️  ITINÉRAIRE
 ──────────────────────────────────────────────────────────────
-🚀 DÉPART
+ DÉPART
    Pays: ${simulationData.departureCountry}
    Ville: ${simulationData.departureCity}
    Agence: ${simulationData.departureAgency}
@@ -268,7 +267,7 @@ Date d'arrivée: ${formatDate(simulationData.arrivalDate)}
 💰 TARIFICATION
 ──────────────────────────────────────────────────────────────
 PRIX TOTAL: ${formattedPrice}
-${simulationData.totalPrice ? "✅ Prix confirmé" : "⏳ Prix en cours de calcul"}
+${simulationData.totalPrice ? " Prix confirmé" : "⏳ Prix en cours de calcul"}
 
 ──────────────────────────────────────────────────────────────
 📞 CONTACT SUPPORT: +32 123 456 789
@@ -305,7 +304,7 @@ Ce document a été généré automatiquement le ${new Date().toLocaleString("fr
         try {
             if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
                 await navigator.share(shareData)
-                toast.success("🚀 Partagé avec succès !")
+                toast.success(" Partagé avec succès !")
             } else {
                 const textToCopy = `${shareData.title}\n${shareData.text}\n${shareData.url}`
                 await navigator.clipboard.writeText(textToCopy)
@@ -313,11 +312,11 @@ Ce document a été généré automatiquement le ${new Date().toLocaleString("fr
             }
         } catch (error) {
             console.error("Error sharing:", error)
-            toast.error("❌ Impossible de partager")
+            toast.error(" Impossible de partager")
         }
     }, [simulationData, formattedPrice])
 
-    
+
 
     if (isLoading) {
         return (
@@ -442,7 +441,7 @@ Ce document a été généré automatiquement le ${new Date().toLocaleString("fr
             >
                 {/* Badges d'information */}
                 <div className="flex items-center justify-center gap-4 flex-wrap mb-6">
-                    
+
                     <Badge variant="secondary">
                         <Package className="h-3 w-3 mr-2" />
                         {simulationData.parcels?.length || 0} colis

@@ -1,7 +1,7 @@
 // src/utils/publicRoutesHelper.ts
 export function isPublicRoute(pathname: string): boolean {
   const publicRoutes = [
-    // ❌ Remove auth routes - let middleware handle them
+    //  Remove auth routes - let middleware handle them
     // "/client/auth/login",        // Remove this
     // "/client/auth/register",     // Remove this
     // "/client/auth/forgot-password", // Remove this

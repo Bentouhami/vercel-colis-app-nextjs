@@ -1,95 +1,100 @@
 // path: src/services/backend-services/Bk_AuthService.ts
-import { randomUUID } from "crypto"
-import { addHours } from "date-fns"
-import nodemailer from "nodemailer"
-import { DOMAIN } from "@/utils/constants"
+import { randomUUID } from "crypto";
+import { addHours } from "date-fns";
+import nodemailer from "nodemailer";
+import { DOMAIN } from "@/utils/constants";
 import bcrypt from "bcryptjs";
-import { prisma } from "@/utils/db"
-
+import { prisma } from "@/utils/db";
 
 const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_SERVER_HOST,
-    port: Number(process.env.EMAIL_SERVER_PORT),
-    auth: {
-        user: process.env.EMAIL_SERVER_USER,
-        pass: process.env.EMAIL_SERVER_PASSWORD,
-    },
-})
+  host: process.env.EMAIL_SERVER_HOST,
+  port: Number(process.env.EMAIL_SERVER_PORT),
+  auth: {
+    user: process.env.EMAIL_SERVER_USER,
+    pass: process.env.EMAIL_SERVER_PASSWORD,
+  },
+});
 
 /**
  * Envoie un lien de réinitialisation de mot de passe à un utilisateur existant
  */
 export async function sendResetPasswordEmail(email: string) {
-    const user = await prisma.user.findUnique({ where: { email } })
+  const user = await prisma.user.findUnique({ where: { email } });
 
-    if (!user) {
-        // 🔒 Ne rien faire si l'email n'existe pas (anti-user enumeration)
-        return
-    }
+  if (!user) {
+    // 🔒 Ne rien faire si l'email n'existe pas (anti-user enumeration)
+    return;
+  }
 
-    // Génération du token
-    const token = randomUUID()
-    const expiresAt = addHours(new Date(), 2)
+  // Génération du token
+  const token = randomUUID();
+  const expiresAt = addHours(new Date(), 2);
 
-    // Sauvegarde en DB
-    await prisma.passwordResetToken.create({
-        data: {
-            token,
-            userId: user.id,
-            expiresAt,
-        },
-    })
+  // Sauvegarde en DB
+  await prisma.passwordResetToken.create({
+    data: {
+      token,
+      userId: user.id,
+      expiresAt,
+    },
+  });
 
-    // Génération du lien
-    const resetUrl = `${DOMAIN}/client/auth/reset-password?token=${token}`
+  // Génération du lien
+  const resetUrl = `${DOMAIN}/auth/reset-password?token=${token}`;
 
-    // Envoi de l'email
-    await transporter.sendMail({
-        from: process.env.EMAIL_FROM,
-        to: email,
-        subject: "Réinitialisation de votre mot de passe - ColisApp",
-        html: generateResetPasswordEmailHtml(user.firstName || "utilisateur", resetUrl),
-    })
+  // Envoi de l'email
+  await transporter.sendMail({
+    from: process.env.EMAIL_FROM,
+    to: email,
+    subject: "Réinitialisation de votre mot de passe - ColisApp",
+    html: generateResetPasswordEmailHtml(
+      user.firstName || "utilisateur",
+      resetUrl
+    ),
+  });
 }
 
 /**
  * Met à jour le mot de passe d’un utilisateur si le token est valide
  */
 export async function resetPassword(token: string, newPassword: string) {
-    // Cherche le token avec l'utilisateur associé
-    const record = await prisma.passwordResetToken.findUnique({
-        where: { token },
-        include: { user: true },
-    })
+  // Cherche le token avec l'utilisateur associé
+  const record = await prisma.passwordResetToken.findUnique({
+    where: { token },
+    include: { user: true },
+  });
 
-    if (!record) {
-        throw new Error("Lien de réinitialisation invalide.")
-    }
+  if (!record) {
+    throw new Error("Lien de réinitialisation invalide.");
+  }
 
-    if (record.expiresAt < new Date()) {
-        throw new Error("Le lien de réinitialisation a expiré.")
-    }
+  if (record.expiresAt < new Date()) {
+    throw new Error("Le lien de réinitialisation a expiré.");
+  }
 
-    // Hash du nouveau mot de passe
-    const hashedPassword = await bcrypt.hash(newPassword, 10)
+  // Hash du nouveau mot de passe
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    // Mise à jour du mot de passe de l'utilisateur
-    await prisma.user.update({
-        where: { id: record.userId },
-        data: { password: hashedPassword },
-    })
+  // Mise à jour du mot de passe de l'utilisateur
+  await prisma.user.update({
+    where: { id: record.userId },
+    data: { password: hashedPassword },
+  });
 
-    // Suppression du token utilisé
-    await prisma.passwordResetToken.delete({
-        where: { id: record.id },
-    })
+  // Suppression du token utilisé
+  await prisma.passwordResetToken.delete({
+    where: { id: record.id },
+  });
 }
 
 /**
  * Génère le contenu HTML du mail de réinitialisation
  */
-function generateResetPasswordEmailHtml(name: string, resetUrl: string): string {
-    return `
+function generateResetPasswordEmailHtml(
+  name: string,
+  resetUrl: string
+): string {
+  return `
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -112,24 +117,20 @@ function generateResetPasswordEmailHtml(name: string, resetUrl: string): string 
   </div>
 </body>
 </html>
-    `
+    `;
 }
-
 
 export async function checkResetToken(token: string): Promise<boolean> {
-    if (!token) return false
+  if (!token) return false;
 
-    const record = await prisma.passwordResetToken.findUnique({
-        where: { token }
-    })
+  const record = await prisma.passwordResetToken.findUnique({
+    where: { token },
+  });
 
-    // if (!record || record.expiresAt < new Date()) {
-    //     return false
-    // }
+  // if (!record || record.expiresAt < new Date()) {
+  //     return false
+  // }
 
-    // simplified
-    return !(!record || record.expiresAt < new Date());
-
-
+  // simplified
+  return !(!record || record.expiresAt < new Date());
 }
-

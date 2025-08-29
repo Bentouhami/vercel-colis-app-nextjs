@@ -57,7 +57,7 @@ export async function getUserForAuthentication(email: string): Promise<{
       return null;
     }
 
-    // ✅ Cast the Prisma Role to RoleDto
+    //  Cast the Prisma Role to RoleDto
     return {
       ...user,
       role: user.role as RoleDto, // Type cast to match your RoleDto enum
@@ -150,7 +150,7 @@ export async function handleDestinataire(
       email: found.email,
       phoneNumber: found.phoneNumber ?? "",
       image: found.image,
-      role: found.role as RoleDto, // ✅ Cast to RoleDto
+      role: found.role as RoleDto, //  Cast to RoleDto
     };
 
     return safeFound;
@@ -199,7 +199,7 @@ export async function createDestinataire(
 
     return {
       ...destinataire,
-      role: destinataire.role as RoleDto, // ✅ Cast to RoleDto
+      role: destinataire.role as RoleDto, //  Cast to RoleDto
     } as DestinataireResponseDto;
   } catch (error) {
     console.error("Error creating destinataire:", error);
@@ -241,7 +241,7 @@ export async function getUserByValidToken(
 
     return {
       ...user,
-      role: user.role as RoleDto, // ✅ Cast to RoleDto
+      role: user.role as RoleDto, //  Cast to RoleDto
     } as UserResponseDto;
   } catch (error) {
     console.error("Error getting user by valid token:", error);
@@ -437,7 +437,6 @@ export async function getUserByEmail(
 ): Promise<UserLoginDto | null> {
   // 🔍 Debug: Track when this function is called
   if (process.env.NODE_ENV === "development") {
-    console.log("🚨 OLD getUserByEmail called for:", email);
     console.trace("Call stack:"); // This will show where it's being called from
   }
 

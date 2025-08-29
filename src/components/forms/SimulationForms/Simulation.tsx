@@ -194,7 +194,7 @@ const SimulationFormMultiStep = () => {
                     setDeparture((prev) => ({ ...prev, agencyName: '' }));
                 }
             } catch (error) {
-                console.error('❌ Error fetching departure agencies:', error);
+                console.error(' Error fetching departure agencies:', error);
                 toast.error('Failed to fetch agencies. Please try again.');
             }
         })();

@@ -5,7 +5,7 @@
 
 ---
 
-## 🚀 Fonctionnalités clés
+##  Fonctionnalités clés
 
 - 🔐 Authentification sécurisée (email + Google via Auth.js)
 - 💰 Paiement en ligne (Stripe - mode test)

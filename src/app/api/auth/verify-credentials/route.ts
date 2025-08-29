@@ -4,7 +4,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { compare } from "bcryptjs";
 import { getUserForAuthentication } from "@/services/backend-services/Bk_UserService";
 
-// 🚀 This runs on serverless (not edge) so bcrypt and Prisma work fine
+//  This runs on serverless (not edge) so bcrypt and Prisma work fine
 export async function POST(request: NextRequest) {
   try {
     const { email, password } = await request.json();
