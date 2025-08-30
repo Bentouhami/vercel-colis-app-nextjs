@@ -26,7 +26,7 @@ export default async function AdminStatsPage() {
       {/* Charts include a built-in sélecteur (Semaine/Mois) */}
       <Card>
         <CardHeader>
-          <CardTitle>Vue d'ensemble</CardTitle>
+          <CardTitle>Vue d&apos;ensemble</CardTitle>
         </CardHeader>
         <CardContent>
           <DashboardCharts />
