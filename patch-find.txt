@@ -1,0 +1,148 @@
+import { NextRequest, NextResponse } from "next/server";
+import { getPaymentSuccessDataById, updateEnvoi } from "@/services/backend-services/Bk_EnvoiService";
+import { prisma } from "@/utils/db";
+import nodemailer from "nodemailer";
+import { DOMAIN } from "@/utils/constants";
+
+/**
+ * Update an envoi
+ * @param req
+ * @param props
+ * @returns
+ */
+export async function PUT(
+  req: NextRequest,
+  props: { params: Promise<{ id: string }> }
+) {
+  const params = await props.params;
+
+  try {
+    const envoiId = parseInt(params.id, 10);
+    if (isNaN(envoiId)) {
+      return NextResponse.json(
+        { error: "Invalid envoi ID provided." },
+        { status: 400 }
+      );
+    }
+
+    // Update envoi in the database (generates tracking, marks paid, etc.)
+    const updateOk = await updateEnvoi(envoiId);
+    if (!updateOk) {
+      return NextResponse.json({ error: "Envoi not found." }, { status: 404 });
+    }
+
+    // Fetch latest envoi with client details
+    const updatedEnvoi = await prisma.envoi.findUnique({
+      where: { id: envoiId },
+      include: { client: true },
+    });
+    if (!updatedEnvoi) {
+      return NextResponse.json({ error: "Envoi not found after update." }, { status: 404 });
+    }
+
+    // Upsert a payment record and send confirmation/tracking emails
+    try {
+      // Persist payment row as PAID
+      await prisma.payment.upsert({
+        where: { envoiId: envoiId },
+        update: {
+          status: "PAID",
+          amount: updatedEnvoi.totalPrice ?? 0,
+        },
+        create: {
+          envoiId: envoiId,
+          method: "CARD",
+          status: "PAID",
+          amount: updatedEnvoi.totalPrice ?? 0,
+        },
+      });
+
+      // Send emails if client email available
+      const clientEmail = updatedEnvoi.client?.email;
+      if (clientEmail) {
+        const transporter = nodemailer.createTransport({
+          host: process.env.EMAIL_SERVER_HOST,
+          port: Number(process.env.EMAIL_SERVER_PORT),
+          auth: {
+            user: process.env.EMAIL_SERVER_USER,
+            pass: process.env.EMAIL_SERVER_PASSWORD,
+          },
+        });
+
+        await transporter.sendMail({
+          from: process.env.EMAIL_FROM,
+          to: clientEmail,
+          subject: `Confirmation de paiement - Envoi #${updatedEnvoi.id}`,
+          html: `<div style="font-family:Arial,sans-serif;line-height:1.5">
+                   <h2 style="color:#1a73e8;margin:0 0 12px">Paiement confirmé</h2>
+                   <p>Votre paiement pour l'envoi #${updatedEnvoi.id} a bien été confirmé.</p>
+                   <p>Montant: ${updatedEnvoi.totalPrice ?? "-"} €</p>
+                 </div>`,
+        });
+
+        if (updatedEnvoi.trackingNumber) {
+          const trackingUrl = `${DOMAIN}/client/tracking?trackingNumber=${encodeURIComponent(
+            updatedEnvoi.trackingNumber
+          )}`;
+          await transporter.sendMail({
+            from: process.env.EMAIL_FROM,
+            to: clientEmail,
+            subject: `Suivi de votre envoi - #${updatedEnvoi.id}`,
+            html: `<div style="font-family:Arial,sans-serif;line-height:1.5">
+                     <h2 style="color:#1a73e8;margin:0 0 12px">Votre numéro de suivi</h2>
+                     <p>Numéro de suivi: <strong>${updatedEnvoi.trackingNumber}</strong></p>
+                     <p><a href="${trackingUrl}">Suivre mon colis</a></p>
+                   </div>`,
+          });
+        }
+      }
+    } catch (e) {
+      console.error("Post-update payment/email step failed", e);
+    }
+
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch (error) {
+    console.error("Error updating envoi:", error);
+    return NextResponse.json(
+      { error: "Internal server error." },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * Get an envoi by id
+ * @param req
+ * @param props
+ */
+export async function GET(
+  req: NextRequest,
+  props: { params: Promise<{ id: string }> }
+) {
+  const params = await props.params;
+
+  try {
+    const envoiId = parseInt(params.id, 10);
+    if (!envoiId || isNaN(envoiId)) {
+      return NextResponse.json(
+        { error: "Invalid envoi ID provided." },
+        { status: 400 }
+      );
+    }
+
+    // Get envoi from the database
+    const envoi = await getPaymentSuccessDataById(envoiId);
+    if (!envoi) {
+      return NextResponse.json({ error: "Envoi not found." }, { status: 404 });
+    }
+
+    return NextResponse.json(envoi, { status: 200 });
+  } catch (error) {
+    console.error("Error getting envoi:", error);
+    return NextResponse.json(
+      { error: "Internal server error." },
+      { status: 500 }
+    );
+  }
+}
+

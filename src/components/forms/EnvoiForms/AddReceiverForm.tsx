@@ -43,6 +43,7 @@ import {
 } from "@/services/frontend-services/simulation/SimulationService"
 import { getSimulationFromCookie } from "@/lib/simulationCookie"
 import RequireAuth from "@/components/auth/RequireAuth"
+import { PhoneInput } from "@/components/phone-input"
 
 interface DebugInfo {
     formData: DestinataireInput | null
@@ -524,16 +525,22 @@ ${JSON.stringify(debugInfo.error, null, 2)}
                                         <Phone className="h-4 w-4 text-blue-500" />
                                         Numéro de téléphone *
                                     </Label>
-                                    <Input
+                                    <PhoneInput
                                         id="phoneNumber"
                                         name="phoneNumber"
-                                        type="tel"
+                                        placeholder="Entrez le numéro"
+                                        defaultCountry="BE"
                                         value={destinataireFormData.phoneNumber}
-                                        onChange={handleInputChange}
+                                        onChange={(val) => {
+                                            const value = (val as string) || "";
+                                            setDestinataireFormData((prev) => ({ ...prev, phoneNumber: value }));
+                                            if (touched["phoneNumber"]) {
+                                                validateField("phoneNumber", value);
+                                            }
+                                        }}
                                         onBlur={() => handleBlur("phoneNumber")}
-                                        placeholder="+32 123 456 789"
-                                        className={`transition-all duration-200 ${errors.phoneNumber ? "border-red-500" : ""}`}
                                         disabled={isLoading}
+                                        className={errors.phoneNumber ? "border-red-500" : ""}
                                     />
                                     {errors.phoneNumber && (
                                         <p className="text-sm text-red-600 dark:text-red-500 flex items-center gap-1 animate-in fade-in duration-200">

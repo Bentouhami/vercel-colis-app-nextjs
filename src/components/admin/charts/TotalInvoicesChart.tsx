@@ -19,7 +19,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
             <div className="bg-white p-3 rounded-lg shadow-md border">
                 <p className="font-semibold mb-2">{label}</p>
                 <p className="text-sm text-[#8884d8]">
-                    Invoices: <span className="font-medium">€{payload[0].value.toFixed(2)}</span>
+                    Montant des factures: <span className="font-medium">€{payload[0].value.toFixed(2)}</span>
                 </p>
             </div>
         );
@@ -30,7 +30,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 export function TotalInvoicesChart({ data, timeRange }: TotalInvoicesChartProps) {
     return (
         <div className="bg-white p-4 shadow rounded-lg hover:shadow-lg transition-shadow duration-300">
-            <h3 className="text-lg font-semibold mb-4">Total Invoices</h3>
+            <h3 className="text-lg font-semibold mb-4">Total factures</h3>
             <div className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
@@ -55,7 +55,7 @@ export function TotalInvoicesChart({ data, timeRange }: TotalInvoicesChartProps)
                         <Area
                             type="monotone"
                             dataKey="invoices"
-                            name="Total Invoices"
+                            name="Total factures"
                             stroke="#8884d8"
                             strokeWidth={2}
                             fill="url(#invoicesGradient)"

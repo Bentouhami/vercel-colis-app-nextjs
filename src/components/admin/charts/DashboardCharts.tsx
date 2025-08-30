@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { RevenueChart } from './RevenueChart';
 import { CustomerGrowthChart } from './CustomerGrowthChart';
 import { TotalInvoicesChart } from './TotalInvoicesChart';
-import {API_DOMAIN} from "@/utils/constants";
+import { API_DOMAIN } from "@/utils/constants";
 
 interface DailyData {
     [date: string]: {
@@ -54,14 +54,13 @@ const DashboardCharts = () => {
     return (
         <div className="w-full">
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">Dashboard Overview</h2>
                 <select
                     value={timeRange}
                     onChange={(e) => setTimeRange(e.target.value as 'month' | 'week')}
                     className="px-4 py-2 border rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                    <option value="month">Monthly</option>
-                    <option value="week">Weekly</option>
+                    <option value="month">Mois</option>
+                    <option value="week">Semaine</option>
                 </select>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

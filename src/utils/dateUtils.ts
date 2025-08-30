@@ -1,12 +1,13 @@
 // path: src/utils/dateUtils.ts
 import { parseISO, format, startOfWeek, endOfWeek, addWeeks } from 'date-fns';
+import { fr } from 'date-fns/locale';
 
 export const formatDateRange = (start: Date, end: Date): string => {
     try {
         if (start.getMonth() === end.getMonth()) {
-            return `${format(start, 'MMM d')}-${format(end, 'd')}`;
+            return `${format(start, 'MMM d', { locale: fr })}-${format(end, 'd', { locale: fr })}`;
         }
-        return `${format(start, 'MMM d')} - ${format(end, 'MMM d')}`;
+        return `${format(start, 'MMM d', { locale: fr })} - ${format(end, 'MMM d', { locale: fr })}`;
     } catch (error) {
         console.error('Error formatting dates:', error);
         return 'Invalid date';
@@ -29,11 +30,25 @@ export const getWeekDateRange = (isoWeek: string): { start: Date; end: Date } =>
 
 export const formatAxisDate = (date: string, timeRange: 'month' | 'week'): string => {
     try {
-        if (timeRange === 'month') {
-            return format(parseISO(`${date}-01`), 'MMM');
+        // Handle full ISO dates like YYYY-MM-DD (our summary endpoints)
+        const parsed = parseISO(date);
+        if (!isNaN(parsed.getTime())) {
+            // For daily points, render day/month; keep it concise
+            return timeRange === 'month' ? format(parsed, 'dd MMM', { locale: fr }) : format(parsed, 'dd/MM', { locale: fr });
         }
-        const { start, end } = getWeekDateRange(date);
-        return formatDateRange(start, end);
+
+        // Handle YYYY-MM (month buckets)
+        if (/^\d{4}-\d{2}$/.test(date)) {
+            return format(parseISO(`${date}-01`), 'MMM', { locale: fr });
+        }
+
+        // Handle ISO week strings like YYYY-Wxx
+        if (/^\d{4}-W\d{2}$/.test(date)) {
+            const { start, end } = getWeekDateRange(date);
+            return formatDateRange(start, end);
+        }
+
+        return date;
     } catch (error) {
         console.error('Error formatting date:', date, error);
         return 'Invalid date';

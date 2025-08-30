@@ -19,7 +19,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
             <div className="bg-white p-3 rounded-lg shadow-md border">
                 <p className="font-semibold mb-2">{label}</p>
                 <p className="text-sm text-[#ffc658]">
-                    Customers: <span className="font-medium">{payload[0].value}</span>
+                    Clients: <span className="font-medium">{payload[0].value}</span>
                 </p>
             </div>
         );
@@ -30,7 +30,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 export function CustomerGrowthChart({ data, timeRange }: CustomerGrowthChartProps) {
     return (
         <div className="bg-white p-4 rounded-lg shadow hover:shadow-lg transition-shadow duration-300">
-            <h3 className="text-lg font-semibold mb-4">Customer Growth</h3>
+            <h3 className="text-lg font-semibold mb-4">Croissance des clients</h3>
             <div className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
@@ -52,7 +52,7 @@ export function CustomerGrowthChart({ data, timeRange }: CustomerGrowthChartProp
                         <Area
                             type="monotone"
                             dataKey="customers"
-                            name="Customer Growth"
+                            name="Croissance des clients"
                             stroke="#ffc658"
                             strokeWidth={2}
                             fill="url(#customerGradient)"

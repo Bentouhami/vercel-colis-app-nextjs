@@ -18,17 +18,20 @@ export default async function AdminEnvoisPage() {
 
     /* 2 – Déterminer les agences dont l'admin est responsable */
     let agencyIds: number[] = [];
-    if (session.user.role === RoleDto.SUPER_ADMIN || session.user.role === RoleDto.AGENCY_ADMIN) {
-        // super‑admin : accès toutes agences
+    if (session.user.role === RoleDto.SUPER_ADMIN) {
+        // Super‑admin : accès toutes agences
         const ids = await prisma.agency.findMany({ select: { id: true } });
         agencyIds = ids.map((a) => a.id);
-    } else {
+    } else if (session.user.role === RoleDto.AGENCY_ADMIN) {
+        // Admin d'agence : uniquement ses agences
         const staff = await prisma.agencyStaff.findMany({
             where: { staffId: Number(session.user.id), staffRole: RoleDto.AGENCY_ADMIN },
             select: { agencyId: true },
         });
         agencyIds = staff.map((s) => s.agencyId);
         if (agencyIds.length === 0) return notFound();
+    } else {
+        return notFound();
     }
 
     /* 3 – Récupérer les envois */

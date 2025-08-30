@@ -107,6 +107,8 @@ const ROUTE_CONFIG = {
     "/api/v1/agencies/update-agency",
     "/api/v1/agencies/[agency]",
     "/api/v1/dashboard/super-admin",
+    "/api/v1/dashboard/monthly-summary",
+    "/api/v1/dashboard/weekly-summary",
     "/api/v1/admin/users/create",
     "/api/v1/users",
     "/api/v1/envois/[id]/status",
