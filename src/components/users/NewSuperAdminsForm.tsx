@@ -7,9 +7,9 @@ export const NewSuperAdmin: React.FC = () => {
     return (
         <div className="space-y-6 pt-4 sm:pt-6">
             <div className="border-b pb-4">
-                <h1 className="text-xl sm:text-2xl font-bold text-foreground/90">Create New Super Admin</h1>
+                <h1 className="text-xl sm:text-2xl font-bold text-foreground/90">Créer un super admin</h1>
             </div>
-            <MultiStepRegistrationForm role="SUPER_ADMIN" />
+            <MultiStepRegistrationForm role="SUPER_ADMIN" askPassword={false} />
         </div>
     );
 };

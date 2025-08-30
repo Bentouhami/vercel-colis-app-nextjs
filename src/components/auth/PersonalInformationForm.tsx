@@ -5,21 +5,25 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FaCalendar, FaPhone, FaUser } from "react-icons/fa";
+import { FaEnvelope } from "react-icons/fa6";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/phone-input";
 import { UseFormReturn, FieldValues, Path } from "react-hook-form";
 import { DatePicker } from "@/components/ui/date-picker";
+import AgencyComboboxSelector from "@/components/forms/admins/AgencyComboboxSelector";
 
 interface PersonalInformationFormProps<TForm extends FieldValues> {
     form: UseFormReturn<TForm>;
     isPending: boolean;
     role?: string;
     agencies?: { id: number; name: string }[];
+    includeEmail?: boolean; // show email input in this step (used for admin create)
 }
 
-export default function PersonalInformationForm<TForm extends FieldValues>({ form, isPending }: PersonalInformationFormProps<TForm>) {
+export default function PersonalInformationForm<TForm extends FieldValues>({ form, isPending, includeEmail = false, role }: PersonalInformationFormProps<TForm>) {
     const { control } = form;
+    const requiresAgency = role === 'AGENCY_ADMIN' || role === 'ACCOUNTANT';
 
     return (
         <Card>
@@ -56,6 +60,30 @@ export default function PersonalInformationForm<TForm extends FieldValues>({ for
                         </FormItem>
                     )} />
                 </div>
+
+                {includeEmail && (
+                    <div className="mt-3">
+                        {/* Email */}
+                        <FormField control={control} name={"email" as Path<TForm>} render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Email <span className="text-red-500 ml-1">*</span></FormLabel>
+                                <FormControl>
+                                    <div className="relative">
+                                        <Input {...field} disabled={isPending} placeholder="exemple@mail.com" className="pl-3" />
+                                        <FaEnvelope className="absolute top-3 right-3 text-muted-foreground" />
+                                    </div>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                    </div>
+                )}
+
+                {requiresAgency && (
+                    <div className="mt-3">
+                        <AgencyComboboxSelector form={form} disabled={isPending} />
+                    </div>
+                )}
 
                 <div className="mt-3 flex flex-col md:flex-row gap-4">
                     {/* BirthDate */}

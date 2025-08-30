@@ -1,8 +1,7 @@
 // path: src/app/api/v1/countries/all/route.ts
 
-import {NextRequest, NextResponse} from 'next/server';
-import {getAllCountries} from "@/services/backend-services/Bk_CountryService";
-import { CountryDto } from "@/services/dtos/countries/CountryDto"; // Import DTO
+import { NextRequest, NextResponse } from "next/server";
+import { getAllCountries } from "@/services/backend-services/Bk_CountryService";
 
 /**
  * Get all countries
@@ -14,20 +13,24 @@ import { CountryDto } from "@/services/dtos/countries/CountryDto"; // Import DTO
  * @openapi
  */
 export async function GET(req: NextRequest) {
+  if (req.method !== "GET") {
+    return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
+  }
+  try {
+    const countries = await getAllCountries();
 
-    if (req.method !== 'GET') {
-        return NextResponse.json({error: 'Method not allowed'}, {status: 405});
+    if (!countries) {
+      return NextResponse.json(
+        { error: "No countries found" },
+        { status: 404 }
+      );
     }
-    try {
-
-        const countries = await getAllCountries();
-
-        if (!countries) {
-            return NextResponse.json({error: "No countries found"}, {status: 404});
-        }
-        return NextResponse.json(countries, {status: 200});
-    } catch (error) {
-        console.error("Erreur dans l'API countries:", error);
-        return NextResponse.json({error: "Internal server error"}, {status: 500});
-    }
+    return NextResponse.json(countries, { status: 200 });
+  } catch (error) {
+    console.error("Erreur dans l'API countries:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
 }

@@ -97,8 +97,6 @@ export async function getUserProfileById(
 
 /**
  * Get user by ID - returns CreateDestinataireDto format
- * @param id - User ID
- * @returns CreateDestinataireDto or null
  */
 export async function getUserById(
   id: number
@@ -223,26 +221,38 @@ export async function updateUserProfileMe(data: Partial<ProfileDto>) {
 }
 
 /**
- * Register new user via API (from GitHub version)
+ * Register new user via API (for clients)
  */
 export async function registerUser(newUser: RegisterUserBackendType) {
   try {
-    // 1) POST the data
     const response = await axios.post(`${API_DOMAIN}/users/register`, newUser, {
       headers: { "Content-Type": "application/json" },
-      // withCredentials: true, // If you need cookies
     });
-    // 2) The server should respond with {error?: string, message?: string}
-    return response.data; // We'll handle .error or .message in the component
+    return response.data;
   } catch (error: any) {
-    // If the server returned a non-2xx status, axios throws
     console.error("Error registering user:", error);
-    // If the backend sent a JSON error, we can pass that up
     if (error.response?.data?.error) {
-      // Re-throw with the server's error message
       throw new Error(error.response.data.error);
     }
-    // Otherwise, throw the generic error
+    throw error;
+  }
+}
+
+/**
+ * Create new user by an Admin
+ */
+export async function createUserByAdmin(newUser: Omit<RegisterUserBackendType, 'password'>) {
+  try {
+    const response = await axios.post(`${API_DOMAIN}/admin/users/create`, newUser, {
+      headers: { "Content-Type": "application/json" },
+      withCredentials: true, // Needed to authorize the admin
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error("Error creating user by admin:", error);
+    if (error.response?.data?.error) {
+      throw new Error(error.response.data.error);
+    }
     throw error;
   }
 }

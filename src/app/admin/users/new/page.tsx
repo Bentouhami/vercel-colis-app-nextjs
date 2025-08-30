@@ -1,29 +1,29 @@
-// path: src/app/dashboard/users/new/page.tsx
+// path: src\app\admin\users\new\page.tsx
 'use client'
 
-import React, {useState} from 'react';
-import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
+import React, { useState } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import RequireAuth from "@/components/auth/RequireAuth";
-import {useSession} from "next-auth/react";
-import {useRouter} from "next/navigation";
-import {ListSkeleton} from "@/components/skeletons/ListSkeleton";
-import {FaUsers} from "react-icons/fa6";
-import {Card, CardContent} from "@/components/ui/card";
-import {accessControlHelper} from "@/utils/accessControlHelper";
-import {RoleDto} from "@/services/dtos";
-import {NewCustomer} from '@/components/users/NewCustomer';
-import {NewAdmin} from '@/components/users/NewAdminForm';
-import {NewAccountant} from '@/components/users/NewAccountant';
-import {NewSuperAdmin} from "@/components/users/NewSuperAdminsForm";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { ListSkeleton } from "@/components/skeletons/ListSkeleton";
+import { FaUsers } from "react-icons/fa6";
+import { Card, CardContent } from "@/components/ui/card";
+import { accessControlHelper } from "@/utils/accessControlHelper";
+import { RoleDto } from "@/services/dtos";
+import { NewCustomer } from '@/components/users/NewCustomer';
+import { NewAdmin } from '@/components/users/NewAdminForm';
+import { NewAccountant } from '@/components/users/NewAccountant';
+import { NewSuperAdmin } from "@/components/users/NewSuperAdminsForm";
 
 export default function UsersPage() {
     const router = useRouter();
     const [activeTab, setActiveTab] = useState('customer');
-    const {data: session, status} = useSession();
+    const { data: session, status } = useSession();
 
     if (status === 'loading') {
-        return <ListSkeleton/>;
+        return <ListSkeleton />;
     }
 
     if (status === 'unauthenticated') {
@@ -54,10 +54,10 @@ export default function UsersPage() {
                         className=" mt-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 py-6">
                         <div className=" flex items-center gap-4">
                             <div className="p-3 bg-primary/10 rounded-lg">
-                                <FaUsers className="h-6 w-6 text-primary"/>
+                                <FaUsers className="h-6 w-6 text-primary" />
                             </div>
                             <h1 className="text-2xl sm:text-3xl font-bold">
-                                <span className="text-primary">User Management</span>
+                                <span className="text-primary">Gestion d&apos;utilisateurs</span>
                             </h1>
                         </div>
                     </div>
@@ -71,43 +71,43 @@ export default function UsersPage() {
                                         value="customer"
                                         className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                                     >
-                                        New Customer
+                                        Client
                                     </TabsTrigger>
                                     <TabsTrigger
                                         value="admin"
                                         className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                                     >
-                                        New Admin
+                                        Admin d&apos;agence
                                     </TabsTrigger>
                                     <TabsTrigger
                                         value="accountant"
                                         className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                                     >
-                                        New Accountant
+                                        Comptable
                                     </TabsTrigger>
                                     {isSuperAdmin && (
                                         <TabsTrigger
                                             value="superadmin"
                                             className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                                         >
-                                            New Super Admin
+                                            Super Admin
                                         </TabsTrigger>
                                     )}
                                 </TabsList>
 
                                 <div className="mt-6">
                                     <TabsContent value="customer">
-                                        <NewCustomer/>
+                                        <NewCustomer />
                                     </TabsContent>
                                     <TabsContent value="admin">
-                                        <NewAdmin/>
+                                        <NewAdmin />
                                     </TabsContent>
                                     <TabsContent value="accountant">
-                                        <NewAccountant/>
+                                        <NewAccountant />
                                     </TabsContent>
                                     {isSuperAdmin && (
                                         <TabsContent value="superadmin">
-                                            <NewSuperAdmin/>
+                                            <NewSuperAdmin />
                                         </TabsContent>
                                     )}
                                 </div>

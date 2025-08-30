@@ -71,7 +71,7 @@ const Sidebar = ({ session }: SidebarProps) => {
             name: "Envois",
             icon: Package,
             path: "/admin/envois",
-            roleAllowed: [RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN, RoleDto.ACCOUNTANT],
+            roleAllowed: [RoleDto.SUPER_ADMIN, RoleDto.AGENCY_ADMIN],
         },
         {
             name: "Utilisateurs",

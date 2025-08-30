@@ -1,10 +1,5 @@
-// src/app/admin/envois/page.tsx – liste des envois pour l'Agency Admin (Auth.js v5)
-// -----------------------------------------------------------------------------
-// • Server Component : récupère la session via `auth()`.
-// • Filtre les envois dont l'agence de départ appartient à l'admin connecté.
-// • Passe la liste à un composant client <EnvoisTable> qui affiche le tableau
-//   et un bouton "Suivi" -> /admin/envois/{id}/tracking.
-// -----------------------------------------------------------------------------
+// path: src/app/admin/envois/page.tsx
+
 import { notFound } from "next/navigation";
 import { auth } from "@/auth/auth";
 import { prisma } from "@/utils/db";
@@ -23,7 +18,7 @@ export default async function AdminEnvoisPage() {
 
     /* 2 – Déterminer les agences dont l'admin est responsable */
     let agencyIds: number[] = [];
-    if (session.user.role === RoleDto.SUPER_ADMIN) {
+    if (session.user.role === RoleDto.SUPER_ADMIN || session.user.role === RoleDto.AGENCY_ADMIN) {
         // super‑admin : accès toutes agences
         const ids = await prisma.agency.findMany({ select: { id: true } });
         agencyIds = ids.map((a) => a.id);

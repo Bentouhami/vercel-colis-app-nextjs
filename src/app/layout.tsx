@@ -8,6 +8,7 @@ import GlobalLoadingOverlay from "@/components/ui/GlobalLoadingOverlay"
 import ProgressWrapper from "@/components/providers/ProgressWrapper"
 import type React from "react"
 import { Providers } from "@/components/providers"
+import CookieConsent from "@/components/privacy/CookieConsent"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                         <ProgressWrapper>
                             <GlobalLoadingOverlay />
                             <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors">{children}</div>
+                            <CookieConsent />
                         </ProgressWrapper>
                     </LoadingProvider>
                 </Providers>

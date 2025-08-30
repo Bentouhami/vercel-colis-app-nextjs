@@ -107,6 +107,7 @@ const ROUTE_CONFIG = {
     "/api/v1/agencies/update-agency",
     "/api/v1/agencies/[agency]",
     "/api/v1/dashboard/super-admin",
+    "/api/v1/admin/users/create",
     "/api/v1/users",
     "/api/v1/envois/[id]/status",
     "/api/v1/envois/[id]/tracking",
@@ -271,6 +272,12 @@ export default auth((req) => {
   if (ADMIN_ROLES.includes(userRole)) {
     //  Allow admin-only routes
     if (isAdminOnlyRoute(pathname)) {
+      return NextResponse.next();
+    }
+
+    //  Allow access to public API routes used by admin UIs (e.g., countries, cities)
+    //  This keeps admin pages functional without granting access to non-admin pages
+    if (pathname.startsWith("/api") && isPublicRoute(pathname)) {
       return NextResponse.next();
     }
 
