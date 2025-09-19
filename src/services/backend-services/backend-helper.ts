@@ -8,7 +8,7 @@ export async function isUserExistingById(userId: number): Promise<boolean> {
   try {
     // check if user exists in database using prima.user.findUnique
 
-    const response = await fetch(`/api/v1/users/${userId}`);
+    const response = await fetch(`/api/v1/admin/users/${userId}`);
     if (!response.ok) {
       throw new Error(`Error fetching user: ${response.statusText}`);
     }

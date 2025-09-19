@@ -62,7 +62,7 @@
           + getUserProfileById(userId: number): Promise<ProfileDto | null>
           + updateUserProfile(userId: number, data: UpdateProfileRequestDto): Promise<ProfileDto | null>
           + getAllUsers(): Promise<ProfileDto[] | null>
-          + DeleteDestinataireById(id: number): Promise<boolean>
+          + DeleteUserById(id: number): Promise<boolean>
           ' ... other relevant CRUD methods
       }
   }

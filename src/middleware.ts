@@ -284,7 +284,6 @@ export default auth((req) => {
     }
 
     //  Block ALL other routes for admins (including root, client, public)
-
     const unauthorizedUrl = new URL("/admin/unauthorized", req.url);
     unauthorizedUrl.searchParams.set("reason", "admin_restricted_access");
     unauthorizedUrl.searchParams.set("attempted", pathname);

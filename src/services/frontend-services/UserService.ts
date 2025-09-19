@@ -80,18 +80,43 @@ export async function getConnectedUser() {
   }
 }
 
-export async function getUserProfileById(
-  id: number
-): Promise<ProfileDto | null> {
+/**
+ * Get user profile by ID
+ * @param id - user ID
+ * @returns User profile data or throws error with message
+ */
+export async function getUserProfileById(id: number): Promise<ProfileDto> {
   try {
     const response = await axios.get(`${API_DOMAIN}/users/${id}/profile`);
+
     if (response.status !== 200) {
-      throw new Error("Failed to fetch user profile");
+      throw new Error(
+        `Failed to fetch user profile: ${response.status} ${response.statusText}`
+      );
     }
+
+    if (!response.data || !response.data.profile) {
+      throw new Error("No profile data found in response");
+    }
+
     return response.data.profile;
   } catch (error) {
-    console.error("Error fetching user profile:", error);
-    return null;
+    // Handle axios errors specifically
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        // Server responded with error status
+        const status = error.response.status;
+        const message =
+          error.response.data?.message || error.response.statusText;
+        throw new Error(`Server error (${status}): ${message}`);
+      } else if (error.request) {
+        // Network error
+        throw new Error("Network error: Unable to reach the server");
+      }
+    }
+
+    // Re-throw the error to be handled by the calling component
+    throw error instanceof Error ? error : new Error("Unknown error occurred");
   }
 }
 
@@ -241,12 +266,18 @@ export async function registerUser(newUser: RegisterUserBackendType) {
 /**
  * Create new user by an Admin
  */
-export async function createUserByAdmin(newUser: Omit<RegisterUserBackendType, 'password'>) {
+export async function createUserByAdmin(
+  newUser: Omit<RegisterUserBackendType, "password">
+) {
   try {
-    const response = await axios.post(`${API_DOMAIN}/admin/users/create`, newUser, {
-      headers: { "Content-Type": "application/json" },
-      withCredentials: true, // Needed to authorize the admin
-    });
+    const response = await axios.post(
+      `${API_DOMAIN}/admin/users/create`,
+      newUser,
+      {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true, // Needed to authorize the admin
+      }
+    );
     return response.data;
   } catch (error: any) {
     console.error("Error creating user by admin:", error);

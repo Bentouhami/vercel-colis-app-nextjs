@@ -97,6 +97,7 @@ export class AdminDashboardRepository {
   }
 
   static async getRecentAgencies(): Promise<AgencyPerformanceDto[]> {
+    // Récupérer les 4 agences les plus récentes avec leurs performances
     const agencies = await prisma.agency.findMany({
       where: { isDeleted: false },
       include: {

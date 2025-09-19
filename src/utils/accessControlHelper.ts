@@ -37,4 +37,9 @@ export const accessControlHelper = {
       session?.user?.role === RoleDto.AGENCY_ADMIN
     );
   },
+
+  // is ACCOUNTANT
+  isAccountant: (session: Session) => {
+    return session?.user?.role === RoleDto.ACCOUNTANT;
+  },
 };

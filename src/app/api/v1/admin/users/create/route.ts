@@ -30,36 +30,92 @@ const adminCreateUserSchema = z.object({
 export async function POST(req: NextRequest) {
   try {
     const session = await auth();
-    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!session)
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const requesterRole = session.user?.role as RoleDto | undefined;
-    if (requesterRole !== RoleDto.SUPER_ADMIN) {
+    if (
+      requesterRole !== RoleDto.SUPER_ADMIN &&
+      requesterRole !== RoleDto.AGENCY_ADMIN
+    ) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
+    // Parse request body
     const body = await req.json();
     const data = adminCreateUserSchema.parse(body);
 
-    const { firstName, lastName, birthDate, phoneNumber, email, role, address, agencyId } = data;
+    // Destructure for easier access
+    const {
+      firstName,
+      lastName,
+      birthDate,
+      phoneNumber,
+      email,
+      role,
+      address,
+      agencyId,
+    } = data;
 
-    // Enforce agencyId for specific roles
-    if ((role === RoleDto.AGENCY_ADMIN || role === RoleDto.ACCOUNTANT) && !agencyId) {
-      return NextResponse.json({ error: "L'agence est requise pour ce rôle." }, { status: 400 });
+    // Security check: Agency admins cannot create or promote to super admin
+    if (
+      requesterRole === RoleDto.AGENCY_ADMIN &&
+      role === RoleDto.SUPER_ADMIN
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Un administrateur d'agence ne peut pas créer ou promouvoir un utilisateur au rôle de super administrateur.",
+        },
+        { status: 403 }
+      );
     }
 
-    // If user already exists, update role/links and resend reset email instead of failing on unique constraint
+    // Enforce agencyId for specific roles
+    if (
+      (role === RoleDto.AGENCY_ADMIN || role === RoleDto.ACCOUNTANT) &&
+      !agencyId
+    ) {
+      return NextResponse.json(
+        { error: "L'agence est requise pour ce rôle." },
+        { status: 400 }
+      );
+    }
+
     const existingUser = await prisma.user.findUnique({
       where: { email },
       select: { id: true, role: true, firstName: true, email: true },
     });
 
     if (existingUser) {
+      // Security check: Agency admins cannot modify super admin accounts
+      if (
+        requesterRole === RoleDto.AGENCY_ADMIN &&
+        existingUser.role === RoleDto.SUPER_ADMIN
+      ) {
+        return NextResponse.json(
+          {
+            error:
+              "Un administrateur d'agence ne peut pas modifier un super administrateur.",
+          },
+          { status: 403 }
+        );
+      }
+
+      // Update role and agency links in a transaction
       await prisma.$transaction(async (tx) => {
         if (existingUser.role !== role) {
-          await tx.user.update({ where: { id: existingUser.id }, data: { role } });
+          await tx.user.update({
+            where: { id: existingUser.id },
+            data: { role },
+          });
         }
 
-        if ((role === RoleDto.AGENCY_ADMIN || role === RoleDto.ACCOUNTANT) && agencyId) {
+        // Link user to agency if required
+        if (
+          (role === RoleDto.AGENCY_ADMIN || role === RoleDto.ACCOUNTANT) &&
+          agencyId
+        ) {
           const exists = await tx.agencyStaff.findFirst({
             where: { staffId: existingUser.id, agencyId: agencyId },
           });
@@ -75,8 +131,10 @@ export async function POST(req: NextRequest) {
         }
       });
 
+      // Send reset password email to let the user set/update their password
       await sendResetPasswordEmail(existingUser.email);
 
+      // Return existing user with message that reset email was sent
       return NextResponse.json({
         message:
           "Utilisateur existant mis à jour. Un lien de réinitialisation a été envoyé pour définir/mettre à jour le mot de passe.",
@@ -86,14 +144,23 @@ export async function POST(req: NextRequest) {
 
     // Transaction: Find/Create Address + Create User + Link Address
     const newUser = await prisma.$transaction(async (tx) => {
-      const country = await tx.country.findFirst({ where: { name: address.country } });
+      const country = await tx.country.findFirst({
+        where: { name: address.country },
+      });
       if (!country) throw new Error("Le pays spécifié est introuvable.");
 
-      const city = await tx.city.findFirst({ where: { name: address.city, countryId: country.id }, select: { id: true } });
+      const city = await tx.city.findFirst({
+        where: { name: address.city, countryId: country.id },
+        select: { id: true },
+      });
       if (!city) throw new Error("La ville spécifiée est introuvable.");
 
       let existingAddress = await tx.address.findFirst({
-        where: { street: address.street, streetNumber: address.streetNumber, cityId: city.id },
+        where: {
+          street: address.street,
+          streetNumber: address.streetNumber,
+          cityId: city.id,
+        },
         select: { id: true },
       });
 
@@ -127,11 +194,18 @@ export async function POST(req: NextRequest) {
       });
 
       await tx.userAddress.create({
-        data: { userId: user.id, addressId: existingAddress.id, addressType: "HOME" },
+        data: {
+          userId: user.id,
+          addressId: existingAddress.id,
+          addressType: "HOME",
+        },
       });
 
       // Link user to agency if required
-      if ((role === RoleDto.AGENCY_ADMIN || role === RoleDto.ACCOUNTANT) && agencyId) {
+      if (
+        (role === RoleDto.AGENCY_ADMIN || role === RoleDto.ACCOUNTANT) &&
+        agencyId
+      ) {
         await tx.agencyStaff.create({
           data: {
             staffId: user.id,
@@ -148,15 +222,22 @@ export async function POST(req: NextRequest) {
     await sendResetPasswordEmail(newUser.email);
 
     return NextResponse.json({
-      message: "Utilisateur créé. Un lien a été envoyé pour définir le mot de passe.",
+      message:
+        "Utilisateur créé. Un lien a été envoyé pour définir le mot de passe.",
       user: newUser,
     });
   } catch (error: any) {
     console.error("Admin Create User Error:", error);
     if (error?.name === "ZodError") {
-      return NextResponse.json({ error: "Données invalides", details: error.errors }, { status: 400 });
+      return NextResponse.json(
+        { error: "Données invalides", details: error.errors },
+        { status: 400 }
+      );
     }
-    return NextResponse.json({ error: error?.message || "Erreur interne" }, { status: 500 });
+    return NextResponse.json(
+      { error: error?.message || "Erreur interne" },
+      { status: 500 }
+    );
   }
 }
 

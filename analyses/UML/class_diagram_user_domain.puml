@@ -60,7 +60,7 @@ package "Service Layer" {
         + getUsersByAgencyAdmin(adminId: number): ProfileDto[]
         + updateUserProfile(userId: number, data: UpdateProfileRequestDto): ProfileDto
         + handleDestinataire(userId: number, data: CreateDestinataireDto): DestinataireResponseDto
-        + DeleteDestinataireById(id: number): boolean
+        + DeleteUserById(id: number): boolean
         ' ... autres méthodes importantes
     }
 }

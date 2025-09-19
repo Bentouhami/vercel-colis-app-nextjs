@@ -59,7 +59,7 @@ export default function UsersList() {
         if (!confirm('Confirmer la suppression de cet utilisateur ?')) return;
 
         try {
-            const res = await fetch(`${API_DOMAIN}/users/${id}`, {method: 'DELETE'});
+            const res = await fetch(`${API_DOMAIN}/admin/users/${id}`, {method: 'DELETE'});
             if (!res.ok) throw new Error();
             toast.success('Utilisateur supprimé.');
             fetchUsers();

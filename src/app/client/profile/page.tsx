@@ -1,8 +1,10 @@
-// path: src/app/client/profile/page.tsx
+
+// 1. Current user viewing their own profile (existing usage)
+// src/app/client/profile/page.tsx
 
 import ProfileComponent from "@/components/client-specific/profile/ProfileComponent"
 
-function Profile() {
+function UserProfilePage() {
     return (
         <div className="w-full max-w-4xl mx-auto">
             <ProfileComponent />
@@ -10,4 +12,4 @@ function Profile() {
     )
 }
 
-export default Profile
+export default UserProfilePage

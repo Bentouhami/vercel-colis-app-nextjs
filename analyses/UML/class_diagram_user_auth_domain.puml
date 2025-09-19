@@ -180,7 +180,7 @@
           + updateUserAndResetTokenVerificationAfterVerification(userId: number): Promise<void>
           + updateVerificationTokenForOldUser(userId: number, verificationData: VerificationDataType): Promise<void>
           + getUserById(id: number): Promise<CreateDestinataireDto | null>
-          + DeleteDestinataireById(id: number): Promise<boolean>
+          + DeleteUserById(id: number): Promise<boolean>
           + checkExistingAssociation(clientId: number, destinataireId: number): Promise<ClientDestinataire | null>
           + associateDestinataireToCurrentClient(userId: number, destinataireId: number): Promise<ClientDestinataire | null>
           + getUserByEmail(email: string): Promise<UserLoginDto | null>
