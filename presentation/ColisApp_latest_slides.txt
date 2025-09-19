@@ -1,0 +1,212 @@
+slide_1
+ColisApp Conception et Développement d'une Plateforme Logistique Full-Stack Moderne Un projet de fin d'études par Faisal BENTOUHAMI 1
+--------------------------------------------------------------------------------
+
+slide_2
+Aperçu 01 Introduction & Contexte Découverte du projet et des défis actuels. 02 Cahier des Charges Objectifs, périmètre et contraintes techniques. 03 Analyse Fonctionnelle Parties prenantes et cas d'utilisation. 04 Analyse Technique Architecture logicielle et réseau. 05 Conclusion & Perspectives Réalisations et évolutions futures. 2
+--------------------------------------------------------------------------------
+
+
+
+slide_3
+Le Point de Départ : Un Marché Fragmenté et une Expérience Datée Le projet ColisApp est né d'un constat simple, issu d'une expérience personnelle : l'envoi de colis à l'international, notamment entre la Belgique et le Maroc, est un parcours semé d'embûches. Ce secteur est caractérisé par une forte fragmentation et un manque criant d'outils numériques. Opacité des Tarifs Une absence totale de transparence sur les coûts d'expédition, rendant difficile l'estimation pour les utilisateurs. Manque de Suivi Aucune visibilité sur le statut des colis après leur dépôt, générant de l'incertitude et de l'anxiété. Paiements Archaïques Des processus de paiement souvent manuels et peu sécurisés, freinant l'efficacité des transactions. Gestion Inefficace Pour les agences, une gestion interne majoritairement manuelle et inefficace, impactant la productivité. C'est cette rupture dans l'expérience utilisateur et cette inefficacité opérationnelle que ColisApp a cherché à résoudre, en apportant une solution numérique intégrée. 3
+--------------------------------------------------------------------------------
+
+slide_4
+La Vision : Créer une Solution Intégrée, Transparente et Évolutive Face aux problématiques identifiées, la vision de ColisApp était de créer une solution unique et centralisée, répondant aux besoins des particuliers comme des professionnels. Faciliter l'Expédition Simplifier le processus d'envoi de colis pour les particuliers, rendant l'expérience fluide et intuitive. Moderniser la Gestion Apporter des outils numériques aux agences pour une gestion interne plus efficace et automatisée. Garantir Transparence & Sécurité Assurer une visibilité complète sur les tarifs et le suivi, tout en sécurisant les transactions financières. Fonctionnalités Clés Un simulateur de prix transparent pour des estimations immédiates. Un suivi en temps réel pour une visibilité complète du colis. Un système de paiement en ligne sécurisé et intégré. Des tableaux de bord dédiés et personnalisés pour chaque rôle (clients, agences, comptables). Ces fonctionnalités concrétisent la vision d'une plateforme logistique moderne et centrée sur l'utilisateur. 4
+--------------------------------------------------------------------------------
+
+slide_5
+Vision business & marché
+Marché cible
+• Expatriés et diasporas belgo-marocaines envoyant régulièrement des colis familiaux.
+• Petites agences locales qui veulent digitaliser leur gestion sans investissement lourd.
+• Commerces de proximité souhaitant proposer un service d’envoi clé en main.
+
+Proposition de valeur
+• Transparence tarifaire grâce au simulateur et paiement Stripe sécurisé.
+• Tableaux de bord multi-rôles pour suivre revenus, clients et opérations.
+• Plateforme évolutive, prête pour d’autres pays, devises et services premium.
+
+Modèle économique (phase 1)
+• Commission 2–5 % par envoi (100 envois/mois à 50 € ≈ 100 €/mois).
+• Abonnement agences 29 €/mois (10 agences pilotes ≈ 290 €/mois).
+• Upsell futur : assurance colis, express, boutique d’accessoires.
+
+Synthèse SWOT
+Forces : UX moderne, suivi temps réel, automatisation.
+Opportunités : nouveaux corridors UE/AFN, partenariats transporteurs.
+Risques : concurrence internationale, adoption progressive des agences.
+
+Lien avec la problématique
+Cette proposition répond à la fragmentation et à l’opacité identifiées initialement.
+--------------------------------------------------------------------------------
+
+slide_6
+Périmètre actuel & hypothèses critiques
+Fonctionnalités livrées
+• Simulation complète, paiement Stripe test, suivi + QR code, gestion multi-rôles, notifications e-mail, dashboards hebdo/mensuels.
+
+Fonctionnalités en cours
+• Reporting annuel/TVA détaillé.
+• Webhook Stripe & anti-fraude renforcé.
+• Gestion documentaire (étiquettes PDF, scan agences).
+
+Hors périmètre
+• Suivi GPS temps réel, app mobile native, notifications SMS/push, multi-devise, chargebacks.
+
+Hypothèses d’exploitation
+• Connexion Internet stable, SMTP opérationnel, données pays/villes/agences préchargées, clients prêts à payer via Stripe.
+
+Contraintes techniques clés
+• Next.js App Router + Prisma/PostgreSQL + Auth.js JWT.
+• Logs serveur disponibles mais observabilité à renforcer (pas d’APM).
+• I18n non activée (français par défaut).
+
+Condition de mise en production
+• Brancher le webhook Stripe, durcir validations (idempotence/signature) et activer monitoring.
+--------------------------------------------------------------------------------
+Titre proposé : Périmètre actuel & hypothèses critiques
+Contenu suggéré :
+Colonne 1 — Fonctionnalités :
+  • Livrées : simulation, paiement Stripe test, suivi, multi-rôles (`analyses/PERIMETRE_ET_CONTRAINTES.md:9-19`).
+  • Partielles : reporting avancé, sécurité paiement (webhook), logistique documentaire (`analyses/PERIMETRE_ET_CONTRAINTES.md:22-27`).
+  • Hors scope : suivi GPS temps réel, appli mobile native, multi-devise (`analyses/PERIMETRE_ET_CONTRAINTES.md:28-36`).
+Colonne 2 — Hypothèses & contraintes :
+  • Stripe webhook, SMTP, données de référence (`analyses/PERIMETRE_ET_CONTRAINTES.md:39-54`).
+  • Observabilité à renforcer, i18n non activée.
+Terminer par les conditions de passage en production.
+=============== Fin nouvelle slide ===============
+
+========== À ajuster (numérotation des slides suivantes) =========
+Les slides actuelles 5 à 19 doivent être décalées de +2 dans le deck final (ex : l'actuelle slide_5 deviendra slide_7).
+Penser à mettre à jour les numéros affichés sur les slides.
+========== Fin ajustement =========
+
+slide_5
+La Fondation du Projet : L'Analyse Fonctionnelle
+
+
+ Un projet de cette ampleur ne peut se construire sans une fondation solide. Une part importante du travail a été consacrée à l'analyse fonctionnelle, étape cruciale pour définir le périmètre exact du projet avant d'écrire la moindre ligne de code. 01 Identification des Parties Prenantes Définition de tous les acteurs impliqués : visiteurs, clients, administrateurs d'agence, comptables, etc. 02 Traduction en User Stories Transformation des besoins de chaque partie prenante en récits d'utilisateurs concrets, par exemple : "En tant que client, je veux suivre mon colis pour savoir où il est". 03 Formalisation en Diagrammes UML Création de diagrammes de cas d'utilisation UML pour décrire précisément les interactions entre les acteurs et le système, assurant une compréhension unifiée des fonctionnalités. Cette démarche structurée a permis de s'assurer que ColisApp répondrait précisément aux attentes des utilisateurs et aux exigences opérationnelles du secteur logistique. 5
+--------------------------------------------------------------------------------
+
+slide_6
+La Modélisation des Données : Le Cœur du Système Une fois les fonctionnalités définies, l'étape suivante a été de structurer l'information de manière logique et cohérente. Une démarche classique de modélisation de données a été suivie pour garantir la robustesse et la scalabilité de la plateforme. Modèle Conceptuel de Données (MCD) Identification des entités principales (Utilisateur, Envoi, Agence) et de leurs relations, représentant la vision métier des données. Modèle Logique de Données (MLD) Traduction du MCD en une structure de tables et de relations, prête à être implémentée dans une base de données relationnelle. Implémentation via schema.prisma Le MLD a été directement implémenté dans le fichier  schema.prisma , servant de source de vérité unique pour toute la structure de données de l'application, garantissant cohérence et sécurité des types. Cette approche a permis de construire une base de données solide et optimisée, essentielle pour le bon fonctionnement d'une plateforme logistique traitant de nombreuses informations. 6
+--------------------------------------------------------------------------------
+
+slide_7
+La Conception Technique : Justification des Choix d'Architecture L'architecture de ColisApp a été pensée pour être moderne, performante et maintenable. Chaque choix technologique répond à un besoin précis, assurant une fondation solide pour le développement. Next.js (Full-Stack) Choisi pour son intégration parfaite entre le frontend et le backend, et les performances offertes par les  React Server Components , idéales pour des pages dynamiques et un bon référencement. PostgreSQL Retenu pour sa robustesse en tant que base de données relationnelle, garantissant fiabilité et intégrité des données. Prisma ORM Un choix stratégique offrant une sécurité de type de bout en bout entre la base de données et le code TypeScript, éliminant une catégorie entière d'erreurs. Auth.js Intégré pour sa flexibilité, permettant de gérer l'authentification classique par mot de passe et les connexions via des fournisseurs externes (Google), avec une gestion fine des rôles et permissions. Cette combinaison de technologies de pointe assure une plateforme agile, sécurisée et prête à évoluer. 7
+--------------------------------------------------------------------------------
+
+slide_8
+MPD 8
+--------------------------------------------------------------------------------
+
+slide_9
+Sécurité & conformité
+RBAC & middleware
+• Rôles CLIENT, DESTINATAIRE, AGENCY_ADMIN, ACCOUNTANT, SUPER_ADMIN contrôlés par un middleware Edge (refus par défaut, redirection selon le rôle).
+• Sessions NextAuth JWT enrichies (id, rôle, nom) + cookie applicatif signé pour les simulations.
+
+Protection des données
+• Données minimisées, TLS, aucun stockage CB (Stripe), tokens reset/verification à durée limitée.
+• Bannière de consentement : tout accepter/refuser/personnaliser, cookie `cookie_consent` versionné 6 mois.
+
+Améliorations programmées
+• Rate limiting sur endpoints sensibles, journalisation centralisée (Sentry), webhook Stripe vérifié.
+• Politique de confidentialité/cookies dédiée, chargement conditionnel des scripts tiers.
+• Tests d’intégration middleware sur les parcours critiques.
+--------------------------------------------------------------------------------
+Titre proposé : Sécurité & conformité
+Contenu suggéré :
+- RBAC & middleware Edge : rôles CLIENT, DESTINATAIRE, AGENCY_ADMIN, ACCOUNTANT, SUPER_ADMIN (`analyses/Annexe_RBAC_RGPD.md:9-36`).
+- Consentement cookies & RGPD : bannière, catégories, cookie versionné (`analyses/Annexe_RBAC_RGPD.md:45-64`).
+- Améliorations prévues : rate limiting, journalisation, webhook Stripe, page politique (`analyses/Annexe_RBAC_RGPD.md:36-71`).
+=============== Fin nouvelle slide ===============
+
+slide_9
+ColisApp en Action : Le Parcours Utilisateur
+
+
+ Voyons maintenant comment l'analyse et l'architecture se traduisent en une expérience utilisateur concrète et des bénéfices tangibles pour chaque type d'utilisateur. Visiteur : Estimation Transparente En quelques clics, sans même avoir de compte, un nouveau visiteur peut obtenir une estimation transparente du coût de son envoi. C'est le premier point de friction éliminé : l'opacité des tarifs. Client : Suivi Détaillé & Historique Une fois connecté, le client accède à son tableau de bord personnel, retrouvant l'historique de ses envois. En cliquant sur un colis, il accède à son suivi détaillé, étape par étape. Le manque de visibilité est résolu. Paiement Sécurisé (Stripe) Après validation de la simulation, le client peut procéder au paiement via une interface sécurisée intégrée avec Stripe. Le troisième point de friction, les paiements archaïques, est ainsi résolu. ColisApp transforme l'expérience d'envoi de colis en la rendant simple, transparente et sécurisée, du début à la fin. 9
+--------------------------------------------------------------------------------
+
+slide_10
+Rétrospective : Les Défis Techniques et Leurs Solutions
+
+
+ Ce projet a été un formidable terrain d'apprentissage, notamment à travers les défis techniques rencontrés et les solutions innovantes mises en œuvre. Adaptation à l'Architecture 'App Router' de Next.js Défi :  Maîtriser la nouvelle architecture 'App Router' et ses implications sur le développement. Solution :  Conception de l'application avec des composants 'serveur' par défaut pour la performance, et activation du mode 'client' uniquement pour les éléments nécessitant une interactivité (ex: formulaires). Sécurisation des Routes avec Auth.js dans l'Environnement 'Edge' Défi :  Gérer la sécurité des routes de manière performante et fiable dans un environnement 'Edge' contraint. Solution :  Dissociation de la vérification de session (très rapide) de la vérification des rôles (effectuée au niveau des API), garantissant performance et sécurité optimales. Gestion des Requêtes Complexes avec Prisma Défi :  Éviter les problèmes de performance lors de l'exécution de requêtes complexes sur la base de données. Solution :  Utilisation systématique des opérateurs  include  et  select  de Prisma pour construire des requêtes optimisées, minimisant la charge sur la base de données. Chaque défi a été une opportunité d'approfondir les connaissances et de renforcer la robustesse de ColisApp. 10
+--------------------------------------------------------------------------------
+
+slide_12
+Planning & démarche projet
+Chronologie des itérations
+• S1–S2 : cadrage & benchmark (retours diaspora, étude existant).
+• S3–S4 : user stories, UML, MCD/MLD, validation encadrant.
+• S5–S8 : implémentation Next.js App Router, Prisma, Auth.js, UI shadcn.
+• S9 : intégration Stripe, e-mails transactionnels, suivi QR code.
+• S10 : tests bout-à-bout, scripts seed, préparation démo.
+
+Facteurs clés
+• Allers-retours avec encadrant et agences pilotes.
+• Revue de backlog hebdo, focus valeur utilisateur.
+• Documentation continue (OpenAPI, annexe RBAC/RGPD, dossier d’analyse).
+--------------------------------------------------------------------------------
+=============== Fin nouvelle slide ===============
+
+slide_13
+Validation & tests
+Couverture par services
+• SimulationService.calculateSimulation : cas nominal, champs manquants, poids/volume limites.
+• TransportService.calculateNextAvailableDate : calcul mardi suivant, franchissement fin de mois/année.
+• Méthodes getPoidsTotal / getVolumeTotal / getPrixTotal : agrégations cohérentes.
+
+Tests manuels & E2E
+• Parcours complet simulation → paiement Stripe test → suivi → notifications e-mail.
+• Vérification des accès RBAC (client/admin/comptable), bannière cookies, QR codes.
+
+Prochaines étapes QA
+• Ajouter tests automatisés (Vitest/Jest) sur services critiques et middleware.
+• Déployer monitoring (logs centralisés, alertes) et couverture webhook Stripe.
+• Revoir les scripts seed avant chaque démo pour garantir la reproductibilité.
+--------------------------------------------------------------------------------
+=============== Fin nouvelle slide ===============
+
+slide_11
+l'Architecture 'App Rouer' de Next.js Structure de nos pages pour la gestion pour les admins. 11
+--------------------------------------------------------------------------------
+
+slide_12
+l'Architecture 'App Router' de Next.js Structure de nos pages pour les clients et destinataires. 12
+--------------------------------------------------------------------------------
+
+slide_13
+l'Architecture 'App Router' de Next.js Structure de nos routes API. 13
+--------------------------------------------------------------------------------
+
+slide_14
+Scénario : Visualisation d'une Liste d'Envois Pour illustrer la mise en œuvre de la modélisation des données, prenons l'exemple concret de l'affichage d'une liste des envois pour un client. Chaque envoi nécessite de présenter des informations clés de manière claire et organisée à l'utilisateur. Le numéro de suivi de l'envoi. Le statut de l'envoi.  Le nom du destinataire Ce scénario démontre comment les modèles conceptuels et logiques de données se traduisent directement en une interface utilisateur fonctionnelle et intuitive, facilitant la gestion et le suivi des envois pour nos clients. 14
+--------------------------------------------------------------------------------
+
+slide_15
+Exemple 1 : La Requête Naïve (Le Problème) Cette première approche, bien que fonctionnelle, est très inefficace. Elle récupère toutes les informations des tables liées (utilisateur et envois), y compris des données inutiles et potentiellement sensibles comme les mots de passe ou les adresses complètes. C'est un problème majeur de performance et de sécurité. 15
+--------------------------------------------------------------------------------
+
+slide_16
+Exemple 2 : La Requête Optimisée avec  select  (La Solution) Voici la version correcte et optimisée. En utilisant  select  à l'intérieur de  include , nous spécifions précisément les champs dont nous avons besoin. Prisma peut alors construire une seule requête SQL très performante qui ne récupère que le strict nécessaire. 16
+--------------------------------------------------------------------------------
+
+slide_17
+Démonstration : Processus d'Envoi et de Suivi Découvrons ensemble comment ColisApp transforme l'expérience d'expédition. Nous allons parcourir le processus complet, de la création d'un envoi à son suivi en temps réel, illustrant l'efficacité et la transparence de notre solution. 17
+--------------------------------------------------------------------------------
+
+slide_18
+Bilan, Apports Personnels et Perspectives
+
+
+ En bilan, ColisApp est aujourd'hui une application fonctionnelle et robuste qui répond point par point à la problématique initiale du secteur logistique. Apports Personnels Acquisition de compétences solides en architecture logicielle full-stack. Maîtrise de la modélisation de données avancée. Développement de capacités de résolution de problèmes techniques complexes. Perspectives d'Évolution Développement d'une application mobile dédiée pour une accessibilité accrue. Extension à de nouveaux marchés géographiques, notamment en Afrique et au-delà. Ajout de fonctionnalités premium, comme l'assurance colis ou des options de livraison express. Impact et Réussite ColisApp démontre la capacité à transformer un besoin métier en une solution technologique complète et performante, prête à être déployée et à évoluer dans un environnement réel. L'aventure ne s'arrête pas là. ColisApp est une plateforme avec un fort potentiel de croissance et d'innovation. 18
+--------------------------------------------------------------------------------
+
+slide_19
+Merci ! Merci de votre attention. Je suis maintenant disponible pour répondre à vos questions. 19
+--------------------------------------------------------------------------------
