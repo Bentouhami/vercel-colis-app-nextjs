@@ -1,0 +1,124 @@
+slide_1
+ColisApp — plateforme logistique full-stack
+• Faisal Bentouhami – Travail de fin d’études
+--------------------------------------------------------------------------------
+slide_2
+Agenda
+• Motivation & problématique
+• Vision business, périmètre et démarche
+• Sécurité, architecture, résultats & suites
+--------------------------------------------------------------------------------
+slide_3
+Motivation & Problématique
+• Parcours d’envoi Belgique ↔ Maroc fragmenté, opaque, peu digitalisé
+• Objectif : unifier simulation → création → paiement → suivi
+• Enjeu : fiabiliser sécurité, RGPD et multi-rôles
+--------------------------------------------------------------------------------
+slide_4
+Vision Produit
+• Simplifier l’expédition pour particuliers et agences
+• Transparence coûts + suivi temps réel + paiements en ligne
+• Tableaux de bord dédiés selon le rôle utilisateur
+--------------------------------------------------------------------------------
+slide_5
+Vision Business & Marché
+• Cibles : diaspora belgo-marocaine, petites agences, commerces de proximité
+• Proposition : service clé en main, simulation transparente, dashboards
+• Modèle : commissions 2–5 %, abonnement agences, services premium (assurance, express)
+--------------------------------------------------------------------------------
+slide_6
+Périmètre & Hypothèses
+• Livré : simulation complète, Stripe test, suivi QR, gestion multi-rôles, e-mails, dashboards
+• Partiel / hors scope : reporting annuel, webhook Stripe, étiquettes PDF, suivi GPS, app mobile
+• Hypothèses : connexion stable, SMTP prêt, données seed, clients OK pour Stripe ; passage prod conditionné par webhook + monitoring
+--------------------------------------------------------------------------------
+slide_7
+Analyse Fonctionnelle
+• Parties prenantes et user stories structurent le backlog
+• Diagrammes UML/Cas d’utilisation pour parcours client, admin, comptable
+• Priorisation via ateliers encadrant + retours agences pilotes
+--------------------------------------------------------------------------------
+slide_8
+Modélisation & Données
+• MCD → MLD → schema.prisma unique source de vérité
+• Entités clés : User, Agency, Envoi, Payment, Tracking
+• Validations Zod partagées client/serveur pour cohérence
+--------------------------------------------------------------------------------
+slide_9
+Sécurité & Conformité
+• RBAC via middleware Edge (CLIENT, DESTINATAIRE, AGENCY_ADMIN, ACCOUNTANT, SUPER_ADMIN)
+• Consentement cookies : bannière trichoix, cookie versionné 6 mois
+• Roadmap : rate limiting, journalisation centralisée, webhook Stripe certifié
+--------------------------------------------------------------------------------
+slide_10
+Parcours Utilisateur
+• Simulation transparente sans compte
+• Paiement Stripe sécurisé et confirmation e-mail
+• Suivi détaillé accessible client & destinataire
+--------------------------------------------------------------------------------
+slide_11
+Défis Techniques & Solutions
+• Adoption App Router : composants serveur par défaut, client ciblé
+• Auth.js côté Edge : séparation session rapide / contrôle rôles API
+• Prisma : requêtes optimisées (include/select) + validations Zod
+--------------------------------------------------------------------------------
+slide_12
+Planning & Démarche
+• S1–S2 cadrage & benchmark ; S3–S4 analyse & modélisation
+• S5–S8 implémentation Next.js/Prisma/Auth.js/UI
+• S9 tests bout-à-bout, intégration Stripe, préparation démo
+--------------------------------------------------------------------------------
+slide_13
+Architecture App Router – Admin
+• Layout admin dédié, chargement données côté serveur
+• Accès filtré par rôle via middleware
+• Dashboards : revenus, nouveaux clients, suivi agences
+--------------------------------------------------------------------------------
+slide_14
+Architecture App Router – Clients
+• Layout client avec routes protégées (profil, envois, paiements)
+• Composants UI shadcn + formulaires typés Zod
+• Historique et suivi des envois consolidés
+--------------------------------------------------------------------------------
+slide_15
+Architecture App Router – API
+• Routes REST v1 (users, agencies, envois, tracking, payments)
+• Validations côté serveur, réponses typées
+• Séparation API publiques vs protégées par rôle
+--------------------------------------------------------------------------------
+slide_16
+Scénario Liste d’Envois
+• Liste paginée des envois d’un client
+• Affichage : numéro de suivi, statut, destinataire, actions
+• Données issues des relations Prisma optimisées
+--------------------------------------------------------------------------------
+slide_17
+Requête Naïve vs Optimisée
+• Variante naïve : include massif → surcharge SQL + risque données sensibles
+• Variante optimisée : include + select ciblés, requête unique efficace
+• Gains : performance, sécurité, lisibilité du code
+--------------------------------------------------------------------------------
+slide_18
+Démonstration Parcours Complet
+• Simulation d’un envoi → création → paiement test
+• Génération numéro de suivi + QR code
+• Notification e-mail et suivi public
+--------------------------------------------------------------------------------
+slide_19
+Résultats & Limites
+• Parcours bout-à-bout opérationnel, UI cohérente
+• Limites : tests automatisés partiels, monitoring à renforcer
+• Prochaines étapes : webhook Stripe, observabilité, i18n, mobile
+--------------------------------------------------------------------------------
+slide_20
+Conclusion & Apports
+• Maîtrise architecture Next.js full-stack & Prisma
+• Mise en place d’un framework RBAC/RGPD complet
+• Vision business clarifiée et roadmap d’extension
+--------------------------------------------------------------------------------
+slide_21
+Questions
+• Merci pour votre attention
+• Démo live possible selon le temps
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
