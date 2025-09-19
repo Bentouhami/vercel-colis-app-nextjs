@@ -1,5 +1,4 @@
 
-import type { Config } from 'jest';
 import nextJest from 'next/jest.js';
 
 const createJestConfig = nextJest({
@@ -8,7 +7,7 @@ const createJestConfig = nextJest({
 });
 
 // Add any custom config to be passed to Jest
-const config: Config = {
+const config = {
   clearMocks: true,
   collectCoverage: true,
   coverageDirectory: "coverage",
