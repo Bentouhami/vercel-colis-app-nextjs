@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth/auth";
 import { RoleDto } from "@/services/dtos";
 import {
-  DeleteUserById,
+  deleteUserById,
   getUserById,
 } from "@/services/backend-services/Bk_UserService";
 import { prisma } from "@/utils/db";
@@ -173,7 +173,7 @@ export async function DELETE(
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const deleted = await DeleteUserById(userId);
+    const deleted = await deleteUserById(userId);
 
     if (!deleted) {
       return NextResponse.json(

@@ -2,7 +2,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import {
-  DeleteDestinataireById,
+  deleteUserById,
   getUserById,
 } from "@/services/backend-services/Bk_UserService";
 
@@ -24,7 +24,6 @@ export async function GET(
         { status: 400 }
       );
     }
-    
 
     const user = await getUserById(Number(userId));
 
@@ -33,7 +32,6 @@ export async function GET(
     }
     return NextResponse.json({ data: user });
   } catch (error) {
-    
     return NextResponse.json({ error: "Failed to get user" }, { status: 500 });
   }
 }
@@ -57,7 +55,6 @@ export async function DELETE(
         { status: 400 }
       );
     }
-    
 
     const result = await getUserById(Number(userId));
 
@@ -66,7 +63,7 @@ export async function DELETE(
     }
 
     // remove the user from the database
-    const isDeleted = await DeleteDestinataireById(Number(userId));
+    const isDeleted = await deleteUserById(Number(userId));
 
     if (!isDeleted) {
       return NextResponse.json(
@@ -81,7 +78,6 @@ export async function DELETE(
       { status: 200 }
     );
   } catch (error) {
-    
     return NextResponse.json(
       { error: "Failed to delete user" },
       { status: 500 }

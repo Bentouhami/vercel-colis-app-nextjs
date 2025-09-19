@@ -47,9 +47,6 @@ export async function getUserForAuthentication(email: string): Promise<{
         image: true,
         role: true,
         emailVerified: true,
-        // 🚫 NO address relations - not needed for auth
-        // 🚫 NO user associations - not needed for auth
-        // 🚫 NO other complex relations - not needed for auth
       },
     });
 
@@ -334,7 +331,7 @@ export async function getUserById(
   }
 }
 
-export async function DeleteDestinataireById(id: number): Promise<boolean> {
+export async function deleteUserById(id: number): Promise<boolean> {
   // ckeck id
   if (isNaN(id) || id <= 0) {
     console.error("Invalid user ID:", id);
@@ -360,6 +357,8 @@ export async function DeleteDestinataireById(id: number): Promise<boolean> {
       },
       data: {
         isDeleted: true,
+        isActive: false,
+        deletedAt: new Date(),
       },
     });
 
