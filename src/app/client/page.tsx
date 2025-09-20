@@ -233,7 +233,7 @@ export default function ClientHomePage() {
                                     Faire une simulation gratuite
                                 </Button>
                             </Link>
-                            <Link href="/client/auth/register">
+                            <Link href="/auth/register">
                                 <Button
                                     size="lg"
                                     variant="outline"
