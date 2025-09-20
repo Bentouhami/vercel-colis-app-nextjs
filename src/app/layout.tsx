@@ -1,5 +1,6 @@
 // path: src/app/layout.tsx
 import { Analytics } from "@vercel/analytics/next"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import type { Metadata } from "next"
 import "./globals.css"
 import { Inter } from "next/font/google"
@@ -30,6 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                             <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors">
                                 {children}
                                 <Analytics />
+                                <SpeedInsights />
                             </div>
                             <CookieConsent />
                         </ProgressWrapper>
